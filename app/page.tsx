@@ -1,65 +1,140 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { useTasbihStore } from "../store/tasbihStore";
+import { dhikrs } from "../data/dhikrs";
+import { CircleProgress } from "../components/CircleProgress";
+import { BottomNav } from "../components/BottomNav";
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const currentDhikr = useTasbihStore((s) => s.currentDhikr);
+  const counter = useTasbihStore((s) => s.counter);
+  const mode = useTasbihStore((s) => s.mode);
+  const isStarted = useTasbihStore((s) => s.isStarted);
+  const increment = useTasbihStore((s) => s.increment);
+  const reset = useTasbihStore((s) => s.reset);
+  const undoLast = useTasbihStore((s) => s.undoLast);
+  const selectDhikr = useTasbihStore((s) => s.selectDhikr);
+  const toggleMode = useTasbihStore((s) => s.toggleMode);
+
+  const target = currentDhikr?.defaultTarget ?? 0;
+  const isCompleted =
+    mode === "up" ? counter >= target && target > 0 : counter <= 0;
+
+  const groupedDhikrs = useMemo(() => {
+    const map = new Map<string, typeof dhikrs>();
+    dhikrs.forEach((d) => {
+      const list = map.get(d.category) ?? [];
+      list.push(d);
+      map.set(d.category, list);
+    });
+    return map;
+  }, []);
+
+  if (!mounted) return null;
+
+  const renderCompteur = () => (
+    <div className="flex flex-col gap-6 px-5 pb-28 pt-6">
+      <header className="flex flex-col items-center gap-2">
+        <h1 className="text-xl font-semibold text-white">🌙 Tasbih Digital</h1>
+        <p className="text-sm text-gray-400">Compteur de dhikr</p>
+      </header>
+
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-semibold text-gray-300">Sélectionner un dhikr</label>
+          <select
+            className="w-full rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] px-3 py-2 text-white outline-none focus:border-[#F5A623]"
+            value={currentDhikr?.id ?? ""}
+            onChange={(e) => selectDhikr(e.target.value)}
+          >
+            {Array.from(groupedDhikrs.entries()).map(([category, items]) => (
+              <optgroup key={category} label={category}>
+                {items.map((d) => (
+                  <option key={d.id} value={d.id} className="text-white">
+                    {d.arabic} — {d.transliteration}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-sm font-semibold text-gray-300">Mode</span>
+          <button
+            className={`flex-1 rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] px-4 py-2 text-sm font-semibold text-white transition hover:border-[#F5A623] ${
+              isStarted || isCompleted ? "opacity-50 pointer-events-none" : ""
+            }`}
+            onClick={toggleMode}
+          >
+            {mode === "up" ? "0 → objectif" : "Objectif → 0"}
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center gap-4">
+          <CircleProgress
+            value={counter}
+            target={target}
+            mode={mode}
+            isCompleted={isCompleted}
+          />
+        <div className="text-center">
+          <div className="text-sm font-semibold text-gray-400">OBJECTIF</div>
+          <div className="text-2xl font-bold text-white">{target}</div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <button
+          onClick={increment}
+          disabled={isCompleted}
+          className={`w-full rounded-xl px-6 py-4 text-lg font-bold shadow-sm transition hover:brightness-110 ${
+            isCompleted
+              ? "bg-[#1A1A1A] text-gray-400 opacity-50 pointer-events-none cursor-not-allowed"
+              : "bg-[#F5A623] text-black"
+          }`}
+        >
+          Appuyer
+        </button>
+
+        <div className="flex items-center justify-between gap-3">
+          <button
+            onClick={undoLast}
+            className="flex-1 rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] px-4 py-3 text-sm font-semibold text-white transition hover:border-[#F5A623]"
+          >
+            ↩ Undo
+          </button>
+          <button
+            onClick={reset}
+            className="flex-1 rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] px-4 py-3 text-sm font-semibold text-white transition hover:border-[#F5A623]"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderPlaceholder = (label: string) => (
+    <div className="flex min-h-[calc(100vh-72px)] flex-col items-center justify-center px-6">
+      <div className="text-center">
+        <div className="text-lg font-semibold text-white">{label}</div>
+        <div className="mt-2 text-sm text-gray-400">À venir...</div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <div className="min-h-screen bg-[#0A0A0A] text-white">
+      <main className="mx-auto flex max-w-md flex-col pb-28">
+        {renderCompteur()}
       </main>
+      <BottomNav />
     </div>
   );
 }

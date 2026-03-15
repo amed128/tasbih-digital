@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useTasbihStore } from "../../store/tasbihStore";
 import { dhikrs } from "../../data/dhikrs";
@@ -107,7 +108,12 @@ export default function StatsPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white">
-      <main className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6">
+      <motion.main
+        className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+      >
         <header className="flex flex-col gap-1">
           <h1 className="text-xl font-semibold text-white">📊 Stats</h1>
           <p className="text-sm text-gray-400">Suivi de votre pratique de dhikr</p>
@@ -207,7 +213,7 @@ export default function StatsPage() {
             </div>
           </div>
         </section>
-      </main>
+      </motion.main>
       <BottomNav />
     </div>
   );

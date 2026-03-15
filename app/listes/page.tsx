@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { useTasbihStore } from "../../store/tasbihStore";
 import { dhikrs } from "../../data/dhikrs";
 import { BottomNav } from "../../components/BottomNav";
+import { Modal } from "../../components/Modal";
 
 function groupByCategory(items: typeof dhikrs) {
   const map = new Map<string, typeof dhikrs>();
@@ -35,6 +37,11 @@ export default function ListesPage() {
   const [expandedLists, setExpandedLists] = useState<Record<string, boolean>>({});
   const [dragging, setDragging] = useState<{ listId: string; index: number } | null>(null);
 
+  const [modalType, setModalType] = useState<"create" | "rename" | "delete" | "add" | null>(null);
+  const [modalListId, setModalListId] = useState<string | null>(null);
+  const [modalInput, setModalInput] = useState<string>("");
+  const [modalSearch, setModalSearch] = useState("");
+
   const filteredDhikrs = useMemo(() => {
     const query = search.trim().toLowerCase();
     if (!query) return dhikrs;
@@ -50,27 +57,74 @@ export default function ListesPage() {
 
   const categories = useMemo(() => groupByCategory(filteredDhikrs), [filteredDhikrs]);
 
-  const handleCreateList = () => {
-    const name = window.prompt("Nom de la nouvelle liste :");
+  const modalFilteredDhikrs = useMemo(() => {
+    const q = modalSearch.trim().toLowerCase();
+    if (!q) return dhikrs;
+    return dhikrs.filter((d) => {
+      return (
+        d.arabic.includes(q) ||
+        d.transliteration.toLowerCase().includes(q) ||
+        d.translation_fr.toLowerCase().includes(q) ||
+        d.translation_en.toLowerCase().includes(q)
+      );
+    });
+  }, [modalSearch]);
+
+  const closeModal = () => {
+    setModalType(null);
+    setModalListId(null);
+    setModalInput("");
+    setModalSearch("");
+  };
+
+  const openCreateModal = () => {
+    setModalType("create");
+    setModalInput("");
+  };
+
+  const openRenameModal = (listId: string) => {
+    setModalType("rename");
+    setModalListId(listId);
+    setModalInput(listId);
+  };
+
+  const openDeleteModal = (listId: string) => {
+    setModalType("delete");
+    setModalListId(listId);
+  };
+
+  const openAddDhikrModal = (listId: string) => {
+    setModalType("add");
+    setModalListId(listId);
+    setModalSearch("");
+  };
+
+  const handleCreateConfirm = () => {
+    const name = modalInput.trim();
     if (!name) return;
-    createList(name.trim());
+    createList(name);
     setExpandedLists((prev) => ({ ...prev, [name]: true }));
+    closeModal();
   };
 
-  const handleRenameList = (oldId: string) => {
-    const name = window.prompt("Renommer la liste :", oldId);
+  const handleRenameConfirm = () => {
+    if (!modalListId) return;
+    const name = modalInput.trim();
     if (!name) return;
-    renameList(oldId, name.trim());
+    renameList(modalListId, name);
+    closeModal();
   };
 
-  const handleDeleteList = (listId: string) => {
-    if (
-      window.confirm(
-        `Supprimer la liste "${listId}" ? Cela supprimera uniquement la liste, pas les dhikrs.`
-      )
-    ) {
-      deleteList(listId);
-    }
+  const handleDeleteConfirm = () => {
+    if (!modalListId) return;
+    deleteList(modalListId);
+    closeModal();
+  };
+
+  const handleAddDhikr = (dhikrId: string) => {
+    if (!modalListId) return;
+    addToList(modalListId, dhikrId);
+    closeModal();
   };
 
   const handleDrop = (listId: string, toIndex: number) => {
@@ -84,7 +138,12 @@ export default function ListesPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white">
-      <main className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6">
+      <motion.main
+        className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+      >
         <header className="flex flex-col gap-1">
           <h1 className="text-xl font-semibold text-white">📚 Listes</h1>
           <p className="text-sm text-gray-400">Bibliothèque, listes personnalisées et organisation</p>
@@ -137,7 +196,7 @@ export default function ListesPage() {
                             </span>
                           </div>
                           <button
-                            onClick={() => addToList(activeListId, d.id)}
+                            onClick={() => openAddDhikrModal(activeListId)}
                             className="rounded-lg bg-[#F5A623] px-3 py-1 text-xs font-semibold text-black"
                           >
                             +
@@ -159,7 +218,7 @@ export default function ListesPage() {
               <div className="text-xs text-gray-400">Créer, modifier, organiser</div>
             </div>
             <button
-              onClick={handleCreateList}
+              onClick={openCreateModal}
               className="rounded-xl bg-[#F5A623] px-3 py-2 text-xs font-semibold text-black"
             >
               + Nouvelle liste
@@ -192,13 +251,13 @@ export default function ListesPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => handleRenameList(listId)}
+                          onClick={() => openRenameModal(listId)}
                           className="rounded-lg border border-[#2A2A2A] bg-[#1A1A1A] px-3 py-1 text-xs text-white"
                         >
                           ✎
                         </button>
                         <button
-                          onClick={() => handleDeleteList(listId)}
+                          onClick={() => openDeleteModal(listId)}
                           className="rounded-lg border border-[#2A2A2A] bg-[#1A1A1A] px-3 py-1 text-xs text-white"
                         >
                           🗑
@@ -264,7 +323,140 @@ export default function ListesPage() {
             )}
           </div>
         </section>
-      </main>
+
+        <Modal
+          isOpen={modalType === "create"}
+          title="Nouvelle liste"
+          onClose={closeModal}
+          closeOnOverlayClick
+          footer={
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={closeModal}
+                className="rounded-xl bg-[#1A1A1A] px-4 py-2 text-sm font-semibold text-white"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleCreateConfirm}
+                className="rounded-xl bg-[#F5A623] px-4 py-2 text-sm font-semibold text-black"
+              >
+                Créer
+              </button>
+            </div>
+          }
+        >
+          <div className="flex flex-col gap-3">
+            <label className="text-sm font-semibold text-gray-200">Nom de la liste</label>
+            <input
+              value={modalInput}
+              onChange={(e) => setModalInput(e.target.value)}
+              placeholder="Mon programme du matin"
+              className="w-full rounded-xl bg-[#2A2A2A] px-4 py-2 text-sm text-white outline-none focus:border-[#F5A623] focus:ring-2 focus:ring-[#F5A623]/40"
+            />
+          </div>
+        </Modal>
+
+        <Modal
+          isOpen={modalType === "rename"}
+          title="Renommer la liste"
+          onClose={closeModal}
+          closeOnOverlayClick
+          footer={
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={closeModal}
+                className="rounded-xl bg-[#1A1A1A] px-4 py-2 text-sm font-semibold text-white"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleRenameConfirm}
+                className="rounded-xl bg-[#F5A623] px-4 py-2 text-sm font-semibold text-black"
+              >
+                Renommer
+              </button>
+            </div>
+          }
+        >
+          <div className="flex flex-col gap-3">
+            <label className="text-sm font-semibold text-gray-200">Nouveau nom</label>
+            <input
+              value={modalInput}
+              onChange={(e) => setModalInput(e.target.value)}
+              className="w-full rounded-xl bg-[#2A2A2A] px-4 py-2 text-sm text-white outline-none focus:border-[#F5A623] focus:ring-2 focus:ring-[#F5A623]/40"
+            />
+          </div>
+        </Modal>
+
+        <Modal
+          isOpen={modalType === "delete"}
+          title="Supprimer la liste"
+          onClose={closeModal}
+          closeOnOverlayClick
+          footer={
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={closeModal}
+                className="rounded-xl bg-[#1A1A1A] px-4 py-2 text-sm font-semibold text-white"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                className="rounded-xl bg-[#EF4444] px-4 py-2 text-sm font-semibold text-white"
+              >
+                Supprimer
+              </button>
+            </div>
+          }
+        >
+          <div className="text-sm text-gray-200">
+            Supprimer <span className="font-semibold text-white">{modalListId}</span> ?
+          </div>
+        </Modal>
+
+        <Modal
+          isOpen={modalType === "add"}
+          title="Ajouter un dhikr"
+          onClose={closeModal}
+          closeOnOverlayClick
+          footer={
+            <div className="flex justify-end">
+              <button
+                onClick={closeModal}
+                className="rounded-xl bg-[#1A1A1A] px-4 py-2 text-sm font-semibold text-white"
+              >
+                Fermer
+              </button>
+            </div>
+          }
+        >
+          <div className="flex flex-col gap-3">
+            <input
+              value={modalSearch}
+              onChange={(e) => setModalSearch(e.target.value)}
+              placeholder="Rechercher un dhikr..."
+              className="w-full rounded-xl bg-[#2A2A2A] px-4 py-2 text-sm text-white outline-none focus:border-[#F5A623] focus:ring-2 focus:ring-[#F5A623]/40"
+            />
+            <div className="max-h-72 space-y-2 overflow-y-auto pr-2">
+              {modalFilteredDhikrs.map((d) => (
+                <button
+                  key={d.id}
+                  onClick={() => handleAddDhikr(d.id)}
+                  className="flex w-full items-center justify-between rounded-xl bg-[#1A1A1A] px-3 py-2 text-left text-white transition hover:bg-[#2A2A2A]"
+                >
+                  <div>
+                    <div className="text-sm text-[#F5A623]">{d.arabic}</div>
+                    <div className="text-xs text-gray-400">{d.transliteration}</div>
+                  </div>
+                  <div className="text-xs font-semibold text-white">Ajouter</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </Modal>
+      </motion.main>
       <BottomNav />
     </div>
   );

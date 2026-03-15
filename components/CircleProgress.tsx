@@ -1,13 +1,14 @@
 "use client";
 
-import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { motion, useAnimation } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
 
 type CircleProgressProps = {
   value: number;
   target: number;
   mode: "up" | "down";
   isCompleted: boolean;
+  pulseTrigger?: number;
   size?: number;
   strokeWidth?: number;
 };
@@ -21,13 +22,48 @@ export function CircleProgress({
   target,
   mode,
   isCompleted,
+  pulseTrigger,
   size = 260,
   strokeWidth = 16,
 }: CircleProgressProps) {
   const [mounted, setMounted] = useState(false);
+  const pulseControls = useAnimation();
+  const numberControls = useAnimation();
+  const prevValueRef = useRef<number>(value);
+  const prevIsCompletedRef = useRef<boolean>(isCompleted);
+
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    if (prevValueRef.current !== value) {
+      numberControls.start({
+        scale: [1, 1.3, 1],
+        color: ["#FFFFFF", "#F5A623", "#FFFFFF"],
+        transition: { duration: 0.15 },
+      });
+      prevValueRef.current = value;
+    }
+  }, [value, numberControls, mounted]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    if (prevIsCompletedRef.current !== isCompleted) {
+      prevIsCompletedRef.current = isCompleted;
+    }
+  }, [isCompleted, mounted]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    if (typeof pulseTrigger === "number") {
+      pulseControls.start({
+        scale: [1, 1.08, 1],
+        transition: { duration: 0.2 },
+      });
+    }
+  }, [pulseTrigger, pulseControls, mounted]);
 
   if (!mounted) return null;
 
@@ -47,9 +83,10 @@ export function CircleProgress({
   const offset = circumference * (1 - progress);
 
   return (
-    <div
+    <motion.div
       className="relative flex flex-col items-center justify-center"
       style={{ width: size, height: size }}
+      animate={pulseControls}
     >
       <svg width={size} height={size} className="-rotate-90">
         <circle
@@ -76,12 +113,13 @@ export function CircleProgress({
       </svg>
 
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div
+        <motion.div
+          animate={numberControls}
           className="text-6xl font-bold leading-tight"
           style={{ color: isCompleted ? GREEN : "white" }}
         >
           {value}
-        </div>
+        </motion.div>
         <div className="mt-1 text-sm font-semibold text-gray-300">
           {mode === "up" ? `/ ${target}` : "RESTANT"}
         </div>
@@ -91,6 +129,6 @@ export function CircleProgress({
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

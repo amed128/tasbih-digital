@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { useTasbihStore } from "../../store/tasbihStore";
 import { BottomNav } from "../../components/BottomNav";
 
@@ -17,7 +18,12 @@ export default function ReglagesPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white">
-      <main className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6">
+      <motion.main
+        className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+      >
         <header className="flex flex-col gap-1">
           <h1 className="text-xl font-semibold text-white">⚙️ Réglages</h1>
           <p className="text-sm text-gray-400">Personnalisez votre expérience</p>
@@ -90,7 +96,7 @@ export default function ReglagesPage() {
         <div className="mt-6 text-center text-xs text-gray-500">
           Tasbih Digital — v1.0
         </div>
-      </main>
+      </motion.main>
 
       <BottomNav />
     </div>

@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import confetti from "canvas-confetti";
 import { useTasbihStore } from "../store/tasbihStore";
 import { dhikrs } from "../data/dhikrs";
 import { CircleProgress } from "../components/CircleProgress";
@@ -20,9 +22,36 @@ export default function Home() {
   const selectDhikr = useTasbihStore((s) => s.selectDhikr);
   const toggleMode = useTasbihStore((s) => s.toggleMode);
 
+  const [pulseTrigger, setPulseTrigger] = useState(0);
+  const [hasFiredConfetti, setHasFiredConfetti] = useState(false);
+  const prevIsCompleted = useRef(false);
+
   const target = currentDhikr?.defaultTarget ?? 0;
   const isCompleted =
     mode === "up" ? counter >= target && target > 0 : counter <= 0;
+
+  const handleIncrement = () => {
+    increment();
+    setPulseTrigger((t) => t + 1);
+  };
+
+  useEffect(() => {
+    if (isCompleted && !prevIsCompleted.current) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { x: 0.5, y: 0.4 },
+        colors: ["#F5A623", "#FFFFFF"],
+      });
+      setHasFiredConfetti(true);
+    }
+
+    if (!isCompleted) {
+      setHasFiredConfetti(false);
+    }
+
+    prevIsCompleted.current = isCompleted;
+  }, [isCompleted]);
 
   const groupedDhikrs = useMemo(() => {
     const map = new Map<string, typeof dhikrs>();
@@ -82,6 +111,7 @@ export default function Home() {
             target={target}
             mode={mode}
             isCompleted={isCompleted}
+            pulseTrigger={pulseTrigger}
           />
         <div className="text-center">
           <div className="text-sm font-semibold text-gray-400">OBJECTIF</div>
@@ -90,9 +120,10 @@ export default function Home() {
       </div>
 
       <div className="flex flex-col gap-3">
-        <button
-          onClick={increment}
+        <motion.button
+          onClick={handleIncrement}
           disabled={isCompleted}
+          whileTap={{ scale: 0.95 }}
           className={`w-full rounded-xl px-6 py-4 text-lg font-bold shadow-sm transition hover:brightness-110 ${
             isCompleted
               ? "bg-[#1A1A1A] text-gray-400 opacity-50 pointer-events-none cursor-not-allowed"
@@ -100,7 +131,7 @@ export default function Home() {
           }`}
         >
           Appuyer
-        </button>
+        </motion.button>
 
         <div className="flex items-center justify-between gap-3">
           <button
@@ -132,7 +163,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white">
       <main className="mx-auto flex max-w-md flex-col pb-28">
-        {renderCompteur()}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {renderCompteur()}
+        </motion.div>
       </main>
       <BottomNav />
     </div>

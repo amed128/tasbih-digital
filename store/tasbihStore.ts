@@ -299,7 +299,13 @@ const createStore = () =>
             ...predefinedLists,
             ...state.customLists,
           } as Record<string, string[]>;
-          const list = lists[listId] ?? [];
+
+          // Support selecting a group/category from the dropdown
+          const groupList = dhikrs
+            .filter((d) => d.category === listId)
+            .map((d) => d.id);
+
+          const list = lists[listId] ?? groupList ?? [];
           const firstId = list[0] ?? state.currentDhikrId;
           const firstDhikr = resolveDhikr(firstId);
           const target = firstDhikr?.defaultTarget ?? 0;

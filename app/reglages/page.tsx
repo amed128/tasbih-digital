@@ -10,9 +10,15 @@ export default function ReglagesPage() {
   useEffect(() => setMounted(true), []);
 
   const preferences = useTasbihStore((s) => s.preferences);
+  const mode = useTasbihStore((s) => s.mode);
+  const toggleMode = useTasbihStore((s) => s.toggleMode);
   const toggleDarkMode = useTasbihStore((s) => s.toggleDarkMode);
   const toggleVibration = useTasbihStore((s) => s.toggleVibration);
   const setLanguage = useTasbihStore((s) => s.setLanguage);
+
+  const setExecutionMode = (target: "up" | "down") => {
+    if (mode !== target) toggleMode();
+  };
 
   if (!mounted) return null;
 
@@ -28,6 +34,32 @@ export default function ReglagesPage() {
           <h1 className="text-xl font-semibold text-white">⚙️ Réglages</h1>
           <p className="text-sm text-gray-400">Personnalisez votre expérience</p>
         </header>
+
+        <section className="rounded-2xl bg-[#1A1A1A] p-4">
+          <div className="text-sm font-semibold text-white">Mode d'exécution</div>
+          <div className="mt-3 flex gap-2">
+            <button
+              onClick={() => setExecutionMode("up")}
+              className={`flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                mode === "up"
+                  ? "bg-[#F5A623] text-black"
+                  : "bg-[#0A0A0A] border border-[#2A2A2A] text-white"
+              }`}
+            >
+              Incrémenter
+            </button>
+            <button
+              onClick={() => setExecutionMode("down")}
+              className={`flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                mode === "down"
+                  ? "bg-[#F5A623] text-black"
+                  : "bg-[#0A0A0A] border border-[#2A2A2A] text-white"
+              }`}
+            >
+              Décrémenter
+            </button>
+          </div>
+        </section>
 
         <section className="rounded-2xl bg-[#1A1A1A] p-4">
           <div className="flex items-center justify-between">

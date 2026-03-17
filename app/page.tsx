@@ -20,7 +20,6 @@ export default function Home() {
   const reset = useTasbihStore((s) => s.reset);
   const undoLast = useTasbihStore((s) => s.undoLast);
   const selectDhikr = useTasbihStore((s) => s.selectDhikr);
-  const toggleMode = useTasbihStore((s) => s.toggleMode);
   const customLists = useTasbihStore((s) => s.customLists);
 
   const [pulseTrigger, setPulseTrigger] = useState(0);
@@ -28,8 +27,28 @@ export default function Home() {
   const prevIsCompleted = useRef(false);
 
   const target = currentDhikr?.defaultTarget ?? 0;
+  const [customTarget, setCustomTarget] = useState(target);
+
+  const activeListId = useTasbihStore((s) => s.activeListId);
+  const activeList = useTasbihStore((s) => s.activeList);
+  const activeIndex = useTasbihStore((s) => s.activeIndex);
+  const nextDhikrInList = useTasbihStore((s) => s.nextDhikrInList);
+  const selectList = useTasbihStore((s) => s.selectList);
+
+  const [ignoreList, setIgnoreList] = useState(false);
+
+  const isListMode =
+    !ignoreList && activeListId !== "Zikr de base" && activeList.length > 0;
+
+  useEffect(() => {
+    if (!isListMode) {
+      setCustomTarget(target);
+    }
+  }, [target, isListMode]);
+
+  const effectiveTarget = isListMode ? target : customTarget;
   const isCompleted =
-    mode === "up" ? counter >= target && target > 0 : counter <= 0;
+    mode === "up" ? counter >= effectiveTarget && effectiveTarget > 0 : counter <= 0;
 
   const handleIncrement = () => {
     increment();
@@ -136,13 +155,6 @@ export default function Home() {
     );
   }, [customLists, normalizedSearch]);
 
-  const activeListId = useTasbihStore((s) => s.activeListId);
-  const activeList = useTasbihStore((s) => s.activeList);
-  const activeIndex = useTasbihStore((s) => s.activeIndex);
-  const nextDhikrInList = useTasbihStore((s) => s.nextDhikrInList);
-  const selectList = useTasbihStore((s) => s.selectList);
-
-  const [ignoreList, setIgnoreList] = useState(false);
   const [showListCompleteToast, setShowListCompleteToast] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
@@ -152,8 +164,6 @@ export default function Home() {
     if (!dropdownOpen) setSearchQuery("");
   }, [dropdownOpen]);
 
-  const isListMode =
-    !ignoreList && activeListId !== "Zikr de base" && activeList.length > 0;
   const listPosition = `${activeIndex + 1} / ${activeList.length}`;
   const isListComplete =
     isListMode && isCompleted && activeIndex === activeList.length - 1;
@@ -422,32 +432,29 @@ export default function Home() {
           </div>
         )}
 
-        {!ignoreList && (
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-sm font-semibold text-gray-300">Mode</span>
-            <button
-              className={`flex-1 rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] px-4 py-2 text-sm font-semibold text-white transition hover:border-[#F5A623] ${
-                isStarted || isCompleted ? "opacity-50 pointer-events-none" : ""
-              }`}
-              onClick={toggleMode}
-            >
-              {mode === "up" ? "0 → objectif" : "Objectif → 0"}
-            </button>
-          </div>
-        )}
       </div>
 
       <div className="flex flex-col items-center gap-4">
         <CircleProgress
           value={counter}
-          target={target}
+          target={effectiveTarget}
           mode={mode}
           isCompleted={isCompleted}
           pulseTrigger={pulseTrigger}
         />
         <div className="text-center">
           <div className="text-sm font-semibold text-gray-400">OBJECTIF</div>
-          <div className="text-2xl font-bold text-white">{target}</div>
+          {!isListMode ? (
+            <input
+              type="number"
+              min={1}
+              value={customTarget}
+              onChange={(e) => setCustomTarget(Math.max(1, Number(e.target.value) || 1))}
+              className="mx-auto w-28 rounded-xl border border-[#2A2A2A] bg-[#0A0A0A] px-3 py-2 text-center text-2xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-[#F5A623]"
+            />
+          ) : (
+            <div className="text-2xl font-bold text-white">{target}</div>
+          )}
         </div>
       </div>
 
@@ -544,7 +551,7 @@ export default function Home() {
 
           <CircleProgress
             value={counter}
-            target={target}
+            target={effectiveTarget}
             mode={mode}
             isCompleted={isCompleted}
             pulseTrigger={pulseTrigger}

@@ -1,12 +1,106 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { BookOpen, ChevronDown, ChevronUp, Grip, Pencil, Search, Trash2 } from "lucide-react";
 import { useTasbihStore } from "../../store/tasbihStore";
 import { dhikrs } from "../../data/dhikrs";
+import type { Dhikr } from "../../data/dhikrs";
 import { BottomNav } from "../../components/BottomNav";
 import { Modal } from "../../components/Modal";
+
+type CreateListItem = {
+  source: "library" | "manual";
+  dhikr: Dhikr;
+};
+
+type DhikrAutocompleteSuggestion = {
+  arabic: string;
+  transliteration: string;
+};
+
+const COMMON_TRANSLITERATION_MAP: Record<string, DhikrAutocompleteSuggestion> = {
+  subhanallah: {
+    arabic: "سُبْحَانَ اللهِ",
+    transliteration: "Subhanallah",
+  },
+  alhamdulillah: {
+    arabic: "الْحَمْدُ لِلَّهِ",
+    transliteration: "Alhamdulillah",
+  },
+  allahuakbar: {
+    arabic: "اللهُ أَكْبَرُ",
+    transliteration: "Allahu Akbar",
+  },
+  laailahaillallah: {
+    arabic: "لَا إِلٰهَ إِلَّا اللَّهُ",
+    transliteration: "Laa ilaaha illallah",
+  },
+  lailahaillallah: {
+    arabic: "لَا إِلٰهَ إِلَّا اللَّهُ",
+    transliteration: "Laa ilaaha illallah",
+  },
+  astaghfirullah: {
+    arabic: "أَسْتَغْفِرُ اللَّهَ",
+    transliteration: "Astaghfirullah",
+  },
+  hasbunallahwanimalwakeel: {
+    arabic: "حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ",
+    transliteration: "Hasbunallahu wa ni'mal wakeel",
+  },
+  lahawlawalaquwwataillabillah: {
+    arabic: "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
+    transliteration: "La hawla wa la quwwata illa billah",
+  },
+  salallahu3alayhiwasallam: {
+    arabic: "صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ",
+    transliteration: "Sallallahu alayhi wa sallam",
+  },
+  salallahualayhiwasallam: {
+    arabic: "صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ",
+    transliteration: "Sallallahu alayhi wa sallam",
+  },
+};
+
+function normalizeTransliteration(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+}
+
+function getAutocompleteSuggestion(value: string): DhikrAutocompleteSuggestion | null {
+  const normalized = normalizeTransliteration(value);
+
+  if (!normalized) return null;
+
+  if (COMMON_TRANSLITERATION_MAP[normalized]) {
+    return COMMON_TRANSLITERATION_MAP[normalized];
+  }
+
+  const exactMatch = dhikrs.find(
+    (dhikr) => normalizeTransliteration(dhikr.transliteration) === normalized
+  );
+  if (exactMatch) {
+    return {
+      arabic: exactMatch.arabic,
+      transliteration: exactMatch.transliteration,
+    };
+  }
+
+  const closeMatch = dhikrs.find((dhikr) => {
+    const transliteration = normalizeTransliteration(dhikr.transliteration);
+    return transliteration.startsWith(normalized) || normalized.startsWith(transliteration);
+  });
+
+  if (!closeMatch) return null;
+
+  return {
+    arabic: closeMatch.arabic,
+    transliteration: closeMatch.transliteration,
+  };
+}
 
 function groupByCategory(items: typeof dhikrs) {
   const map = new Map<string, typeof dhikrs>();
@@ -19,33 +113,79 @@ function groupByCategory(items: typeof dhikrs) {
 }
 
 export default function ListesPage() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   const customLists = useTasbihStore((s) => s.customLists);
+  const customDhikrs = useTasbihStore((s) => s.customDhikrs);
   const createList = useTasbihStore((s) => s.createList);
   const deleteList = useTasbihStore((s) => s.deleteList);
   const renameList = useTasbihStore((s) => s.renameList);
+  const upsertCustomDhikr = useTasbihStore((s) => s.upsertCustomDhikr);
   const addToList = useTasbihStore((s) => s.addToList);
+  const removeFromList = useTasbihStore((s) => s.removeFromList);
   const selectList = useTasbihStore((s) => s.selectList);
   const activeListId = useTasbihStore((s) => s.activeListId);
+  const listesUI = useTasbihStore((s) => s.listesUI);
+  const setListesUI = useTasbihStore((s) => s.setListesUI);
 
-  const [libraryExpanded, setLibraryExpanded] = useState(true);
+  const libraryExpanded = listesUI.libraryExpanded;
+  const expandedCategories = listesUI.expandedCategories;
+  const expandedLists = listesUI.expandedLists;
+
+  const setLibraryExpanded = (val: boolean | ((prev: boolean) => boolean)) =>
+    setListesUI({ libraryExpanded: typeof val === "function" ? val(listesUI.libraryExpanded) : val });
+  const setExpandedCategories = (val: Record<string, boolean> | ((prev: Record<string, boolean>) => Record<string, boolean>)) =>
+    setListesUI({ expandedCategories: typeof val === "function" ? val(listesUI.expandedCategories) : val });
+  const setExpandedLists = (val: Record<string, boolean> | ((prev: Record<string, boolean>) => Record<string, boolean>)) =>
+    setListesUI({ expandedLists: typeof val === "function" ? val(listesUI.expandedLists) : val });
+
   const [search, setSearch] = useState("");
-  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
-  const [expandedLists, setExpandedLists] = useState<Record<string, boolean>>({});
 
-  const [modalType, setModalType] = useState<"create" | "rename" | "delete" | null>(null);
+  const [modalType, setModalType] = useState<"create" | "edit" | "delete" | null>(null);
   const [modalListId, setModalListId] = useState<string | null>(null);
   const [modalInput, setModalInput] = useState<string>("");
   const [createLibraryExpanded, setCreateLibraryExpanded] = useState(false);
   const [createSearchQuery, setCreateSearchQuery] = useState("");
-  const [createListDhikrs, setCreateListDhikrs] = useState<string[]>([]);
+  const [createListItems, setCreateListItems] = useState<CreateListItem[]>([]);
   const [manualDhikrShow, setManualDhikrShow] = useState(false);
   const [manualArabic, setManualArabic] = useState("");
   const [manualTranslit, setManualTranslit] = useState("");
   const [manualReps, setManualReps] = useState("33");
   const [createCategoryExpanded, setCreateCategoryExpanded] = useState<Record<string, boolean>>({});
+
+  const allDhikrsById = useMemo(() => {
+    const entries = [...dhikrs, ...Object.values(customDhikrs)].map((dhikr) => [dhikr.id, dhikr] as const);
+    return new Map<string, Dhikr>(entries);
+  }, [customDhikrs]);
+
+  const manualAutocompleteSuggestion = useMemo(
+    () => getAutocompleteSuggestion(manualTranslit.trim()),
+    [manualTranslit]
+  );
+
+  const manualArabicSuggestion = useMemo(() => {
+    if (manualArabic.trim()) return "";
+    return manualAutocompleteSuggestion?.arabic ?? "";
+  }, [manualArabic, manualAutocompleteSuggestion]);
+
+  const parsedManualReps = Number.parseInt(manualReps.trim(), 10);
+  const isManualRepsValid = Number.isFinite(parsedManualReps) && parsedManualReps > 0;
+  const hasManualLabel = Boolean(manualArabic.trim() || manualTranslit.trim());
+  const canAddManualDhikr = hasManualLabel && isManualRepsValid;
+  const isListFormMode = modalType === "create" || modalType === "edit";
+  const isEditMode = modalType === "edit";
+  const trimmedListName = modalInput.trim();
+  const hasDuplicateListName =
+    trimmedListName.length > 0 &&
+    Object.keys(customLists).some(
+      (listId) => listId === trimmedListName && (!isEditMode || listId !== modalListId)
+    );
+  const canSaveList =
+    trimmedListName.length > 0 && createListItems.length > 0 && !hasDuplicateListName;
 
   const filteredDhikrs = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -66,7 +206,7 @@ export default function ListesPage() {
     setModalType(null);
     setModalListId(null);
     setModalInput("");
-    setCreateListDhikrs([]);
+    setCreateListItems([]);
     setManualDhikrShow(false);
     setManualArabic("");
     setManualTranslit("");
@@ -79,9 +219,14 @@ export default function ListesPage() {
   const openCreateModal = () => {
     setModalType("create");
     setModalInput("");
-    setCreateListDhikrs([]);
+    setCreateListItems([]);
+    setManualDhikrShow(false);
+    setManualArabic("");
+    setManualTranslit("");
+    setManualReps("33");
     setCreateLibraryExpanded(false);
     setCreateSearchQuery("");
+    setCreateCategoryExpanded({});
   };
 
   const createFilteredDhikrs = useMemo(() => {
@@ -100,34 +245,77 @@ export default function ListesPage() {
   const createCategories = useMemo(() => groupByCategory(createFilteredDhikrs), [createFilteredDhikrs]);
 
   const handleAddDhikrToCreate = (dhikrId: string) => {
-    if (!createListDhikrs.includes(dhikrId)) {
-      setCreateListDhikrs([...createListDhikrs, dhikrId]);
-    }
+    const dhikr = dhikrs.find((item) => item.id === dhikrId);
+    if (!dhikr) return;
+
+    setCreateListItems((prev) => {
+      if (prev.some((item) => item.dhikr.id === dhikrId)) return prev;
+      return [...prev, { source: "library", dhikr }];
+    });
   };
 
   const handleRemoveDhikrFromCreate = (dhikrId: string) => {
-    setCreateListDhikrs(createListDhikrs.filter((id) => id !== dhikrId));
+    setCreateListItems((prev) => prev.filter((item) => item.dhikr.id !== dhikrId));
   };
 
   const handleAddManualDhikr = () => {
-    const ar = manualArabic.trim();
-    const tr = manualTranslit.trim();
-    const reps = manualReps.trim();
-    if (!ar || !tr || !reps) return;
-    const tempId = `manual-${Date.now()}`;
-    if (!createListDhikrs.includes(tempId)) {
-      setCreateListDhikrs([...createListDhikrs, tempId]);
-    }
+    const transliteration = manualTranslit.trim();
+    const autocompleteSuggestion = getAutocompleteSuggestion(transliteration);
+    const arabic = manualArabic.trim() || autocompleteSuggestion?.arabic || transliteration;
+    const repetitions = Number.parseInt(manualReps.trim(), 10);
+
+    if (!canAddManualDhikr) return;
+
+    const manualDhikr: Dhikr = {
+      id: `manual-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      arabic,
+      transliteration: autocompleteSuggestion?.transliteration || transliteration || manualArabic.trim(),
+      translation_fr: autocompleteSuggestion?.transliteration || transliteration || manualArabic.trim(),
+      translation_en: autocompleteSuggestion?.transliteration || transliteration || manualArabic.trim(),
+      defaultTarget: repetitions,
+      category: "Dhikr général",
+    };
+
+    setCreateListItems((prev) => [...prev, { source: "manual", dhikr: manualDhikr }]);
     setManualArabic("");
     setManualTranslit("");
     setManualReps("33");
     setManualDhikrShow(false);
   };
 
-  const openRenameModal = (listId: string) => {
-    setModalType("rename");
+  const handleManualTranslitBlur = () => {
+    if (!manualTranslit.trim()) return;
+
+    const autocompleteSuggestion = getAutocompleteSuggestion(manualTranslit.trim());
+    if (autocompleteSuggestion) {
+      setManualArabic((prev) => prev.trim() || autocompleteSuggestion.arabic);
+      setManualTranslit(autocompleteSuggestion.transliteration);
+    }
+  };
+
+  const openEditListView = (listId: string) => {
+    const baseItems = (customLists[listId] ?? [])
+      .map((dhikrId) => {
+        const dhikr = allDhikrsById.get(dhikrId);
+        if (!dhikr) return null;
+        return {
+          source: customDhikrs[dhikrId] ? "manual" : "library",
+          dhikr,
+        } as CreateListItem;
+      })
+      .filter((item): item is CreateListItem => item !== null);
+
+    setModalType("edit");
     setModalListId(listId);
     setModalInput(listId);
+    setCreateListItems(baseItems);
+    setManualDhikrShow(false);
+    setManualArabic("");
+    setManualTranslit("");
+    setManualReps("33");
+    setCreateLibraryExpanded(false);
+    setCreateSearchQuery("");
+    setCreateCategoryExpanded({});
   };
 
   const openDeleteModal = (listId: string) => {
@@ -135,23 +323,57 @@ export default function ListesPage() {
     setModalListId(listId);
   };
 
-  const handleCreateConfirm = () => {
+  const handleSaveListForm = () => {
     const name = modalInput.trim();
-    if (!name) return;
-    createList(name);
-    createListDhikrs.forEach((dhikrId) => {
-      addToList(name, dhikrId);
-    });
-    setExpandedLists((prev) => ({ ...prev, [name]: true }));
-    closeModal();
-  };
+    if (!name || createListItems.length === 0 || hasDuplicateListName) return;
 
-  const handleRenameConfirm = () => {
-    if (!modalListId) return;
-    const name = modalInput.trim();
-    if (!name) return;
-    renameList(modalListId, name);
-    closeModal();
+    if (modalType === "create") {
+      createList(name);
+      createListItems.forEach(({ source, dhikr }) => {
+        if (source === "manual") {
+          upsertCustomDhikr(dhikr);
+        }
+        addToList(name, dhikr.id);
+      });
+      setExpandedLists((prev) => ({ ...prev, [name]: true }));
+      closeModal();
+      return;
+    }
+
+    if (modalType === "edit" && modalListId) {
+      const originalListId = modalListId;
+      const currentIds = customLists[originalListId] ?? [];
+
+      createListItems.forEach(({ source, dhikr }) => {
+        if (source === "manual") {
+          upsertCustomDhikr(dhikr);
+        }
+      });
+
+      const targetListId = name;
+      if (targetListId !== originalListId) {
+        renameList(originalListId, targetListId);
+      }
+
+      const desiredIds = createListItems.map((item) => item.dhikr.id);
+      const desiredSet = new Set(desiredIds);
+      const existingSet = new Set(currentIds);
+
+      currentIds.forEach((dhikrId) => {
+        if (!desiredSet.has(dhikrId)) {
+          removeFromList(targetListId, dhikrId);
+        }
+      });
+
+      desiredIds.forEach((dhikrId) => {
+        if (!existingSet.has(dhikrId)) {
+          addToList(targetListId, dhikrId);
+        }
+      });
+
+      setExpandedLists((prev) => ({ ...prev, [targetListId]: true }));
+      closeModal();
+    }
   };
 
   const handleDeleteConfirm = () => {
@@ -180,6 +402,8 @@ export default function ListesPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2 }}
       >
+        {!isListFormMode && (
+          <>
 
         <section className="overflow-hidden rounded-3xl border border-[#2A2A2A] bg-gradient-to-b from-[#171717] to-[#121212]">
           <button
@@ -323,7 +547,7 @@ export default function ListesPage() {
                           {expanded ? <ChevronUp className="h-5 w-5" strokeWidth={2} /> : <ChevronDown className="h-5 w-5" strokeWidth={2} />}
                         </button>
                         <button
-                          onClick={() => openRenameModal(listId)}
+                          onClick={() => openEditListView(listId)}
                           className="text-[#8A8A8A]"
                           aria-label="Renommer"
                         >
@@ -345,7 +569,7 @@ export default function ListesPage() {
                           <div className="text-sm text-[#7A7A7A]">Aucun Zikr dans cette liste.</div>
                         ) : (
                           items.map((dhikrId) => {
-                            const dhikr = dhikrs.find((d) => d.id === dhikrId);
+                            const dhikr = allDhikrsById.get(dhikrId);
                             if (!dhikr) return null;
                             return (
                               <div
@@ -376,134 +600,139 @@ export default function ListesPage() {
           </div>
         </section>
 
-        <Modal
-          isOpen={modalType === "create"}
-          title="Nouvelle liste"
-          onClose={closeModal}
-          closeOnOverlayClick={false}
-          footer={
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={closeModal}
-                className="rounded-xl bg-[#1A1A1A] px-4 py-2 text-sm font-semibold text-white"
-              >
-                Annuler
-              </button>
-              <button
-                onClick={handleCreateConfirm}
-                disabled={!modalInput.trim()}
-                className="rounded-xl bg-[#F5A623] px-4 py-2 text-sm font-semibold text-black disabled:opacity-50"
-              >
-                Sauvegarder
-              </button>
-            </div>
-          }
-        >
-          <div className="flex max-h-96 flex-col gap-4 overflow-y-auto">
+          </>
+        )}
+
+        {isListFormMode && (
+          <section className="flex flex-col gap-5 pb-2">
+            <h2 className="text-[2.15rem] font-semibold tracking-tight text-[#ECECEC]">
+              {isEditMode ? "Modifier la liste" : "Nouvelle liste"}
+            </h2>
+
             <div>
-              <label className="text-sm font-semibold text-gray-200">Nom de la liste</label>
+              <label className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#7E7E83]">Nom de la liste</label>
               <input
                 value={modalInput}
                 onChange={(e) => setModalInput(e.target.value)}
-                placeholder="Mon programme du matin"
-                className="mt-2 w-full rounded-xl bg-[#2A2A2A] px-4 py-2 text-sm text-white outline-none focus:border-[#F5A623] focus:ring-2 focus:ring-[#F5A623]/40"
+                placeholder={isEditMode ? "Nom de la liste" : "Ex: Après la prière"}
+                className="mt-3 w-full rounded-3xl border border-[#484848] bg-[#2A2A2A] px-5 py-4 text-[0.95rem] font-semibold text-white placeholder:text-[#5B5B5B] outline-none focus:border-[#F5A623]"
               />
+              {hasDuplicateListName && (
+                <p className="mt-2 text-xs text-[#E07A7A]">Ce nom de liste existe déjà.</p>
+              )}
             </div>
 
-            <div className="border-t border-[#3A3A3A] pt-4">
-              <label className="text-sm font-semibold text-gray-200">Dhikrs</label>
-              {createListDhikrs.length === 0 ? (
-                <div className="mt-3 text-xs text-gray-400">Aucun dhikr ajouté</div>
-              ) : (
-                <div className="mt-3 space-y-2">
-                  {createListDhikrs.map((dhikrId, idx) => {
-                    const dhikr = dhikrs.find((d) => d.id === dhikrId);
-                    if (!dhikr) return null;
+            <div>
+              <div className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#7E7E83]">Dhikrs</div>
+              <div className="mt-3 space-y-3 rounded-[28px] border border-[#2F2F2F] bg-[#151515] p-4">
+                {createListItems.length === 0 ? (
+                  <div className="text-sm text-[#7D7D7D]">Ajoute au moins un dhikr depuis la bibliothèque ou l&apos;ajout manuel.</div>
+                ) : (
+                  createListItems.map(({ source, dhikr }, idx) => {
                     return (
                       <div
-                        key={dhikrId}
-                        className="flex items-center justify-between rounded-lg border border-[#2A2A2A] bg-[#1A1A1A] px-3 py-2"
+                        key={dhikr.id}
+                        className="flex items-center justify-between rounded-2xl border border-[#2A2A2A] bg-[#1A1A1A] px-3 py-2"
                       >
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500">#{idx + 1}</span>
-                            <div className="text-xs text-white">{dhikr.arabic}</div>
+                            <span className="text-xs text-[#7E7E7E]">#{idx + 1}</span>
+                            <div className="text-xs font-semibold text-white">{dhikr.arabic}</div>
                           </div>
-                          <div className="text-xs text-gray-400">{dhikr.transliteration}</div>
+                          <div className="text-xs text-[#8B8B8B]">
+                            {dhikr.transliteration} · {dhikr.defaultTarget}
+                            {source === "manual" ? " · Manuel" : ""}
+                          </div>
                         </div>
                         <button
-                          onClick={() => handleRemoveDhikrFromCreate(dhikrId)}
-                          className="ml-2 text-lg text-gray-400 hover:text-white"
+                          onClick={() => handleRemoveDhikrFromCreate(dhikr.id)}
+                          className="ml-2 text-lg text-[#8B8B8B] hover:text-white"
                         >
                           ✕
                         </button>
                       </div>
                     );
-                  })}
-                </div>
-              )}
+                  })
+                )}
+              </div>
             </div>
 
             <button
               type="button"
-              onClick={() => setManualDhikrShow(!manualDhikrShow)}
-              className="border border-dashed border-[#F5A623] rounded-xl py-3 text-sm font-semibold text-[#F5A623] transition hover:bg-[#F5A623]/5"
+              onClick={() => setManualDhikrShow((prev) => !prev)}
+              className="rounded-3xl border border-dashed border-[#C9C9C9] py-4 text-[1.05rem] font-semibold text-[#9C9C9C] transition hover:border-[#F5A623] hover:text-[#F5A623]"
             >
               + Ajouter manuellement
             </button>
 
             {manualDhikrShow && (
-              <div className="space-y-2 rounded-lg border border-[#3A3A3A] bg-[#1A1A1A] p-3">
+              <div className="space-y-3 rounded-[24px] border border-[#3A3A3A] bg-[#1A1A1A] p-4">
                 <input
                   value={manualArabic}
                   onChange={(e) => setManualArabic(e.target.value)}
-                  placeholder="(ex: شبحان الله) Texte arabe"
-                  className="w-full rounded-lg bg-[#2A2A2A] px-3 py-2 text-sm text-white placeholder:text-gray-500 outline-none focus:border-[#F5A623] focus:ring-1 focus:ring-[#F5A623]"
+                  placeholder="(ex: سُبْحَانَ اللهِ) Texte arabe"
+                  className="w-full rounded-2xl border border-[#474747] bg-[#2A2A2A] px-4 py-3 text-[0.95rem] text-white placeholder:text-[#666666] outline-none focus:border-[#F5A623]"
                 />
                 <input
                   value={manualTranslit}
                   onChange={(e) => setManualTranslit(e.target.value)}
+                  onBlur={handleManualTranslitBlur}
                   placeholder="Translittération / nom"
-                  className="w-full rounded-lg bg-[#2A2A2A] px-3 py-2 text-sm text-white placeholder:text-gray-500 outline-none focus:border-[#F5A623] focus:ring-1 focus:ring-[#F5A623]"
+                  className="w-full rounded-2xl border border-[#474747] bg-[#2A2A2A] px-4 py-3 text-[0.95rem] text-white placeholder:text-[#666666] outline-none focus:border-[#F5A623]"
                 />
+                {manualArabicSuggestion ? (
+                  <p className="text-xs text-[#C89B32]">
+                    Auto-complétion disponible: {manualArabicSuggestion}
+                    {manualAutocompleteSuggestion?.transliteration
+                      ? ` · ${manualAutocompleteSuggestion.transliteration}`
+                      : ""}
+                  </p>
+                ) : null}
                 <div className="flex items-center gap-2">
-                  <label className="text-xs font-semibold text-gray-400">Répétitions:</label>
+                  <label className="text-[1rem] font-semibold text-[#8D8D8D]">Répétitions :</label>
                   <input
                     type="number"
+                    min="1"
                     value={manualReps}
                     onChange={(e) => setManualReps(e.target.value)}
-                    className="w-20 rounded-lg border border-[#2A2A2A] bg-[#2A2A2A] px-2 py-1 text-sm text-white outline-none focus:border-[#F5A623]"
+                    className="w-36 rounded-2xl border border-[#474747] bg-[#2A2A2A] px-4 py-2 text-[2rem] font-semibold text-white outline-none focus:border-[#F5A623]"
                   />
                 </div>
+                <p className="text-xs text-[#8A8A8A]">Pour ajouter manuellement, il faut un nombre de répétitions supérieur à 0 et au moins un des champs Texte arabe ou Translittération.</p>
                 <button
                   onClick={handleAddManualDhikr}
-                  className="w-full rounded-lg bg-[#F5A623] py-2 text-xs font-semibold text-black transition hover:bg-[#F5A623]/90"
+                  disabled={!canAddManualDhikr}
+                  className="w-full rounded-xl bg-[#F5A623] py-2.5 text-sm font-semibold text-black transition hover:bg-[#F5A623]/90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Ajouter
                 </button>
               </div>
             )}
 
-            <div className="border-t border-[#3A3A3A] pt-4">
+            <div className="overflow-hidden rounded-3xl border border-[#2D2D2D] bg-[#151515]">
               <button
                 type="button"
                 onClick={() => setCreateLibraryExpanded(!createLibraryExpanded)}
-                className="flex w-full items-center justify-between rounded-lg border border-[#3A3A3A] bg-[#1A1A1A] px-3 py-2 text-left hover:border-[#F5A623]"
+                className="flex w-full items-center justify-between px-4 py-4 text-left"
               >
-                <span className="text-sm font-semibold text-white">📚 Bibliothèque de zikr</span>
-                <span className="text-gray-400">{createLibraryExpanded ? "⌃" : "⌄"}</span>
+                <span className="text-[2rem] text-[#F5A623]">◫</span>
+                <span className="ml-3 flex-1 text-[0.95rem] font-semibold text-white">
+                  Bibliothèque de zikr
+                  <span className="ml-2 text-[#666666]">({dhikrs.length})</span>
+                </span>
+                <span className="text-[#666666]">{createLibraryExpanded ? "⌃" : "⌄"}</span>
               </button>
 
               {createLibraryExpanded && (
-                <div className="mt-2 space-y-2">
+                <div className="space-y-2 border-t border-[#2D2D2D] px-3 pb-3 pt-2">
                   <input
                     value={createSearchQuery}
                     onChange={(e) => setCreateSearchQuery(e.target.value)}
                     onBlur={(e) => setCreateSearchQuery(e.target.value.trim())}
                     placeholder="Rechercher..."
-                    className="w-full rounded-lg bg-[#2A2A2A] px-3 py-2 text-xs text-white placeholder:text-gray-500 outline-none focus:border-[#F5A623] focus:ring-1 focus:ring-[#F5A623]"
+                    className="w-full rounded-xl bg-[#2A2A2A] px-3 py-2 text-sm text-white placeholder:text-gray-500 outline-none focus:border-[#F5A623] focus:ring-1 focus:ring-[#F5A623]"
                   />
-                  <div className="max-h-40 space-y-1 overflow-y-auto rounded-lg border border-[#2A2A2A] bg-[#0F0F0F] p-2">
+                  <div className="max-h-52 space-y-1 overflow-y-auto rounded-xl border border-[#2A2A2A] bg-[#0F0F0F] p-2">
                     {Array.from(createCategories.entries()).map(([category, items]) => {
                       const expanded = createCategoryExpanded[category] ?? false;
                       return (
@@ -524,7 +753,7 @@ export default function ListesPage() {
                           {expanded && (
                             <div className="space-y-1 pl-2">
                               {items.map((d) => {
-                                const isAdded = createListDhikrs.includes(d.id);
+                                const isAdded = createListItems.some((item) => item.dhikr.id === d.id);
                                 return (
                                   <div
                                     key={d.id}
@@ -537,7 +766,7 @@ export default function ListesPage() {
                                     <button
                                       onClick={() => handleAddDhikrToCreate(d.id)}
                                       disabled={isAdded}
-                                      className="ml-2 rounded bg-[#F5A623] px-2 py-0.5 text-xs font-semibold text-black transition disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#F5A623]/90"
+                                      className="ml-2 rounded bg-[#F5A623] px-2 py-0.5 text-xs font-semibold text-black transition disabled:cursor-not-allowed disabled:opacity-40 hover:bg-[#F5A623]/90"
                                     >
                                       +
                                     </button>
@@ -553,40 +782,24 @@ export default function ListesPage() {
                 </div>
               )}
             </div>
-          </div>
-        </Modal>
 
-        <Modal
-          isOpen={modalType === "rename"}
-          title="Renommer la liste"
-          onClose={closeModal}
-          closeOnOverlayClick
-          footer={
-            <div className="flex justify-end gap-2">
+            <div className="mt-4 grid grid-cols-2 gap-3">
               <button
                 onClick={closeModal}
-                className="rounded-xl bg-[#1A1A1A] px-4 py-2 text-sm font-semibold text-white"
+                className="rounded-3xl border border-[#5A5A5A] bg-[#2A2A2A] px-4 py-3 text-[1.05rem] font-semibold text-[#E8E8E8]"
               >
                 Annuler
               </button>
               <button
-                onClick={handleRenameConfirm}
-                className="rounded-xl bg-[#F5A623] px-4 py-2 text-sm font-semibold text-black"
+                onClick={handleSaveListForm}
+                disabled={!canSaveList}
+                className="rounded-3xl bg-[#7D560D] px-4 py-3 text-[1.05rem] font-semibold text-[#D8D8D8] transition enabled:bg-[#F5A623] enabled:text-black disabled:cursor-not-allowed disabled:opacity-70"
               >
-                Renommer
+                {isEditMode ? "Mettre à jour" : "Sauvegarder"}
               </button>
             </div>
-          }
-        >
-          <div className="flex flex-col gap-3">
-            <label className="text-sm font-semibold text-gray-200">Nouveau nom</label>
-            <input
-              value={modalInput}
-              onChange={(e) => setModalInput(e.target.value)}
-              className="w-full rounded-xl bg-[#2A2A2A] px-4 py-2 text-sm text-white outline-none focus:border-[#F5A623] focus:ring-2 focus:ring-[#F5A623]/40"
-            />
-          </div>
-        </Modal>
+          </section>
+        )}
 
         <Modal
           isOpen={modalType === "delete"}

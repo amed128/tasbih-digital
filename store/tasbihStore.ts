@@ -49,8 +49,15 @@ export type TasbihStoreState = {
   sessionStartAt?: string;
   // Custom lists
   customLists: Record<string, string[]>;
+  customDhikrs: Record<string, Dhikr>;
   // Preferences
   preferences: Preferences;
+  // Listes page UI state (persisted across tab navigation)
+  listesUI: {
+    libraryExpanded: boolean;
+    expandedCategories: Record<string, boolean>;
+    expandedLists: Record<string, boolean>;
+  };
   // Actions
   increment: () => void;
   decrement: () => void;
@@ -62,6 +69,7 @@ export type TasbihStoreState = {
   selectList: (listId: string) => void;
   setCustomTarget: (target?: number) => void;
   toggleMode: () => void;
+  setListesUI: (update: Partial<TasbihStoreState["listesUI"]>) => void;
   resetStats: () => void;
   toggleDarkMode: () => void;
   toggleVibration: () => void;
@@ -70,6 +78,7 @@ export type TasbihStoreState = {
   createList: (listName: string) => void;
   deleteList: (listId: string) => void;
   renameList: (oldId: string, newId: string) => void;
+  upsertCustomDhikr: (dhikr: Dhikr) => void;
   addToList: (listId: string, dhikrId: string) => void;
   removeFromList: (listId: string, dhikrId: string) => void;
   moveInList: (listId: string, fromIndex: number, toIndex: number) => void;
@@ -101,6 +110,12 @@ function getInitialState(): Partial<TasbihStoreState> {
     currentSessionCount: 0,
     sessionStartAt: undefined,
     customLists: {},
+    customDhikrs: {},
+    listesUI: {
+      libraryExpanded: true,
+      expandedCategories: {},
+      expandedLists: {},
+    },
     preferences: {
       darkMode: true,
       vibration: true,
@@ -152,15 +167,18 @@ const initialState: Partial<TasbihStoreState> = {
   } as Preferences,
 };
 
-const resolveDhikr = (dhikrId: string): Dhikr | undefined => {
-  return dhikrs.find((d) => d.id === dhikrId);
+const resolveDhikr = (
+  dhikrId: string,
+  customDhikrs: Record<string, Dhikr> = {}
+): Dhikr | undefined => {
+  return customDhikrs[dhikrId] ?? dhikrs.find((d) => d.id === dhikrId);
 };
 
 const createStore = () =>
   create<TasbihStoreState>()(
-    devtools((set, get) => ({
+    devtools((set) => ({
       ...initialState,
-      currentDhikr: resolveDhikr(initialState.currentDhikrId ?? ""),
+      currentDhikr: resolveDhikr(initialState.currentDhikrId ?? "", initialState.customDhikrs ?? {}),
       increment: () =>
         set((state) => {
           const target = state.customTarget ?? state.currentDhikr?.defaultTarget ?? 0;
@@ -288,7 +306,7 @@ const createStore = () =>
         set((state) => {
           const nextIndex = Math.min(state.activeList.length - 1, state.activeIndex + 1);
           const nextDhikrId = state.activeList[nextIndex] ?? state.currentDhikrId;
-          const nextDhikr = resolveDhikr(nextDhikrId);
+          const nextDhikr = resolveDhikr(nextDhikrId, state.customDhikrs);
           const target = nextDhikr?.defaultTarget ?? 0;
           const newState = {
             activeIndex: nextIndex,
@@ -307,7 +325,7 @@ const createStore = () =>
 
       selectDhikr: (dhikrId: string) =>
         set((state) => {
-          const dhikr = resolveDhikr(dhikrId);
+          const dhikr = resolveDhikr(dhikrId, state.customDhikrs);
           const target = dhikr?.defaultTarget ?? 0;
           const newState = {
             currentDhikrId: dhikrId,
@@ -325,7 +343,7 @@ const createStore = () =>
 
       selectDhikrAsList: (dhikrId: string) =>
         set((state) => {
-          const dhikr = resolveDhikr(dhikrId);
+          const dhikr = resolveDhikr(dhikrId, state.customDhikrs);
           const target = dhikr?.defaultTarget ?? 0;
           const listLabel = dhikr?.transliteration || dhikrId;
           const newState = {
@@ -359,7 +377,7 @@ const createStore = () =>
 
           const list = lists[listId] ?? groupList ?? [];
           const firstId = list[0] ?? state.currentDhikrId;
-          const firstDhikr = resolveDhikr(firstId);
+          const firstDhikr = resolveDhikr(firstId, state.customDhikrs);
           const target = firstDhikr?.defaultTarget ?? 0;
           const newState = {
             activeListId: listId,
@@ -370,6 +388,21 @@ const createStore = () =>
             customTarget: undefined,
             counter: state.mode === "down" ? target : 0,
             isStarted: false,
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      upsertCustomDhikr: (dhikr: Dhikr) =>
+        set((state) => {
+          const newState = {
+            customDhikrs: {
+              ...state.customDhikrs,
+              [dhikr.id]: dhikr,
+            },
           };
           persistState({
             ...state,
@@ -409,7 +442,7 @@ const createStore = () =>
             newState.activeList = predefinedLists["Zikr de base"];
             newState.activeIndex = 0;
             newState.currentDhikrId = predefinedLists["Zikr de base"][0];
-            newState.currentDhikr = resolveDhikr(predefinedLists["Zikr de base"][0]);
+            newState.currentDhikr = resolveDhikr(predefinedLists["Zikr de base"][0], state.customDhikrs);
             newState.customTarget = undefined;
           }
           persistState({
@@ -589,6 +622,18 @@ const createStore = () =>
               ...state.preferences,
               language: lang,
             },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      setListesUI: (update) =>
+        set((state) => {
+          const newState = {
+            listesUI: { ...state.listesUI, ...update },
           };
           persistState({
             ...state,

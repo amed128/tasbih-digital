@@ -24,8 +24,11 @@ export type Stats = {
 export type Preferences = {
   darkMode: boolean;
   vibration: boolean;
+  tapSound: TapSound;
   language: "fr" | "en";
 };
+
+export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
 
 export type TasbihStoreState = {
   // Current selected dhikr
@@ -62,6 +65,7 @@ export type TasbihStoreState = {
   resetStats: () => void;
   toggleDarkMode: () => void;
   toggleVibration: () => void;
+  setTapSound: (sound: TapSound) => void;
   setLanguage: (lang: "fr" | "en") => void;
   createList: (listName: string) => void;
   deleteList: (listId: string) => void;
@@ -100,6 +104,7 @@ function getInitialState(): Partial<TasbihStoreState> {
     preferences: {
       darkMode: true,
       vibration: true,
+      tapSound: "tap-soft",
       language: "fr",
     },
   };
@@ -126,7 +131,26 @@ function persistState(state: Partial<TasbihStoreState>) {
   }
 }
 
-const initialState = { ...getInitialState(), ...loadStateFromStorage() };
+const normalizeTapSound = (value: unknown): TapSound => {
+  if (value === "off") return "off";
+  if (value === "tap-soft") return "tap-soft";
+  if (value === "button-click") return "button-click";
+  if (value === "haptic-pulse") return "haptic-pulse";
+  return "tap-soft";
+};
+
+const baseInitialState = getInitialState();
+const storedState = loadStateFromStorage();
+
+const initialState: Partial<TasbihStoreState> = {
+  ...baseInitialState,
+  ...storedState,
+  preferences: {
+    ...baseInitialState.preferences,
+    ...storedState?.preferences,
+    tapSound: normalizeTapSound(storedState?.preferences?.tapSound),
+  } as Preferences,
+};
 
 const resolveDhikr = (dhikrId: string): Dhikr | undefined => {
   return dhikrs.find((d) => d.id === dhikrId);
@@ -536,6 +560,21 @@ const createStore = () =>
             preferences: {
               ...state.preferences,
               vibration: !state.preferences.vibration,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      setTapSound: (sound: TapSound) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              tapSound: normalizeTapSound(sound),
             },
           };
           persistState({

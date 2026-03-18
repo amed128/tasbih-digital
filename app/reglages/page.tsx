@@ -5,15 +5,27 @@ import { motion } from "framer-motion";
 import { useTasbihStore } from "../../store/tasbihStore";
 import { BottomNav } from "../../components/BottomNav";
 
+const SOUND_OPTIONS = [
+  { value: "off", label: "Desactive" },
+  { value: "tap-soft", label: "Tap doux" },
+  { value: "button-click", label: "Clic bouton" },
+  { value: "haptic-pulse", label: "Pulse court" },
+] as const;
+
 export default function ReglagesPage() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
   const preferences = useTasbihStore((s) => s.preferences);
   const mode = useTasbihStore((s) => s.mode);
+
+  const isIOS =
+    typeof navigator !== "undefined" &&
+    /iPad|iPhone|iPod/.test(navigator.userAgent);
   const toggleMode = useTasbihStore((s) => s.toggleMode);
   const toggleDarkMode = useTasbihStore((s) => s.toggleDarkMode);
   const toggleVibration = useTasbihStore((s) => s.toggleVibration);
+  const setTapSound = useTasbihStore((s) => s.setTapSound);
   const setLanguage = useTasbihStore((s) => s.setLanguage);
 
   const setExecutionMode = (target: "up" | "down") => {
@@ -81,10 +93,35 @@ export default function ReglagesPage() {
         </section>
 
         <section className="rounded-2xl bg-[#1A1A1A] p-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="text-sm font-semibold text-white">Son</div>
+              <div className="text-xs text-gray-400">
+                Simule un retour d'appui ou une sensation de vibration
+              </div>
+            </div>
+            <select
+              value={preferences.tapSound}
+              onChange={(e) => setTapSound(e.target.value as (typeof SOUND_OPTIONS)[number]["value"])}
+              className="rounded-lg border border-[#2A2A2A] bg-[#0A0A0A] px-3 py-2 text-xs font-semibold text-white outline-none focus:border-[#F5A623]"
+              aria-label="Selection du son"
+            >
+              {SOUND_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[#1A1A1A] p-4">
+          <div className="flex items-center justify-between gap-4">
             <div>
               <div className="text-sm font-semibold text-white">Vibration</div>
-              <div className="text-xs text-gray-400">Retour haptique (si supporté)</div>
+              <div className="text-xs text-gray-400">
+                {isIOS ? "Non disponible sur iOS" : "Retour haptique si supporte"}
+              </div>
             </div>
             <button
               onClick={toggleVibration}
@@ -94,7 +131,7 @@ export default function ReglagesPage() {
                   : "bg-[#0A0A0A] border border-[#2A2A2A] text-white"
               }`}
             >
-              {preferences.vibration ? "Activé" : "Désactivé"}
+              {preferences.vibration ? "Active" : "Desactive"}
             </button>
           </div>
         </section>

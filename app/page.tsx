@@ -17,6 +17,7 @@ export default function Home() {
   const counter = useTasbihStore((s) => s.counter);
   const mode = useTasbihStore((s) => s.mode);
   const vibrationEnabled = useTasbihStore((s) => s.preferences.vibration);
+  const tapSound = useTasbihStore((s) => s.preferences.tapSound);
   const customTarget = useTasbihStore((s) => s.customTarget);
   const increment = useTasbihStore((s) => s.increment);
   const reset = useTasbihStore((s) => s.reset);
@@ -87,10 +88,67 @@ export default function Home() {
   };
 
   const triggerHaptic = (pattern: number | number[]) => {
-    if (!vibrationEnabled) return;
+    if (!vibrationEnabled && tapSound === "off") return;
     if (typeof window === "undefined") return;
-    if (typeof window.navigator?.vibrate !== "function") return;
-    window.navigator.vibrate(pattern);
+
+    // Hardware vibration where supported (typically Android/Chrome).
+    if (vibrationEnabled && typeof window.navigator?.vibrate === "function") {
+      window.navigator.vibrate(pattern);
+    }
+
+    if (tapSound === "off") return;
+
+    const kind = Array.isArray(pattern) ? "complete" : "tap";
+
+    const playTone = (
+      ctx: AudioContext,
+      startTime: number,
+      frequency: number,
+      duration: number,
+      volume: number,
+      type: OscillatorType
+    ) => {
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, startTime);
+      gain.gain.setValueAtTime(volume, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+      oscillator.start(startTime);
+      oscillator.stop(startTime + duration);
+    };
+
+    // Audio fallback that works on iOS PWAs after a direct tap.
+    try {
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new AudioContext();
+      }
+      const ctx = audioCtxRef.current;
+      if (ctx.state === "suspended") void ctx.resume();
+      const now = ctx.currentTime;
+
+      if (tapSound === "tap-soft") {
+        playTone(ctx, now, 880, 0.014, 0.05, "sine");
+        if (kind === "complete") {
+          playTone(ctx, now + 0.06, 980, 0.02, 0.05, "sine");
+        }
+      } else if (tapSound === "button-click") {
+        playTone(ctx, now, 540, 0.008, 0.04, "square");
+        if (kind === "complete") {
+          playTone(ctx, now + 0.05, 680, 0.008, 0.04, "square");
+          playTone(ctx, now + 0.1, 820, 0.01, 0.04, "square");
+        }
+      } else {
+        playTone(ctx, now, 220, 0.018, 0.055, "triangle");
+        if (kind === "complete") {
+          playTone(ctx, now + 0.055, 220, 0.02, 0.055, "triangle");
+        }
+      }
+    } catch {
+      // AudioContext unavailable — no-op
+    }
   };
 
   const handleIncrement = () => {
@@ -122,7 +180,7 @@ export default function Home() {
     }
 
     prevIsCompleted.current = isCompleted;
-  }, [isCompleted, vibrationEnabled]);
+  }, [isCompleted, vibrationEnabled, tapSound]);
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -208,6 +266,7 @@ export default function Home() {
   const [customListsExpanded, setCustomListsExpanded] = useState(true);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const chipsContainerRef = useRef<HTMLDivElement | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
 
   useEffect(() => {
     if (!dropdownOpen) setSearchQuery("");

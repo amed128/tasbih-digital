@@ -112,6 +112,10 @@ function groupByCategory(items: typeof dhikrs) {
   return map;
 }
 
+function formatZikrCount(count: number) {
+  return `${count} ${count === 1 ? "zikr" : "zikrs"}`;
+}
+
 export default function ListesPage() {
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -156,6 +160,7 @@ export default function ListesPage() {
   const [manualTranslit, setManualTranslit] = useState("");
   const [manualReps, setManualReps] = useState("33");
   const [createCategoryExpanded, setCreateCategoryExpanded] = useState<Record<string, boolean>>({});
+  const [selectedLibraryDhikr, setSelectedLibraryDhikr] = useState<Dhikr | null>(null);
 
   const allDhikrsById = useMemo(() => {
     const entries = [...dhikrs, ...Object.values(customDhikrs)].map((dhikr) => [dhikr.id, dhikr] as const);
@@ -460,9 +465,9 @@ export default function ListesPage() {
                             }))
                           }
                           aria-expanded={expanded}
-                          className="flex w-full items-center justify-between px-4 py-2.5 text-left"
+                          className="group flex w-full items-center justify-between px-4 py-2.5 text-left"
                         >
-                          <span className="flex-1 text-[0.95rem] font-semibold text-[#F5A623]">
+                          <span className="flex-1 text-[0.95rem] font-semibold text-white transition-colors group-hover:text-[#F5A623]">
                             {category}
                           </span>
                           <span className="text-[0.95rem] font-semibold text-[#666666]">{items.length}</span>
@@ -472,15 +477,18 @@ export default function ListesPage() {
                         {expanded && (
                           <div className="space-y-1 px-4 pb-3">
                             {items.map((d) => (
-                              <div
+                              <button
+                                type="button"
                                 key={d.id}
-                                className="rounded-xl border border-[#2A2A2A] bg-[#141414] px-3 py-2.5"
+                                onClick={() => setSelectedLibraryDhikr(d)}
+                                className="w-full rounded-xl border border-[#2A2A2A] bg-[#141414] px-3 py-2.5 text-left transition hover:border-[#3E3E3E]"
                               >
-                                <div className="text-[0.95rem] font-semibold text-[#F5A623]">{d.arabic}</div>
-                                <div className="text-[0.78rem] text-[#7A7A7A]">
-                                  {d.transliteration} · {d.defaultTarget}
+                                <div className="text-[0.95rem] font-semibold text-white">{d.arabic}</div>
+                                <div className="mt-0.5 flex items-center justify-between gap-3 text-[0.78rem] text-[#7A7A7A]">
+                                  <span className="min-w-0 flex-1 truncate">{d.transliteration}</span>
+                                  <span className="flex-shrink-0 font-semibold text-[#8A8A8A]">×{d.defaultTarget}</span>
                                 </div>
-                              </div>
+                              </button>
                             ))}
                           </div>
                         )}
@@ -529,7 +537,7 @@ export default function ListesPage() {
                         >
                           <div className="truncate text-[0.9rem] font-semibold text-[#EFEFEF]">
                             {listId}
-                            <span className="ml-2 text-[0.86rem] text-[#656565]">({items.length} dhikrs)</span>
+                            <span className="ml-2 text-[0.86rem] text-[#656565]">({formatZikrCount(items.length)})</span>
                           </div>
                         </button>
                       </div>
@@ -572,22 +580,22 @@ export default function ListesPage() {
                             const dhikr = allDhikrsById.get(dhikrId);
                             if (!dhikr) return null;
                             return (
-                              <div
+                              <button
+                                type="button"
                                 key={dhikrId}
-                                className="flex items-center justify-between gap-4 py-1"
+                                onClick={() => setSelectedLibraryDhikr(dhikr)}
+                                className="group flex w-full items-center justify-between gap-4 rounded-xl px-2 py-1 text-left transition hover:bg-[#1B1B1B]"
                               >
                                 <div className="min-w-0 flex-1">
-                                  <div className="flex min-w-0 items-baseline gap-4">
-                                    <span className="truncate text-[1.05rem] font-semibold text-[#F5A623]">
-                                      {dhikr.arabic}
-                                    </span>
-                                    <span className="truncate text-[0.9rem] font-semibold text-[#6F6F73]">
-                                      {dhikr.transliteration}
-                                    </span>
+                                  <div className="truncate text-[1.05rem] font-semibold text-white transition-colors group-hover:text-[#F5A623]">
+                                    {dhikr.arabic}
+                                  </div>
+                                  <div className="truncate text-[0.86rem] font-semibold text-[#6F6F73]">
+                                    {dhikr.transliteration}
                                   </div>
                                 </div>
                                 <span className="ml-4 flex-shrink-0 text-[1rem] font-semibold text-[#79797E]">×{dhikr.defaultTarget}</span>
-                              </div>
+                              </button>
                             );
                           })
                         )}
@@ -623,10 +631,10 @@ export default function ListesPage() {
             </div>
 
             <div>
-              <div className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#7E7E83]">Dhikrs</div>
+              <div className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#7E7E83]">Zikrs</div>
               <div className="mt-3 space-y-3 rounded-[28px] border border-[#2F2F2F] bg-[#151515] p-4">
                 {createListItems.length === 0 ? (
-                  <div className="text-sm text-[#7D7D7D]">Ajoute au moins un dhikr depuis la bibliothèque ou l&apos;ajout manuel.</div>
+                  <div className="text-sm text-[#7D7D7D]">Ajoute au moins un zikr depuis la bibliothèque ou l&apos;ajout manuel.</div>
                 ) : (
                   createListItems.map(({ source, dhikr }, idx) => {
                     return (
@@ -826,6 +834,27 @@ export default function ListesPage() {
           <div className="text-sm text-gray-200">
             Supprimer <span className="font-semibold text-white">{modalListId}</span> ?
           </div>
+        </Modal>
+
+        <Modal
+          isOpen={Boolean(selectedLibraryDhikr)}
+          title="Aperçu du zikr"
+          onClose={() => setSelectedLibraryDhikr(null)}
+          closeOnOverlayClick
+        >
+          {selectedLibraryDhikr ? (
+            <div className="rounded-2xl border border-[#2E2E2E] bg-[#141414] px-4 py-5 text-center">
+              <div className="text-[1.7rem] font-semibold leading-relaxed text-white">
+                {selectedLibraryDhikr.arabic}
+              </div>
+              <div className="mt-3 text-[0.95rem] font-semibold text-[#BEBEBE]">
+                {selectedLibraryDhikr.transliteration}
+              </div>
+              <div className="mt-1 text-sm text-[#8A8A8A]">
+                Objectif: {selectedLibraryDhikr.defaultTarget}
+              </div>
+            </div>
+          ) : null}
         </Modal>
 
       </motion.main>

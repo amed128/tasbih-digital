@@ -279,7 +279,7 @@ export default function ListesPage() {
                     {expanded && (
                       <div className="space-y-2 px-4 pb-3">
                         {items.length === 0 ? (
-                          <div className="text-sm text-gray-400">Aucun dhikr dans cette liste.</div>
+                          <div className="text-sm text-gray-400">Aucun Zikr dans cette liste.</div>
                         ) : (
                           items.map((dhikrId, index) => {
                             const dhikr = dhikrs.find((d) => d.id === dhikrId);
@@ -418,7 +418,7 @@ export default function ListesPage() {
 
         <Modal
           isOpen={modalType === "add"}
-          title="Ajouter un dhikr"
+          title="Ajouter un Zikr"
           onClose={closeModal}
           closeOnOverlayClick
           footer={
@@ -436,7 +436,7 @@ export default function ListesPage() {
             <input
               value={modalSearch}
               onChange={(e) => setModalSearch(e.target.value)}
-              placeholder="Rechercher un dhikr..."
+              placeholder="Rechercher un Zikr..."
               className="w-full rounded-xl bg-[#2A2A2A] px-4 py-2 text-sm text-white outline-none focus:border-[#F5A623] focus:ring-2 focus:ring-[#F5A623]/40"
             />
             <div className="max-h-72 space-y-2 overflow-y-auto pr-2">

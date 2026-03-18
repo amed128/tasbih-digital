@@ -116,7 +116,7 @@ export default function StatsPage() {
       >
         <header className="flex flex-col gap-1">
           <h1 className="text-xl font-semibold text-white">📊 Stats</h1>
-          <p className="text-sm text-gray-400">Suivi de votre pratique de dhikr</p>
+          <p className="text-sm text-gray-400">Suivi de votre pratique de Zikr</p>
         </header>
 
         <section className="grid grid-cols-2 gap-3">
@@ -173,7 +173,7 @@ export default function StatsPage() {
 
         <section className="grid gap-3">
           <div className="rounded-2xl bg-[#1A1A1A] p-4">
-            <div className="text-sm font-semibold text-gray-400">Dhikr le plus pratiqué</div>
+            <div className="text-sm font-semibold text-gray-400">Zikr le plus pratiqué</div>
             <div className="mt-2 text-white">{mostPracticed.label}</div>
             <div className="mt-1 text-xs text-gray-400">Total : {mostPracticed.count}</div>
           </div>

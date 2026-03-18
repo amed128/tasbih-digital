@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Tasbih Digital",
-  description: "Compteur de dhikr mobile-first avec Next.js",
+  description: "Compteur de Zikr mobile-first avec Next.js",
 };
 
 export default function RootLayout({

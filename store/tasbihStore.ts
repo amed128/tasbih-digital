@@ -35,6 +35,7 @@ export type TasbihStoreState = {
   counter: number;
   isStarted: boolean;
   mode: Mode;
+  customTarget?: number;
   // Active list and index
   activeListId: string;
   activeList: string[];
@@ -54,7 +55,9 @@ export type TasbihStoreState = {
   undoLast: () => void;
   nextDhikrInList: () => void;
   selectDhikr: (dhikrId: string) => void;
+  selectDhikrAsList: (dhikrId: string) => void;
   selectList: (listId: string) => void;
+  setCustomTarget: (target?: number) => void;
   toggleMode: () => void;
   resetStats: () => void;
   toggleDarkMode: () => void;
@@ -81,6 +84,7 @@ function getInitialState(): Partial<TasbihStoreState> {
     counter: 0,
     isStarted: false,
     mode: "up",
+    customTarget: undefined,
     activeListId: listId,
     activeList: list,
     activeIndex: 0,
@@ -135,7 +139,7 @@ const createStore = () =>
       currentDhikr: resolveDhikr(initialState.currentDhikrId ?? ""),
       increment: () =>
         set((state) => {
-          const target = state.currentDhikr?.defaultTarget ?? 0;
+          const target = state.customTarget ?? state.currentDhikr?.defaultTarget ?? 0;
           const initial = state.mode === "up" ? 0 : target;
           const next = state.mode === "up" ? state.counter + 1 : state.counter - 1;
           const bounded = Math.max(0, Math.min(target, next));
@@ -165,7 +169,7 @@ const createStore = () =>
 
       decrement: () =>
         set((state) => {
-          const target = state.currentDhikr?.defaultTarget ?? 0;
+          const target = state.customTarget ?? state.currentDhikr?.defaultTarget ?? 0;
           const initial = state.mode === "up" ? 0 : target;
           const next = state.mode === "up" ? state.counter - 1 : state.counter + 1;
           const bounded = Math.max(0, Math.min(target, next));
@@ -212,7 +216,7 @@ const createStore = () =>
             nextHistory.map((entry) => entry.startAt.slice(0, 10))
           );
 
-          const target = state.currentDhikr?.defaultTarget ?? 0;
+          const target = state.customTarget ?? state.currentDhikr?.defaultTarget ?? 0;
           const initial = state.mode === "up" ? 0 : target;
 
           const newState: Partial<TasbihStoreState> = {
@@ -237,7 +241,7 @@ const createStore = () =>
       undoLast: () =>
         set((state) => {
           // undo will decrement totalDhikr and reverse counter by one step
-          const target = state.currentDhikr?.defaultTarget ?? 0;
+          const target = state.customTarget ?? state.currentDhikr?.defaultTarget ?? 0;
           const direction = state.mode === "up" ? -1 : 1;
           const next = state.counter + direction;
           const bounded = Math.max(0, Math.min(target, next));
@@ -266,6 +270,7 @@ const createStore = () =>
             activeIndex: nextIndex,
             currentDhikrId: nextDhikrId,
             currentDhikr: nextDhikr,
+            customTarget: undefined,
             counter: state.mode === "down" ? target : 0,
             isStarted: false,
           };
@@ -283,6 +288,29 @@ const createStore = () =>
           const newState = {
             currentDhikrId: dhikrId,
             currentDhikr: dhikr,
+            customTarget: undefined,
+            counter: state.mode === "down" ? target : 0,
+            isStarted: false,
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      selectDhikrAsList: (dhikrId: string) =>
+        set((state) => {
+          const dhikr = resolveDhikr(dhikrId);
+          const target = dhikr?.defaultTarget ?? 0;
+          const listLabel = dhikr?.transliteration || dhikrId;
+          const newState = {
+            activeListId: listLabel,
+            activeList: [dhikrId],
+            activeIndex: 0,
+            currentDhikrId: dhikrId,
+            currentDhikr: dhikr,
+            customTarget: undefined,
             counter: state.mode === "down" ? target : 0,
             isStarted: false,
           };
@@ -315,6 +343,7 @@ const createStore = () =>
             activeIndex: 0,
             currentDhikrId: firstId,
             currentDhikr: firstDhikr,
+            customTarget: undefined,
             counter: state.mode === "down" ? target : 0,
             isStarted: false,
           };
@@ -357,6 +386,7 @@ const createStore = () =>
             newState.activeIndex = 0;
             newState.currentDhikrId = predefinedLists["Zikr de base"][0];
             newState.currentDhikr = resolveDhikr(predefinedLists["Zikr de base"][0]);
+            newState.customTarget = undefined;
           }
           persistState({
             ...state,
@@ -441,16 +471,42 @@ const createStore = () =>
           return newState;
         }),
 
+      setCustomTarget: (target?: number) =>
+        set((state) => {
+          const parsed =
+            typeof target === "number" && Number.isFinite(target)
+              ? Math.max(1, Math.floor(target))
+              : undefined;
+          const effectiveTarget = parsed ?? state.currentDhikr?.defaultTarget ?? 0;
+          const nextCounter =
+            state.mode === "down"
+              ? state.isStarted
+                ? Math.min(state.counter, effectiveTarget)
+                : effectiveTarget
+              : state.counter;
+
+          const newState = {
+            customTarget: parsed,
+            counter: nextCounter,
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
       toggleMode: () =>
         set((state) => {
-          if (state.isStarted) return state;
-
           const nextMode: Mode = state.mode === "up" ? "down" : "up";
-          const target = state.currentDhikr?.defaultTarget ?? 0;
+          const target = state.customTarget ?? state.currentDhikr?.defaultTarget ?? 0;
+          const mirroredCounter = Math.max(0, Math.min(target, target - state.counter));
+          const initial = nextMode === "up" ? 0 : target;
+          const goalReached = nextMode === "up" ? mirroredCounter === target : mirroredCounter === 0;
           const newState: Partial<TasbihStoreState> = {
             mode: nextMode,
-            counter: nextMode === "down" ? target : 0,
-            isStarted: false,
+            counter: mirroredCounter,
+            isStarted: mirroredCounter !== initial && !goalReached,
           };
           persistState({
             ...state,

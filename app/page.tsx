@@ -400,12 +400,11 @@ export default function Home() {
             >
               <div className="border-b border-[#242424] px-4 py-3">
                 <input
-                  autoFocus
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onBlur={(e) => setSearchQuery(e.target.value.trim())}
                   placeholder="Rechercher un Zikr ou une catégorie"
-                  className="w-full rounded-xl border border-[#2A2A2A] bg-[#0E0E0E] px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#F5A623]"
+                  className="w-full rounded-xl border border-[#2A2A2A] bg-[#0E0E0E] px-3 py-2 text-base text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#F5A623]"
                 />
               </div>
 

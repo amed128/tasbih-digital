@@ -25,6 +25,7 @@ export default function ListesPage() {
   const createList = useTasbihStore((s) => s.createList);
   const deleteList = useTasbihStore((s) => s.deleteList);
   const renameList = useTasbihStore((s) => s.renameList);
+  const addToList = useTasbihStore((s) => s.addToList);
   const removeFromList = useTasbihStore((s) => s.removeFromList);
   const moveInList = useTasbihStore((s) => s.moveInList);
   const selectList = useTasbihStore((s) => s.selectList);
@@ -39,6 +40,14 @@ export default function ListesPage() {
   const [modalType, setModalType] = useState<"create" | "rename" | "delete" | null>(null);
   const [modalListId, setModalListId] = useState<string | null>(null);
   const [modalInput, setModalInput] = useState<string>("");
+  const [createLibraryExpanded, setCreateLibraryExpanded] = useState(false);
+  const [createSearchQuery, setCreateSearchQuery] = useState("");
+  const [createListDhikrs, setCreateListDhikrs] = useState<string[]>([]);
+  const [manualDhikrShow, setManualDhikrShow] = useState(false);
+  const [manualArabic, setManualArabic] = useState("");
+  const [manualTranslit, setManualTranslit] = useState("");
+  const [manualReps, setManualReps] = useState("33");
+  const [createCategoryExpanded, setCreateCategoryExpanded] = useState<Record<string, boolean>>({});
 
   const filteredDhikrs = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -59,11 +68,62 @@ export default function ListesPage() {
     setModalType(null);
     setModalListId(null);
     setModalInput("");
+    setCreateListDhikrs([]);
+    setManualDhikrShow(false);
+    setManualArabic("");
+    setManualTranslit("");
+    setManualReps("33");
+    setCreateLibraryExpanded(false);
+    setCreateSearchQuery("");
+    setCreateCategoryExpanded({});
   };
 
   const openCreateModal = () => {
     setModalType("create");
     setModalInput("");
+    setCreateListDhikrs([]);
+    setCreateLibraryExpanded(false);
+    setCreateSearchQuery("");
+  };
+
+  const createFilteredDhikrs = useMemo(() => {
+    const query = createSearchQuery.trim().toLowerCase();
+    if (!query) return dhikrs;
+    return dhikrs.filter((d) => {
+      return (
+        d.arabic.includes(query) ||
+        d.transliteration.toLowerCase().includes(query) ||
+        d.translation_fr.toLowerCase().includes(query) ||
+        d.translation_en.toLowerCase().includes(query)
+      );
+    });
+  }, [createSearchQuery]);
+
+  const createCategories = useMemo(() => groupByCategory(createFilteredDhikrs), [createFilteredDhikrs]);
+
+  const handleAddDhikrToCreate = (dhikrId: string) => {
+    if (!createListDhikrs.includes(dhikrId)) {
+      setCreateListDhikrs([...createListDhikrs, dhikrId]);
+    }
+  };
+
+  const handleRemoveDhikrFromCreate = (dhikrId: string) => {
+    setCreateListDhikrs(createListDhikrs.filter((id) => id !== dhikrId));
+  };
+
+  const handleAddManualDhikr = () => {
+    const ar = manualArabic.trim();
+    const tr = manualTranslit.trim();
+    const reps = manualReps.trim();
+    if (!ar || !tr || !reps) return;
+    const tempId = `manual-${Date.now()}`;
+    if (!createListDhikrs.includes(tempId)) {
+      setCreateListDhikrs([...createListDhikrs, tempId]);
+    }
+    setManualArabic("");
+    setManualTranslit("");
+    setManualReps("33");
+    setManualDhikrShow(false);
   };
 
   const openRenameModal = (listId: string) => {
@@ -81,6 +141,9 @@ export default function ListesPage() {
     const name = modalInput.trim();
     if (!name) return;
     createList(name);
+    createListDhikrs.forEach((dhikrId) => {
+      addToList(name, dhikrId);
+    });
     setExpandedLists((prev) => ({ ...prev, [name]: true }));
     closeModal();
   };
@@ -323,7 +386,7 @@ export default function ListesPage() {
           isOpen={modalType === "create"}
           title="Nouvelle liste"
           onClose={closeModal}
-          closeOnOverlayClick
+          closeOnOverlayClick={false}
           footer={
             <div className="flex justify-end gap-2">
               <button
@@ -334,21 +397,168 @@ export default function ListesPage() {
               </button>
               <button
                 onClick={handleCreateConfirm}
-                className="rounded-xl bg-[#F5A623] px-4 py-2 text-sm font-semibold text-black"
+                disabled={!modalInput.trim()}
+                className="rounded-xl bg-[#F5A623] px-4 py-2 text-sm font-semibold text-black disabled:opacity-50"
               >
-                Créer
+                Sauvegarder
               </button>
             </div>
           }
         >
-          <div className="flex flex-col gap-3">
-            <label className="text-sm font-semibold text-gray-200">Nom de la liste</label>
-            <input
-              value={modalInput}
-              onChange={(e) => setModalInput(e.target.value)}
-              placeholder="Mon programme du matin"
-              className="w-full rounded-xl bg-[#2A2A2A] px-4 py-2 text-sm text-white outline-none focus:border-[#F5A623] focus:ring-2 focus:ring-[#F5A623]/40"
-            />
+          <div className="flex max-h-96 flex-col gap-4 overflow-y-auto">
+            <div>
+              <label className="text-sm font-semibold text-gray-200">Nom de la liste</label>
+              <input
+                value={modalInput}
+                onChange={(e) => setModalInput(e.target.value)}
+                placeholder="Mon programme du matin"
+                className="mt-2 w-full rounded-xl bg-[#2A2A2A] px-4 py-2 text-sm text-white outline-none focus:border-[#F5A623] focus:ring-2 focus:ring-[#F5A623]/40"
+              />
+            </div>
+
+            <div className="border-t border-[#3A3A3A] pt-4">
+              <label className="text-sm font-semibold text-gray-200">Dhikrs</label>
+              {createListDhikrs.length === 0 ? (
+                <div className="mt-3 text-xs text-gray-400">Aucun dhikr ajouté</div>
+              ) : (
+                <div className="mt-3 space-y-2">
+                  {createListDhikrs.map((dhikrId, idx) => {
+                    const dhikr = dhikrs.find((d) => d.id === dhikrId);
+                    if (!dhikr) return null;
+                    return (
+                      <div
+                        key={dhikrId}
+                        className="flex items-center justify-between rounded-lg border border-[#2A2A2A] bg-[#1A1A1A] px-3 py-2"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-gray-500">#{idx + 1}</span>
+                            <div className="text-xs text-white">{dhikr.arabic}</div>
+                          </div>
+                          <div className="text-xs text-gray-400">{dhikr.transliteration}</div>
+                        </div>
+                        <button
+                          onClick={() => handleRemoveDhikrFromCreate(dhikrId)}
+                          className="ml-2 text-lg text-gray-400 hover:text-white"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setManualDhikrShow(!manualDhikrShow)}
+              className="border border-dashed border-[#F5A623] rounded-xl py-3 text-sm font-semibold text-[#F5A623] transition hover:bg-[#F5A623]/5"
+            >
+              + Ajouter manuellement
+            </button>
+
+            {manualDhikrShow && (
+              <div className="space-y-2 rounded-lg border border-[#3A3A3A] bg-[#1A1A1A] p-3">
+                <input
+                  value={manualArabic}
+                  onChange={(e) => setManualArabic(e.target.value)}
+                  placeholder="(ex: شبحان الله) Texte arabe"
+                  className="w-full rounded-lg bg-[#2A2A2A] px-3 py-2 text-sm text-white placeholder:text-gray-500 outline-none focus:border-[#F5A623] focus:ring-1 focus:ring-[#F5A623]"
+                />
+                <input
+                  value={manualTranslit}
+                  onChange={(e) => setManualTranslit(e.target.value)}
+                  placeholder="Translittération / nom"
+                  className="w-full rounded-lg bg-[#2A2A2A] px-3 py-2 text-sm text-white placeholder:text-gray-500 outline-none focus:border-[#F5A623] focus:ring-1 focus:ring-[#F5A623]"
+                />
+                <div className="flex items-center gap-2">
+                  <label className="text-xs font-semibold text-gray-400">Répétitions:</label>
+                  <input
+                    type="number"
+                    value={manualReps}
+                    onChange={(e) => setManualReps(e.target.value)}
+                    className="w-20 rounded-lg border border-[#2A2A2A] bg-[#2A2A2A] px-2 py-1 text-sm text-white outline-none focus:border-[#F5A623]"
+                  />
+                </div>
+                <button
+                  onClick={handleAddManualDhikr}
+                  className="w-full rounded-lg bg-[#F5A623] py-2 text-xs font-semibold text-black transition hover:bg-[#F5A623]/90"
+                >
+                  Ajouter
+                </button>
+              </div>
+            )}
+
+            <div className="border-t border-[#3A3A3A] pt-4">
+              <button
+                type="button"
+                onClick={() => setCreateLibraryExpanded(!createLibraryExpanded)}
+                className="flex w-full items-center justify-between rounded-lg border border-[#3A3A3A] bg-[#1A1A1A] px-3 py-2 text-left hover:border-[#F5A623]"
+              >
+                <span className="text-sm font-semibold text-white">📚 Bibliothèque de zikr</span>
+                <span className="text-gray-400">{createLibraryExpanded ? "⌃" : "⌄"}</span>
+              </button>
+
+              {createLibraryExpanded && (
+                <div className="mt-2 space-y-2">
+                  <input
+                    value={createSearchQuery}
+                    onChange={(e) => setCreateSearchQuery(e.target.value)}
+                    onBlur={(e) => setCreateSearchQuery(e.target.value.trim())}
+                    placeholder="Rechercher..."
+                    className="w-full rounded-lg bg-[#2A2A2A] px-3 py-2 text-xs text-white placeholder:text-gray-500 outline-none focus:border-[#F5A623] focus:ring-1 focus:ring-[#F5A623]"
+                  />
+                  <div className="max-h-40 space-y-1 overflow-y-auto rounded-lg border border-[#2A2A2A] bg-[#0F0F0F] p-2">
+                    {Array.from(createCategories.entries()).map(([category, items]) => {
+                      const expanded = createCategoryExpanded[category] ?? false;
+                      return (
+                        <div key={category}>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setCreateCategoryExpanded((prev) => ({
+                                ...prev,
+                                [category]: !expanded,
+                              }))
+                            }
+                            className="flex w-full items-center justify-between rounded px-2 py-1 text-xs font-semibold text-[#F5A623] hover:bg-[#1A1A1A]"
+                          >
+                            <span>{category}</span>
+                            <span>{expanded ? "⌄" : "›"}</span>
+                          </button>
+                          {expanded && (
+                            <div className="space-y-1 pl-2">
+                              {items.map((d) => {
+                                const isAdded = createListDhikrs.includes(d.id);
+                                return (
+                                  <div
+                                    key={d.id}
+                                    className="flex items-center justify-between rounded px-2 py-1 text-xs text-gray-300 hover:bg-[#1A1A1A]"
+                                  >
+                                    <div className="flex-1 truncate">
+                                      <div className="truncate text-white">{d.arabic}</div>
+                                      <div className="text-gray-500">{d.transliteration}</div>
+                                    </div>
+                                    <button
+                                      onClick={() => handleAddDhikrToCreate(d.id)}
+                                      disabled={isAdded}
+                                      className="ml-2 rounded bg-[#F5A623] px-2 py-0.5 text-xs font-semibold text-black transition disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#F5A623]/90"
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </Modal>
 

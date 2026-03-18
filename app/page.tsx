@@ -85,9 +85,7 @@ export default function Home() {
 
   const scheduleAlignCurrentListChip = (behavior: ScrollBehavior = "smooth") => {
     if (typeof window === "undefined") return;
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => alignCurrentListChip(behavior));
-    });
+    window.requestAnimationFrame(() => alignCurrentListChip(behavior));
   };
 
   const triggerHaptic = (pattern: number | number[]) => {
@@ -183,7 +181,7 @@ export default function Home() {
     }
 
     prevIsCompleted.current = isCompleted;
-  }, [isCompleted, vibrationEnabled, tapSound]);
+  }, [isCompleted]);
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -270,6 +268,8 @@ export default function Home() {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const chipsContainerRef = useRef<HTMLDivElement | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
+
+  useEffect(() => () => { audioCtxRef.current?.close(); }, []);
 
   useEffect(() => {
     if (!dropdownOpen) setSearchQuery("");
@@ -400,8 +400,10 @@ export default function Home() {
             >
               <div className="border-b border-[#242424] px-4 py-3">
                 <input
+                  autoFocus
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onBlur={(e) => setSearchQuery(e.target.value.trim())}
                   placeholder="Rechercher un Zikr ou une catégorie"
                   className="w-full rounded-xl border border-[#2A2A2A] bg-[#0E0E0E] px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#F5A623]"
                 />
@@ -637,6 +639,7 @@ export default function Home() {
             <input
               type="number"
               min={1}
+              max={999}
               value={effectiveTarget}
               disabled={isTargetLocked}
               readOnly={isTargetLocked}
@@ -690,6 +693,7 @@ export default function Home() {
         <div className="flex items-center justify-between gap-4">
           <button
             onClick={undoLast}
+            aria-label="Annuler la dernière action"
             className="flex-1 rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] px-4 py-4 text-sm font-semibold text-white transition hover:border-[#F5A623] active:brightness-95"
           >
             ↩ Annuler
@@ -814,6 +818,7 @@ export default function Home() {
           <div className="flex items-center justify-between gap-4">
             <button
               onClick={undoLast}
+              aria-label="Annuler la dernière action"
               className="flex-1 rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] px-4 py-4 text-sm font-semibold text-white transition hover:border-[#F5A623] active:brightness-95"
             >
               ↩ Annuler
@@ -859,7 +864,7 @@ export default function Home() {
         isOpen={showResetConfirm}
         title="Reinitialiser le compteur ?"
         onClose={() => setShowResetConfirm(false)}
-        closeOnOverlayClick
+        closeOnOverlayClick={false}
         footer={
           <div className="flex justify-end gap-2">
             <button

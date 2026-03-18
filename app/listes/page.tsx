@@ -132,7 +132,6 @@ export default function ListesPage() {
   const addToList = useTasbihStore((s) => s.addToList);
   const removeFromList = useTasbihStore((s) => s.removeFromList);
   const selectList = useTasbihStore((s) => s.selectList);
-  const activeListId = useTasbihStore((s) => s.activeListId);
   const listesUI = useTasbihStore((s) => s.listesUI);
   const setListesUI = useTasbihStore((s) => s.setListesUI);
 
@@ -387,6 +386,14 @@ export default function ListesPage() {
     closeModal();
   };
 
+  const togglePersonalList = (listId: string) => {
+    setExpandedLists((prev) => ({
+      ...prev,
+      [listId]: !(prev[listId] ?? false),
+    }));
+    selectList(listId);
+  };
+
   if (!mounted) return null;
 
   const isSearching = search.trim().length > 0;
@@ -520,49 +527,60 @@ export default function ListesPage() {
             ) : (
               Object.entries(customLists).map(([listId, items]) => {
                 const expanded = expandedLists[listId] ?? false;
-                const isActive = activeListId === listId;
                 return (
                   <div
                     key={listId}
-                    className={`overflow-hidden rounded-[28px] border border-[#2D2D2D] bg-[#141414] ${
-                      isActive ? "ring-2 ring-[#F5A623]/50" : ""
-                    }`}
+                    className="overflow-hidden rounded-[28px] border border-[#2D2D2D] bg-[#141414]"
                   >
-                    <div className="flex items-center justify-between px-4 py-4.5">
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => togglePersonalList(listId)}
+                      onKeyDown={(e) => {
+                        if (e.key !== "Enter" && e.key !== " ") return;
+                        e.preventDefault();
+                        togglePersonalList(listId);
+                      }}
+                      className="flex items-center justify-between px-4 py-4.5"
+                    >
                       <div className="flex min-w-0 flex-1 items-center gap-4">
                         <Grip className="h-4 w-4 text-[#595959]" strokeWidth={2} />
-                        <button
-                          onClick={() => selectList(listId)}
-                          className="min-w-0 flex-1 text-left"
-                        >
+                        <div className="min-w-0 flex-1 text-left">
                           <div className="truncate text-[0.9rem] font-semibold text-[#EFEFEF]">
                             {listId}
                             <span className="ml-2 text-[0.86rem] text-[#656565]">({formatZikrCount(items.length)})</span>
                           </div>
-                        </button>
+                        </div>
                       </div>
                       <div className="flex flex-shrink-0 items-center gap-3">
                         <button
-                          onClick={() =>
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setExpandedLists((prev) => ({
                               ...prev,
                               [listId]: !expanded,
-                            }))
-                          }
+                            }));
+                          }}
                           className="text-[#747474]"
                           aria-label={expanded ? "Réduire" : "Développer"}
                         >
                           {expanded ? <ChevronUp className="h-5 w-5" strokeWidth={2} /> : <ChevronDown className="h-5 w-5" strokeWidth={2} />}
                         </button>
                         <button
-                          onClick={() => openEditListView(listId)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditListView(listId);
+                          }}
                           className="text-[#8A8A8A]"
                           aria-label="Renommer"
                         >
                           <Pencil className="h-5 w-5" strokeWidth={2} />
                         </button>
                         <button
-                          onClick={() => openDeleteModal(listId)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openDeleteModal(listId);
+                          }}
                           className="text-[#8A8A8A]"
                           aria-label="Supprimer"
                         >

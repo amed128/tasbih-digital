@@ -46,6 +46,46 @@ export default function Home() {
   const isCompleted =
     mode === "up" ? counter >= effectiveTarget && effectiveTarget > 0 : counter <= 0;
 
+  const alignCurrentListChip = (behavior: ScrollBehavior = "smooth") => {
+    if (!chipsContainerRef.current) return;
+
+    const container = chipsContainerRef.current;
+    const currentChip = container.querySelector<HTMLElement>(
+      `[data-chip-index="${activeIndex}"]`
+    );
+
+    if (!currentChip) return;
+
+    // Keep the active chip visible inside the mini scrollbar without moving the page.
+    const containerRect = container.getBoundingClientRect();
+    const chipRect = currentChip.getBoundingClientRect();
+    const padding = 8;
+
+    const chipTop = chipRect.top - containerRect.top + container.scrollTop;
+    const chipBottom = chipRect.bottom - containerRect.top + container.scrollTop;
+    const visibleTop = container.scrollTop;
+    const visibleBottom = container.scrollTop + container.clientHeight;
+
+    if (chipTop < visibleTop + padding) {
+      const targetTop = Math.max(0, chipTop - padding);
+      container.scrollTo({ top: targetTop, behavior });
+      return;
+    }
+
+    if (chipBottom > visibleBottom - padding) {
+      const maxScrollTop = Math.max(0, container.scrollHeight - container.clientHeight);
+      const targetTop = Math.min(maxScrollTop, chipBottom - container.clientHeight + padding);
+      container.scrollTo({ top: targetTop, behavior });
+    }
+  };
+
+  const scheduleAlignCurrentListChip = (behavior: ScrollBehavior = "smooth") => {
+    if (typeof window === "undefined") return;
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => alignCurrentListChip(behavior));
+    });
+  };
+
   const triggerHaptic = (pattern: number | number[]) => {
     if (!vibrationEnabled) return;
     if (typeof window === "undefined") return;
@@ -234,23 +274,13 @@ export default function Home() {
 
   useEffect(() => {
     if (!isListMode) return;
-    if (!chipsContainerRef.current) return;
-
-    const container = chipsContainerRef.current;
-    const currentChip = container.querySelector<HTMLElement>(
-      `[data-chip-index="${activeIndex}"]`
-    );
-
-    if (!currentChip) return;
-
-    const targetTop = Math.max(0, currentChip.offsetTop - 4);
-    const maxScrollTop = Math.max(0, container.scrollHeight - container.clientHeight);
-
-    container.scrollTo({
-      top: Math.min(targetTop, maxScrollTop),
-      behavior: "smooth",
-    });
+    scheduleAlignCurrentListChip("smooth");
   }, [activeIndex, isListMode]);
+
+  useEffect(() => {
+    if (!isListMode) return;
+    scheduleAlignCurrentListChip("auto");
+  }, [pulseTrigger, isListMode]);
 
   if (!mounted) return null;
 
@@ -635,8 +665,8 @@ export default function Home() {
           </span>
         </div>
 
-        <div ref={chipsContainerRef} className="max-h-[72px] overflow-y-auto pr-1">
-          <div className="flex flex-wrap gap-2 pb-2">
+        <div ref={chipsContainerRef} className="max-h-[104px] overflow-y-auto pr-1">
+          <div className="flex flex-wrap gap-2 pb-2 pt-2">
           {activeList.map((dhikrId, index) => renderChip(dhikrId, index))}
           </div>
         </div>

@@ -502,12 +502,10 @@ const createStore = () =>
               ? Math.max(1, Math.floor(target))
               : undefined;
           const effectiveTarget = parsed ?? state.currentDhikr?.defaultTarget ?? 0;
-          const nextCounter =
-            state.mode === "down"
-              ? state.isStarted
-                ? Math.min(state.counter, effectiveTarget)
-                : effectiveTarget
-              : state.counter;
+          const initial = state.mode === "up" ? 0 : effectiveTarget;
+          const nextCounter = state.isStarted
+            ? Math.max(0, Math.min(state.counter, effectiveTarget))
+            : initial;
 
           const newState = {
             customTarget: parsed,

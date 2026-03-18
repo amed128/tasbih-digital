@@ -15,6 +15,7 @@ export default function Home() {
 
   const currentDhikr = useTasbihStore((s) => s.currentDhikr);
   const counter = useTasbihStore((s) => s.counter);
+  const isStarted = useTasbihStore((s) => s.isStarted);
   const mode = useTasbihStore((s) => s.mode);
   const vibrationEnabled = useTasbihStore((s) => s.preferences.vibration);
   const tapSound = useTasbihStore((s) => s.preferences.tapSound);
@@ -47,6 +48,7 @@ export default function Home() {
   const effectiveTarget = isListMode ? target : (customTarget ?? target);
   const isCompleted =
     mode === "up" ? counter >= effectiveTarget && effectiveTarget > 0 : counter <= 0;
+  const isTargetLocked = !isListMode && isStarted && !isCompleted;
 
   const alignCurrentListChip = (behavior: ScrollBehavior = "smooth") => {
     if (!chipsContainerRef.current) return;
@@ -636,8 +638,15 @@ export default function Home() {
               type="number"
               min={1}
               value={effectiveTarget}
-              onChange={(e) => setCustomTarget(Math.max(1, Number(e.target.value) || 1))}
-              className="mx-auto w-28 rounded-xl border border-[#2A2A2A] bg-[#0A0A0A] px-3 py-2 text-center text-2xl font-bold text-white focus:outline-none focus:ring-2 focus:ring-[#F5A623]"
+              disabled={isTargetLocked}
+              readOnly={isTargetLocked}
+              onChange={(e) => {
+                if (isTargetLocked) return;
+                setCustomTarget(Math.max(1, Number(e.target.value) || 1));
+              }}
+              className={`mx-auto w-28 rounded-xl border border-[#2A2A2A] bg-[#0A0A0A] px-3 py-2 text-center text-2xl font-bold text-white transition focus:outline-none focus:ring-2 focus:ring-[#F5A623] ${
+                isTargetLocked ? "cursor-not-allowed opacity-55 blur-[0.6px]" : ""
+              }`}
             />
           ) : (
             <div className="text-2xl font-bold text-white">{effectiveTarget}</div>

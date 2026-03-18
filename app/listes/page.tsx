@@ -813,7 +813,7 @@ export default function ListesPage() {
           isOpen={modalType === "delete"}
           title="Supprimer la liste"
           onClose={closeModal}
-          closeOnOverlayClick
+          closeOnOverlayClick={false}
           footer={
             <div className="flex justify-end gap-2">
               <button

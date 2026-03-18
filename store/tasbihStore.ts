@@ -174,6 +174,22 @@ const resolveDhikr = (
   return customDhikrs[dhikrId] ?? dhikrs.find((d) => d.id === dhikrId);
 };
 
+const pruneOrphanCustomDhikrs = (
+  customDhikrs: Record<string, Dhikr>,
+  customLists: Record<string, string[]>
+): Record<string, Dhikr> => {
+  const referencedDhikrIds = new Set(Object.values(customLists).flat());
+  const nextCustomDhikrs: Record<string, Dhikr> = {};
+
+  Object.entries(customDhikrs).forEach(([dhikrId, dhikr]) => {
+    if (referencedDhikrIds.has(dhikrId)) {
+      nextCustomDhikrs[dhikrId] = dhikr;
+    }
+  });
+
+  return nextCustomDhikrs;
+};
+
 const createStore = () =>
   create<TasbihStoreState>()(
     devtools((set) => ({
@@ -431,11 +447,18 @@ const createStore = () =>
 
       deleteList: (listId: string) =>
         set((state) => {
-          const next = { ...state.customLists };
-          delete next[listId];
+          const nextCustomLists = { ...state.customLists };
+          delete nextCustomLists[listId];
+
+          const nextCustomDhikrs = pruneOrphanCustomDhikrs(
+            state.customDhikrs,
+            nextCustomLists
+          );
+
           const isActive = state.activeListId === listId;
           const newState: Partial<TasbihStoreState> = {
-            customLists: next,
+            customLists: nextCustomLists,
+            customDhikrs: nextCustomDhikrs,
           };
           if (isActive) {
             newState.activeListId = "Zikr de base";
@@ -495,11 +518,20 @@ const createStore = () =>
       removeFromList: (listId: string, dhikrId: string) =>
         set((state) => {
           const list = state.customLists[listId] ?? [];
-          const next = {
+          const nextCustomLists = {
             ...state.customLists,
             [listId]: list.filter((id) => id !== dhikrId),
           };
-          const newState = { customLists: next };
+
+          const nextCustomDhikrs = pruneOrphanCustomDhikrs(
+            state.customDhikrs,
+            nextCustomLists
+          );
+
+          const newState = {
+            customLists: nextCustomLists,
+            customDhikrs: nextCustomDhikrs,
+          };
           persistState({
             ...state,
             ...newState,

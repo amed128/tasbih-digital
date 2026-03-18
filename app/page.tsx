@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import { useTasbihStore } from "../store/tasbihStore";
 import { dhikrs } from "../data/dhikrs";
@@ -23,6 +23,7 @@ export default function Home() {
   const reset = useTasbihStore((s) => s.reset);
   const undoLast = useTasbihStore((s) => s.undoLast);
   const setCustomTarget = useTasbihStore((s) => s.setCustomTarget);
+  const toggleMode = useTasbihStore((s) => s.toggleMode);
   const selectDhikrAsList = useTasbihStore((s) => s.selectDhikrAsList);
   const customLists = useTasbihStore((s) => s.customLists);
 
@@ -348,9 +349,14 @@ export default function Home() {
       <header className="flex flex-col items-center gap-2">
         <h1 className="text-xl font-semibold text-white">🌙 Tasbih Digital</h1>
         <p className="text-sm text-gray-400">Compteur de Zikr</p>
-        <span className="rounded-full border border-[#2A2A2A] bg-[#151515] px-3 py-1 text-xs font-semibold text-[#F5A623]">
+        <button
+          type="button"
+          onClick={toggleMode}
+          className="rounded-full border border-[#2A2A2A] bg-[#151515] px-3 py-1 text-xs font-semibold text-[#F5A623] transition hover:border-[#F5A623]"
+          aria-label="Changer le mode d'execution"
+        >
           Mode: {executionModeLabel}
-        </span>
+        </button>
       </header>
 
       <div className="flex flex-col gap-4">
@@ -615,9 +621,8 @@ export default function Home() {
 
       </div>
 
-      <div className="flex flex-col items-center gap-4">
+      <motion.div layout className="flex flex-col items-center gap-4">
         <CircleProgress
-          key={`circle-${mode}-${effectiveTarget}-compteur`}
           value={counter}
           target={effectiveTarget}
           mode={mode}
@@ -638,30 +643,40 @@ export default function Home() {
             <div className="text-2xl font-bold text-white">{effectiveTarget}</div>
           )}
         </div>
-      </div>
+      </motion.div>
 
-      <div className="flex flex-col gap-3 pb-6">
+      <motion.div layout className="flex flex-col gap-3 pb-6">
         <motion.button
           onClick={handleIncrement}
           disabled={isCompleted}
           whileTap={{ scale: 0.95 }}
+          animate={{
+            backgroundColor: isCompleted ? "#1A1A1A" : "#F5A623",
+            color: isCompleted ? "#9CA3AF" : "#000000",
+            opacity: isCompleted ? 0.55 : 1,
+          }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
           className={`w-full rounded-xl px-6 py-5 text-lg font-bold shadow-sm transition hover:brightness-110 active:brightness-95 ${
-            isCompleted
-              ? "bg-[#1A1A1A] text-gray-400 opacity-50 pointer-events-none cursor-not-allowed"
-              : "bg-[#F5A623] text-black"
+            isCompleted ? "pointer-events-none cursor-not-allowed" : ""
           }`}
         >
           Appuyer
         </motion.button>
 
-        {isListMode && isCompleted && !isListComplete && (
-          <button
-            onClick={nextDhikrInList}
-            className="w-full rounded-xl bg-[#22C55E] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
-          >
-            → Zikr suivant
-          </button>
-        )}
+        <AnimatePresence>
+          {isListMode && isCompleted && !isListComplete && (
+            <motion.button
+              onClick={nextDhikrInList}
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.18 }}
+              className="w-full rounded-xl bg-[#22C55E] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
+            >
+              → Zikr suivant
+            </motion.button>
+          )}
+        </AnimatePresence>
 
         <div className="flex items-center justify-between gap-4">
           <button
@@ -677,7 +692,7 @@ export default function Home() {
             Reinitialiser
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 
@@ -719,9 +734,14 @@ export default function Home() {
         </header>
 
         <div className="flex justify-center">
-          <span className="rounded-full border border-[#2A2A2A] bg-[#151515] px-3 py-1 text-xs font-semibold text-[#F5A623]">
+          <button
+            type="button"
+            onClick={toggleMode}
+            className="rounded-full border border-[#2A2A2A] bg-[#151515] px-3 py-1 text-xs font-semibold text-[#F5A623] transition hover:border-[#F5A623]"
+            aria-label="Changer le mode d'execution"
+          >
             Mode: {executionModeLabel}
-          </span>
+          </button>
         </div>
 
         <div ref={chipsContainerRef} className="max-h-[104px] overflow-y-auto pr-1">
@@ -730,7 +750,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-4">
+        <motion.div layout className="flex flex-col items-center gap-4">
           <div className="text-center">
             <div className="text-[2rem] font-bold text-[#F5A623]">
               {currentDhikrInList?.transliteration}
@@ -741,37 +761,46 @@ export default function Home() {
           </div>
 
           <CircleProgress
-            key={`circle-${mode}-${target}-${activeListId}`}
             value={counter}
             target={effectiveTarget}
             mode={mode}
             isCompleted={isCompleted}
             pulseTrigger={pulseTrigger}
           />
-        </div>
+        </motion.div>
 
-        <div className="flex flex-col gap-3">
+        <motion.div layout className="flex flex-col gap-3">
           <motion.button
             onClick={handleIncrement}
             disabled={isCompleted}
             whileTap={{ scale: 0.95 }}
+            animate={{
+              backgroundColor: isCompleted ? "#1A1A1A" : "#F5A623",
+              color: isCompleted ? "#9CA3AF" : "#000000",
+              opacity: isCompleted ? 0.55 : 1,
+            }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
             className={`w-full rounded-xl px-6 py-5 text-lg font-bold shadow-sm transition hover:brightness-110 active:brightness-95 ${
-              isCompleted
-                ? "bg-[#1A1A1A] text-gray-400 opacity-50 pointer-events-none cursor-not-allowed"
-                : "bg-[#F5A623] text-black"
+              isCompleted ? "pointer-events-none cursor-not-allowed" : ""
             }`}
           >
             Appuyer
           </motion.button>
 
-          {isCompleted && !isListComplete && (
-            <button
-              onClick={nextDhikrInList}
-              className="w-full rounded-xl bg-[#22C55E] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
-            >
-              → Zikr suivant
-            </button>
-          )}
+          <AnimatePresence>
+            {isCompleted && !isListComplete && (
+              <motion.button
+                onClick={nextDhikrInList}
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.18 }}
+                className="w-full rounded-xl bg-[#22C55E] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
+              >
+                → Zikr suivant
+              </motion.button>
+            )}
+          </AnimatePresence>
 
           <div className="flex items-center justify-between gap-4">
             <button
@@ -794,7 +823,7 @@ export default function Home() {
           >
             ↩ Retour au compteur simple
           </button>
-        </div>
+        </motion.div>
 
         {showListCompleteToast && (
           <div className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-full bg-[#22C55E] px-4 py-2 text-sm font-semibold text-white shadow-lg">

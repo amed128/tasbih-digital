@@ -168,14 +168,14 @@ export default function ListesPage() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#0A0A0A] text-white">
       <div className="border-b border-[#242424]">
-        <div className="mx-auto flex h-18 w-full max-w-[760px] items-center justify-center gap-2 px-7">
+        <div className="mx-auto flex h-18 w-full max-w-md items-center justify-center gap-2 px-4">
           <span className="text-2xl text-[#F5A623]">☽</span>
           <h1 className="text-[1.95rem] font-semibold tracking-tight text-[#F4F4F4]">Tasbih Digital</h1>
         </div>
       </div>
 
       <motion.main
-        className="mx-auto flex w-full max-w-[760px] flex-col gap-6 px-7 pb-36 pt-6"
+        className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 pb-36 pt-6"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2 }}
@@ -191,7 +191,7 @@ export default function ListesPage() {
             <div className="flex items-center gap-3">
               <BookOpen className="h-6 w-6 text-[#F5A623]" strokeWidth={1.8} />
               <div>
-                <div className="text-[1.85rem] font-semibold text-[#ECECEC]">
+                <div className="text-[0.875rem] font-semibold text-[#ECECEC]">
                   Bibliothèque de zikr
                   <span className="ml-2 text-[#5D5D5D]">({dhikrs.length})</span>
                 </div>

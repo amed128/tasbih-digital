@@ -115,6 +115,14 @@ export function CircleProgress({
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <motion.div
           animate={numberControls}
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          aria-label={
+            mode === "up"
+              ? `${value} sur ${target}${isCompleted ? ", objectif atteint" : ""}`
+              : `${value} restant${isCompleted ? ", objectif atteint" : ""}`
+          }
           className="text-6xl font-bold leading-tight"
           style={{ color: isCompleted ? GREEN : "white" }}
         >
@@ -124,7 +132,11 @@ export function CircleProgress({
           {mode === "up" ? `/ ${target}` : "RESTANT"}
         </div>
         {isCompleted && (
-          <div className="mt-3 flex items-center gap-2 rounded-full bg-green-500/15 px-3 py-1 text-sm font-semibold text-green-200">
+          <div
+            role="status"
+            aria-live="polite"
+            className="mt-3 flex items-center gap-2 rounded-full bg-green-500/15 px-3 py-1 text-sm font-semibold text-green-200"
+          >
             <span className="text-base">✓</span> Objectif atteint
           </div>
         )}

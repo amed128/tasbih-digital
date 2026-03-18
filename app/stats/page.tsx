@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useTasbihStore } from "../../store/tasbihStore";
@@ -40,11 +40,12 @@ function buildLast7DaysData(history: { startAt: string; dhikrCount: number }[]) 
 function computeStreak(dates: string[]) {
   const unique = Array.from(new Set(dates)).sort((a, b) => (a < b ? 1 : -1));
   let streak = 0;
-  let current = new Date();
+  const current = new Date();
   current.setHours(0, 0, 0, 0);
 
   for (let i = 0; i < unique.length; i += 1) {
     const day = new Date(unique[i]);
+    if (Number.isNaN(day.getTime())) continue;
     if (day.getTime() === current.getTime()) {
       streak += 1;
       current.setDate(current.getDate() - 1);
@@ -57,8 +58,11 @@ function computeStreak(dates: string[]) {
 }
 
 export default function StatsPage() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   const stats = useTasbihStore((s) => s.stats);
   const resetStats = useTasbihStore((s) => s.resetStats);
@@ -79,7 +83,8 @@ export default function StatsPage() {
   const mostPracticed = useMemo(() => {
     const counts = new Map<string, number>();
     stats.history.forEach((h) => {
-      counts.set(h.dhikrId ?? "", (counts.get(h.dhikrId ?? "") ?? 0) + h.dhikrCount);
+      if (!h.dhikrId) return;
+      counts.set(h.dhikrId, (counts.get(h.dhikrId) ?? 0) + h.dhikrCount);
     });
     let bestId: string | null = null;
     let bestCount = 0;

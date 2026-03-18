@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { useTasbihStore } from "../../store/tasbihStore";
 import { BottomNav } from "../../components/BottomNav";
@@ -13,8 +13,11 @@ const SOUND_OPTIONS = [
 ] as const;
 
 export default function ReglagesPage() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   const preferences = useTasbihStore((s) => s.preferences);
   const mode = useTasbihStore((s) => s.mode);
@@ -48,7 +51,7 @@ export default function ReglagesPage() {
         </header>
 
         <section className="rounded-2xl bg-[#1A1A1A] p-4">
-          <div className="text-sm font-semibold text-white">Mode d'exécution</div>
+          <div className="text-sm font-semibold text-white">Mode d&apos;exécution</div>
           <div className="mt-3 flex gap-2">
             <button
               onClick={() => setExecutionMode("up")}
@@ -97,13 +100,13 @@ export default function ReglagesPage() {
             <div>
               <div className="text-sm font-semibold text-white">Son</div>
               <div className="text-xs text-gray-400">
-                Simule un retour d'appui ou une sensation de vibration
+                Simule un retour d&apos;appui ou une sensation de vibration
               </div>
             </div>
             <select
               value={preferences.tapSound}
               onChange={(e) => setTapSound(e.target.value as (typeof SOUND_OPTIONS)[number]["value"])}
-              className="rounded-lg border border-[#2A2A2A] bg-[#0A0A0A] px-3 py-2 text-xs font-semibold text-white outline-none focus:border-[#F5A623]"
+              className="rounded-lg border border-[#2A2A2A] bg-[#0A0A0A] px-3 py-2 text-base font-semibold text-white outline-none focus:border-[#F5A623]"
               aria-label="Selection du son"
             >
               {SOUND_OPTIONS.map((option) => (

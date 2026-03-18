@@ -396,7 +396,7 @@ export default function Home() {
               id="zikr-selection-dropdown"
               role="region"
               aria-label="Selection de Zikr"
-              className="mt-2 max-h-[60vh] w-full overflow-y-auto rounded-2xl border border-[#2A2A2A] bg-gradient-to-b from-[#1B1B1B] to-[#151515] py-1 shadow-[0_10px_28px_rgba(0,0,0,0.45)]"
+              className="mt-2 max-h-[60vh] w-full overflow-x-hidden overflow-y-auto rounded-2xl border border-[#2A2A2A] bg-gradient-to-b from-[#1B1B1B] to-[#151515] py-1 shadow-[0_10px_28px_rgba(0,0,0,0.45)]"
             >
               <div className="border-b border-[#242424] px-4 py-3">
                 <input
@@ -486,18 +486,18 @@ export default function Home() {
                           <button
                             key={d.id}
                             type="button"
-                            className="flex w-full items-start justify-between border-t border-[#232323] px-6 py-3 text-left text-white hover:bg-white/[0.03]"
+                            className="flex w-full min-w-0 items-start justify-between border-t border-[#232323] px-6 py-3 text-left text-white hover:bg-white/[0.03]"
                             onClick={() => {
                               selectDhikrAsList(d.id);
                               setIgnoreList(false);
                               setDropdownOpen(false);
                             }}
                           >
-                            <div className="flex flex-col">
+                            <div className="min-w-0 flex-1">
                               <span className="truncate text-base leading-tight">{highlightMatch(d.arabic)}</span>
-                              <span className="mt-0.5 truncate text-sm text-gray-400">{highlightMatch(d.transliteration)}</span>
+                              <span className="mt-0.5 block truncate text-sm text-gray-400">{highlightMatch(d.transliteration)}</span>
                             </div>
-                            <span className="pl-3 text-sm text-gray-500">×{d.defaultTarget}</span>
+                            <span className="ml-3 w-14 flex-shrink-0 self-center text-right text-sm text-gray-500 tabular-nums">×{d.defaultTarget}</span>
                           </button>
                         ))}
                       </div>
@@ -585,18 +585,18 @@ export default function Home() {
                             <button
                               key={d.id}
                               type="button"
-                              className="flex w-full items-start justify-between border-t border-[#232323] px-6 py-3 text-left text-white hover:bg-white/[0.03]"
+                              className="flex w-full min-w-0 items-start justify-between border-t border-[#232323] px-6 py-3 text-left text-white hover:bg-white/[0.03]"
                               onClick={() => {
                                 selectDhikrAsList(d.id);
                                 setIgnoreList(false);
                                 setDropdownOpen(false);
                               }}
                             >
-                              <div className="flex flex-col">
+                              <div className="min-w-0 flex-1">
                                 <span className="truncate text-base leading-tight">{highlightMatch(d.arabic)}</span>
-                                <span className="mt-0.5 truncate text-sm text-gray-400">{highlightMatch(d.transliteration)}</span>
+                                <span className="mt-0.5 block truncate text-sm text-gray-400">{highlightMatch(d.transliteration)}</span>
                               </div>
-                              <span className="pl-3 text-sm text-gray-500">×{d.defaultTarget}</span>
+                              <span className="ml-3 w-14 flex-shrink-0 self-center text-right text-sm text-gray-500 tabular-nums">×{d.defaultTarget}</span>
                             </button>
                           ))}
                         </div>

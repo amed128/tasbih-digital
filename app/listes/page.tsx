@@ -465,9 +465,9 @@ export default function ListesPage() {
                             }))
                           }
                           aria-expanded={expanded}
-                          className="group flex w-full items-center justify-between px-4 py-2.5 text-left"
+                          className="flex w-full items-center justify-between px-4 py-2.5 text-left"
                         >
-                          <span className="flex-1 text-[0.95rem] font-semibold text-white transition-colors group-hover:text-[#F5A623]">
+                          <span className="flex-1 text-[0.95rem] font-semibold text-[#F5A623]">
                             {category}
                           </span>
                           <span className="text-[0.95rem] font-semibold text-[#666666]">{items.length}</span>
@@ -481,11 +481,11 @@ export default function ListesPage() {
                                 type="button"
                                 key={d.id}
                                 onClick={() => setSelectedLibraryDhikr(d)}
-                                className="w-full rounded-xl border border-[#2A2A2A] bg-[#141414] px-3 py-2.5 text-left transition hover:border-[#3E3E3E]"
+                                className="group w-full rounded-xl border border-[#2A2A2A] bg-[#141414] px-3 py-2.5 text-left transition hover:border-[#3E3E3E]"
                               >
-                                <div className="text-[0.95rem] font-semibold text-white">{d.arabic}</div>
-                                <div className="mt-0.5 flex items-center justify-between gap-3 text-[0.78rem] text-[#7A7A7A]">
-                                  <span className="min-w-0 flex-1 truncate">{d.transliteration}</span>
+                                <div className="text-[0.95rem] font-semibold text-white transition-colors group-hover:text-[#F5A623]">{d.arabic}</div>
+                                <div className="mt-0.5 flex items-center justify-between gap-3 text-[#7A7A7A]">
+                                  <span className="min-w-0 flex-1 truncate text-[0.86rem] font-semibold">{d.transliteration}</span>
                                   <span className="flex-shrink-0 font-semibold text-[#8A8A8A]">×{d.defaultTarget}</span>
                                 </div>
                               </button>

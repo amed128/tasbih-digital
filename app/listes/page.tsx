@@ -25,22 +25,20 @@ export default function ListesPage() {
   const createList = useTasbihStore((s) => s.createList);
   const deleteList = useTasbihStore((s) => s.deleteList);
   const renameList = useTasbihStore((s) => s.renameList);
-  const addToList = useTasbihStore((s) => s.addToList);
   const removeFromList = useTasbihStore((s) => s.removeFromList);
   const moveInList = useTasbihStore((s) => s.moveInList);
   const selectList = useTasbihStore((s) => s.selectList);
   const activeListId = useTasbihStore((s) => s.activeListId);
-  const activeList = useTasbihStore((s) => s.activeList);
 
+  const [libraryExpanded, setLibraryExpanded] = useState(true);
   const [search, setSearch] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [expandedLists, setExpandedLists] = useState<Record<string, boolean>>({});
   const [dragging, setDragging] = useState<{ listId: string; index: number } | null>(null);
 
-  const [modalType, setModalType] = useState<"create" | "rename" | "delete" | "add" | null>(null);
+  const [modalType, setModalType] = useState<"create" | "rename" | "delete" | null>(null);
   const [modalListId, setModalListId] = useState<string | null>(null);
   const [modalInput, setModalInput] = useState<string>("");
-  const [modalSearch, setModalSearch] = useState("");
 
   const filteredDhikrs = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -57,24 +55,10 @@ export default function ListesPage() {
 
   const categories = useMemo(() => groupByCategory(filteredDhikrs), [filteredDhikrs]);
 
-  const modalFilteredDhikrs = useMemo(() => {
-    const q = modalSearch.trim().toLowerCase();
-    if (!q) return dhikrs;
-    return dhikrs.filter((d) => {
-      return (
-        d.arabic.includes(q) ||
-        d.transliteration.toLowerCase().includes(q) ||
-        d.translation_fr.toLowerCase().includes(q) ||
-        d.translation_en.toLowerCase().includes(q)
-      );
-    });
-  }, [modalSearch]);
-
   const closeModal = () => {
     setModalType(null);
     setModalListId(null);
     setModalInput("");
-    setModalSearch("");
   };
 
   const openCreateModal = () => {
@@ -91,12 +75,6 @@ export default function ListesPage() {
   const openDeleteModal = (listId: string) => {
     setModalType("delete");
     setModalListId(listId);
-  };
-
-  const openAddDhikrModal = (listId: string) => {
-    setModalType("add");
-    setModalListId(listId);
-    setModalSearch("");
   };
 
   const handleCreateConfirm = () => {
@@ -121,12 +99,6 @@ export default function ListesPage() {
     closeModal();
   };
 
-  const handleAddDhikr = (dhikrId: string) => {
-    if (!modalListId) return;
-    addToList(modalListId, dhikrId);
-    closeModal();
-  };
-
   const handleDrop = (listId: string, toIndex: number) => {
     if (!dragging) return;
     if (dragging.listId !== listId) return;
@@ -135,6 +107,9 @@ export default function ListesPage() {
   };
 
   if (!mounted) return null;
+
+  const isSearching = search.trim().length > 0;
+  const categoryEntries = Array.from(categories.entries());
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white">
@@ -149,66 +124,86 @@ export default function ListesPage() {
           <p className="text-sm text-gray-400">Bibliothèque, listes personnalisées et organisation</p>
         </header>
 
-        <section className="rounded-2xl bg-[#1A1A1A] p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm font-semibold text-white">Bibliothèque de zikr (70)</div>
-              <div className="text-xs text-gray-400">Recherche et exploration</div>
-            </div>
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher..."
-              className="w-36 rounded-xl border border-[#2A2A2A] bg-[#0A0A0A] px-3 py-2 text-sm text-white outline-none focus:border-[#F5A623]"
-            />
-          </div>
-
-          <div className="mt-4 space-y-3">
-            {Array.from(categories.entries()).map(([category, items]) => {
-              const expanded = expandedCategories[category] ?? true;
-              return (
-                <div key={category} className="rounded-2xl border border-[#2A2A2A] bg-[#0A0A0A]">
-                  <button
-                    onClick={() =>
-                      setExpandedCategories((prev) => ({
-                        ...prev,
-                        [category]: !expanded,
-                      }))
-                    }
-                    className="flex w-full items-center justify-between px-4 py-3 text-left"
-                  >
-                    <span className="font-semibold text-white">{category}</span>
-                    <span className="text-sm font-semibold text-[#F5A623]">
-                      {expanded ? "–" : "+"}
-                    </span>
-                  </button>
-                  {expanded && (
-                    <div className="space-y-1 px-4 pb-3">
-                      {items.map((d) => (
-                        <div
-                          key={d.id}
-                          className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#1A1A1A] px-3 py-2"
-                        >
-                          <div className="flex flex-col">
-                            <span className="text-sm text-white">{d.arabic}</span>
-                            <span className="text-xs text-gray-400">
-                              {d.transliteration} ×{d.defaultTarget}
-                            </span>
-                          </div>
-                          <button
-                            onClick={() => openAddDhikrModal(activeListId)}
-                            className="rounded-lg bg-[#F5A623] px-3 py-1 text-xs font-semibold text-black"
-                          >
-                            +
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+        <section className="overflow-hidden rounded-3xl border border-[#2A2A2A] bg-gradient-to-b from-[#171717] to-[#121212]">
+          <button
+            type="button"
+            onClick={() => setLibraryExpanded((prev) => !prev)}
+            aria-expanded={libraryExpanded}
+            className="flex w-full items-center justify-between px-5 py-4 text-left"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-xl text-[#F5A623]">◫</span>
+              <div>
+                <div className="text-[1.05rem] font-semibold text-white">
+                  Bibliothèque de zikr
+                  <span className="ml-2 text-gray-500">({dhikrs.length})</span>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            </div>
+            <span className="text-2xl text-gray-500">{libraryExpanded ? "⌃" : "⌄"}</span>
+          </button>
+
+          {libraryExpanded && (
+            <div className="border-t border-[#242424]">
+              <div className="px-4 py-4">
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onBlur={(e) => setSearch(e.target.value.trim())}
+                  placeholder="Rechercher un zikr..."
+                  className="w-full rounded-2xl border border-[#3A3A3A] bg-[#202020] px-4 py-3 text-base text-white placeholder:text-gray-500 outline-none focus:border-[#F5A623]"
+                />
+              </div>
+
+              <div className="max-h-[40vh] overflow-y-auto overscroll-contain border-t border-[#242424]">
+                {categoryEntries.length === 0 ? (
+                  <div className="px-5 py-4 text-sm text-gray-400">Aucun résultat trouvé</div>
+                ) : (
+                  categoryEntries.map(([category, items]) => {
+                    const expanded = isSearching ? true : expandedCategories[category] ?? false;
+                    return (
+                      <div key={category} className="border-b border-[#242424] last:border-b-0">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setExpandedCategories((prev) => ({
+                              ...prev,
+                              [category]: !expanded,
+                            }))
+                          }
+                          aria-expanded={expanded}
+                          className="flex w-full items-center justify-between px-5 py-3 text-left"
+                        >
+                          <span className="text-lg leading-none text-[#F5A623]">•</span>
+                          <span className="ml-2 flex-1 text-[1.15rem] font-semibold text-[#F5A623]">
+                            {category}
+                          </span>
+                          <span className="text-lg font-semibold text-[#6C6C6C]">{items.length}</span>
+                          <span className="ml-3 text-base text-[#5A5A5A]">{expanded ? "⌄" : "›"}</span>
+                        </button>
+
+                        {expanded && (
+                          <div className="space-y-1 px-5 pb-4">
+                            {items.map((d) => (
+                              <div
+                                key={d.id}
+                                className="rounded-xl border border-[#2A2A2A] bg-[#141414] px-3 py-2"
+                              >
+                                <div className="text-sm font-semibold text-white">{d.arabic}</div>
+                                <div className="text-xs text-gray-400">
+                                  {d.transliteration} · {d.defaultTarget}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          )}
         </section>
 
         <section className="rounded-2xl bg-[#1A1A1A] p-4">
@@ -416,46 +411,6 @@ export default function ListesPage() {
           </div>
         </Modal>
 
-        <Modal
-          isOpen={modalType === "add"}
-          title="Ajouter un Zikr"
-          onClose={closeModal}
-          closeOnOverlayClick
-          footer={
-            <div className="flex justify-end">
-              <button
-                onClick={closeModal}
-                className="rounded-xl bg-[#1A1A1A] px-4 py-2 text-sm font-semibold text-white"
-              >
-                Fermer
-              </button>
-            </div>
-          }
-        >
-          <div className="flex flex-col gap-3">
-            <input
-              value={modalSearch}
-              onChange={(e) => setModalSearch(e.target.value)}
-              placeholder="Rechercher un Zikr..."
-              className="w-full rounded-xl bg-[#2A2A2A] px-4 py-2 text-sm text-white outline-none focus:border-[#F5A623] focus:ring-2 focus:ring-[#F5A623]/40"
-            />
-            <div className="max-h-72 space-y-2 overflow-y-auto pr-2">
-              {modalFilteredDhikrs.map((d) => (
-                <button
-                  key={d.id}
-                  onClick={() => handleAddDhikr(d.id)}
-                  className="flex w-full items-center justify-between rounded-xl bg-[#1A1A1A] px-3 py-2 text-left text-white transition hover:bg-[#2A2A2A]"
-                >
-                  <div>
-                    <div className="text-sm text-[#F5A623]">{d.arabic}</div>
-                    <div className="text-xs text-gray-400">{d.transliteration}</div>
-                  </div>
-                  <div className="text-xs font-semibold text-white">Ajouter</div>
-                </button>
-              ))}
-            </div>
-          </div>
-        </Modal>
       </motion.main>
       <BottomNav />
     </div>

@@ -132,6 +132,24 @@ export const translations = {
       ariaDown: "{{value}} restant{{completed}}",
       ariaCompleted: ", objectif atteint",
     },
+    about: {
+      title: "À propos",
+      appSectionTitle: "Application",
+      appDescription:
+        "Compteur de Zikr mobile-first — sans compte, sans serveur, sans données tierces.",
+      version: "Version 0.1.0",
+      dataSectionTitle: "Confidentialité",
+      dataDescription:
+        "Cette application ne collecte aucune donnée personnelle. Toutes vos informations (listes, compteurs, préférences) sont stockées uniquement sur votre appareil dans le stockage local du navigateur. Rien n'est envoyé en dehors de votre appareil.",
+      storageSectionTitle: "Stockage local",
+      storageDescription:
+        "Vous pouvez effacer toutes les données de l'application en supprimant les données du site dans les réglages de votre navigateur.",
+      sourceTitle: "Code source",
+      sourceHint: "Voir le dépôt",
+      back: "← Retour",
+      settingsLink: "À propos",
+      settingsHint: "Version, confidentialité",
+    },
   },
 
   en: {
@@ -266,6 +284,24 @@ export const translations = {
       ariaUp: "{{value}} of {{target}}{{completed}}",
       ariaDown: "{{value}} remaining{{completed}}",
       ariaCompleted: ", goal reached",
+    },
+    about: {
+      title: "About",
+      appSectionTitle: "Application",
+      appDescription:
+        "Mobile-first Zikr counter — no account, no server, no third-party data.",
+      version: "Version 0.1.0",
+      dataSectionTitle: "Privacy",
+      dataDescription:
+        "This application does not collect any personal data. All your information (lists, counters, preferences) is stored only on your device in the browser's local storage. Nothing is sent outside your device.",
+      storageSectionTitle: "Local storage",
+      storageDescription:
+        "You can erase all app data by clearing the site data in your browser settings.",
+      sourceTitle: "Source code",
+      sourceHint: "View repository",
+      back: "← Back",
+      settingsLink: "About",
+      settingsHint: "Version, privacy",
     },
   },
 } as const;

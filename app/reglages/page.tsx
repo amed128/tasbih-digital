@@ -7,6 +7,7 @@ import type { Theme } from "../../store/tasbihStore";
 import type { TapSound } from "../../store/tasbihStore";
 import { BottomNav } from "../../components/BottomNav";
 import { useT } from "@/hooks/useT";
+import Link from "next/link";
 
 export default function ReglagesPage() {
   const mounted = useSyncExternalStore(
@@ -182,7 +183,22 @@ export default function ReglagesPage() {
           </div>
         </section>
 
-        <div className="mt-6 text-center text-xs text-[var(--secondary)]">
+        <Link
+          href="/about"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
+        >
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">
+              {t("about.settingsLink")}
+            </div>
+            <div className="text-xs text-[var(--secondary)]">
+              {t("about.settingsHint")}
+            </div>
+          </div>
+          <span className="text-[var(--secondary)] text-base">›</span>
+        </Link>
+
+        <div className="mt-2 text-center text-xs text-[var(--secondary)]">
           {t("settings.version")}
         </div>
       </motion.main>

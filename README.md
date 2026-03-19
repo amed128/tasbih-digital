@@ -169,6 +169,13 @@ Notes:
 
 See `CONTRIBUTING.md` for contribution guidelines and pull request expectations.
 
+## Legal Pages
+
+- About page: `/about`
+- Privacy policy page: `/privacy`
+
+Both pages are designed to support app-store submission requirements where a public privacy URL is needed.
+
 ## Repository Setup
 
 See `docs/repository-setup.md` for recommended GitHub labels, branch protection, and review settings.

@@ -58,6 +58,21 @@ export default function AboutPage() {
           </div>
         </section>
 
+        <Link
+          href="/privacy"
+          className="rounded-2xl bg-[var(--card)] p-4 flex items-center justify-between"
+        >
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">
+              {t("about.privacyPolicy")}
+            </div>
+            <div className="text-xs text-[var(--secondary)]">
+              {t("about.privacyPolicyHint")}
+            </div>
+          </div>
+          <span className="text-[var(--secondary)] text-base">›</span>
+        </Link>
+
         {/* Local storage */}
         <section className="rounded-2xl bg-[var(--card)] p-4 flex flex-col gap-2">
           <div className="text-sm font-semibold text-[var(--foreground)]">

@@ -144,11 +144,33 @@ export const translations = {
       storageSectionTitle: "Stockage local",
       storageDescription:
         "Vous pouvez effacer toutes les données de l'application en supprimant les données du site dans les réglages de votre navigateur.",
+      privacyPolicy: "Politique de confidentialité",
+      privacyPolicyHint: "Version publique prête pour les stores",
       sourceTitle: "Code source",
       sourceHint: "Voir le dépôt",
       back: "← Retour",
       settingsLink: "À propos",
       settingsHint: "Version, confidentialité",
+      policyBack: "← Retour à À propos",
+      policyTitle: "Politique de confidentialité",
+      policyUpdated: "Dernière mise à jour: 20 mars 2026",
+      policyIntro:
+        "Tasbih Digital respecte votre vie privée. Cette application fonctionne sans compte et sans serveur.",
+      policyCollectionTitle: "1. Données collectées",
+      policyCollectionBody:
+        "Aucune donnée personnelle n'est collectée, transmise ou vendue.",
+      policyStorageTitle: "2. Stockage local",
+      policyStorageBody:
+        "Les données (listes, compteurs, préférences) sont conservées uniquement sur votre appareil via le stockage local du navigateur.",
+      policyThirdPartyTitle: "3. Services tiers",
+      policyThirdPartyBody:
+        "Aucun service tiers d'analyse, de publicité ou de suivi n'est utilisé.",
+      policyControlTitle: "4. Contrôle utilisateur",
+      policyControlBody:
+        "Vous pouvez supprimer toutes les données de l'application en effaçant les données du site dans les paramètres de votre navigateur.",
+      policyContactTitle: "5. Contact",
+      policyContactBody:
+        "Pour toute question, utilisez le dépôt GitHub du projet.",
     },
   },
 
@@ -297,11 +319,33 @@ export const translations = {
       storageSectionTitle: "Local storage",
       storageDescription:
         "You can erase all app data by clearing the site data in your browser settings.",
+      privacyPolicy: "Privacy policy",
+      privacyPolicyHint: "Public page ready for app stores",
       sourceTitle: "Source code",
       sourceHint: "View repository",
       back: "← Back",
       settingsLink: "About",
       settingsHint: "Version, privacy",
+      policyBack: "← Back to About",
+      policyTitle: "Privacy policy",
+      policyUpdated: "Last updated: March 20, 2026",
+      policyIntro:
+        "Tasbih Digital respects your privacy. This application works without an account and without a server.",
+      policyCollectionTitle: "1. Data collection",
+      policyCollectionBody:
+        "No personal data is collected, transmitted, or sold.",
+      policyStorageTitle: "2. Local storage",
+      policyStorageBody:
+        "Data (lists, counters, preferences) is stored only on your device using browser local storage.",
+      policyThirdPartyTitle: "3. Third-party services",
+      policyThirdPartyBody:
+        "No analytics, ads, or tracking third-party services are used.",
+      policyControlTitle: "4. User control",
+      policyControlBody:
+        "You can delete all application data by clearing the site data in your browser settings.",
+      policyContactTitle: "5. Contact",
+      policyContactBody:
+        "For any question, please use the project's GitHub repository.",
     },
   },
 } as const;

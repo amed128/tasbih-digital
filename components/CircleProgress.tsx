@@ -128,14 +128,14 @@ export function CircleProgress({
         >
           {value}
         </motion.div>
-        <div className="mt-1 text-sm font-semibold text-gray-300">
+        <div className="mt-1 text-sm font-semibold text-[var(--secondary)]">
           {mode === "up" ? `/ ${target}` : "RESTANT"}
         </div>
         {isCompleted && (
           <div
             role="status"
             aria-live="polite"
-            className="mt-3 flex items-center gap-2 rounded-full bg-green-500/15 px-3 py-1 text-sm font-semibold text-green-200"
+            className="mt-3 flex items-center gap-2 rounded-full bg-green-500/15 px-3 py-1 text-sm font-semibold text-[var(--foreground)]"
           >
             <span className="text-base">✓</span> Objectif atteint
           </div>

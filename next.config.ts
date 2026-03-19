@@ -1,7 +1,16 @@
-/** @type {import('next').NextConfig} */
-const withPWA = require("next-pwa");
+import withPWA from "next-pwa";
+import type { NextConfig } from "next";
 
-let nextConfig = {
+type NextConfigWithPWA = NextConfig & {
+  pwa?: {
+    dest?: string;
+    disable?: boolean;
+    register?: boolean;
+    skipWaiting?: boolean;
+  };
+};
+
+let nextConfig: NextConfigWithPWA = {
   turbopack: {},
   pwa: {
     dest: "public",
@@ -16,8 +25,7 @@ nextConfig = withPWA(nextConfig);
 // Remove `pwa` key to avoid Next.js warning about unrecognized config options.
 // The plugin has already applied the PWA settings.
 if (nextConfig && typeof nextConfig === "object" && "pwa" in nextConfig) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  delete (nextConfig as any).pwa;
+  delete nextConfig.pwa;
 }
 
-module.exports = nextConfig;
+export default nextConfig;

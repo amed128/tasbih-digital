@@ -4,7 +4,7 @@ import { useMemo, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useTasbihStore } from "../../store/tasbihStore";
-import { dhikrs } from "../../data/dhikrs";
+import { zikrs } from "../../data/zikrs";
 import { BottomNav } from "../../components/BottomNav";
 import { useT } from "@/hooks/useT";
 
@@ -17,7 +17,7 @@ function dayLabel(date: Date, locale: string) {
   return date.toLocaleDateString(locale, { weekday: "short" });
 }
 
-function buildLast7DaysData(history: { startAt: string; dhikrCount: number }[], locale: string) {
+function buildLast7DaysZikrData(history: { startAt: string; zikrCount: number }[], locale: string) {
   const today = new Date();
   const start = new Date(today);
   start.setHours(0, 0, 0, 0);
@@ -32,7 +32,7 @@ function buildLast7DaysData(history: { startAt: string; dhikrCount: number }[], 
   history.forEach((entry) => {
     const key = entry.startAt.slice(0, 10);
     const row = data.find((r) => r.date === key);
-    if (row) row.total += entry.dhikrCount;
+    if (row) row.total += entry.zikrCount;
   });
 
   return data;
@@ -71,7 +71,7 @@ export default function StatsPage() {
   const t = useT();
   const locale = language === "fr" ? "fr-FR" : "en-US";
 
-  const total = stats.totalDhikr;
+  const total = stats.totalZikr;
   const sessions = stats.sessions;
   const activeDays = stats.activeDays;
 
@@ -87,8 +87,8 @@ export default function StatsPage() {
   const mostPracticed = useMemo(() => {
     const counts = new Map<string, number>();
     stats.history.forEach((h) => {
-      if (!h.dhikrId) return;
-      counts.set(h.dhikrId, (counts.get(h.dhikrId) ?? 0) + h.dhikrCount);
+      if (!h.zikrId) return;
+      counts.set(h.zikrId, (counts.get(h.zikrId) ?? 0) + h.zikrCount);
     });
     let bestId: string | null = null;
     let bestCount = 0;
@@ -98,14 +98,14 @@ export default function StatsPage() {
         bestId = id;
       }
     });
-    const dhikr = bestId ? dhikrs.find((d) => d.id === bestId) : undefined;
+    const zikr = bestId ? zikrs.find((d) => d.id === bestId) : undefined;
     return {
-      label: dhikr ? `${dhikr.arabic} — ${dhikr.transliteration}` : t("stats.none"),
+      label: zikr ? `${zikr.arabic} — ${zikr.transliteration}` : t("stats.none"),
       count: bestCount,
     };
   }, [stats.history, t]);
 
-  const weeklyData = useMemo(() => buildLast7DaysData(stats.history, locale), [stats.history, locale]);
+  const weeklyData = useMemo(() => buildLast7DaysZikrData(stats.history, locale), [stats.history, locale]);
 
   const recentHistory = useMemo(() => {
     return [...stats.history]
@@ -202,7 +202,7 @@ export default function StatsPage() {
                 <div className="text-sm text-[var(--secondary)]">{t("stats.noSessions")}</div>
               ) : (
                 recentHistory.map((entry) => {
-                  const dhikr = dhikrs.find((d) => d.id === entry.dhikrId);
+                  const zikr = zikrs.find((d) => d.id === entry.zikrId);
                   return (
                     <div
                       key={entry.id}
@@ -210,11 +210,11 @@ export default function StatsPage() {
                     >
                       <div>
                         <div className="text-sm text-[var(--foreground)]">
-                          {formatDate(entry.startAt, locale)} — {dhikr?.arabic ?? "—"}
+                          {formatDate(entry.startAt, locale)} — {zikr?.arabic ?? "—"}
                         </div>
-                        <div className="text-xs text-[var(--secondary)]">{dhikr?.transliteration ?? ""}</div>
+                        <div className="text-xs text-[var(--secondary)]">{zikr?.transliteration ?? ""}</div>
                       </div>
-                      <div className="text-sm font-semibold text-[var(--foreground)]">{entry.dhikrCount}</div>
+                      <div className="text-sm font-semibold text-[var(--foreground)]">{entry.zikrCount}</div>
                     </div>
                   );
                 })

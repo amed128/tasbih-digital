@@ -1,20 +1,23 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import { useTasbihStore } from "../store/tasbihStore";
-import { DEFAULT_LIST_ID, dhikrs } from "../data/dhikrs";
+import { DEFAULT_LIST_ID, zikrs } from "../data/zikrs";
 import { useT } from "@/hooks/useT";
 import { CircleProgress } from "../components/CircleProgress";
 import { BottomNav } from "../components/BottomNav";
 import { Modal } from "../components/Modal";
 
 export default function Home() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
-  const currentDhikr = useTasbihStore((s) => s.currentDhikr);
+  const currentZikr = useTasbihStore((s) => s.currentZikr);
   const counter = useTasbihStore((s) => s.counter);
   const isStarted = useTasbihStore((s) => s.isStarted);
   const mode = useTasbihStore((s) => s.mode);
@@ -27,21 +30,20 @@ export default function Home() {
   const undoLast = useTasbihStore((s) => s.undoLast);
   const setCustomTarget = useTasbihStore((s) => s.setCustomTarget);
   const toggleMode = useTasbihStore((s) => s.toggleMode);
-  const selectDhikrAsList = useTasbihStore((s) => s.selectDhikrAsList);
+  const selectZikrAsList = useTasbihStore((s) => s.selectZikrAsList);
   const customLists = useTasbihStore((s) => s.customLists);
 
   const t = useT();
 
   const [pulseTrigger, setPulseTrigger] = useState(0);
-  const [hasFiredConfetti, setHasFiredConfetti] = useState(false);
   const prevIsCompleted = useRef(false);
 
-  const target = currentDhikr?.defaultTarget ?? 0;
+  const target = currentZikr?.defaultTarget ?? 0;
 
   const activeListId = useTasbihStore((s) => s.activeListId);
   const activeList = useTasbihStore((s) => s.activeList);
   const activeIndex = useTasbihStore((s) => s.activeIndex);
-  const nextDhikrInList = useTasbihStore((s) => s.nextDhikrInList);
+  const nextZikrInList = useTasbihStore((s) => s.nextZikrInList);
   const selectList = useTasbihStore((s) => s.selectList);
 
   const [ignoreList, setIgnoreList] = useState(false);
@@ -87,10 +89,10 @@ export default function Home() {
     }
   };
 
-  const scheduleAlignCurrentListChip = (behavior: ScrollBehavior = "smooth") => {
+  const scheduleAlignCurrentListChip = useEffectEvent((behavior: ScrollBehavior = "smooth") => {
     if (typeof window === "undefined") return;
     window.requestAnimationFrame(() => alignCurrentListChip(behavior));
-  };
+  });
 
   const triggerHaptic = (pattern: number | number[]) => {
     if (!vibrationEnabled && tapSound === "off") return;
@@ -168,22 +170,21 @@ export default function Home() {
     reset();
   };
 
+  const triggerCompletionFeedback = useEffectEvent(() => {
+    triggerHaptic([35, 40, 35]);
+    if (confettiEnabled) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { x: 0.5, y: 0.4 },
+        colors: ["#E4B15A", "#FFFFFF"],
+      });
+    }
+  });
+
   useEffect(() => {
     if (isCompleted && !prevIsCompleted.current) {
-      triggerHaptic([35, 40, 35]);
-      if (confettiEnabled) {
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { x: 0.5, y: 0.4 },
-          colors: ["#E4B15A", "#FFFFFF"],
-        });
-      }
-      setHasFiredConfetti(true);
-    }
-
-    if (!isCompleted) {
-      setHasFiredConfetti(false);
+      triggerCompletionFeedback();
     }
 
     prevIsCompleted.current = isCompleted;
@@ -191,9 +192,9 @@ export default function Home() {
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  const groupedDhikrs = useMemo(() => {
-    const map = new Map<string, typeof dhikrs>();
-    dhikrs.forEach((d) => {
+  const groupedZikrs = useMemo(() => {
+    const map = new Map<string, typeof zikrs>();
+    zikrs.forEach((d) => {
       const list = map.get(d.category) ?? [];
       list.push(d);
       map.set(d.category, list);
@@ -226,46 +227,41 @@ export default function Home() {
     );
   };
 
-  const filteredGroupEntries = useMemo(() => {
-    if (!isSearching) return Array.from(groupedDhikrs.entries());
+  const filteredGroupEntries = !isSearching
+    ? Array.from(groupedZikrs.entries())
+    : Array.from(groupedZikrs.entries()).reduce<[string, typeof zikrs][]>(
+        (acc, [category, items]) => {
+          const matchCategory = matchesSearch(category);
+          const matchedItems = items.filter(
+            (d) => matchesSearch(d.arabic) || matchesSearch(d.transliteration)
+          );
+          if (matchCategory || matchedItems.length > 0) {
+            acc.push([category, matchCategory ? items : matchedItems]);
+          }
+          return acc;
+        },
+        []
+      );
 
-    return Array.from(groupedDhikrs.entries()).reduce<[string, typeof dhikrs][]>(
-      (acc, [category, items]) => {
-        const matchCategory = matchesSearch(category);
-        const matchedItems = items.filter(
-          (d) => matchesSearch(d.arabic) || matchesSearch(d.transliteration)
-        );
-        if (matchCategory || matchedItems.length > 0) {
-          acc.push([category, matchCategory ? items : matchedItems]);
-        }
-        return acc;
-      },
-      []
-    );
-  }, [groupedDhikrs, normalizedSearch]);
+  const filteredCustomLists = !isSearching
+    ? customLists
+    : Object.entries(customLists).reduce<Record<string, string[]>>(
+        (acc, [listId, ids]) => {
+          const matchListId = matchesSearch(listId);
+          const items = ids
+            .map((id) => zikrs.find((d) => d.id === id))
+            .filter(Boolean) as typeof zikrs;
+          const matchedItems = items.filter(
+            (d) => matchesSearch(d.arabic) || matchesSearch(d.transliteration)
+          );
+          if (matchListId || matchedItems.length > 0) {
+            acc[listId] = matchListId ? ids : matchedItems.map((d) => d.id);
+          }
+          return acc;
+        },
+        {}
+      );
 
-  const filteredCustomLists = useMemo(() => {
-    if (!isSearching) return customLists;
-
-    return Object.entries(customLists).reduce<Record<string, string[]>>(
-      (acc, [listId, ids]) => {
-        const matchListId = matchesSearch(listId);
-        const items = ids
-          .map((id) => dhikrs.find((d) => d.id === id))
-          .filter(Boolean) as typeof dhikrs;
-        const matchedItems = items.filter(
-          (d) => matchesSearch(d.arabic) || matchesSearch(d.transliteration)
-        );
-        if (matchListId || matchedItems.length > 0) {
-          acc[listId] = matchListId ? ids : matchedItems.map((d) => d.id);
-        }
-        return acc;
-      },
-      {}
-    );
-  }, [customLists, normalizedSearch]);
-
-  const [showListCompleteToast, setShowListCompleteToast] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
@@ -280,10 +276,6 @@ export default function Home() {
       audioCtxRef.current.close();
     }
   }, []);
-
-  useEffect(() => {
-    if (!dropdownOpen) setSearchQuery("");
-  }, [dropdownOpen]);
 
   const listPosition = `${activeIndex + 1} / ${activeList.length}`;
   const isListComplete =
@@ -306,26 +298,12 @@ export default function Home() {
   };
 
   useEffect(() => {
-    setIgnoreList(false);
-  }, [activeListId]);
-
-  useEffect(() => {
-    if (!isListComplete) return;
-
-    setShowListCompleteToast(true);
-    const timer = window.setTimeout(() => {
-      setShowListCompleteToast(false);
-    }, 4000);
-
-    return () => window.clearTimeout(timer);
-  }, [isListComplete]);
-
-  useEffect(() => {
     const handler = (event: MouseEvent) => {
       if (!dropdownOpen) return;
       if (!dropdownRef.current) return;
       if (event.target instanceof Node && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
+        setSearchQuery("");
       }
     };
 
@@ -333,6 +311,7 @@ export default function Home() {
       if (!dropdownOpen) return;
       if (event.key === "Escape") {
         setDropdownOpen(false);
+        setSearchQuery("");
       }
     };
 
@@ -375,7 +354,10 @@ export default function Home() {
         <div className="flex flex-col gap-2" ref={dropdownRef}>
           <button
             type="button"
-            onClick={() => setDropdownOpen((open) => !open)}
+            onClick={() => {
+              if (dropdownOpen) setSearchQuery("");
+              setDropdownOpen((open) => !open);
+            }}
             aria-expanded={dropdownOpen}
             aria-controls="zikr-selection-dropdown"
             aria-haspopup="listbox"
@@ -498,7 +480,7 @@ export default function Home() {
                             type="button"
                             className="flex w-full min-w-0 items-start justify-between border-t border-[var(--border)] px-6 py-3 text-left text-[var(--foreground)] hover:bg-white/[0.03]"
                             onClick={() => {
-                              selectDhikrAsList(d.id);
+                              selectZikrAsList(d.id);
                               setIgnoreList(false);
                               setDropdownOpen(false);
                             }}
@@ -538,8 +520,8 @@ export default function Home() {
                 Object.entries(filteredCustomLists).map(([listId, ids]) => {
                   const expanded = isSearching ? true : expandedGroups[listId] ?? false;
                   const items = ids
-                    .map((id) => dhikrs.find((d) => d.id === id))
-                    .filter(Boolean) as typeof dhikrs;
+                    .map((id) => zikrs.find((d) => d.id === id))
+                    .filter(Boolean) as typeof zikrs;
                   return (
                     <div key={listId} className="border-b border-[var(--border)] last:border-b-0">
                       <div
@@ -597,7 +579,7 @@ export default function Home() {
                               type="button"
                               className="flex w-full min-w-0 items-start justify-between border-t border-[var(--border)] px-6 py-3 text-left text-[var(--foreground)] hover:bg-white/[0.03]"
                               onClick={() => {
-                                selectDhikrAsList(d.id);
+                                selectZikrAsList(d.id);
                                 setIgnoreList(false);
                                 setDropdownOpen(false);
                               }}
@@ -621,13 +603,13 @@ export default function Home() {
           )}
         </div>
 
-        {ignoreList && currentDhikr && (
+        {ignoreList && currentZikr && (
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-black">
-              {currentDhikr.transliteration}
+              {currentZikr.transliteration}
             </span>
             <span className="rounded-full bg-[var(--border)] px-4 py-2 text-sm text-[var(--secondary)]">
-              {currentDhikr.arabic}
+              {currentZikr.arabic}
             </span>
           </div>
         )}
@@ -687,7 +669,7 @@ export default function Home() {
         <AnimatePresence>
           {isListMode && isCompleted && !isListComplete && (
             <motion.button
-              onClick={nextDhikrInList}
+              onClick={nextZikrInList}
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
@@ -719,11 +701,11 @@ export default function Home() {
   );
 
   const renderListMode = () => {
-    const currentDhikrInList = currentDhikr;
+    const currentZikrInList = currentZikr;
 
-    const renderChip = (dhikrId: string, index: number) => {
-      const dhikr = dhikrs.find((d) => d.id === dhikrId);
-      if (!dhikr) return null;
+    const renderChip = (zikrId: string, index: number) => {
+      const zikr = zikrs.find((d) => d.id === zikrId);
+      if (!zikr) return null;
 
       const isCurrent = index === activeIndex;
       const isDone = index < activeIndex || (isCurrent && isCompleted);
@@ -737,11 +719,11 @@ export default function Home() {
 
       return (
         <div
-          key={dhikrId}
+          key={zikrId}
           data-chip-index={index}
           className={`flex-shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${bgClass} ${textClass}`}
         >
-          {dhikr.transliteration}
+          {zikr.transliteration}
         </div>
       );
     };
@@ -768,17 +750,17 @@ export default function Home() {
 
         <div ref={chipsContainerRef} className="max-h-[104px] overflow-y-auto pr-1">
           <div className="flex flex-wrap gap-2 pb-2 pt-2">
-          {activeList.map((dhikrId, index) => renderChip(dhikrId, index))}
+          {activeList.map((zikrId, index) => renderChip(zikrId, index))}
           </div>
         </div>
 
         <motion.div layout className="flex flex-col items-center gap-4">
           <div className="text-center">
             <div className="text-[2rem] font-bold text-[var(--primary)]">
-              {currentDhikrInList?.transliteration}
+              {currentZikrInList?.transliteration}
             </div>
             <div className="mt-2 text-sm text-white">
-              {currentDhikrInList?.arabic}
+              {currentZikrInList?.arabic}
             </div>
           </div>
 
@@ -812,7 +794,7 @@ export default function Home() {
           <AnimatePresence>
             {isCompleted && !isListComplete && (
               <motion.button
-                onClick={nextDhikrInList}
+                onClick={nextZikrInList}
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
@@ -848,7 +830,7 @@ export default function Home() {
           </button>
         </motion.div>
 
-        {showListCompleteToast && (
+        {isListComplete && (
           <div className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-full bg-[#22C55E] px-4 py-2 text-sm font-semibold text-white shadow-lg">
             {t("counter.listComplete")}
           </div>

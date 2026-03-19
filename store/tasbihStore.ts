@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { DEFAULT_LIST_ID, dhikrs, predefinedLists } from "../data/dhikrs";
-import type { Dhikr } from "../data/dhikrs";
+import { DEFAULT_LIST_ID, zikrs, predefinedLists } from "../data/zikrs";
+import type { Zikr } from "../data/zikrs";
 
 export type Mode = "up" | "down";
 
@@ -9,13 +9,13 @@ export type SessionRecord = {
   id: string;
   startAt: string; // ISO
   endAt?: string;
-  dhikrCount: number;
+  zikrCount: number;
   listId?: string;
-  dhikrId?: string;
+  zikrId?: string;
 };
 
 export type Stats = {
-  totalDhikr: number;
+  totalZikr: number;
   sessions: number;
   activeDays: number;
   history: SessionRecord[];
@@ -33,9 +33,9 @@ export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
 export type Theme = "light" | "dark" | "blue";
 
 export type TasbihStoreState = {
-  // Current selected dhikr
-  currentDhikrId: string;
-  currentDhikr: Dhikr | undefined;
+  // Current selected zikr
+  currentZikrId: string;
+  currentZikr: Zikr | undefined;
   // Counter
   counter: number;
   isStarted: boolean;
@@ -51,7 +51,7 @@ export type TasbihStoreState = {
   sessionStartAt?: string;
   // Custom lists
   customLists: Record<string, string[]>;
-  customDhikrs: Record<string, Dhikr>;
+  customZikrs: Record<string, Zikr>;
   // Preferences
   preferences: Preferences;
   // Listes page UI state (persisted across tab navigation)
@@ -65,9 +65,9 @@ export type TasbihStoreState = {
   decrement: () => void;
   reset: () => void;
   undoLast: () => void;
-  nextDhikrInList: () => void;
-  selectDhikr: (dhikrId: string) => void;
-  selectDhikrAsList: (dhikrId: string) => void;
+  nextZikrInList: () => void;
+  selectZikr: (zikrId: string) => void;
+  selectZikrAsList: (zikrId: string) => void;
   selectList: (listId: string) => void;
   setCustomTarget: (target?: number) => void;
   toggleMode: () => void;
@@ -81,26 +81,135 @@ export type TasbihStoreState = {
   createList: (listName: string) => void;
   deleteList: (listId: string) => void;
   renameList: (oldId: string, newId: string) => void;
-  upsertCustomDhikr: (dhikr: Dhikr) => void;
-  addToList: (listId: string, dhikrId: string) => void;
-  removeFromList: (listId: string, dhikrId: string) => void;
+  upsertCustomZikr: (zikr: Zikr) => void;
+  addToList: (listId: string, zikrId: string) => void;
+  removeFromList: (listId: string, zikrId: string) => void;
   moveInList: (listId: string, fromIndex: number, toIndex: number) => void;
 };
 
 const STORAGE_KEY = "tasbihDigitalStateV1";
-const LEGACY_DEFAULT_LIST_ID = "Zikr de base";
+const LEGACY_DEFAULT_LIST_LABEL = "Zikr de base";
+const LEGACY_DEFAULT_LIST_ID = "base-dhikr";
 
 const normalizeListId = (listId: string): string =>
-  listId === LEGACY_DEFAULT_LIST_ID ? DEFAULT_LIST_ID : listId;
+  listId === LEGACY_DEFAULT_LIST_LABEL || listId === LEGACY_DEFAULT_LIST_ID
+    ? DEFAULT_LIST_ID
+    : listId;
+
+const normalizeZikrId = (zikrId: string): string =>
+  zikrId.startsWith("dhikr-") ? `zikr-${zikrId.slice("dhikr-".length)}` : zikrId;
+
+const normalizeZikrCategory = (category: unknown): Zikr["category"] =>
+  category === "Dhikr général" ? "Zikr général" : (category as Zikr["category"]);
+
+const normalizeStoredZikr = (value: unknown): Zikr | undefined => {
+  if (!value || typeof value !== "object") return undefined;
+
+  const zikr = value as Zikr;
+  return {
+    ...zikr,
+    id: normalizeZikrId(zikr.id),
+    category: normalizeZikrCategory(zikr.category),
+  };
+};
+
+const normalizeStoredZikrs = (value: unknown): Record<string, Zikr> => {
+  if (!value || typeof value !== "object") return {};
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).flatMap(([zikrId, zikrValue]) => {
+      const normalizedZikr = normalizeStoredZikr(zikrValue);
+      if (!normalizedZikr) return [];
+      return [[normalizeZikrId(zikrId), normalizedZikr] as const];
+    })
+  );
+};
+
+const normalizeStoredHistory = (value: unknown): SessionRecord[] => {
+  if (!Array.isArray(value)) return [];
+
+  return value.map((entry) => {
+    const record = entry as SessionRecord & {
+      dhikrCount?: number;
+      dhikrId?: string;
+    };
+
+    return {
+      ...record,
+      zikrCount: record.zikrCount ?? record.dhikrCount ?? 0,
+      zikrId:
+        typeof record.zikrId === "string"
+          ? normalizeZikrId(record.zikrId)
+          : typeof record.dhikrId === "string"
+            ? normalizeZikrId(record.dhikrId)
+            : undefined,
+    };
+  });
+};
+
+const normalizeStoredLists = (value: unknown): Record<string, string[]> => {
+  if (!value || typeof value !== "object") return {};
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).map(([listId, ids]) => [
+      normalizeListId(listId),
+      Array.isArray(ids)
+        ? ids.filter((id): id is string => typeof id === "string").map(normalizeZikrId)
+        : [],
+    ])
+  );
+};
+
+function migrateStoredState(rawState: unknown): Partial<TasbihStoreState> | null {
+  if (!rawState || typeof rawState !== "object") return null;
+
+  const legacy = rawState as Record<string, unknown>;
+  const stats = legacy.stats as Record<string, unknown> | undefined;
+  const currentZikrId =
+    typeof legacy.currentZikrId === "string"
+      ? legacy.currentZikrId
+      : typeof legacy.currentDhikrId === "string"
+        ? legacy.currentDhikrId
+        : undefined;
+
+  return {
+    ...(legacy as Partial<TasbihStoreState>),
+    currentZikrId: currentZikrId ? normalizeZikrId(currentZikrId) : undefined,
+    currentZikr: normalizeStoredZikr(legacy.currentZikr ?? legacy.currentDhikr),
+    activeListId:
+      typeof legacy.activeListId === "string" ? normalizeListId(legacy.activeListId) : undefined,
+    activeList: Array.isArray(legacy.activeList)
+      ? legacy.activeList
+          .filter((id): id is string => typeof id === "string")
+          .map(normalizeZikrId)
+      : undefined,
+    customLists: normalizeStoredLists(legacy.customLists),
+    customZikrs: normalizeStoredZikrs(legacy.customZikrs ?? legacy.customDhikrs),
+    stats: stats
+      ? {
+          ...(stats as Partial<Stats>),
+          totalZikr:
+            typeof stats.totalZikr === "number"
+              ? stats.totalZikr
+              : typeof stats.totalDhikr === "number"
+                ? stats.totalDhikr
+                : 0,
+          sessions: typeof stats.sessions === "number" ? stats.sessions : 0,
+          activeDays: typeof stats.activeDays === "number" ? stats.activeDays : 0,
+          history: normalizeStoredHistory(stats.history),
+        }
+      : undefined,
+  };
+}
 
 function getInitialState(): Partial<TasbihStoreState> {
   const listId = DEFAULT_LIST_ID;
   const list = predefinedLists[listId] ?? [];
-  const firstDhikrId = list.length > 0 ? list[0] : "";
+  const firstZikrId = list.length > 0 ? list[0] : "";
 
   return {
-    currentDhikrId: firstDhikrId,
-    currentDhikr: undefined,
+    currentZikrId: firstZikrId,
+    currentZikr: undefined,
     counter: 0,
     isStarted: false,
     mode: "up",
@@ -109,7 +218,7 @@ function getInitialState(): Partial<TasbihStoreState> {
     activeList: list,
     activeIndex: 0,
     stats: {
-      totalDhikr: 0,
+      totalZikr: 0,
       sessions: 0,
       activeDays: 0,
       history: [],
@@ -117,7 +226,7 @@ function getInitialState(): Partial<TasbihStoreState> {
     currentSessionCount: 0,
     sessionStartAt: undefined,
     customLists: {},
-    customDhikrs: {},
+    customZikrs: {},
     listesUI: {
       libraryExpanded: true,
       expandedCategories: {},
@@ -138,8 +247,7 @@ function loadStateFromStorage(): Partial<TasbihStoreState> | null {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as Partial<TasbihStoreState>;
-    return parsed;
+    return migrateStoredState(JSON.parse(raw));
   } catch {
     return null;
   }
@@ -201,37 +309,37 @@ const initialState: Partial<TasbihStoreState> = {
   } as Preferences,
 };
 
-const resolveDhikr = (
-  dhikrId: string,
-  customDhikrs: Record<string, Dhikr> = {}
-): Dhikr | undefined => {
-  return customDhikrs[dhikrId] ?? dhikrs.find((d) => d.id === dhikrId);
+const resolveZikr = (
+  zikrId: string,
+  customZikrs: Record<string, Zikr> = {}
+): Zikr | undefined => {
+  return customZikrs[zikrId] ?? zikrs.find((d) => d.id === zikrId);
 };
 
-const pruneOrphanCustomDhikrs = (
-  customDhikrs: Record<string, Dhikr>,
+const pruneOrphanCustomZikrs = (
+  customZikrs: Record<string, Zikr>,
   customLists: Record<string, string[]>
-): Record<string, Dhikr> => {
-  const referencedDhikrIds = new Set(Object.values(customLists).flat());
-  const nextCustomDhikrs: Record<string, Dhikr> = {};
+): Record<string, Zikr> => {
+  const referencedZikrIds = new Set(Object.values(customLists).flat());
+  const nextCustomZikrs: Record<string, Zikr> = {};
 
-  Object.entries(customDhikrs).forEach(([dhikrId, dhikr]) => {
-    if (referencedDhikrIds.has(dhikrId)) {
-      nextCustomDhikrs[dhikrId] = dhikr;
+  Object.entries(customZikrs).forEach(([zikrId, zikr]) => {
+    if (referencedZikrIds.has(zikrId)) {
+      nextCustomZikrs[zikrId] = zikr;
     }
   });
 
-  return nextCustomDhikrs;
+  return nextCustomZikrs;
 };
 
 const createStore = () =>
   create<TasbihStoreState>()(
     devtools((set) => ({
       ...initialState,
-      currentDhikr: resolveDhikr(initialState.currentDhikrId ?? "", initialState.customDhikrs ?? {}),
+      currentZikr: resolveZikr(initialState.currentZikrId ?? "", initialState.customZikrs ?? {}),
       increment: () =>
         set((state) => {
-          const target = state.customTarget ?? state.currentDhikr?.defaultTarget ?? 0;
+          const target = state.customTarget ?? state.currentZikr?.defaultTarget ?? 0;
           const initial = state.mode === "up" ? 0 : target;
           const next = state.mode === "up" ? state.counter + 1 : state.counter - 1;
           const bounded = Math.max(0, Math.min(target, next));
@@ -249,7 +357,7 @@ const createStore = () =>
             sessionStartAt: startAt,
             stats: {
               ...state.stats,
-              totalDhikr: state.stats.totalDhikr + 1,
+              totalZikr: state.stats.totalZikr + 1,
             },
           };
           persistState({
@@ -261,7 +369,7 @@ const createStore = () =>
 
       decrement: () =>
         set((state) => {
-          const target = state.customTarget ?? state.currentDhikr?.defaultTarget ?? 0;
+          const target = state.customTarget ?? state.currentZikr?.defaultTarget ?? 0;
           const initial = state.mode === "up" ? 0 : target;
           const next = state.mode === "up" ? state.counter - 1 : state.counter + 1;
           const bounded = Math.max(0, Math.min(target, next));
@@ -274,7 +382,7 @@ const createStore = () =>
             isStarted,
             stats: {
               ...state.stats,
-              totalDhikr: Math.max(0, state.stats.totalDhikr - 1),
+              totalZikr: Math.max(0, state.stats.totalZikr - 1),
             },
           };
           persistState({
@@ -291,12 +399,12 @@ const createStore = () =>
           const historyEntry =
             sessionCount > 0
               ? {
-                  id: `${state.sessionStartAt ?? endAt}-${state.currentDhikrId}`,
+                  id: `${state.sessionStartAt ?? endAt}-${state.currentZikrId}`,
                   startAt: state.sessionStartAt ?? endAt,
                   endAt,
-                  dhikrCount: sessionCount,
+                  zikrCount: sessionCount,
                   listId: state.activeListId,
-                  dhikrId: state.currentDhikrId,
+                  zikrId: state.currentZikrId,
                 }
               : undefined;
 
@@ -308,7 +416,7 @@ const createStore = () =>
             nextHistory.map((entry) => entry.startAt.slice(0, 10))
           );
 
-          const target = state.customTarget ?? state.currentDhikr?.defaultTarget ?? 0;
+          const target = state.customTarget ?? state.currentZikr?.defaultTarget ?? 0;
           const initial = state.mode === "up" ? 0 : target;
 
           const newState: Partial<TasbihStoreState> = {
@@ -332,17 +440,17 @@ const createStore = () =>
 
       undoLast: () =>
         set((state) => {
-          // undo will decrement totalDhikr and reverse counter by one step
-          const target = state.customTarget ?? state.currentDhikr?.defaultTarget ?? 0;
+          // undo will decrement totalZikr and reverse counter by one step
+          const target = state.customTarget ?? state.currentZikr?.defaultTarget ?? 0;
           const direction = state.mode === "up" ? -1 : 1;
           const next = state.counter + direction;
           const bounded = Math.max(0, Math.min(target, next));
-          const newTotal = Math.max(0, state.stats.totalDhikr - 1);
+          const newTotal = Math.max(0, state.stats.totalZikr - 1);
           const newState = {
             counter: bounded,
             stats: {
               ...state.stats,
-              totalDhikr: newTotal,
+              totalZikr: newTotal,
             },
           };
           persistState({
@@ -352,16 +460,16 @@ const createStore = () =>
           return newState;
         }),
 
-      nextDhikrInList: () =>
+      nextZikrInList: () =>
         set((state) => {
           const nextIndex = Math.min(state.activeList.length - 1, state.activeIndex + 1);
-          const nextDhikrId = state.activeList[nextIndex] ?? state.currentDhikrId;
-          const nextDhikr = resolveDhikr(nextDhikrId, state.customDhikrs);
-          const target = nextDhikr?.defaultTarget ?? 0;
+          const nextZikrId = state.activeList[nextIndex] ?? state.currentZikrId;
+          const nextZikr = resolveZikr(nextZikrId, state.customZikrs);
+          const target = nextZikr?.defaultTarget ?? 0;
           const newState = {
             activeIndex: nextIndex,
-            currentDhikrId: nextDhikrId,
-            currentDhikr: nextDhikr,
+            currentZikrId: nextZikrId,
+            currentZikr: nextZikr,
             customTarget: undefined,
             counter: state.mode === "down" ? target : 0,
             isStarted: false,
@@ -373,13 +481,13 @@ const createStore = () =>
           return newState;
         }),
 
-      selectDhikr: (dhikrId: string) =>
+      selectZikr: (zikrId: string) =>
         set((state) => {
-          const dhikr = resolveDhikr(dhikrId, state.customDhikrs);
-          const target = dhikr?.defaultTarget ?? 0;
+          const zikr = resolveZikr(zikrId, state.customZikrs);
+          const target = zikr?.defaultTarget ?? 0;
           const newState = {
-            currentDhikrId: dhikrId,
-            currentDhikr: dhikr,
+            currentZikrId: zikrId,
+            currentZikr: zikr,
             customTarget: undefined,
             counter: state.mode === "down" ? target : 0,
             isStarted: false,
@@ -391,17 +499,17 @@ const createStore = () =>
           return newState;
         }),
 
-      selectDhikrAsList: (dhikrId: string) =>
+      selectZikrAsList: (zikrId: string) =>
         set((state) => {
-          const dhikr = resolveDhikr(dhikrId, state.customDhikrs);
-          const target = dhikr?.defaultTarget ?? 0;
-          const listLabel = dhikr?.transliteration || dhikrId;
+          const zikr = resolveZikr(zikrId, state.customZikrs);
+          const target = zikr?.defaultTarget ?? 0;
+          const listLabel = zikr?.transliteration || zikrId;
           const newState = {
             activeListId: listLabel,
-            activeList: [dhikrId],
+            activeList: [zikrId],
             activeIndex: 0,
-            currentDhikrId: dhikrId,
-            currentDhikr: dhikr,
+            currentZikrId: zikrId,
+            currentZikr: zikr,
             customTarget: undefined,
             counter: state.mode === "down" ? target : 0,
             isStarted: false,
@@ -422,20 +530,20 @@ const createStore = () =>
           } as Record<string, string[]>;
 
           // Support selecting a group/category from the dropdown
-          const groupList = dhikrs
+          const groupList = zikrs
             .filter((d) => d.category === normalizedListId)
             .map((d) => d.id);
 
           const list = lists[normalizedListId] ?? groupList ?? [];
-          const firstId = list[0] ?? state.currentDhikrId;
-          const firstDhikr = resolveDhikr(firstId, state.customDhikrs);
-          const target = firstDhikr?.defaultTarget ?? 0;
+          const firstId = list[0] ?? state.currentZikrId;
+          const firstZikr = resolveZikr(firstId, state.customZikrs);
+          const target = firstZikr?.defaultTarget ?? 0;
           const newState = {
             activeListId: normalizedListId,
             activeList: list,
             activeIndex: 0,
-            currentDhikrId: firstId,
-            currentDhikr: firstDhikr,
+            currentZikrId: firstId,
+            currentZikr: firstZikr,
             customTarget: undefined,
             counter: state.mode === "down" ? target : 0,
             isStarted: false,
@@ -447,12 +555,12 @@ const createStore = () =>
           return newState;
         }),
 
-      upsertCustomDhikr: (dhikr: Dhikr) =>
+      upsertCustomZikr: (zikr: Zikr) =>
         set((state) => {
           const newState = {
-            customDhikrs: {
-              ...state.customDhikrs,
-              [dhikr.id]: dhikr,
+            customZikrs: {
+              ...state.customZikrs,
+              [zikr.id]: zikr,
             },
           };
           persistState({
@@ -485,22 +593,22 @@ const createStore = () =>
           const nextCustomLists = { ...state.customLists };
           delete nextCustomLists[listId];
 
-          const nextCustomDhikrs = pruneOrphanCustomDhikrs(
-            state.customDhikrs,
+          const nextCustomZikrs = pruneOrphanCustomZikrs(
+            state.customZikrs,
             nextCustomLists
           );
 
           const isActive = state.activeListId === listId;
           const newState: Partial<TasbihStoreState> = {
             customLists: nextCustomLists,
-            customDhikrs: nextCustomDhikrs,
+            customZikrs: nextCustomZikrs,
           };
           if (isActive) {
             newState.activeListId = DEFAULT_LIST_ID;
             newState.activeList = predefinedLists[DEFAULT_LIST_ID];
             newState.activeIndex = 0;
-            newState.currentDhikrId = predefinedLists[DEFAULT_LIST_ID][0];
-            newState.currentDhikr = resolveDhikr(predefinedLists[DEFAULT_LIST_ID][0], state.customDhikrs);
+            newState.currentZikrId = predefinedLists[DEFAULT_LIST_ID][0];
+            newState.currentZikr = resolveZikr(predefinedLists[DEFAULT_LIST_ID][0], state.customZikrs);
             newState.customTarget = undefined;
           }
           persistState({
@@ -534,13 +642,13 @@ const createStore = () =>
           return newState;
         }),
 
-      addToList: (listId: string, dhikrId: string) =>
+      addToList: (listId: string, zikrId: string) =>
         set((state) => {
           const list = state.customLists[listId] ?? [];
-          if (list.includes(dhikrId)) return state;
+          if (list.includes(zikrId)) return state;
           const next = {
             ...state.customLists,
-            [listId]: [...list, dhikrId],
+            [listId]: [...list, zikrId],
           };
           const newState = { customLists: next };
           persistState({
@@ -550,22 +658,22 @@ const createStore = () =>
           return newState;
         }),
 
-      removeFromList: (listId: string, dhikrId: string) =>
+      removeFromList: (listId: string, zikrId: string) =>
         set((state) => {
           const list = state.customLists[listId] ?? [];
           const nextCustomLists = {
             ...state.customLists,
-            [listId]: list.filter((id) => id !== dhikrId),
+            [listId]: list.filter((id) => id !== zikrId),
           };
 
-          const nextCustomDhikrs = pruneOrphanCustomDhikrs(
-            state.customDhikrs,
+          const nextCustomZikrs = pruneOrphanCustomZikrs(
+            state.customZikrs,
             nextCustomLists
           );
 
           const newState = {
             customLists: nextCustomLists,
-            customDhikrs: nextCustomDhikrs,
+            customZikrs: nextCustomZikrs,
           };
           persistState({
             ...state,
@@ -601,7 +709,7 @@ const createStore = () =>
             typeof target === "number" && Number.isFinite(target)
               ? Math.max(1, Math.floor(target))
               : undefined;
-          const effectiveTarget = parsed ?? state.currentDhikr?.defaultTarget ?? 0;
+          const effectiveTarget = parsed ?? state.currentZikr?.defaultTarget ?? 0;
           const initial = state.mode === "up" ? 0 : effectiveTarget;
           const nextCounter = state.isStarted
             ? Math.max(0, Math.min(state.counter, effectiveTarget))
@@ -621,7 +729,7 @@ const createStore = () =>
       toggleMode: () =>
         set((state) => {
           const nextMode: Mode = state.mode === "up" ? "down" : "up";
-          const target = state.customTarget ?? state.currentDhikr?.defaultTarget ?? 0;
+          const target = state.customTarget ?? state.currentZikr?.defaultTarget ?? 0;
           const mirroredCounter = Math.max(0, Math.min(target, target - state.counter));
           const initial = nextMode === "up" ? 0 : target;
           const goalReached = nextMode === "up" ? mirroredCounter === target : mirroredCounter === 0;
@@ -728,7 +836,7 @@ const createStore = () =>
         set((state) => {
           const newState = {
             stats: {
-              totalDhikr: 0,
+              totalZikr: 0,
               sessions: 0,
               activeDays: 0,
               history: [],

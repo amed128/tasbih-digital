@@ -1,36 +1,187 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tasbih Digital
+
+Tasbih Digital is a mobile-first zikr counter built with Next.js. It provides a focused counter experience, custom zikr lists, lightweight stats, theme and feedback preferences, and production PWA support.
+
+## Overview
+
+- Mobile-first interface optimized for touch interaction
+- Built-in zikr library with Arabic, transliteration, and French/English translations
+- Increment and decrement counting modes
+- Personal lists with manual zikr entries
+- Session history and weekly statistics
+- Persistent local state with no backend required
+- Installable PWA in production builds
+
+## Screenshots
+
+Add app captures under `docs/screenshots/` and keep them mobile-focused.
+
+Use this exact Markdown block once the files exist:
+
+```md
+![Counter screen](docs/screenshots/counter.png)
+
+![Lists screen](docs/screenshots/lists.png)
+
+![Stats screen](docs/screenshots/stats.png)
+
+![Settings screen](docs/screenshots/settings.png)
+```
+
+## Tech Stack
+
+- Next.js 16 App Router
+- React 19
+- TypeScript
+- Tailwind CSS v4
+- Zustand for persisted client state
+- Framer Motion for UI motion
+- Recharts for statistics charts
+- next-pwa for production service worker registration
+
+## Main Features
+
+### Counter
+
+The main screen is a tap-first tasbih counter with:
+
+- up/down modes
+- target-based progress
+- undo and reset actions
+- zikr selection from the built-in library
+- support for running a full custom list step by step
+- optional haptics, tap sound, and confetti when a goal is reached
+
+### Lists
+
+The lists screen lets users:
+
+- browse the bundled zikr library by category
+- search by Arabic, transliteration, or translation
+- create personal lists
+- rename and delete personal lists
+- add manual zikr items with custom repetition counts
+- edit and reorder manual content inside a list flow
+
+### Stats
+
+The stats screen tracks locally stored usage data, including:
+
+- total zikr count
+- session count
+- active days
+- average per day, week, and session
+- 7-day chart
+- streak calculation
+- recent session history
+
+### Settings
+
+The settings screen supports:
+
+- theme switching: `light`, `dark`, `blue`
+- language switching: French and English
+- vibration toggle
+- tap sound selection
+- confetti toggle
+
+## Persistence Model
+
+Application state is stored in `localStorage` through the Zustand store in `store/tasbihStore.ts`.
+
+Persisted data includes:
+
+- current zikr and counter state
+- custom lists and manual zikr entries
+- session history and stats
+- UI preferences such as theme, language, sound, vibration, and confetti
+
+This project currently does not use a server, database, or authentication layer.
+
+## PWA Notes
+
+- Web app manifest: `public/manifest.json`
+- PWA plugin: `next-pwa`
+- Service worker registration is enabled in production only
+- PWA features are disabled automatically during local development
+
+## Project Structure
+
+```text
+app/
+	page.tsx            Counter screen
+	listes/page.tsx     Personal lists and zikr library
+	stats/page.tsx      Stats dashboard
+	reglages/page.tsx   Preferences
+components/           Shared UI pieces
+data/zikrs.ts        Built-in zikr library and default lists
+hooks/useT.ts         Translation helper
+i18n/translations.ts  French and English UI strings
+store/tasbihStore.ts  Global persisted state
+public/manifest.json  PWA manifest
+scripts/              Utility scripts such as icon generation
+```
 
 ## Getting Started
 
-First, run the development server:
+### Requirements
+
+- Node.js 20+
+- npm
+
+### Install
+
+```bash
+npm install
+```
+
+### Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Production Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run start
+```
 
-## Learn More
+### Lint
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run lint
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The app can be deployed on any platform that supports Next.js. Vercel is the simplest option.
 
-## Deploy on Vercel
+Notes:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- PWA registration is intended for production builds
+- Because state is stored locally in the browser, user data does not sync across devices
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Product Notes
+
+- The app is primarily designed for mobile viewport use
+- iOS does not expose the same vibration support as Android browsers, so audio feedback is used as a fallback where available
+- Themes are applied through CSS variables and synchronized at runtime
+
+## Contributing
+
+See `CONTRIBUTING.md` for contribution guidelines and pull request expectations.
+
+## Repository Setup
+
+See `docs/repository-setup.md` for recommended GitHub labels, branch protection, and review settings.
+
+## Roadmap Ideas
+
+- import/export of user data
+- optional cloud sync
+- richer session insights
+- more bundled curated zikr sets

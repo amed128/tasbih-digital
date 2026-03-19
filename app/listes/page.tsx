@@ -4,28 +4,28 @@ import { useMemo, useState, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { BookOpen, ChevronDown, ChevronUp, Grip, Pencil, Search, Trash2 } from "lucide-react";
 import { useTasbihStore } from "../../store/tasbihStore";
-import { dhikrs } from "../../data/dhikrs";
-import type { Dhikr } from "../../data/dhikrs";
+import { zikrs } from "../../data/zikrs";
+import type { Zikr } from "../../data/zikrs";
 import { BottomNav } from "../../components/BottomNav";
 import { Modal } from "../../components/Modal";
 import { useT } from "@/hooks/useT";
 
 type CreateListItem = {
   source: "library" | "manual";
-  dhikr: Dhikr;
+  zikr: Zikr;
 };
 
-type DhikrAutocompleteSuggestion = {
+type ZikrAutocompleteSuggestion = {
   arabic: string;
   transliteration: string;
 };
 
-type DhikrAutocompleteMatch = {
-  exact: DhikrAutocompleteSuggestion | null;
-  suggestion: DhikrAutocompleteSuggestion | null;
+type ZikrAutocompleteMatch = {
+  exact: ZikrAutocompleteSuggestion | null;
+  suggestion: ZikrAutocompleteSuggestion | null;
 };
 
-const COMMON_TRANSLITERATION_MAP: Record<string, DhikrAutocompleteSuggestion> = {
+const COMMON_TRANSLITERATION_MAP: Record<string, ZikrAutocompleteSuggestion> = {
   subhanallah: {
     arabic: "سُبْحَانَ اللهِ",
     transliteration: "Subhanallah",
@@ -80,7 +80,7 @@ function normalizeTransliteration(value: string) {
     .replace(/[^a-z0-9]/g, "");
 }
 
-function getExactAutocompleteSuggestion(value: string): DhikrAutocompleteSuggestion | null {
+function getExactAutocompleteSuggestion(value: string): ZikrAutocompleteSuggestion | null {
   const normalized = normalizeTransliteration(value);
 
   if (!normalized) return null;
@@ -89,8 +89,8 @@ function getExactAutocompleteSuggestion(value: string): DhikrAutocompleteSuggest
     return COMMON_TRANSLITERATION_MAP[normalized];
   }
 
-  const exactMatch = dhikrs.find(
-    (dhikr) => normalizeTransliteration(dhikr.transliteration) === normalized
+  const exactMatch = zikrs.find(
+    (zikr) => normalizeTransliteration(zikr.transliteration) === normalized
   );
   if (exactMatch) {
     return {
@@ -102,7 +102,7 @@ function getExactAutocompleteSuggestion(value: string): DhikrAutocompleteSuggest
   return null;
 }
 
-function getAutocompleteSuggestion(value: string): DhikrAutocompleteSuggestion | null {
+function getAutocompleteSuggestion(value: string): ZikrAutocompleteSuggestion | null {
   const normalized = normalizeTransliteration(value);
 
   if (!normalized) return null;
@@ -110,8 +110,8 @@ function getAutocompleteSuggestion(value: string): DhikrAutocompleteSuggestion |
   const exactMatch = getExactAutocompleteSuggestion(value);
   if (exactMatch) return exactMatch;
 
-  const closeMatch = dhikrs.find((dhikr) => {
-    const transliteration = normalizeTransliteration(dhikr.transliteration);
+  const closeMatch = zikrs.find((zikr) => {
+    const transliteration = normalizeTransliteration(zikr.transliteration);
     return transliteration.startsWith(normalized) || normalized.startsWith(transliteration);
   });
 
@@ -123,7 +123,7 @@ function getAutocompleteSuggestion(value: string): DhikrAutocompleteSuggestion |
   };
 }
 
-function getAutocompleteMatch(value: string): DhikrAutocompleteMatch {
+function getAutocompleteMatch(value: string): ZikrAutocompleteMatch {
   const exact = getExactAutocompleteSuggestion(value);
   if (exact) {
     return { exact, suggestion: exact };
@@ -135,8 +135,8 @@ function getAutocompleteMatch(value: string): DhikrAutocompleteMatch {
   };
 }
 
-function groupByCategory(items: typeof dhikrs) {
-  const map = new Map<string, typeof dhikrs>();
+function groupByCategory(items: typeof zikrs) {
+  const map = new Map<string, typeof zikrs>();
   items.forEach((d) => {
     const list = map.get(d.category) ?? [];
     list.push(d);
@@ -157,11 +157,11 @@ export default function ListesPage() {
   );
 
   const customLists = useTasbihStore((s) => s.customLists);
-  const customDhikrs = useTasbihStore((s) => s.customDhikrs);
+  const customZikrs = useTasbihStore((s) => s.customZikrs);
   const createList = useTasbihStore((s) => s.createList);
   const deleteList = useTasbihStore((s) => s.deleteList);
   const renameList = useTasbihStore((s) => s.renameList);
-  const upsertCustomDhikr = useTasbihStore((s) => s.upsertCustomDhikr);
+  const upsertCustomZikr = useTasbihStore((s) => s.upsertCustomZikr);
   const addToList = useTasbihStore((s) => s.addToList);
   const removeFromList = useTasbihStore((s) => s.removeFromList);
   const selectList = useTasbihStore((s) => s.selectList);
@@ -188,20 +188,20 @@ export default function ListesPage() {
   const [createLibraryExpanded, setCreateLibraryExpanded] = useState(false);
   const [createSearchQuery, setCreateSearchQuery] = useState("");
   const [createListItems, setCreateListItems] = useState<CreateListItem[]>([]);
-  const [manualDhikrShow, setManualDhikrShow] = useState(false);
+  const [manualZikrShow, setManualZikrShow] = useState(false);
   const [manualEditModalOpen, setManualEditModalOpen] = useState(false);
-  const [manualEditingDhikrId, setManualEditingDhikrId] = useState<string | null>(null);
+  const [manualEditingZikrId, setManualEditingZikrId] = useState<string | null>(null);
   const [manualArabicAutofilled, setManualArabicAutofilled] = useState(false);
   const [manualArabic, setManualArabic] = useState("");
   const [manualTranslit, setManualTranslit] = useState("");
   const [manualReps, setManualReps] = useState("33");
   const [createCategoryExpanded, setCreateCategoryExpanded] = useState<Record<string, boolean>>({});
-  const [selectedLibraryDhikr, setSelectedLibraryDhikr] = useState<Dhikr | null>(null);
+  const [selectedLibraryZikr, setSelectedLibraryZikr] = useState<Zikr | null>(null);
 
-  const allDhikrsById = useMemo(() => {
-    const entries = [...dhikrs, ...Object.values(customDhikrs)].map((dhikr) => [dhikr.id, dhikr] as const);
-    return new Map<string, Dhikr>(entries);
-  }, [customDhikrs]);
+  const allZikrsById = useMemo(() => {
+    const entries = [...zikrs, ...Object.values(customZikrs)].map((zikr) => [zikr.id, zikr] as const);
+    return new Map<string, Zikr>(entries);
+  }, [customZikrs]);
 
   const manualAutocomplete = useMemo(
     () => getAutocompleteMatch(manualTranslit.trim()),
@@ -217,7 +217,7 @@ export default function ListesPage() {
   const parsedManualReps = Number.parseInt(manualReps.trim(), 10);
   const isManualRepsValid = Number.isFinite(parsedManualReps) && parsedManualReps > 0;
   const hasManualLabel = Boolean(manualArabic.trim() || manualTranslit.trim());
-  const canAddManualDhikr = hasManualLabel && isManualRepsValid;
+  const canAddManualZikr = hasManualLabel && isManualRepsValid;
   const isListFormMode = modalType === "create" || modalType === "edit";
   const isEditMode = modalType === "edit";
   const trimmedListName = modalInput.trim();
@@ -229,10 +229,10 @@ export default function ListesPage() {
   const canSaveList =
     trimmedListName.length > 0 && createListItems.length > 0 && !hasDuplicateListName;
 
-  const filteredDhikrs = useMemo(() => {
+  const filteredZikrs = useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return dhikrs;
-    return dhikrs.filter((d) => {
+    if (!query) return zikrs;
+    return zikrs.filter((d) => {
       return (
         d.arabic.includes(query) ||
         d.transliteration.toLowerCase().includes(query) ||
@@ -242,16 +242,16 @@ export default function ListesPage() {
     });
   }, [search]);
 
-  const categories = useMemo(() => groupByCategory(filteredDhikrs), [filteredDhikrs]);
+  const categories = useMemo(() => groupByCategory(filteredZikrs), [filteredZikrs]);
 
   const closeModal = () => {
     setModalType(null);
     setModalListId(null);
     setModalInput("");
     setCreateListItems([]);
-    setManualDhikrShow(false);
+    setManualZikrShow(false);
     setManualEditModalOpen(false);
-    setManualEditingDhikrId(null);
+    setManualEditingZikrId(null);
     setManualArabicAutofilled(false);
     setManualArabic("");
     setManualTranslit("");
@@ -265,9 +265,9 @@ export default function ListesPage() {
     setModalType("create");
     setModalInput("");
     setCreateListItems([]);
-    setManualDhikrShow(false);
+    setManualZikrShow(false);
     setManualEditModalOpen(false);
-    setManualEditingDhikrId(null);
+    setManualEditingZikrId(null);
     setManualArabicAutofilled(false);
     setManualArabic("");
     setManualTranslit("");
@@ -277,10 +277,10 @@ export default function ListesPage() {
     setCreateCategoryExpanded({});
   };
 
-  const createFilteredDhikrs = useMemo(() => {
+  const createFilteredZikrs = useMemo(() => {
     const query = createSearchQuery.trim().toLowerCase();
-    if (!query) return dhikrs;
-    return dhikrs.filter((d) => {
+    if (!query) return zikrs;
+    return zikrs.filter((d) => {
       return (
         d.arabic.includes(query) ||
         d.transliteration.toLowerCase().includes(query) ||
@@ -290,46 +290,46 @@ export default function ListesPage() {
     });
   }, [createSearchQuery]);
 
-  const createCategories = useMemo(() => groupByCategory(createFilteredDhikrs), [createFilteredDhikrs]);
+  const createCategories = useMemo(() => groupByCategory(createFilteredZikrs), [createFilteredZikrs]);
 
-  const handleAddDhikrToCreate = (dhikrId: string) => {
-    const dhikr = dhikrs.find((item) => item.id === dhikrId);
-    if (!dhikr) return;
+  const handleAddZikrToCreate = (zikrId: string) => {
+    const zikr = zikrs.find((item) => item.id === zikrId);
+    if (!zikr) return;
 
     setCreateListItems((prev) => {
-      if (prev.some((item) => item.dhikr.id === dhikrId)) return prev;
-      return [...prev, { source: "library", dhikr }];
+      if (prev.some((item) => item.zikr.id === zikrId)) return prev;
+      return [...prev, { source: "library", zikr }];
     });
   };
 
-  const handleRemoveDhikrFromCreate = (dhikrId: string) => {
-    setCreateListItems((prev) => prev.filter((item) => item.dhikr.id !== dhikrId));
+  const handleRemoveZikrFromCreate = (zikrId: string) => {
+    setCreateListItems((prev) => prev.filter((item) => item.zikr.id !== zikrId));
 
-    if (manualEditingDhikrId === dhikrId) {
+    if (manualEditingZikrId === zikrId) {
       setManualEditModalOpen(false);
-      setManualEditingDhikrId(null);
+      setManualEditingZikrId(null);
       setManualArabicAutofilled(false);
       setManualArabic("");
       setManualTranslit("");
       setManualReps("33");
-      setManualDhikrShow(false);
+      setManualZikrShow(false);
     }
   };
 
-  const startEditingManualDhikr = (dhikr: Dhikr) => {
-    const exactMatch = getExactAutocompleteSuggestion(dhikr.transliteration);
-    setManualEditingDhikrId(dhikr.id);
-    setManualArabicAutofilled(Boolean(exactMatch && exactMatch.arabic === dhikr.arabic));
-    setManualArabic(dhikr.arabic);
-    setManualTranslit(dhikr.transliteration);
-    setManualReps(String(dhikr.defaultTarget));
-    setManualDhikrShow(false);
+  const startEditingManualZikr = (zikr: Zikr) => {
+    const exactMatch = getExactAutocompleteSuggestion(zikr.transliteration);
+    setManualEditingZikrId(zikr.id);
+    setManualArabicAutofilled(Boolean(exactMatch && exactMatch.arabic === zikr.arabic));
+    setManualArabic(zikr.arabic);
+    setManualTranslit(zikr.transliteration);
+    setManualReps(String(zikr.defaultTarget));
+    setManualZikrShow(false);
     setManualEditModalOpen(true);
   };
 
   const closeManualEditModal = () => {
     setManualEditModalOpen(false);
-    setManualEditingDhikrId(null);
+    setManualEditingZikrId(null);
     setManualArabicAutofilled(false);
     setManualArabic("");
     setManualTranslit("");
@@ -357,52 +357,52 @@ export default function ListesPage() {
     }
   };
 
-  const handleAddManualDhikr = () => {
-    const editingId = manualEditingDhikrId;
+  const handleAddManualZikr = () => {
+    const editingId = manualEditingZikrId;
     const transliteration = manualTranslit.trim();
     const exactMatch = getExactAutocompleteSuggestion(transliteration);
     const arabic = manualArabic.trim() || exactMatch?.arabic || transliteration;
     const repetitions = Number.parseInt(manualReps.trim(), 10);
 
-    if (!canAddManualDhikr) return;
+    if (!canAddManualZikr) return;
 
-    const manualDhikr: Dhikr = {
+    const manualZikr: Zikr = {
       id: editingId ?? `manual-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       arabic,
       transliteration: transliteration || manualArabic.trim(),
       translation_fr: transliteration || manualArabic.trim(),
       translation_en: transliteration || manualArabic.trim(),
       defaultTarget: repetitions,
-      category: "Dhikr général",
+      category: "Zikr général",
     };
 
     if (editingId) {
       setCreateListItems((prev) =>
         prev.map((item) =>
-          item.dhikr.id === editingId ? { source: "manual", dhikr: manualDhikr } : item
+          item.zikr.id === editingId ? { source: "manual", zikr: manualZikr } : item
         )
       );
     } else {
-      setCreateListItems((prev) => [...prev, { source: "manual", dhikr: manualDhikr }]);
+      setCreateListItems((prev) => [...prev, { source: "manual", zikr: manualZikr }]);
     }
 
-    setManualEditingDhikrId(null);
+    setManualEditingZikrId(null);
     setManualEditModalOpen(false);
     setManualArabicAutofilled(false);
     setManualArabic("");
     setManualTranslit("");
     setManualReps("33");
-    setManualDhikrShow(false);
+    setManualZikrShow(false);
   };
 
   const openEditListView = (listId: string) => {
     const baseItems = (customLists[listId] ?? [])
-      .map((dhikrId) => {
-        const dhikr = allDhikrsById.get(dhikrId);
-        if (!dhikr) return null;
+      .map((zikrId) => {
+        const zikr = allZikrsById.get(zikrId);
+        if (!zikr) return null;
         return {
-          source: customDhikrs[dhikrId] ? "manual" : "library",
-          dhikr,
+          source: customZikrs[zikrId] ? "manual" : "library",
+          zikr,
         } as CreateListItem;
       })
       .filter((item): item is CreateListItem => item !== null);
@@ -411,9 +411,9 @@ export default function ListesPage() {
     setModalListId(listId);
     setModalInput(listId);
     setCreateListItems(baseItems);
-    setManualDhikrShow(false);
+    setManualZikrShow(false);
     setManualEditModalOpen(false);
-    setManualEditingDhikrId(null);
+    setManualEditingZikrId(null);
     setManualArabicAutofilled(false);
     setManualArabic("");
     setManualTranslit("");
@@ -434,11 +434,11 @@ export default function ListesPage() {
 
     if (modalType === "create") {
       createList(name);
-      createListItems.forEach(({ source, dhikr }) => {
+      createListItems.forEach(({ source, zikr }) => {
         if (source === "manual") {
-          upsertCustomDhikr(dhikr);
+          upsertCustomZikr(zikr);
         }
-        addToList(name, dhikr.id);
+        addToList(name, zikr.id);
       });
       setExpandedLists((prev) => ({ ...prev, [name]: true }));
       closeModal();
@@ -449,9 +449,9 @@ export default function ListesPage() {
       const originalListId = modalListId;
       const currentIds = customLists[originalListId] ?? [];
 
-      createListItems.forEach(({ source, dhikr }) => {
+      createListItems.forEach(({ source, zikr }) => {
         if (source === "manual") {
-          upsertCustomDhikr(dhikr);
+          upsertCustomZikr(zikr);
         }
       });
 
@@ -460,19 +460,19 @@ export default function ListesPage() {
         renameList(originalListId, targetListId);
       }
 
-      const desiredIds = createListItems.map((item) => item.dhikr.id);
+      const desiredIds = createListItems.map((item) => item.zikr.id);
       const desiredSet = new Set(desiredIds);
       const existingSet = new Set(currentIds);
 
-      currentIds.forEach((dhikrId) => {
-        if (!desiredSet.has(dhikrId)) {
-          removeFromList(targetListId, dhikrId);
+      currentIds.forEach((zikrId) => {
+        if (!desiredSet.has(zikrId)) {
+          removeFromList(targetListId, zikrId);
         }
       });
 
-      desiredIds.forEach((dhikrId) => {
-        if (!existingSet.has(dhikrId)) {
-          addToList(targetListId, dhikrId);
+      desiredIds.forEach((zikrId) => {
+        if (!existingSet.has(zikrId)) {
+          addToList(targetListId, zikrId);
         }
       });
 
@@ -530,7 +530,7 @@ export default function ListesPage() {
               <div>
                 <div className="text-[0.875rem] font-semibold text-[var(--foreground)]">
                   {t("lists.libraryTitle")}
-                  <span className="ml-2 text-[var(--secondary)]">({dhikrs.length})</span>
+                  <span className="ml-2 text-[var(--secondary)]">({zikrs.length})</span>
                 </div>
               </div>
             </div>
@@ -588,7 +588,7 @@ export default function ListesPage() {
                               <button
                                 type="button"
                                 key={d.id}
-                                onClick={() => setSelectedLibraryDhikr(d)}
+                                onClick={() => setSelectedLibraryZikr(d)}
                                 className="group w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 text-left transition hover:border-[#3E3E3E]"
                               >
                                 <div className="text-[0.95rem] font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">{d.arabic}</div>
@@ -695,25 +695,25 @@ export default function ListesPage() {
                         {items.length === 0 ? (
                           <div className="text-sm text-[var(--secondary)]">{t("lists.noZikrInList")}</div>
                         ) : (
-                          items.map((dhikrId) => {
-                            const dhikr = allDhikrsById.get(dhikrId);
-                            if (!dhikr) return null;
+                          items.map((zikrId) => {
+                            const zikr = allZikrsById.get(zikrId);
+                            if (!zikr) return null;
                             return (
                               <button
                                 type="button"
-                                key={dhikrId}
-                                onClick={() => setSelectedLibraryDhikr(dhikr)}
+                                key={zikrId}
+                                onClick={() => setSelectedLibraryZikr(zikr)}
                                 className="group flex w-full items-center justify-between gap-4 rounded-xl px-2 py-1 text-left transition hover:bg-[color:var(--border)]/45"
                               >
                                 <div className="min-w-0 flex-1">
                                   <div className="truncate text-[1.05rem] font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">
-                                    {dhikr.arabic}
+                                    {zikr.arabic}
                                   </div>
                                   <div className="truncate text-[0.86rem] font-semibold text-[var(--secondary)]">
-                                    {dhikr.transliteration}
+                                    {zikr.transliteration}
                                   </div>
                                 </div>
-                                <span className="ml-4 flex-shrink-0 text-[1rem] font-semibold text-[var(--secondary)]">×{dhikr.defaultTarget}</span>
+                                <span className="ml-4 flex-shrink-0 text-[1rem] font-semibold text-[var(--secondary)]">×{zikr.defaultTarget}</span>
                               </button>
                             );
                           })
@@ -755,20 +755,20 @@ export default function ListesPage() {
                 {createListItems.length === 0 ? (
                   <div className="text-sm text-[var(--secondary)]">{t("lists.addAtLeastOne")}</div>
                 ) : (
-                  createListItems.map(({ source, dhikr }, idx) => {
+                  createListItems.map(({ source, zikr }, idx) => {
                     const isManual = source === "manual";
                     return (
                       <div
-                        key={dhikr.id}
+                        key={zikr.id}
                         role={isManual ? "button" : undefined}
                         tabIndex={isManual ? 0 : undefined}
-                        onClick={isManual ? () => startEditingManualDhikr(dhikr) : undefined}
+                        onClick={isManual ? () => startEditingManualZikr(zikr) : undefined}
                         onKeyDown={
                           isManual
                             ? (e) => {
                                 if (e.key !== "Enter" && e.key !== " ") return;
                                 e.preventDefault();
-                                startEditingManualDhikr(dhikr);
+                                startEditingManualZikr(zikr);
                               }
                             : undefined
                         }
@@ -786,10 +786,10 @@ export default function ListesPage() {
                                 {t("lists.manualTag")}
                               </span>
                             ) : null}
-                            <div className="text-xs font-semibold text-[var(--foreground)]">{dhikr.arabic}</div>
+                            <div className="text-xs font-semibold text-[var(--foreground)]">{zikr.arabic}</div>
                           </div>
                           <div className="text-xs text-[var(--secondary)]">
-                            {dhikr.transliteration} · {dhikr.defaultTarget}
+                            {zikr.transliteration} · {zikr.defaultTarget}
                           </div>
                           {isManual ? (
                             <div className="mt-1 text-[0.68rem] font-semibold text-[var(--primary)]">
@@ -800,7 +800,7 @@ export default function ListesPage() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleRemoveDhikrFromCreate(dhikr.id);
+                            handleRemoveZikrFromCreate(zikr.id);
                           }}
                           className="ml-2 text-lg text-[var(--secondary)] hover:text-[var(--foreground)]"
                         >
@@ -820,14 +820,14 @@ export default function ListesPage() {
               type="button"
               onClick={() => {
                 if (manualEditModalOpen) closeManualEditModal();
-                setManualDhikrShow((prev) => !prev);
+                setManualZikrShow((prev) => !prev);
               }}
               className="rounded-3xl border border-dashed border-[var(--border)] py-4 text-[1.05rem] font-semibold text-[var(--secondary)] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
             >
               {t("lists.addManualBtn")}
             </button>
 
-            {manualDhikrShow && (
+            {manualZikrShow && (
               <div className="space-y-3 rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-4">
                 <input
                   value={manualArabic}
@@ -861,11 +861,11 @@ export default function ListesPage() {
                 </div>
                 <p className="text-xs text-[var(--secondary)]">{t("lists.manualHint")}</p>
                 <button
-                  onClick={handleAddManualDhikr}
-                  disabled={!canAddManualDhikr}
+                  onClick={handleAddManualZikr}
+                  disabled={!canAddManualZikr}
                   className="w-full rounded-xl bg-[var(--primary)] py-2.5 text-sm font-semibold text-black transition hover:bg-[color:var(--primary)]/90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {manualEditingDhikrId ? t("lists.manualSaveBtn") : t("lists.addBtn")}
+                  {manualEditingZikrId ? t("lists.manualSaveBtn") : t("lists.addBtn")}
                 </button>
               </div>
             )}
@@ -879,7 +879,7 @@ export default function ListesPage() {
                 <span className="text-[2rem] text-[var(--primary)]">◫</span>
                 <span className="ml-3 flex-1 text-[0.95rem] font-semibold text-[var(--foreground)]">
                   {t("lists.libraryTitle")}
-                  <span className="ml-2 text-[var(--secondary)]">({dhikrs.length})</span>
+                  <span className="ml-2 text-[var(--secondary)]">({zikrs.length})</span>
                 </span>
                 <span className="text-[var(--secondary)]">{createLibraryExpanded ? "⌃" : "⌄"}</span>
               </button>
@@ -914,7 +914,7 @@ export default function ListesPage() {
                           {expanded && (
                             <div className="space-y-1 pl-2">
                               {items.map((d) => {
-                                const isAdded = createListItems.some((item) => item.dhikr.id === d.id);
+                                const isAdded = createListItems.some((item) => item.zikr.id === d.id);
                                 return (
                                   <div
                                     key={d.id}
@@ -925,7 +925,7 @@ export default function ListesPage() {
                                       <div className="text-[var(--secondary)]">{d.transliteration}</div>
                                     </div>
                                     <button
-                                      onClick={() => handleAddDhikrToCreate(d.id)}
+                                      onClick={() => handleAddZikrToCreate(d.id)}
                                       disabled={isAdded}
                                       className="ml-2 rounded bg-[var(--primary)] px-2 py-0.5 text-xs font-semibold text-black transition disabled:cursor-not-allowed disabled:opacity-40 hover:bg-[color:var(--primary)]/90"
                                     >
@@ -990,7 +990,7 @@ export default function ListesPage() {
         </Modal>
 
         <Modal
-          isOpen={manualEditModalOpen && Boolean(manualEditingDhikrId)}
+          isOpen={manualEditModalOpen && Boolean(manualEditingZikrId)}
           title={t("lists.manualEditTitle")}
           onClose={closeManualEditModal}
           closeOnOverlayClick
@@ -1003,8 +1003,8 @@ export default function ListesPage() {
                 {t("lists.cancel")}
               </button>
               <button
-                onClick={handleAddManualDhikr}
-                disabled={!canAddManualDhikr}
+                onClick={handleAddManualZikr}
+                disabled={!canAddManualZikr}
                 className="rounded-xl bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-black disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {t("lists.manualSaveBtn")}
@@ -1047,21 +1047,21 @@ export default function ListesPage() {
         </Modal>
 
         <Modal
-          isOpen={Boolean(selectedLibraryDhikr)}
+          isOpen={Boolean(selectedLibraryZikr)}
           title={t("lists.previewTitle")}
-          onClose={() => setSelectedLibraryDhikr(null)}
+          onClose={() => setSelectedLibraryZikr(null)}
           closeOnOverlayClick
         >
-          {selectedLibraryDhikr ? (
+          {selectedLibraryZikr ? (
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-5 text-center">
               <div className="text-[1.7rem] font-semibold leading-relaxed text-[var(--foreground)]">
-                {selectedLibraryDhikr.arabic}
+                {selectedLibraryZikr.arabic}
               </div>
               <div className="mt-3 text-[0.95rem] font-semibold text-[var(--secondary)]">
-                {selectedLibraryDhikr.transliteration}
+                {selectedLibraryZikr.transliteration}
               </div>
               <div className="mt-1 text-sm text-[var(--secondary)]">
-                {t("lists.previewTarget", { count: selectedLibraryDhikr.defaultTarget })}
+                {t("lists.previewTarget", { count: selectedLibraryZikr.defaultTarget })}
               </div>
             </div>
           ) : null}

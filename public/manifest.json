@@ -1,7 +1,7 @@
 {
   "name": "Tasbih Digital",
   "short_name": "Tasbih",
-  "description": "Compteur de dhikr islamique digital",
+  "description": "Compteur de zikr islamique digital",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0A0A0A",

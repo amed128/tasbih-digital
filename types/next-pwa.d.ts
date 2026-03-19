@@ -7,12 +7,14 @@ declare module "next-pwa" {
     register?: boolean;
     skipWaiting?: boolean;
     // Allow extra properties too
-    [key: string]: any;
+    [key: string]: unknown;
   };
 
-  type WithPWA = (nextConfig?: NextConfig) => NextConfig;
+  type NextConfigWithPWA = NextConfig & {
+    pwa?: NextPWAConfig;
+  };
 
-  function nextPWA(config?: NextPWAConfig): WithPWA;
+  function nextPWA(nextConfig?: NextConfigWithPWA): NextConfigWithPWA;
 
   export default nextPWA;
 }

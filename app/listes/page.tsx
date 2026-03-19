@@ -20,12 +20,21 @@ type DhikrAutocompleteSuggestion = {
   transliteration: string;
 };
 
+type DhikrAutocompleteMatch = {
+  exact: DhikrAutocompleteSuggestion | null;
+  suggestion: DhikrAutocompleteSuggestion | null;
+};
+
 const COMMON_TRANSLITERATION_MAP: Record<string, DhikrAutocompleteSuggestion> = {
   subhanallah: {
     arabic: "سُبْحَانَ اللهِ",
     transliteration: "Subhanallah",
   },
   alhamdulillah: {
+    arabic: "الْحَمْدُ لِلَّهِ",
+    transliteration: "Alhamdulillah",
+  },
+  alhamdulillahi: {
     arabic: "الْحَمْدُ لِلَّهِ",
     transliteration: "Alhamdulillah",
   },
@@ -71,7 +80,7 @@ function normalizeTransliteration(value: string) {
     .replace(/[^a-z0-9]/g, "");
 }
 
-function getAutocompleteSuggestion(value: string): DhikrAutocompleteSuggestion | null {
+function getExactAutocompleteSuggestion(value: string): DhikrAutocompleteSuggestion | null {
   const normalized = normalizeTransliteration(value);
 
   if (!normalized) return null;
@@ -90,6 +99,17 @@ function getAutocompleteSuggestion(value: string): DhikrAutocompleteSuggestion |
     };
   }
 
+  return null;
+}
+
+function getAutocompleteSuggestion(value: string): DhikrAutocompleteSuggestion | null {
+  const normalized = normalizeTransliteration(value);
+
+  if (!normalized) return null;
+
+  const exactMatch = getExactAutocompleteSuggestion(value);
+  if (exactMatch) return exactMatch;
+
   const closeMatch = dhikrs.find((dhikr) => {
     const transliteration = normalizeTransliteration(dhikr.transliteration);
     return transliteration.startsWith(normalized) || normalized.startsWith(transliteration);
@@ -100,6 +120,18 @@ function getAutocompleteSuggestion(value: string): DhikrAutocompleteSuggestion |
   return {
     arabic: closeMatch.arabic,
     transliteration: closeMatch.transliteration,
+  };
+}
+
+function getAutocompleteMatch(value: string): DhikrAutocompleteMatch {
+  const exact = getExactAutocompleteSuggestion(value);
+  if (exact) {
+    return { exact, suggestion: exact };
+  }
+
+  return {
+    exact: null,
+    suggestion: getAutocompleteSuggestion(value),
   };
 }
 
@@ -157,6 +189,9 @@ export default function ListesPage() {
   const [createSearchQuery, setCreateSearchQuery] = useState("");
   const [createListItems, setCreateListItems] = useState<CreateListItem[]>([]);
   const [manualDhikrShow, setManualDhikrShow] = useState(false);
+  const [manualEditModalOpen, setManualEditModalOpen] = useState(false);
+  const [manualEditingDhikrId, setManualEditingDhikrId] = useState<string | null>(null);
+  const [manualArabicAutofilled, setManualArabicAutofilled] = useState(false);
   const [manualArabic, setManualArabic] = useState("");
   const [manualTranslit, setManualTranslit] = useState("");
   const [manualReps, setManualReps] = useState("33");
@@ -168,15 +203,16 @@ export default function ListesPage() {
     return new Map<string, Dhikr>(entries);
   }, [customDhikrs]);
 
-  const manualAutocompleteSuggestion = useMemo(
-    () => getAutocompleteSuggestion(manualTranslit.trim()),
+  const manualAutocomplete = useMemo(
+    () => getAutocompleteMatch(manualTranslit.trim()),
     [manualTranslit]
   );
 
   const manualArabicSuggestion = useMemo(() => {
+    if (manualAutocomplete.exact) return "";
     if (manualArabic.trim()) return "";
-    return manualAutocompleteSuggestion?.arabic ?? "";
-  }, [manualArabic, manualAutocompleteSuggestion]);
+    return manualAutocomplete.suggestion?.arabic ?? "";
+  }, [manualArabic, manualAutocomplete]);
 
   const parsedManualReps = Number.parseInt(manualReps.trim(), 10);
   const isManualRepsValid = Number.isFinite(parsedManualReps) && parsedManualReps > 0;
@@ -214,6 +250,9 @@ export default function ListesPage() {
     setModalInput("");
     setCreateListItems([]);
     setManualDhikrShow(false);
+    setManualEditModalOpen(false);
+    setManualEditingDhikrId(null);
+    setManualArabicAutofilled(false);
     setManualArabic("");
     setManualTranslit("");
     setManualReps("33");
@@ -227,6 +266,9 @@ export default function ListesPage() {
     setModalInput("");
     setCreateListItems([]);
     setManualDhikrShow(false);
+    setManualEditModalOpen(false);
+    setManualEditingDhikrId(null);
+    setManualArabicAutofilled(false);
     setManualArabic("");
     setManualTranslit("");
     setManualReps("33");
@@ -262,41 +304,95 @@ export default function ListesPage() {
 
   const handleRemoveDhikrFromCreate = (dhikrId: string) => {
     setCreateListItems((prev) => prev.filter((item) => item.dhikr.id !== dhikrId));
+
+    if (manualEditingDhikrId === dhikrId) {
+      setManualEditModalOpen(false);
+      setManualEditingDhikrId(null);
+      setManualArabicAutofilled(false);
+      setManualArabic("");
+      setManualTranslit("");
+      setManualReps("33");
+      setManualDhikrShow(false);
+    }
+  };
+
+  const startEditingManualDhikr = (dhikr: Dhikr) => {
+    const exactMatch = getExactAutocompleteSuggestion(dhikr.transliteration);
+    setManualEditingDhikrId(dhikr.id);
+    setManualArabicAutofilled(Boolean(exactMatch && exactMatch.arabic === dhikr.arabic));
+    setManualArabic(dhikr.arabic);
+    setManualTranslit(dhikr.transliteration);
+    setManualReps(String(dhikr.defaultTarget));
+    setManualDhikrShow(false);
+    setManualEditModalOpen(true);
+  };
+
+  const closeManualEditModal = () => {
+    setManualEditModalOpen(false);
+    setManualEditingDhikrId(null);
+    setManualArabicAutofilled(false);
+    setManualArabic("");
+    setManualTranslit("");
+    setManualReps("33");
+  };
+
+  const handleManualArabicChange = (value: string) => {
+    setManualArabic(value);
+    setManualArabicAutofilled(false);
+  };
+
+  const handleManualTranslitChange = (value: string) => {
+    setManualTranslit(value);
+
+    const exactMatch = getExactAutocompleteSuggestion(value);
+    if (exactMatch) {
+      setManualArabic(exactMatch.arabic);
+      setManualArabicAutofilled(true);
+      return;
+    }
+
+    if (manualArabicAutofilled) {
+      setManualArabic("");
+      setManualArabicAutofilled(false);
+    }
   };
 
   const handleAddManualDhikr = () => {
+    const editingId = manualEditingDhikrId;
     const transliteration = manualTranslit.trim();
-    const autocompleteSuggestion = getAutocompleteSuggestion(transliteration);
-    const arabic = manualArabic.trim() || autocompleteSuggestion?.arabic || transliteration;
+    const exactMatch = getExactAutocompleteSuggestion(transliteration);
+    const arabic = manualArabic.trim() || exactMatch?.arabic || transliteration;
     const repetitions = Number.parseInt(manualReps.trim(), 10);
 
     if (!canAddManualDhikr) return;
 
     const manualDhikr: Dhikr = {
-      id: `manual-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      id: editingId ?? `manual-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       arabic,
-      transliteration: autocompleteSuggestion?.transliteration || transliteration || manualArabic.trim(),
-      translation_fr: autocompleteSuggestion?.transliteration || transliteration || manualArabic.trim(),
-      translation_en: autocompleteSuggestion?.transliteration || transliteration || manualArabic.trim(),
+      transliteration: transliteration || manualArabic.trim(),
+      translation_fr: transliteration || manualArabic.trim(),
+      translation_en: transliteration || manualArabic.trim(),
       defaultTarget: repetitions,
       category: "Dhikr général",
     };
 
-    setCreateListItems((prev) => [...prev, { source: "manual", dhikr: manualDhikr }]);
+    if (editingId) {
+      setCreateListItems((prev) =>
+        prev.map((item) =>
+          item.dhikr.id === editingId ? { source: "manual", dhikr: manualDhikr } : item
+        )
+      );
+    } else {
+      setCreateListItems((prev) => [...prev, { source: "manual", dhikr: manualDhikr }]);
+    }
+
+    setManualEditingDhikrId(null);
+    setManualEditModalOpen(false);
+    setManualArabicAutofilled(false);
     setManualArabic("");
     setManualTranslit("");
     setManualReps("33");
     setManualDhikrShow(false);
-  };
-
-  const handleManualTranslitBlur = () => {
-    if (!manualTranslit.trim()) return;
-
-    const autocompleteSuggestion = getAutocompleteSuggestion(manualTranslit.trim());
-    if (autocompleteSuggestion) {
-      setManualArabic((prev) => prev.trim() || autocompleteSuggestion.arabic);
-      setManualTranslit(autocompleteSuggestion.transliteration);
-    }
   };
 
   const openEditListView = (listId: string) => {
@@ -316,6 +412,9 @@ export default function ListesPage() {
     setModalInput(listId);
     setCreateListItems(baseItems);
     setManualDhikrShow(false);
+    setManualEditModalOpen(false);
+    setManualEditingDhikrId(null);
+    setManualArabicAutofilled(false);
     setManualArabic("");
     setManualTranslit("");
     setManualReps("33");
@@ -657,23 +756,52 @@ export default function ListesPage() {
                   <div className="text-sm text-[var(--secondary)]">{t("lists.addAtLeastOne")}</div>
                 ) : (
                   createListItems.map(({ source, dhikr }, idx) => {
+                    const isManual = source === "manual";
                     return (
                       <div
                         key={dhikr.id}
-                        className="flex items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--background)] px-3 py-2"
+                        role={isManual ? "button" : undefined}
+                        tabIndex={isManual ? 0 : undefined}
+                        onClick={isManual ? () => startEditingManualDhikr(dhikr) : undefined}
+                        onKeyDown={
+                          isManual
+                            ? (e) => {
+                                if (e.key !== "Enter" && e.key !== " ") return;
+                                e.preventDefault();
+                                startEditingManualDhikr(dhikr);
+                              }
+                            : undefined
+                        }
+                        className={`flex items-center justify-between rounded-2xl border bg-[var(--background)] px-3 py-2 ${
+                          isManual
+                            ? "cursor-pointer border-[var(--primary)]/40 hover:border-[var(--primary)]"
+                            : "border-[var(--border)]"
+                        }`}
                       >
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-[var(--secondary)]">#{idx + 1}</span>
+                            {isManual ? (
+                              <span className="rounded-full border border-[var(--primary)]/40 bg-[var(--primary)]/15 px-2 py-0.5 text-[0.68rem] font-semibold text-[var(--primary)]">
+                                {t("lists.manualTag")}
+                              </span>
+                            ) : null}
                             <div className="text-xs font-semibold text-[var(--foreground)]">{dhikr.arabic}</div>
                           </div>
                           <div className="text-xs text-[var(--secondary)]">
                             {dhikr.transliteration} · {dhikr.defaultTarget}
-                            {source === "manual" ? ` · ${t("lists.manualTag")}` : ""}
                           </div>
+                          {isManual ? (
+                            <div className="mt-1 text-[0.68rem] font-semibold text-[var(--primary)]">
+                              {t("lists.manualEditHint")}
+                            </div>
+                          ) : null}
                         </div>
                         <button
-                          onClick={() => handleRemoveDhikrFromCreate(dhikr.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveDhikrFromCreate(dhikr.id);
+                          }}
                           className="ml-2 text-lg text-[var(--secondary)] hover:text-[var(--foreground)]"
                         >
                           ✕
@@ -683,11 +811,17 @@ export default function ListesPage() {
                   })
                 )}
               </div>
+              {createListItems.some((item) => item.source === "manual") ? (
+                <p className="mt-2 text-xs text-[var(--primary)]">{t("lists.manualEditHint")}</p>
+              ) : null}
             </div>
 
             <button
               type="button"
-              onClick={() => setManualDhikrShow((prev) => !prev)}
+              onClick={() => {
+                if (manualEditModalOpen) closeManualEditModal();
+                setManualDhikrShow((prev) => !prev);
+              }}
               className="rounded-3xl border border-dashed border-[var(--border)] py-4 text-[1.05rem] font-semibold text-[var(--secondary)] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
             >
               {t("lists.addManualBtn")}
@@ -697,22 +831,21 @@ export default function ListesPage() {
               <div className="space-y-3 rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-4">
                 <input
                   value={manualArabic}
-                  onChange={(e) => setManualArabic(e.target.value)}
+                  onChange={(e) => handleManualArabicChange(e.target.value)}
                   placeholder={t("lists.arabicPlaceholder")}
                   className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
                 />
                 <input
                   value={manualTranslit}
-                  onChange={(e) => setManualTranslit(e.target.value)}
-                  onBlur={handleManualTranslitBlur}
+                  onChange={(e) => handleManualTranslitChange(e.target.value)}
                   placeholder={t("lists.translitPlaceholder")}
                   className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
                 />
                 {manualArabicSuggestion ? (
                   <p className="text-xs text-[var(--primary)]">
                     {t("lists.autocompleteHint")} {manualArabicSuggestion}
-                    {manualAutocompleteSuggestion?.transliteration
-                      ? ` · ${manualAutocompleteSuggestion.transliteration}`
+                    {manualAutocomplete.suggestion?.transliteration
+                      ? ` · ${manualAutocomplete.suggestion.transliteration}`
                       : ""}
                   </p>
                 ) : null}
@@ -732,7 +865,7 @@ export default function ListesPage() {
                   disabled={!canAddManualDhikr}
                   className="w-full rounded-xl bg-[var(--primary)] py-2.5 text-sm font-semibold text-black transition hover:bg-[color:var(--primary)]/90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {t("lists.addBtn")}
+                  {manualEditingDhikrId ? t("lists.manualSaveBtn") : t("lists.addBtn")}
                 </button>
               </div>
             )}
@@ -853,6 +986,63 @@ export default function ListesPage() {
         >
           <div className="text-sm text-[var(--secondary)]">
             {t("lists.deleteModalBody", { name: modalListId ?? "" })}
+          </div>
+        </Modal>
+
+        <Modal
+          isOpen={manualEditModalOpen && Boolean(manualEditingDhikrId)}
+          title={t("lists.manualEditTitle")}
+          onClose={closeManualEditModal}
+          closeOnOverlayClick
+          footer={
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={closeManualEditModal}
+                className="rounded-xl bg-[var(--card)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
+              >
+                {t("lists.cancel")}
+              </button>
+              <button
+                onClick={handleAddManualDhikr}
+                disabled={!canAddManualDhikr}
+                className="rounded-xl bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-black disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {t("lists.manualSaveBtn")}
+              </button>
+            </div>
+          }
+        >
+          <div className="space-y-3">
+            <input
+              value={manualArabic}
+              onChange={(e) => handleManualArabicChange(e.target.value)}
+              placeholder={t("lists.arabicPlaceholder")}
+              className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
+            />
+            <input
+              value={manualTranslit}
+              onChange={(e) => handleManualTranslitChange(e.target.value)}
+              placeholder={t("lists.translitPlaceholder")}
+              className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
+            />
+            {manualArabicSuggestion ? (
+              <p className="text-xs text-[var(--primary)]">
+                {t("lists.autocompleteHint")} {manualArabicSuggestion}
+                {manualAutocomplete.suggestion?.transliteration
+                  ? ` · ${manualAutocomplete.suggestion.transliteration}`
+                  : ""}
+              </p>
+            ) : null}
+            <div className="flex items-center gap-2">
+              <label className="text-[1rem] font-semibold text-[var(--foreground)]">{t("lists.repsLabel")}</label>
+              <input
+                type="number"
+                min="1"
+                value={manualReps}
+                onChange={(e) => setManualReps(e.target.value)}
+                className="w-36 rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-[2rem] font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+              />
+            </div>
           </div>
         </Modal>
 

@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run build:next && npm run pwa:sync",
+    "build:next": "next build --webpack",
+    "pwa:sync": "node scripts/sync-pwa-assets.mjs",
     "start": "next start",
     "lint": "eslint",
     "test:e2e": "playwright test",

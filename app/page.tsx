@@ -198,7 +198,7 @@ export default function Home() {
     return map;
   }, []);
 
-  const formatZikrCount = (count: number) => `${count} Zikr${count === 1 ? "" : "s"}`;
+  const formatZikrCount = (count: number) => `${count} ${count === 1 ? "zikr" : "zikrs"}`;
 
   const normalizedSearch = searchQuery.trim().toLowerCase();
   const isSearching = normalizedSearch.length > 0;

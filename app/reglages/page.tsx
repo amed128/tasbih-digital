@@ -27,12 +27,10 @@ export default function ReglagesPage() {
   );
 
   const preferences = useTasbihStore((s) => s.preferences);
-  const mode = useTasbihStore((s) => s.mode);
 
   const isIOS =
     typeof navigator !== "undefined" &&
     /iPad|iPhone|iPod/.test(navigator.userAgent);
-  const toggleMode = useTasbihStore((s) => s.toggleMode);
   const setTheme = useTasbihStore((s) => s.setTheme);
   const toggleVibration = useTasbihStore((s) => s.toggleVibration);
   const toggleConfetti = useTasbihStore((s) => s.toggleConfetti);
@@ -56,10 +54,6 @@ export default function ReglagesPage() {
     applyThemeToDom(theme);
   };
 
-  const setExecutionMode = (target: "up" | "down") => {
-    if (mode !== target) toggleMode();
-  };
-
   if (!mounted) return null;
 
   return (
@@ -74,32 +68,6 @@ export default function ReglagesPage() {
           <h1 className="text-xl font-semibold text-[var(--foreground)]">⚙️ Réglages</h1>
           <p className="text-sm text-[var(--secondary)]">Personnalisez votre expérience</p>
         </header>
-
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="text-sm font-semibold text-[var(--foreground)]">Mode d&apos;exécution</div>
-          <div className="mt-3 flex gap-2">
-            <button
-              onClick={() => setExecutionMode("up")}
-              className={`flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                mode === "up"
-                  ? "bg-[var(--primary)] text-black"
-                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-              }`}
-            >
-              Incrémenter
-            </button>
-            <button
-              onClick={() => setExecutionMode("down")}
-              className={`flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                mode === "down"
-                  ? "bg-[var(--primary)] text-black"
-                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-              }`}
-            >
-              Décrémenter
-            </button>
-          </div>
-        </section>
 
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="flex items-center justify-between gap-4">

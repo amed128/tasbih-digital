@@ -46,10 +46,7 @@ export default function Home() {
   const nextZikrInList = useTasbihStore((s) => s.nextZikrInList);
   const selectList = useTasbihStore((s) => s.selectList);
 
-  const [ignoreList, setIgnoreList] = useState(false);
-
-  const isListMode =
-    !ignoreList && activeListId !== DEFAULT_LIST_ID && activeList.length > 0;
+  const isListMode = activeListId !== DEFAULT_LIST_ID && activeList.length > 0;
 
   const effectiveTarget = isListMode ? target : (customTarget ?? target);
   const isCompleted =
@@ -165,7 +162,6 @@ export default function Home() {
   };
 
   const handleQuitList = () => {
-    setIgnoreList(true);
     selectList(DEFAULT_LIST_ID);
     reset();
   };
@@ -432,14 +428,12 @@ export default function Home() {
                       className="flex cursor-pointer items-center justify-between px-4 py-3 hover:bg-white/[0.03]"
                       onClick={() => {
                         selectList(category);
-                        setIgnoreList(false);
                         setDropdownOpen(false);
                       }}
                       onKeyDown={(e) => {
                         if (e.key !== "Enter" && e.key !== " ") return;
                         e.preventDefault();
                         selectList(category);
-                        setIgnoreList(false);
                         setDropdownOpen(false);
                       }}
                     >
@@ -481,7 +475,6 @@ export default function Home() {
                             className="flex w-full min-w-0 items-start justify-between border-t border-[var(--border)] px-6 py-3 text-left text-[var(--foreground)] hover:bg-white/[0.03]"
                             onClick={() => {
                               selectZikrAsList(d.id);
-                              setIgnoreList(false);
                               setDropdownOpen(false);
                             }}
                           >
@@ -531,14 +524,12 @@ export default function Home() {
                         className="flex cursor-pointer items-center justify-between px-4 py-3 hover:bg-white/[0.03]"
                         onClick={() => {
                           selectList(listId);
-                          setIgnoreList(false);
                           setDropdownOpen(false);
                         }}
                         onKeyDown={(e) => {
                           if (e.key !== "Enter" && e.key !== " ") return;
                           e.preventDefault();
                           selectList(listId);
-                          setIgnoreList(false);
                           setDropdownOpen(false);
                         }}
                       >
@@ -580,7 +571,6 @@ export default function Home() {
                               className="flex w-full min-w-0 items-start justify-between border-t border-[var(--border)] px-6 py-3 text-left text-[var(--foreground)] hover:bg-white/[0.03]"
                               onClick={() => {
                                 selectZikrAsList(d.id);
-                                setIgnoreList(false);
                                 setDropdownOpen(false);
                               }}
                             >
@@ -602,17 +592,6 @@ export default function Home() {
             </div>
           )}
         </div>
-
-        {ignoreList && currentZikr && (
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-black">
-              {currentZikr.transliteration}
-            </span>
-            <span className="rounded-full bg-[var(--border)] px-4 py-2 text-sm text-[var(--secondary)]">
-              {currentZikr.arabic}
-            </span>
-          </div>
-        )}
 
       </div>
 

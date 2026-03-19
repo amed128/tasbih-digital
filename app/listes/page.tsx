@@ -400,11 +400,11 @@ export default function ListesPage() {
   const categoryEntries = Array.from(categories.entries());
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#0A0A0A] text-white">
-      <div className="border-b border-[#242424]">
+    <div className="min-h-screen overflow-x-hidden bg-[var(--background)] text-[var(--foreground)]">
+      <div className="border-b border-[var(--border)]">
         <div className="mx-auto flex h-18 w-full max-w-md items-center justify-center gap-2 px-4">
-          <span className="text-2xl text-[#F5A623]">☽</span>
-          <h1 className="text-[1.95rem] font-semibold tracking-tight text-[#F4F4F4]">Tasbih Digital</h1>
+          <span className="text-2xl text-[var(--primary)]">☽</span>
+          <h1 className="text-[1.95rem] font-semibold tracking-tight text-[var(--foreground)]">Tasbih Digital</h1>
         </div>
       </div>
 
@@ -417,7 +417,7 @@ export default function ListesPage() {
         {!isListFormMode && (
           <>
 
-        <section className="overflow-hidden rounded-3xl border border-[#2A2A2A] bg-gradient-to-b from-[#171717] to-[#121212]">
+        <section className="overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--card)]">
           <button
             type="button"
             onClick={() => setLibraryExpanded((prev) => !prev)}
@@ -425,9 +425,9 @@ export default function ListesPage() {
             className="flex w-full items-center justify-between px-4 py-3.5 text-left"
           >
             <div className="flex items-center gap-3">
-              <BookOpen className="h-6 w-6 text-[#F5A623]" strokeWidth={1.8} />
+              <BookOpen className="h-6 w-6 text-[var(--primary)]" strokeWidth={1.8} />
               <div>
-                <div className="text-[0.875rem] font-semibold text-[#ECECEC]">
+                <div className="text-[0.875rem] font-semibold text-[var(--foreground)]">
                   Bibliothèque de zikr
                   <span className="ml-2 text-[#5D5D5D]">({dhikrs.length})</span>
                 </div>
@@ -441,7 +441,7 @@ export default function ListesPage() {
           </button>
 
           {libraryExpanded && (
-            <div className="border-t border-[#242424]">
+            <div className="border-t border-[var(--border)]">
               <div className="px-4 py-3">
                 <div className="relative">
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#6B6B6B]" strokeWidth={2} />
@@ -450,19 +450,19 @@ export default function ListesPage() {
                     onChange={(e) => setSearch(e.target.value)}
                     onBlur={(e) => setSearch(e.target.value.trim())}
                     placeholder="Rechercher un zikr..."
-                    className="w-full rounded-2xl border border-[#3A3A3A] bg-[#202020] py-2.5 pl-11 pr-4 text-[0.95rem] text-white placeholder:text-[#5A5A5A] outline-none focus:border-[#F5A623]"
+                    className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] py-2.5 pl-11 pr-4 text-[0.95rem] text-[var(--foreground)] placeholder:text-[#5A5A5A] outline-none focus:border-[var(--primary)]"
                   />
                 </div>
               </div>
 
-              <div className="max-h-[40vh] overflow-y-auto overscroll-contain border-t border-[#242424]">
+              <div className="max-h-[40vh] overflow-y-auto overscroll-contain border-t border-[var(--border)]">
                 {categoryEntries.length === 0 ? (
                   <div className="px-6 py-4 text-sm text-[#7A7A7A]">Aucun résultat trouvé</div>
                 ) : (
                   categoryEntries.map(([category, items]) => {
                     const expanded = isSearching ? true : expandedCategories[category] ?? false;
                     return (
-                      <div key={category} className="border-b border-[#242424] last:border-b-0">
+                      <div key={category} className="border-b border-[var(--border)] last:border-b-0">
                         <button
                           type="button"
                           onClick={() =>
@@ -474,7 +474,7 @@ export default function ListesPage() {
                           aria-expanded={expanded}
                           className="flex w-full items-center justify-between px-4 py-2.5 text-left"
                         >
-                          <span className="flex-1 text-[0.95rem] font-semibold text-[#F5A623]">
+                          <span className="flex-1 text-[0.95rem] font-semibold text-[var(--primary)]">
                             {category}
                           </span>
                           <span className="text-[0.95rem] font-semibold text-[#666666]">{items.length}</span>
@@ -488,9 +488,9 @@ export default function ListesPage() {
                                 type="button"
                                 key={d.id}
                                 onClick={() => setSelectedLibraryDhikr(d)}
-                                className="group w-full rounded-xl border border-[#2A2A2A] bg-[#141414] px-3 py-2.5 text-left transition hover:border-[#3E3E3E]"
+                                className="group w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 text-left transition hover:border-[#3E3E3E]"
                               >
-                                <div className="text-[0.95rem] font-semibold text-white transition-colors group-hover:text-[#F5A623]">{d.arabic}</div>
+                                <div className="text-[0.95rem] font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">{d.arabic}</div>
                                 <div className="mt-0.5 flex items-center justify-between gap-3 text-[#7A7A7A]">
                                   <span className="min-w-0 flex-1 truncate text-[0.86rem] font-semibold">{d.transliteration}</span>
                                   <span className="flex-shrink-0 font-semibold text-[#8A8A8A]">×{d.defaultTarget}</span>
@@ -515,7 +515,7 @@ export default function ListesPage() {
             </div>
             <button
               onClick={openCreateModal}
-              className="whitespace-nowrap rounded-2xl border border-[#8B5A08] bg-[#6E4708] px-3.5 py-1.5 text-[0.82rem] font-semibold text-[#F4C13A]"
+              className="whitespace-nowrap rounded-2xl border border-[var(--primary)] bg-[var(--card)] px-3.5 py-1.5 text-[0.82rem] font-semibold text-[var(--primary)]"
             >
               ＋ Nouvelle liste
             </button>
@@ -530,7 +530,7 @@ export default function ListesPage() {
                 return (
                   <div
                     key={listId}
-                    className="overflow-hidden rounded-[28px] border border-[#2D2D2D] bg-[#141414]"
+                    className="overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--card)]"
                   >
                     <div
                       role="button"
@@ -546,7 +546,7 @@ export default function ListesPage() {
                       <div className="flex min-w-0 flex-1 items-center gap-4">
                         <Grip className="h-4 w-4 text-[#595959]" strokeWidth={2} />
                         <div className="min-w-0 flex-1 text-left">
-                          <div className="truncate text-[0.9rem] font-semibold text-[#EFEFEF]">
+                          <div className="truncate text-[0.9rem] font-semibold text-[var(--foreground)]">
                             {listId}
                             <span className="ml-2 text-[0.86rem] text-[#656565]">({formatZikrCount(items.length)})</span>
                           </div>
@@ -590,7 +590,7 @@ export default function ListesPage() {
                     </div>
 
                     {expanded && (
-                      <div className="space-y-2 border-t border-[#2A2A2A] bg-[#151515] px-5 py-3">
+                      <div className="space-y-2 border-t border-[var(--border)] bg-[var(--background)] px-5 py-3">
                         {items.length === 0 ? (
                           <div className="text-sm text-[#7A7A7A]">Aucun Zikr dans cette liste.</div>
                         ) : (
@@ -602,10 +602,10 @@ export default function ListesPage() {
                                 type="button"
                                 key={dhikrId}
                                 onClick={() => setSelectedLibraryDhikr(dhikr)}
-                                className="group flex w-full items-center justify-between gap-4 rounded-xl px-2 py-1 text-left transition hover:bg-[#1B1B1B]"
+                                className="group flex w-full items-center justify-between gap-4 rounded-xl px-2 py-1 text-left transition hover:bg-[color:var(--border)]/45"
                               >
                                 <div className="min-w-0 flex-1">
-                                  <div className="truncate text-[1.05rem] font-semibold text-white transition-colors group-hover:text-[#F5A623]">
+                                  <div className="truncate text-[1.05rem] font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">
                                     {dhikr.arabic}
                                   </div>
                                   <div className="truncate text-[0.86rem] font-semibold text-[#6F6F73]">
@@ -631,7 +631,7 @@ export default function ListesPage() {
 
         {isListFormMode && (
           <section className="flex flex-col gap-5 pb-2">
-            <h2 className="text-[2.15rem] font-semibold tracking-tight text-[#ECECEC]">
+            <h2 className="text-[2.15rem] font-semibold tracking-tight text-[var(--foreground)]">
               {isEditMode ? "Modifier la liste" : "Nouvelle liste"}
             </h2>
 
@@ -641,7 +641,7 @@ export default function ListesPage() {
                 value={modalInput}
                 onChange={(e) => setModalInput(e.target.value)}
                 placeholder={isEditMode ? "Nom de la liste" : "Ex: Après la prière"}
-                className="mt-3 w-full rounded-3xl border border-[#484848] bg-[#2A2A2A] px-5 py-4 text-[0.95rem] font-semibold text-white placeholder:text-[#5B5B5B] outline-none focus:border-[#F5A623]"
+                className="mt-3 w-full rounded-3xl border border-[var(--border)] bg-[var(--card)] px-5 py-4 text-[0.95rem] font-semibold text-[var(--foreground)] placeholder:text-[#5B5B5B] outline-none focus:border-[var(--primary)]"
               />
               {hasDuplicateListName && (
                 <p className="mt-2 text-xs text-[#E07A7A]">Ce nom de liste existe déjà.</p>
@@ -650,7 +650,7 @@ export default function ListesPage() {
 
             <div>
               <div className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#7E7E83]">Zikrs</div>
-              <div className="mt-3 space-y-3 rounded-[28px] border border-[#2F2F2F] bg-[#151515] p-4">
+              <div className="mt-3 space-y-3 rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-4">
                 {createListItems.length === 0 ? (
                   <div className="text-sm text-[#7D7D7D]">Ajoute au moins un zikr depuis la bibliothèque ou l&apos;ajout manuel.</div>
                 ) : (
@@ -658,12 +658,12 @@ export default function ListesPage() {
                     return (
                       <div
                         key={dhikr.id}
-                        className="flex items-center justify-between rounded-2xl border border-[#2A2A2A] bg-[#1A1A1A] px-3 py-2"
+                        className="flex items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--background)] px-3 py-2"
                       >
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-[#7E7E7E]">#{idx + 1}</span>
-                            <div className="text-xs font-semibold text-white">{dhikr.arabic}</div>
+                            <div className="text-xs font-semibold text-[var(--foreground)]">{dhikr.arabic}</div>
                           </div>
                           <div className="text-xs text-[#8B8B8B]">
                             {dhikr.transliteration} · {dhikr.defaultTarget}
@@ -686,25 +686,25 @@ export default function ListesPage() {
             <button
               type="button"
               onClick={() => setManualDhikrShow((prev) => !prev)}
-              className="rounded-3xl border border-dashed border-[#C9C9C9] py-4 text-[1.05rem] font-semibold text-[#9C9C9C] transition hover:border-[#F5A623] hover:text-[#F5A623]"
+              className="rounded-3xl border border-dashed border-[#C9C9C9] py-4 text-[1.05rem] font-semibold text-[#9C9C9C] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
             >
               + Ajouter manuellement
             </button>
 
             {manualDhikrShow && (
-              <div className="space-y-3 rounded-[24px] border border-[#3A3A3A] bg-[#1A1A1A] p-4">
+              <div className="space-y-3 rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-4">
                 <input
                   value={manualArabic}
                   onChange={(e) => setManualArabic(e.target.value)}
                   placeholder="(ex: سُبْحَانَ اللهِ) Texte arabe"
-                  className="w-full rounded-2xl border border-[#474747] bg-[#2A2A2A] px-4 py-3 text-[0.95rem] text-white placeholder:text-[#666666] outline-none focus:border-[#F5A623]"
+                  className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[#666666] outline-none focus:border-[var(--primary)]"
                 />
                 <input
                   value={manualTranslit}
                   onChange={(e) => setManualTranslit(e.target.value)}
                   onBlur={handleManualTranslitBlur}
                   placeholder="Translittération / nom"
-                  className="w-full rounded-2xl border border-[#474747] bg-[#2A2A2A] px-4 py-3 text-[0.95rem] text-white placeholder:text-[#666666] outline-none focus:border-[#F5A623]"
+                  className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[#666666] outline-none focus:border-[var(--primary)]"
                 />
                 {manualArabicSuggestion ? (
                   <p className="text-xs text-[#C89B32]">
@@ -721,28 +721,28 @@ export default function ListesPage() {
                     min="1"
                     value={manualReps}
                     onChange={(e) => setManualReps(e.target.value)}
-                    className="w-36 rounded-2xl border border-[#474747] bg-[#2A2A2A] px-4 py-2 text-[2rem] font-semibold text-white outline-none focus:border-[#F5A623]"
+                    className="w-36 rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-[2rem] font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
                   />
                 </div>
                 <p className="text-xs text-[#8A8A8A]">Pour ajouter manuellement, il faut un nombre de répétitions supérieur à 0 et au moins un des champs Texte arabe ou Translittération.</p>
                 <button
                   onClick={handleAddManualDhikr}
                   disabled={!canAddManualDhikr}
-                  className="w-full rounded-xl bg-[#F5A623] py-2.5 text-sm font-semibold text-black transition hover:bg-[#F5A623]/90 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-full rounded-xl bg-[var(--primary)] py-2.5 text-sm font-semibold text-black transition hover:bg-[color:var(--primary)]/90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Ajouter
                 </button>
               </div>
             )}
 
-            <div className="overflow-hidden rounded-3xl border border-[#2D2D2D] bg-[#151515]">
+            <div className="overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--card)]">
               <button
                 type="button"
                 onClick={() => setCreateLibraryExpanded(!createLibraryExpanded)}
                 className="flex w-full items-center justify-between px-4 py-4 text-left"
               >
-                <span className="text-[2rem] text-[#F5A623]">◫</span>
-                <span className="ml-3 flex-1 text-[0.95rem] font-semibold text-white">
+                <span className="text-[2rem] text-[var(--primary)]">◫</span>
+                <span className="ml-3 flex-1 text-[0.95rem] font-semibold text-[var(--foreground)]">
                   Bibliothèque de zikr
                   <span className="ml-2 text-[#666666]">({dhikrs.length})</span>
                 </span>
@@ -750,15 +750,15 @@ export default function ListesPage() {
               </button>
 
               {createLibraryExpanded && (
-                <div className="space-y-2 border-t border-[#2D2D2D] px-3 pb-3 pt-2">
+                <div className="space-y-2 border-t border-[var(--border)] px-3 pb-3 pt-2">
                   <input
                     value={createSearchQuery}
                     onChange={(e) => setCreateSearchQuery(e.target.value)}
                     onBlur={(e) => setCreateSearchQuery(e.target.value.trim())}
                     placeholder="Rechercher..."
-                    className="w-full rounded-xl bg-[#2A2A2A] px-3 py-2 text-sm text-white placeholder:text-gray-500 outline-none focus:border-[#F5A623] focus:ring-1 focus:ring-[#F5A623]"
+                    className="w-full rounded-xl bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-gray-500 outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]"
                   />
-                  <div className="max-h-52 space-y-1 overflow-y-auto rounded-xl border border-[#2A2A2A] bg-[#0F0F0F] p-2">
+                  <div className="max-h-52 space-y-1 overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--background)] p-2">
                     {Array.from(createCategories.entries()).map(([category, items]) => {
                       const expanded = createCategoryExpanded[category] ?? false;
                       return (
@@ -771,7 +771,7 @@ export default function ListesPage() {
                                 [category]: !expanded,
                               }))
                             }
-                            className="flex w-full items-center justify-between rounded px-2 py-1 text-xs font-semibold text-[#F5A623] hover:bg-[#1A1A1A]"
+                            className="flex w-full items-center justify-between rounded px-2 py-1 text-xs font-semibold text-[var(--primary)] hover:bg-[var(--card)]"
                           >
                             <span>{category}</span>
                             <span>{expanded ? "⌄" : "›"}</span>
@@ -783,16 +783,16 @@ export default function ListesPage() {
                                 return (
                                   <div
                                     key={d.id}
-                                    className="flex items-center justify-between rounded px-2 py-1 text-xs text-gray-300 hover:bg-[#1A1A1A]"
+                                    className="flex items-center justify-between rounded px-2 py-1 text-xs text-gray-300 hover:bg-[var(--card)]"
                                   >
                                     <div className="flex-1 truncate">
-                                      <div className="truncate text-white">{d.arabic}</div>
+                                      <div className="truncate text-[var(--foreground)]">{d.arabic}</div>
                                       <div className="text-gray-500">{d.transliteration}</div>
                                     </div>
                                     <button
                                       onClick={() => handleAddDhikrToCreate(d.id)}
                                       disabled={isAdded}
-                                      className="ml-2 rounded bg-[#F5A623] px-2 py-0.5 text-xs font-semibold text-black transition disabled:cursor-not-allowed disabled:opacity-40 hover:bg-[#F5A623]/90"
+                                      className="ml-2 rounded bg-[var(--primary)] px-2 py-0.5 text-xs font-semibold text-black transition disabled:cursor-not-allowed disabled:opacity-40 hover:bg-[color:var(--primary)]/90"
                                     >
                                       +
                                     </button>
@@ -812,14 +812,14 @@ export default function ListesPage() {
             <div className="mt-4 grid grid-cols-2 gap-3">
               <button
                 onClick={closeModal}
-                className="rounded-3xl border border-[#5A5A5A] bg-[#2A2A2A] px-4 py-3 text-[1.05rem] font-semibold text-[#E8E8E8]"
+                className="rounded-3xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[1.05rem] font-semibold text-[var(--foreground)]"
               >
                 Annuler
               </button>
               <button
                 onClick={handleSaveListForm}
                 disabled={!canSaveList}
-                className="rounded-3xl bg-[#7D560D] px-4 py-3 text-[1.05rem] font-semibold text-[#D8D8D8] transition enabled:bg-[#F5A623] enabled:text-black disabled:cursor-not-allowed disabled:opacity-70"
+                className="rounded-3xl bg-[var(--card)] px-4 py-3 text-[1.05rem] font-semibold text-[var(--foreground)] transition enabled:bg-[var(--primary)] enabled:text-black disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isEditMode ? "Mettre à jour" : "Sauvegarder"}
               </button>
@@ -836,7 +836,7 @@ export default function ListesPage() {
             <div className="flex justify-end gap-2">
               <button
                 onClick={closeModal}
-                className="rounded-xl bg-[#1A1A1A] px-4 py-2 text-sm font-semibold text-white"
+                className="rounded-xl bg-[var(--card)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
               >
                 Annuler
               </button>
@@ -861,14 +861,14 @@ export default function ListesPage() {
           closeOnOverlayClick
         >
           {selectedLibraryDhikr ? (
-            <div className="rounded-2xl border border-[#2E2E2E] bg-[#141414] px-4 py-5 text-center">
-              <div className="text-[1.7rem] font-semibold leading-relaxed text-white">
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-5 text-center">
+              <div className="text-[1.7rem] font-semibold leading-relaxed text-[var(--foreground)]">
                 {selectedLibraryDhikr.arabic}
               </div>
-              <div className="mt-3 text-[0.95rem] font-semibold text-[#BEBEBE]">
+              <div className="mt-3 text-[0.95rem] font-semibold text-[var(--foreground)] opacity-80">
                 {selectedLibraryDhikr.transliteration}
               </div>
-              <div className="mt-1 text-sm text-[#8A8A8A]">
+              <div className="mt-1 text-sm text-[var(--foreground)] opacity-60">
                 Objectif: {selectedLibraryDhikr.defaultTarget}
               </div>
             </div>

@@ -171,7 +171,7 @@ export default function Home() {
         particleCount: 100,
         spread: 70,
         origin: { x: 0.5, y: 0.4 },
-        colors: ["#F5A623", "#FFFFFF"],
+        colors: ["#E4B15A", "#FFFFFF"],
       });
       setHasFiredConfetti(true);
     }
@@ -209,7 +209,7 @@ export default function Home() {
       <>
         {parts.map((part, idx) =>
           part.toLowerCase() === normalizedSearch ? (
-            <span key={idx} className="rounded bg-[#F5A623]/30 px-1 text-white">
+            <span key={idx} className="rounded bg-[color:var(--primary)]/30 px-1 text-[var(--foreground)]">
               {part}
             </span>
           ) : (
@@ -349,12 +349,12 @@ export default function Home() {
   const renderCompteur = () => (
     <div className="flex flex-col gap-6 px-5 pt-6">
       <header className="flex flex-col items-center gap-2">
-        <h1 className="text-xl font-semibold text-white">🌙 Tasbih Digital</h1>
+        <h1 className="text-xl font-semibold text-[var(--foreground)]">🌙 Tasbih Digital</h1>
         <p className="text-sm text-gray-400">Compteur de Zikr</p>
         <button
           type="button"
           onClick={toggleMode}
-          className="rounded-full border border-[#2A2A2A] bg-[#151515] px-3 py-1 text-xs font-semibold text-[#F5A623] transition hover:border-[#F5A623]"
+          className="rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)]"
           aria-label="Changer le mode d'execution"
         >
           Mode: {executionModeLabel}
@@ -369,14 +369,14 @@ export default function Home() {
             aria-expanded={dropdownOpen}
             aria-controls="zikr-selection-dropdown"
             aria-haspopup="listbox"
-            className="flex w-full items-center justify-between rounded-2xl border border-[#2A2A2A] bg-gradient-to-br from-[#1D1D1D] to-[#171717] px-4 py-3 text-left outline-none transition focus:border-[#F5A623]"
+            className="flex w-full items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-left outline-none transition focus:border-[var(--primary)]"
           >
             <div className="min-w-0">
               {isListMode ? (
                 <>
                   <div className="flex items-center gap-2">
-                    <span className="truncate text-sm font-semibold text-white">≡ {activeListId}</span>
-                    <span className="rounded-full bg-[#F5A623] px-2 py-0.5 text-[10px] font-semibold text-black">
+                    <span className="truncate text-sm font-semibold text-[var(--foreground)]">≡ {activeListId}</span>
+                    <span className="rounded-full bg-[var(--primary)] px-2 py-0.5 text-[10px] font-semibold text-black">
                       Sélection
                     </span>
                   </div>
@@ -385,7 +385,7 @@ export default function Home() {
                   </div>
                 </>
               ) : (
-                <span className="truncate text-sm font-semibold text-white">Tous les Zikr</span>
+                <span className="truncate text-sm font-semibold text-[var(--foreground)]">Tous les Zikr</span>
               )}
             </div>
             <span className="ml-3 text-lg text-gray-500">{dropdownOpen ? "⌃" : "⌄"}</span>
@@ -396,22 +396,22 @@ export default function Home() {
               id="zikr-selection-dropdown"
               role="region"
               aria-label="Selection de Zikr"
-              className="mt-2 max-h-[60vh] w-full overflow-x-hidden overflow-y-auto rounded-2xl border border-[#2A2A2A] bg-gradient-to-b from-[#1B1B1B] to-[#151515] py-1 shadow-[0_10px_28px_rgba(0,0,0,0.45)]"
+              className="mt-2 max-h-[60vh] w-full overflow-x-hidden overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--card)] py-1 shadow-[0_10px_28px_rgba(0,0,0,0.45)]"
             >
-              <div className="border-b border-[#242424] px-4 py-3">
+              <div className="border-b border-[var(--border)] px-4 py-3">
                 <input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onBlur={(e) => setSearchQuery(e.target.value.trim())}
                   placeholder="Rechercher un Zikr ou une catégorie"
-                  className="w-full rounded-xl border border-[#2A2A2A] bg-[#0E0E0E] px-3 py-2 text-base text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#F5A623]"
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base text-[var(--foreground)] placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                 />
               </div>
 
               <button
                 type="button"
                 onClick={() => setLibraryExpanded(!libraryExpanded)}
-                className="flex w-full items-center justify-between border-b border-[#242424] px-4 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[#666666] hover:bg-white/[0.03]"
+                className="flex w-full items-center justify-between border-b border-[var(--border)] px-4 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[#666666] hover:bg-white/[0.03]"
               >
                 <span className="flex items-center gap-2">
                   <span className="text-[0.78rem]">◫</span>
@@ -432,7 +432,7 @@ export default function Home() {
               {filteredGroupEntries.map(([category, items]) => {
                 const expanded = isSearching ? true : expandedGroups[category] ?? false;
                 return (
-                  <div key={category} className="border-b border-[#242424] last:border-b-0">
+                  <div key={category} className="border-b border-[var(--border)] last:border-b-0">
                     <div
                       role="button"
                       tabIndex={0}
@@ -452,7 +452,7 @@ export default function Home() {
                       }}
                     >
                       <div className="min-w-0">
-                        <div className="flex items-center gap-2 text-[#F5A623]">
+                        <div className="flex items-center gap-2 text-[var(--primary)]">
                           <span className="text-xs">☰</span>
                           <span className="truncate text-base font-semibold">
                             {highlightMatch(category)}
@@ -486,7 +486,7 @@ export default function Home() {
                           <button
                             key={d.id}
                             type="button"
-                            className="flex w-full min-w-0 items-start justify-between border-t border-[#232323] px-6 py-3 text-left text-white hover:bg-white/[0.03]"
+                            className="flex w-full min-w-0 items-start justify-between border-t border-[var(--border)] px-6 py-3 text-left text-[var(--foreground)] hover:bg-white/[0.03]"
                             onClick={() => {
                               selectDhikrAsList(d.id);
                               setIgnoreList(false);
@@ -531,7 +531,7 @@ export default function Home() {
                     .map((id) => dhikrs.find((d) => d.id === id))
                     .filter(Boolean) as typeof dhikrs;
                   return (
-                    <div key={listId} className="border-b border-[#242424] last:border-b-0">
+                    <div key={listId} className="border-b border-[var(--border)] last:border-b-0">
                       <div
                         role="button"
                         tabIndex={0}
@@ -551,7 +551,7 @@ export default function Home() {
                         }}
                       >
                         <div className="min-w-0">
-                          <div className="flex items-center gap-2 text-[#F5A623]">
+                          <div className="flex items-center gap-2 text-[var(--primary)]">
                             <span className="text-xs">☰</span>
                             <span className="truncate text-base font-semibold">
                               {highlightMatch(listId)}
@@ -585,7 +585,7 @@ export default function Home() {
                             <button
                               key={d.id}
                               type="button"
-                              className="flex w-full min-w-0 items-start justify-between border-t border-[#232323] px-6 py-3 text-left text-white hover:bg-white/[0.03]"
+                              className="flex w-full min-w-0 items-start justify-between border-t border-[var(--border)] px-6 py-3 text-left text-[var(--foreground)] hover:bg-white/[0.03]"
                               onClick={() => {
                                 selectDhikrAsList(d.id);
                                 setIgnoreList(false);
@@ -613,10 +613,10 @@ export default function Home() {
 
         {ignoreList && currentDhikr && (
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-[#F5A623] px-4 py-2 text-sm font-semibold text-black">
+            <span className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-black">
               {currentDhikr.transliteration}
             </span>
-            <span className="rounded-full bg-[#2A2A2A] px-4 py-2 text-sm text-gray-300">
+            <span className="rounded-full bg-[var(--border)] px-4 py-2 text-sm text-gray-300">
               {currentDhikr.arabic}
             </span>
           </div>
@@ -646,12 +646,12 @@ export default function Home() {
                 if (isTargetLocked) return;
                 setCustomTarget(Math.max(1, Number(e.target.value) || 1));
               }}
-              className={`mx-auto w-28 rounded-xl border border-[#2A2A2A] bg-[#0A0A0A] px-3 py-2 text-center text-2xl font-bold text-white transition focus:outline-none focus:ring-2 focus:ring-[#F5A623] ${
+              className={`mx-auto w-28 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-center text-2xl font-bold text-[var(--foreground)] transition focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${
                 isTargetLocked ? "cursor-not-allowed opacity-55 blur-[0.6px]" : ""
               }`}
             />
           ) : (
-            <div className="text-2xl font-bold text-white">{effectiveTarget}</div>
+            <div className="text-2xl font-bold text-[var(--foreground)]">{effectiveTarget}</div>
           )}
         </div>
       </motion.div>
@@ -662,7 +662,7 @@ export default function Home() {
           disabled={isCompleted}
           whileTap={{ scale: 0.95 }}
           animate={{
-            backgroundColor: isCompleted ? "#1A1A1A" : "#F5A623",
+            backgroundColor: isCompleted ? "var(--card)" : "var(--primary)",
             color: isCompleted ? "#9CA3AF" : "#000000",
             opacity: isCompleted ? 0.55 : 1,
           }}
@@ -693,13 +693,13 @@ export default function Home() {
           <button
             onClick={undoLast}
             aria-label="Annuler la dernière action"
-            className="flex-1 rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] px-4 py-4 text-sm font-semibold text-white transition hover:border-[#F5A623] active:brightness-95"
+            className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"
           >
             ↩ Annuler
           </button>
           <button
             onClick={handleResetRequest}
-            className="flex-1 rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] px-4 py-4 text-sm font-semibold text-white transition hover:border-[#F5A623] active:brightness-95"
+            className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"
           >
             Reinitialiser
           </button>
@@ -721,8 +721,8 @@ export default function Home() {
       const bgClass = isDone
         ? "bg-[#22C55E]"
         : isCurrent
-        ? "bg-[#F5A623]"
-        : "bg-[#2A2A2A]";
+        ? "bg-[var(--primary)]"
+        : "bg-[var(--border)]";
       const textClass = isDone ? "text-white" : isCurrent ? "text-black" : "text-[#666666]";
 
       return (
@@ -749,7 +749,7 @@ export default function Home() {
           <button
             type="button"
             onClick={toggleMode}
-            className="rounded-full border border-[#2A2A2A] bg-[#151515] px-3 py-1 text-xs font-semibold text-[#F5A623] transition hover:border-[#F5A623]"
+            className="rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)]"
             aria-label="Changer le mode d'execution"
           >
             Mode: {executionModeLabel}
@@ -764,7 +764,7 @@ export default function Home() {
 
         <motion.div layout className="flex flex-col items-center gap-4">
           <div className="text-center">
-            <div className="text-[2rem] font-bold text-[#F5A623]">
+            <div className="text-[2rem] font-bold text-[var(--primary)]">
               {currentDhikrInList?.transliteration}
             </div>
             <div className="mt-2 text-sm text-white">
@@ -787,7 +787,7 @@ export default function Home() {
             disabled={isCompleted}
             whileTap={{ scale: 0.95 }}
             animate={{
-              backgroundColor: isCompleted ? "#1A1A1A" : "#F5A623",
+              backgroundColor: isCompleted ? "var(--card)" : "var(--primary)",
               color: isCompleted ? "#9CA3AF" : "#000000",
               opacity: isCompleted ? 0.55 : 1,
             }}
@@ -818,13 +818,13 @@ export default function Home() {
             <button
               onClick={undoLast}
               aria-label="Annuler la dernière action"
-              className="flex-1 rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] px-4 py-4 text-sm font-semibold text-white transition hover:border-[#F5A623] active:brightness-95"
+              className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"
             >
               ↩ Annuler
             </button>
             <button
               onClick={handleResetRequest}
-              className="flex-1 rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] px-4 py-4 text-sm font-semibold text-white transition hover:border-[#F5A623] active:brightness-95"
+              className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"
             >
               Reinitialiser
             </button>
@@ -848,7 +848,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white">
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <main className="mx-auto flex max-w-md flex-col pb-20">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -868,7 +868,7 @@ export default function Home() {
           <div className="flex justify-end gap-2">
             <button
               onClick={() => setShowResetConfirm(false)}
-              className="rounded-xl bg-[#1A1A1A] px-4 py-2 text-sm font-semibold text-white"
+              className="rounded-xl bg-[var(--card)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
             >
               Annuler
             </button>

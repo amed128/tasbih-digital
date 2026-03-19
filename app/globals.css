@@ -1,11 +1,31 @@
 @import "tailwindcss";
 
-:root {
+:root,
+html[data-theme="blue"],
+body[data-theme="blue"] {
+  --background: #0B1118;
+  --foreground: #ededed;
+  --primary: #E4B15A;
+  --card: #151E29;
+  --border: #2B3747;
+}
+
+html[data-theme="dark"],
+body[data-theme="dark"] {
   --background: #0A0A0A;
   --foreground: #ededed;
   --primary: #F5A623;
   --card: #1A1A1A;
   --border: #2A2A2A;
+}
+
+html[data-theme="light"],
+body[data-theme="light"] {
+  --background: #F3F5F8;
+  --foreground: #1E2530;
+  --primary: #B8822E;
+  --card: #FFFFFF;
+  --border: #D4DCE6;
 }
 
 @theme inline {

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useAnimation } from "framer-motion";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useSyncExternalStore } from "react";
 
 type CircleProgressProps = {
   value: number;
@@ -13,9 +13,9 @@ type CircleProgressProps = {
   strokeWidth?: number;
 };
 
-const GOLD = "#F5A623";
+const GOLD = "var(--primary)";
 const GREEN = "#22C55E";
-const BACKGROUND = "#1A1A1A";
+const BACKGROUND = "var(--card)";
 
 export function CircleProgress({
   value,
@@ -26,22 +26,22 @@ export function CircleProgress({
   size = 260,
   strokeWidth = 16,
 }: CircleProgressProps) {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   const pulseControls = useAnimation();
   const numberControls = useAnimation();
   const prevValueRef = useRef<number>(value);
   const prevIsCompletedRef = useRef<boolean>(isCompleted);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
     if (!mounted) return;
     if (prevValueRef.current !== value) {
       numberControls.start({
         scale: [1, 1.3, 1],
-        color: ["#FFFFFF", "#F5A623", "#FFFFFF"],
+        color: ["var(--foreground)", "var(--primary)", "var(--foreground)"],
         transition: { duration: 0.15 },
       });
       prevValueRef.current = value;
@@ -94,7 +94,7 @@ export function CircleProgress({
           cy={size / 2}
           r={radius}
           fill={BACKGROUND}
-          stroke="#2A2A2A"
+          stroke="var(--border)"
           strokeWidth={strokeWidth}
         />
         <motion.circle
@@ -124,7 +124,7 @@ export function CircleProgress({
               : `${value} restant${isCompleted ? ", objectif atteint" : ""}`
           }
           className="text-6xl font-bold leading-tight"
-          style={{ color: isCompleted ? GREEN : "white" }}
+          style={{ color: isCompleted ? GREEN : "var(--foreground)" }}
         >
           {value}
         </motion.div>

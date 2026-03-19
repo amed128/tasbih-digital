@@ -112,7 +112,7 @@ export default function StatsPage() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white">
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <motion.main
         className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6"
         initial={{ opacity: 0, y: 10 }}
@@ -120,75 +120,75 @@ export default function StatsPage() {
         transition={{ duration: 0.2 }}
       >
         <header className="flex flex-col gap-1">
-          <h1 className="text-xl font-semibold text-white">📊 Stats</h1>
+          <h1 className="text-xl font-semibold text-[var(--foreground)]">📊 Stats</h1>
           <p className="text-sm text-gray-400">Suivi de votre pratique de Zikr</p>
         </header>
 
         <section className="grid grid-cols-2 gap-3">
-          <div className="rounded-2xl bg-[#1A1A1A] p-4">
+          <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="text-xs font-semibold text-gray-400">Total zikrs</div>
-            <div className="mt-2 text-2xl font-bold text-white">{total}</div>
+            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{total}</div>
           </div>
-          <div className="rounded-2xl bg-[#1A1A1A] p-4">
+          <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="text-xs font-semibold text-gray-400">Moy. / jour</div>
-            <div className="mt-2 text-2xl font-bold text-white">{Math.round(moyenneJour)}</div>
+            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{Math.round(moyenneJour)}</div>
           </div>
-          <div className="rounded-2xl bg-[#1A1A1A] p-4">
+          <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="text-xs font-semibold text-gray-400">Moy. / sem.</div>
-            <div className="mt-2 text-2xl font-bold text-white">{Math.round(moyenneSem)}</div>
+            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{Math.round(moyenneSem)}</div>
           </div>
-          <div className="rounded-2xl bg-[#1A1A1A] p-4">
+          <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="text-xs font-semibold text-gray-400">Sessions</div>
-            <div className="mt-2 text-2xl font-bold text-white">{sessions}</div>
+            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{sessions}</div>
           </div>
-          <div className="rounded-2xl bg-[#1A1A1A] p-4">
+          <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="text-xs font-semibold text-gray-400">Moy. session</div>
-            <div className="mt-2 text-2xl font-bold text-white">{Math.round(moyenneSession)}</div>
+            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{Math.round(moyenneSession)}</div>
           </div>
-          <div className="rounded-2xl bg-[#1A1A1A] p-4">
+          <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="text-xs font-semibold text-gray-400">Jours actifs</div>
-            <div className="mt-2 text-2xl font-bold text-white">{activeDays}</div>
+            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{activeDays}</div>
           </div>
         </section>
 
-        <section className="rounded-2xl bg-[#1A1A1A] p-4">
+        <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm font-semibold text-white">Hebdomadaire</div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">Hebdomadaire</div>
               <div className="text-xs text-gray-400">Zikrs sur les 7 derniers jours</div>
             </div>
-            <div className="text-sm font-semibold text-[#F5A623]">{streak}j streak</div>
+            <div className="text-sm font-semibold text-[var(--primary)]">{streak}j streak</div>
           </div>
           <div className="mt-4" style={{ height: 240 }}>
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={weeklyData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                <CartesianGrid stroke="#2A2A2A" strokeDasharray="3 3" />
+                <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
                 <XAxis dataKey="day" tick={{ fill: "#9ca3af", fontSize: 12 }} />
                 <YAxis tick={{ fill: "#9ca3af", fontSize: 12 }} />
                 <Tooltip
-                  wrapperStyle={{ borderRadius: 12, background: "#1A1A1A", border: "1px solid #2A2A2A" }}
-                  contentStyle={{ background: "#1A1A1A", border: "none" }}
+                  wrapperStyle={{ borderRadius: 12, background: "var(--card)", border: "1px solid var(--border)" }}
+                  contentStyle={{ background: "var(--card)", border: "none" }}
                   cursor={{ fill: "rgba(245, 166, 35, 0.15)" }}
                 />
-                <Bar dataKey="total" fill="#F5A623" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="total" fill="var(--primary)" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </section>
 
         <section className="grid gap-3">
-          <div className="rounded-2xl bg-[#1A1A1A] p-4">
+          <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="text-sm font-semibold text-gray-400">Zikr le plus pratiqué</div>
-            <div className="mt-2 text-white">{mostPracticed.label}</div>
+            <div className="mt-2 text-[var(--foreground)]">{mostPracticed.label}</div>
             <div className="mt-1 text-xs text-gray-400">Total : {mostPracticed.count}</div>
           </div>
 
-          <div className="rounded-2xl bg-[#1A1A1A] p-4">
+          <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="flex items-center justify-between">
               <div className="text-sm font-semibold text-gray-400">Historique des sessions</div>
               <button
                 onClick={resetStats}
-                className="rounded-xl border border-[#2A2A2A] bg-[#0A0A0A] px-3 py-1 text-xs font-semibold text-white transition hover:border-[#F5A623]"
+                className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-1 text-xs font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)]"
               >
                 Réinitialiser
               </button>
@@ -202,15 +202,15 @@ export default function StatsPage() {
                   return (
                     <div
                       key={entry.id}
-                      className="flex items-center justify-between rounded-xl bg-[#0A0A0A] px-3 py-2"
+                      className="flex items-center justify-between rounded-xl bg-[var(--background)] px-3 py-2"
                     >
                       <div>
-                        <div className="text-sm text-white">
+                        <div className="text-sm text-[var(--foreground)]">
                           {formatDate(entry.startAt)} — {dhikr?.arabic ?? "—"}
                         </div>
                         <div className="text-xs text-gray-400">{dhikr?.transliteration ?? ""}</div>
                       </div>
-                      <div className="text-sm font-semibold text-white">{entry.dhikrCount}</div>
+                      <div className="text-sm font-semibold text-[var(--foreground)]">{entry.dhikrCount}</div>
                     </div>
                   );
                 })

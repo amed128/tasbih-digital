@@ -121,7 +121,7 @@ export function Modal({
             aria-modal="true"
             aria-labelledby={titleId}
             tabIndex={-1}
-            className="relative w-[min(92vw,420px)] rounded-2xl bg-[#1A1A1A] p-6 shadow-xl"
+            className="relative w-[min(92vw,420px)] rounded-2xl bg-[var(--card)] p-6 shadow-xl"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
@@ -130,7 +130,7 @@ export function Modal({
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 id={titleId} className="text-lg font-semibold text-white">
+                <h2 id={titleId} className="text-lg font-semibold text-[var(--foreground)]">
                   {title}
                 </h2>
               </div>

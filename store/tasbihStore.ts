@@ -22,13 +22,14 @@ export type Stats = {
 };
 
 export type Preferences = {
-  darkMode: boolean;
+  theme: Theme;
   vibration: boolean;
   tapSound: TapSound;
   language: "fr" | "en";
 };
 
 export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
+export type Theme = "light" | "dark" | "blue";
 
 export type TasbihStoreState = {
   // Current selected dhikr
@@ -71,7 +72,7 @@ export type TasbihStoreState = {
   toggleMode: () => void;
   setListesUI: (update: Partial<TasbihStoreState["listesUI"]>) => void;
   resetStats: () => void;
-  toggleDarkMode: () => void;
+  setTheme: (theme: Theme) => void;
   toggleVibration: () => void;
   setTapSound: (sound: TapSound) => void;
   setLanguage: (lang: "fr" | "en") => void;
@@ -117,7 +118,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       expandedLists: {},
     },
     preferences: {
-      darkMode: true,
+      theme: "blue",
       vibration: true,
       tapSound: "tap-soft",
       language: "fr",
@@ -154,6 +155,26 @@ const normalizeTapSound = (value: unknown): TapSound => {
   return "tap-soft";
 };
 
+const normalizeTheme = (value: unknown): Theme => {
+  if (value === "light") return "light";
+  if (value === "dark") return "dark";
+  if (value === "blue") return "blue";
+  return "blue";
+};
+
+const resolveStoredTheme = (preferences: unknown): Theme => {
+  if (preferences && typeof preferences === "object") {
+    const prefs = preferences as { theme?: unknown; darkMode?: unknown };
+    if (prefs.theme !== undefined) {
+      return normalizeTheme(prefs.theme);
+    }
+    if (typeof prefs.darkMode === "boolean") {
+      return prefs.darkMode ? "dark" : "blue";
+    }
+  }
+  return "blue";
+};
+
 const baseInitialState = getInitialState();
 const storedState = loadStateFromStorage();
 
@@ -163,6 +184,7 @@ const initialState: Partial<TasbihStoreState> = {
   preferences: {
     ...baseInitialState.preferences,
     ...storedState?.preferences,
+    theme: resolveStoredTheme(storedState?.preferences),
     tapSound: normalizeTapSound(storedState?.preferences?.tapSound),
   } as Preferences,
 };
@@ -602,12 +624,12 @@ const createStore = () =>
           return newState;
         }),
 
-      toggleDarkMode: () =>
+      setTheme: (theme: Theme) =>
         set((state) => {
           const newState = {
             preferences: {
               ...state.preferences,
-              darkMode: !state.preferences.darkMode,
+              theme: normalizeTheme(theme),
             },
           };
           persistState({

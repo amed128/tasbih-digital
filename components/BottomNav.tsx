@@ -36,12 +36,12 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 border-t border-[#2A2A2A] bg-[#0A0A0A]">
+    <footer className="fixed bottom-0 left-0 right-0 border-t border-[var(--border)] bg-[var(--background)]">
       <div className="mx-auto flex max-w-md items-center justify-between px-4 py-3">
         {tabs.map((tab) => {
           const isActive = pathname === tab.href;
           const Icon = getIcon(tab.href);
-          const color = isActive ? "#F5A623" : "#666666";
+          const color = isActive ? "var(--primary)" : "#666666";
 
           return (
             <Link

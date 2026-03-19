@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Tasbih Digital",
-  description: "Compteur de Zikr mobile-first avec Next.js",
+  description: "Mobile-first zikr counter with Next.js",
 };
 
 export default function RootLayout({
@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
+    <html lang="en">
       <head>
         <meta name="theme-color" content="#E4B15A" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

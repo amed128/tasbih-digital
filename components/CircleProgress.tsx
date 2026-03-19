@@ -2,6 +2,7 @@
 
 import { motion, useAnimation } from "framer-motion";
 import React, { useEffect, useRef, useSyncExternalStore } from "react";
+import { useT } from "@/hooks/useT";
 
 type CircleProgressProps = {
   value: number;
@@ -26,6 +27,7 @@ export function CircleProgress({
   size = 260,
   strokeWidth = 16,
 }: CircleProgressProps) {
+  const t = useT();
   const mounted = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -120,8 +122,15 @@ export function CircleProgress({
           aria-atomic="true"
           aria-label={
             mode === "up"
-              ? `${value} sur ${target}${isCompleted ? ", objectif atteint" : ""}`
-              : `${value} restant${isCompleted ? ", objectif atteint" : ""}`
+              ? t("circle.ariaUp", {
+                  value,
+                  target,
+                  completed: isCompleted ? t("circle.ariaCompleted") : "",
+                })
+              : t("circle.ariaDown", {
+                  value,
+                  completed: isCompleted ? t("circle.ariaCompleted") : "",
+                })
           }
           className="text-6xl font-bold leading-tight"
           style={{ color: isCompleted ? GREEN : "var(--foreground)" }}
@@ -129,7 +138,7 @@ export function CircleProgress({
           {value}
         </motion.div>
         <div className="mt-1 text-sm font-semibold text-[var(--secondary)]">
-          {mode === "up" ? `/ ${target}` : "RESTANT"}
+          {mode === "up" ? `/ ${target}` : t("circle.remaining")}
         </div>
         {isCompleted && (
           <div
@@ -137,7 +146,7 @@ export function CircleProgress({
             aria-live="polite"
             className="mt-3 flex items-center gap-2 rounded-full bg-green-500/15 px-3 py-1 text-sm font-semibold text-[var(--foreground)]"
           >
-            <span className="text-base">✓</span> Objectif atteint
+            <span className="text-base">✓</span> {t("circle.objectiveReached")}
           </div>
         )}
       </div>

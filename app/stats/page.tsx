@@ -6,17 +6,18 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { useTasbihStore } from "../../store/tasbihStore";
 import { dhikrs } from "../../data/dhikrs";
 import { BottomNav } from "../../components/BottomNav";
+import { useT } from "@/hooks/useT";
 
-function formatDate(dateStr: string) {
+function formatDate(dateStr: string, locale: string) {
   const date = new Date(dateStr);
-  return date.toLocaleDateString(undefined, { day: "2-digit", month: "2-digit" });
+  return date.toLocaleDateString(locale, { day: "2-digit", month: "2-digit" });
 }
 
-function dayLabel(date: Date) {
-  return date.toLocaleDateString(undefined, { weekday: "short" });
+function dayLabel(date: Date, locale: string) {
+  return date.toLocaleDateString(locale, { weekday: "short" });
 }
 
-function buildLast7DaysData(history: { startAt: string; dhikrCount: number }[]) {
+function buildLast7DaysData(history: { startAt: string; dhikrCount: number }[], locale: string) {
   const today = new Date();
   const start = new Date(today);
   start.setHours(0, 0, 0, 0);
@@ -25,7 +26,7 @@ function buildLast7DaysData(history: { startAt: string; dhikrCount: number }[]) 
     const d = new Date(start);
     d.setDate(start.getDate() - i);
     const key = d.toISOString().slice(0, 10);
-    data.push({ day: dayLabel(d), date: key, total: 0 });
+    data.push({ day: dayLabel(d, locale), date: key, total: 0 });
   }
 
   history.forEach((entry) => {
@@ -66,6 +67,9 @@ export default function StatsPage() {
 
   const stats = useTasbihStore((s) => s.stats);
   const resetStats = useTasbihStore((s) => s.resetStats);
+  const language = useTasbihStore((s) => s.preferences.language);
+  const t = useT();
+  const locale = language === "fr" ? "fr-FR" : "en-US";
 
   const total = stats.totalDhikr;
   const sessions = stats.sessions;
@@ -96,12 +100,12 @@ export default function StatsPage() {
     });
     const dhikr = bestId ? dhikrs.find((d) => d.id === bestId) : undefined;
     return {
-      label: dhikr ? `${dhikr.arabic} — ${dhikr.transliteration}` : "Aucun",
+      label: dhikr ? `${dhikr.arabic} — ${dhikr.transliteration}` : t("stats.none"),
       count: bestCount,
     };
-  }, [stats.history]);
+  }, [stats.history, t]);
 
-  const weeklyData = useMemo(() => buildLast7DaysData(stats.history), [stats.history]);
+  const weeklyData = useMemo(() => buildLast7DaysData(stats.history, locale), [stats.history, locale]);
 
   const recentHistory = useMemo(() => {
     return [...stats.history]
@@ -120,33 +124,33 @@ export default function StatsPage() {
         transition={{ duration: 0.2 }}
       >
         <header className="flex flex-col gap-1">
-          <h1 className="text-xl font-semibold text-[var(--foreground)]">📊 Stats</h1>
-          <p className="text-sm text-[var(--secondary)]">Suivi de votre pratique de Zikr</p>
+          <h1 className="text-xl font-semibold text-[var(--foreground)]">{t("stats.title")}</h1>
+          <p className="text-sm text-[var(--secondary)]">{t("stats.subtitle")}</p>
         </header>
 
         <section className="grid grid-cols-2 gap-3">
           <div className="rounded-2xl bg-[var(--card)] p-4">
-            <div className="text-xs font-semibold text-[var(--secondary)]">Total zikrs</div>
+            <div className="text-xs font-semibold text-[var(--secondary)]">{t("stats.totalZikrs")}</div>
             <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{total}</div>
           </div>
           <div className="rounded-2xl bg-[var(--card)] p-4">
-            <div className="text-xs font-semibold text-[var(--secondary)]">Moy. / jour</div>
+            <div className="text-xs font-semibold text-[var(--secondary)]">{t("stats.avgDay")}</div>
             <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{Math.round(moyenneJour)}</div>
           </div>
           <div className="rounded-2xl bg-[var(--card)] p-4">
-            <div className="text-xs font-semibold text-[var(--secondary)]">Moy. / sem.</div>
+            <div className="text-xs font-semibold text-[var(--secondary)]">{t("stats.avgWeek")}</div>
             <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{Math.round(moyenneSem)}</div>
           </div>
           <div className="rounded-2xl bg-[var(--card)] p-4">
-            <div className="text-xs font-semibold text-[var(--secondary)]">Sessions</div>
+            <div className="text-xs font-semibold text-[var(--secondary)]">{t("stats.sessions")}</div>
             <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{sessions}</div>
           </div>
           <div className="rounded-2xl bg-[var(--card)] p-4">
-            <div className="text-xs font-semibold text-[var(--secondary)]">Moy. session</div>
+            <div className="text-xs font-semibold text-[var(--secondary)]">{t("stats.avgSession")}</div>
             <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{Math.round(moyenneSession)}</div>
           </div>
           <div className="rounded-2xl bg-[var(--card)] p-4">
-            <div className="text-xs font-semibold text-[var(--secondary)]">Jours actifs</div>
+            <div className="text-xs font-semibold text-[var(--secondary)]">{t("stats.activeDays")}</div>
             <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{activeDays}</div>
           </div>
         </section>
@@ -154,17 +158,17 @@ export default function StatsPage() {
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">Hebdomadaire</div>
-              <div className="text-xs text-[var(--secondary)]">Zikrs sur les 7 derniers jours</div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">{t("stats.weeklyTitle")}</div>
+              <div className="text-xs text-[var(--secondary)]">{t("stats.weeklySubtitle")}</div>
             </div>
-            <div className="text-sm font-semibold text-[var(--primary)]">{streak}j streak</div>
+            <div className="text-sm font-semibold text-[var(--primary)]">{t("stats.streak", { streak })}</div>
           </div>
           <div className="mt-4" style={{ height: 240 }}>
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={weeklyData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
-                <XAxis dataKey="day" tick={{ fill: "#9ca3af", fontSize: 12 }} />
-                <YAxis tick={{ fill: "#9ca3af", fontSize: 12 }} />
+                <XAxis dataKey="day" tick={{ fill: "var(--secondary)", fontSize: 12 }} />
+                <YAxis tick={{ fill: "var(--secondary)", fontSize: 12 }} />
                 <Tooltip
                   wrapperStyle={{ borderRadius: 12, background: "var(--card)", border: "1px solid var(--border)" }}
                   contentStyle={{ background: "var(--card)", border: "none" }}
@@ -178,24 +182,24 @@ export default function StatsPage() {
 
         <section className="grid gap-3">
           <div className="rounded-2xl bg-[var(--card)] p-4">
-            <div className="text-sm font-semibold text-[var(--secondary)]">Zikr le plus pratiqué</div>
+            <div className="text-sm font-semibold text-[var(--secondary)]">{t("stats.mostPracticed")}</div>
             <div className="mt-2 text-[var(--foreground)]">{mostPracticed.label}</div>
-            <div className="mt-1 text-xs text-[var(--secondary)]">Total : {mostPracticed.count}</div>
+            <div className="mt-1 text-xs text-[var(--secondary)]">{t("stats.totalCount", { count: mostPracticed.count })}</div>
           </div>
 
           <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold text-[var(--secondary)]">Historique des sessions</div>
+              <div className="text-sm font-semibold text-[var(--secondary)]">{t("stats.historyTitle")}</div>
               <button
                 onClick={resetStats}
                 className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-1 text-xs font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)]"
               >
-                Réinitialiser
+                {t("stats.resetStats")}
               </button>
             </div>
             <div className="mt-3 space-y-2">
               {recentHistory.length === 0 ? (
-                <div className="text-sm text-[var(--secondary)]">Aucune session enregistrée.</div>
+                <div className="text-sm text-[var(--secondary)]">{t("stats.noSessions")}</div>
               ) : (
                 recentHistory.map((entry) => {
                   const dhikr = dhikrs.find((d) => d.id === entry.dhikrId);
@@ -206,7 +210,7 @@ export default function StatsPage() {
                     >
                       <div>
                         <div className="text-sm text-[var(--foreground)]">
-                          {formatDate(entry.startAt)} — {dhikr?.arabic ?? "—"}
+                          {formatDate(entry.startAt, locale)} — {dhikr?.arabic ?? "—"}
                         </div>
                         <div className="text-xs text-[var(--secondary)]">{dhikr?.transliteration ?? ""}</div>
                       </div>

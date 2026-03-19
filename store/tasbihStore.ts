@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { dhikrs, predefinedLists } from "../data/dhikrs";
+import { DEFAULT_LIST_ID, dhikrs, predefinedLists } from "../data/dhikrs";
 import type { Dhikr } from "../data/dhikrs";
 
 export type Mode = "up" | "down";
@@ -88,9 +88,13 @@ export type TasbihStoreState = {
 };
 
 const STORAGE_KEY = "tasbihDigitalStateV1";
+const LEGACY_DEFAULT_LIST_ID = "Zikr de base";
+
+const normalizeListId = (listId: string): string =>
+  listId === LEGACY_DEFAULT_LIST_ID ? DEFAULT_LIST_ID : listId;
 
 function getInitialState(): Partial<TasbihStoreState> {
-  const listId = "Zikr de base";
+  const listId = DEFAULT_LIST_ID;
   const list = predefinedLists[listId] ?? [];
   const firstDhikrId = list.length > 0 ? list[0] : "";
 
@@ -180,10 +184,15 @@ const resolveStoredTheme = (preferences: unknown): Theme => {
 
 const baseInitialState = getInitialState();
 const storedState = loadStateFromStorage();
+const normalizedStoredActiveListId =
+  typeof storedState?.activeListId === "string"
+    ? normalizeListId(storedState.activeListId)
+    : undefined;
 
 const initialState: Partial<TasbihStoreState> = {
   ...baseInitialState,
   ...storedState,
+  activeListId: normalizedStoredActiveListId ?? baseInitialState.activeListId,
   preferences: {
     ...baseInitialState.preferences,
     ...storedState?.preferences,
@@ -406,6 +415,7 @@ const createStore = () =>
 
       selectList: (listId: string) =>
         set((state) => {
+          const normalizedListId = normalizeListId(listId);
           const lists = {
             ...predefinedLists,
             ...state.customLists,
@@ -413,15 +423,15 @@ const createStore = () =>
 
           // Support selecting a group/category from the dropdown
           const groupList = dhikrs
-            .filter((d) => d.category === listId)
+            .filter((d) => d.category === normalizedListId)
             .map((d) => d.id);
 
-          const list = lists[listId] ?? groupList ?? [];
+          const list = lists[normalizedListId] ?? groupList ?? [];
           const firstId = list[0] ?? state.currentDhikrId;
           const firstDhikr = resolveDhikr(firstId, state.customDhikrs);
           const target = firstDhikr?.defaultTarget ?? 0;
           const newState = {
-            activeListId: listId,
+            activeListId: normalizedListId,
             activeList: list,
             activeIndex: 0,
             currentDhikrId: firstId,
@@ -486,11 +496,11 @@ const createStore = () =>
             customDhikrs: nextCustomDhikrs,
           };
           if (isActive) {
-            newState.activeListId = "Zikr de base";
-            newState.activeList = predefinedLists["Zikr de base"];
+            newState.activeListId = DEFAULT_LIST_ID;
+            newState.activeList = predefinedLists[DEFAULT_LIST_ID];
             newState.activeIndex = 0;
-            newState.currentDhikrId = predefinedLists["Zikr de base"][0];
-            newState.currentDhikr = resolveDhikr(predefinedLists["Zikr de base"][0], state.customDhikrs);
+            newState.currentDhikrId = predefinedLists[DEFAULT_LIST_ID][0];
+            newState.currentDhikr = resolveDhikr(predefinedLists[DEFAULT_LIST_ID][0], state.customDhikrs);
             newState.customTarget = undefined;
           }
           persistState({

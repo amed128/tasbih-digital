@@ -4,18 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { Hash, List, BarChart2, Settings } from "lucide-react";
+import { useT } from "@/hooks/useT";
 
 type Tab = {
   href: string;
   label: string;
 };
-
-const tabs: Tab[] = [
-  { href: "/", label: "Compteur" },
-  { href: "/listes", label: "Listes" },
-  { href: "/stats", label: "Stats" },
-  { href: "/reglages", label: "Réglages" },
-];
 
 function getIcon(href: string) {
   switch (href) {
@@ -34,6 +28,13 @@ function getIcon(href: string) {
 
 export function BottomNav() {
   const pathname = usePathname();
+  const t = useT();
+  const tabs: Tab[] = [
+    { href: "/", label: t("nav.counter") },
+    { href: "/listes", label: t("nav.lists") },
+    { href: "/stats", label: t("nav.stats") },
+    { href: "/reglages", label: t("nav.settings") },
+  ];
 
   return (
     <footer className="fixed bottom-0 left-0 right-0 border-t border-[var(--border)] bg-[var(--background)]">
@@ -41,7 +42,7 @@ export function BottomNav() {
         {tabs.map((tab) => {
           const isActive = pathname === tab.href;
           const Icon = getIcon(tab.href);
-          const color = isActive ? "var(--primary)" : "#666666";
+          const color = isActive ? "var(--primary)" : "var(--secondary)";
 
           return (
             <Link

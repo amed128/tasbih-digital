@@ -4,20 +4,9 @@ import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { useTasbihStore } from "../../store/tasbihStore";
 import type { Theme } from "../../store/tasbihStore";
+import type { TapSound } from "../../store/tasbihStore";
 import { BottomNav } from "../../components/BottomNav";
-
-const SOUND_OPTIONS = [
-  { value: "off", label: "Desactive" },
-  { value: "tap-soft", label: "Tap doux" },
-  { value: "button-click", label: "Clic bouton" },
-  { value: "haptic-pulse", label: "Pulse court" },
-] as const;
-
-const THEME_OPTIONS = [
-  { value: "light", label: "Clair" },
-  { value: "dark", label: "Sombre" },
-  { value: "blue", label: "Bleu" },
-] as const;
+import { useT } from "@/hooks/useT";
 
 export default function ReglagesPage() {
   const mounted = useSyncExternalStore(
@@ -36,6 +25,20 @@ export default function ReglagesPage() {
   const toggleConfetti = useTasbihStore((s) => s.toggleConfetti);
   const setTapSound = useTasbihStore((s) => s.setTapSound);
   const setLanguage = useTasbihStore((s) => s.setLanguage);
+  const t = useT();
+
+  const soundOptions: { value: TapSound; label: string }[] = [
+    { value: "off", label: t("settings.soundOff") },
+    { value: "tap-soft", label: t("settings.soundSoft") },
+    { value: "button-click", label: t("settings.soundClick") },
+    { value: "haptic-pulse", label: t("settings.soundPulse") },
+  ];
+
+  const themeOptions: { value: Theme; label: string }[] = [
+    { value: "light", label: t("settings.themeLight") },
+    { value: "dark", label: t("settings.themeDark") },
+    { value: "blue", label: t("settings.themeBlue") },
+  ];
 
   const applyThemeToDom = (theme: Theme) => {
     if (typeof document === "undefined") return;
@@ -65,23 +68,23 @@ export default function ReglagesPage() {
         transition={{ duration: 0.2 }}
       >
         <header className="flex flex-col gap-1">
-          <h1 className="text-xl font-semibold text-[var(--foreground)]">⚙️ Réglages</h1>
-          <p className="text-sm text-[var(--secondary)]">Personnalisez votre expérience</p>
+          <h1 className="text-xl font-semibold text-[var(--foreground)]">{t("settings.title")}</h1>
+          <p className="text-sm text-[var(--secondary)]">{t("settings.subtitle")}</p>
         </header>
 
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">Thème</div>
-              <div className="text-xs text-[var(--secondary)]">Choix global de palette</div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.themeTitle")}</div>
+              <div className="text-xs text-[var(--secondary)]">{t("settings.themeHint")}</div>
             </div>
             <select
               value={preferences.theme}
               onChange={(e) => handleThemeChange(e.target.value as Theme)}
               className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
-              aria-label="Selection du thème"
+              aria-label={t("settings.ariaTheme")}
             >
-              {THEME_OPTIONS.map((option) => (
+              {themeOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -93,18 +96,18 @@ export default function ReglagesPage() {
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">Son</div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.soundTitle")}</div>
               <div className="text-xs text-[var(--secondary)]">
-                Simule un retour d&apos;appui ou une sensation de vibration
+                {t("settings.soundHint")}
               </div>
             </div>
             <select
               value={preferences.tapSound}
-              onChange={(e) => setTapSound(e.target.value as (typeof SOUND_OPTIONS)[number]["value"])}
+              onChange={(e) => setTapSound(e.target.value as TapSound)}
               className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
-              aria-label="Selection du son"
+              aria-label={t("settings.ariaSound")}
             >
-              {SOUND_OPTIONS.map((option) => (
+              {soundOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -116,9 +119,9 @@ export default function ReglagesPage() {
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">Vibration</div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.vibrationTitle")}</div>
               <div className="text-xs text-[var(--secondary)]">
-                {isIOS ? "Non disponible sur iOS" : "Retour haptique si supporte"}
+                {isIOS ? t("settings.vibrationIOS") : t("settings.vibrationHint")}
               </div>
             </div>
             <button
@@ -129,7 +132,7 @@ export default function ReglagesPage() {
                   : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
               }`}
             >
-              {preferences.vibration ? "Active" : "Desactive"}
+              {preferences.vibration ? t("settings.on") : t("settings.off")}
             </button>
           </div>
         </section>
@@ -137,8 +140,8 @@ export default function ReglagesPage() {
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">Confettis</div>
-              <div className="text-xs text-[var(--secondary)]">Animation lors de l&apos;objectif atteint</div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.confettiTitle")}</div>
+              <div className="text-xs text-[var(--secondary)]">{t("settings.confettiHint")}</div>
             </div>
             <button
               onClick={toggleConfetti}
@@ -148,13 +151,13 @@ export default function ReglagesPage() {
                   : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
               }`}
             >
-              {preferences.confetti ? "Active" : "Desactive"}
+              {preferences.confetti ? t("settings.on") : t("settings.off")}
             </button>
           </div>
         </section>
 
         <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="text-sm font-semibold text-[var(--foreground)]">Langue</div>
+          <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.langTitle")}</div>
           <div className="mt-3 flex gap-2">
             <button
               onClick={() => setLanguage("fr")}
@@ -180,7 +183,7 @@ export default function ReglagesPage() {
         </section>
 
         <div className="mt-6 text-center text-xs text-[var(--secondary)]">
-          Tasbih Digital — v1.0
+          {t("settings.version")}
         </div>
       </motion.main>
 

@@ -11,6 +11,7 @@ const THEME_META_COLOR: Record<"light" | "dark" | "blue", string> = {
 
 export function ThemeSync() {
   const theme = useTasbihStore((s) => s.preferences.theme);
+  const language = useTasbihStore((s) => s.preferences.language);
 
   useEffect(() => {
     const nextTheme = theme ?? "blue";
@@ -22,6 +23,10 @@ export function ThemeSync() {
       themeMeta.setAttribute("content", THEME_META_COLOR[nextTheme]);
     }
   }, [theme]);
+
+  useEffect(() => {
+    document.documentElement.lang = language ?? "fr";
+  }, [language]);
 
   return null;
 }

@@ -1402,8 +1402,10 @@ export const dhikrs: Dhikr[] = [
     category: "Asma ul-Husna",
   },];
 
+export const DEFAULT_LIST_ID = "base-dhikr";
+
 export const predefinedLists = {
-  "Zikr de base": [
+  [DEFAULT_LIST_ID]: [
     "tasbih-1",
     "hamd-1",
     "takbir-1",

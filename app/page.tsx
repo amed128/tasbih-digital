@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import { useTasbihStore } from "../store/tasbihStore";
-import { dhikrs } from "../data/dhikrs";
+import { DEFAULT_LIST_ID, dhikrs } from "../data/dhikrs";
+import { useT } from "@/hooks/useT";
 import { CircleProgress } from "../components/CircleProgress";
 import { BottomNav } from "../components/BottomNav";
 import { Modal } from "../components/Modal";
@@ -29,6 +30,8 @@ export default function Home() {
   const selectDhikrAsList = useTasbihStore((s) => s.selectDhikrAsList);
   const customLists = useTasbihStore((s) => s.customLists);
 
+  const t = useT();
+
   const [pulseTrigger, setPulseTrigger] = useState(0);
   const [hasFiredConfetti, setHasFiredConfetti] = useState(false);
   const prevIsCompleted = useRef(false);
@@ -44,7 +47,7 @@ export default function Home() {
   const [ignoreList, setIgnoreList] = useState(false);
 
   const isListMode =
-    !ignoreList && activeListId !== "Zikr de base" && activeList.length > 0;
+    !ignoreList && activeListId !== DEFAULT_LIST_ID && activeList.length > 0;
 
   const effectiveTarget = isListMode ? target : (customTarget ?? target);
   const isCompleted =
@@ -161,7 +164,7 @@ export default function Home() {
 
   const handleQuitList = () => {
     setIgnoreList(true);
-    selectList("Zikr de base");
+    selectList(DEFAULT_LIST_ID);
     reset();
   };
 
@@ -285,7 +288,7 @@ export default function Home() {
   const listPosition = `${activeIndex + 1} / ${activeList.length}`;
   const isListComplete =
     isListMode && isCompleted && activeIndex === activeList.length - 1;
-  const executionModeLabel = mode === "up" ? "Incrementation" : "Decrementation";
+  const executionModeLabel = mode === "up" ? t("counter.modeIncrement") : t("counter.modeDecrement");
   const initialCounter = mode === "up" ? 0 : effectiveTarget;
   const hasProgressToReset = counter !== initialCounter || (isListMode && activeIndex > 0);
 
@@ -357,12 +360,12 @@ export default function Home() {
     <div className="flex flex-col gap-6 px-5 pt-6">
       <header className="flex flex-col items-center gap-2">
         <h1 className="text-xl font-semibold text-[var(--foreground)]">🌙 Tasbih Digital</h1>
-        <p className="text-sm text-[var(--secondary)]">Compteur de Zikr</p>
+        <p className="text-sm text-[var(--secondary)]">{ t("counter.subtitle") }</p>
         <button
           type="button"
           onClick={toggleMode}
           className="rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)]"
-          aria-label="Changer le mode d'execution"
+          aria-label={t("counter.ariaChangeMode")}
         >
           Mode: {executionModeLabel}
         </button>
@@ -384,7 +387,7 @@ export default function Home() {
                   <div className="flex items-center gap-2">
                     <span className="truncate text-sm font-semibold text-[var(--foreground)]">≡ {activeListId}</span>
                     <span className="rounded-full bg-[var(--primary)] px-2 py-0.5 text-[10px] font-semibold text-black">
-                      Sélection
+                      {t("counter.selectionBadge")}
                     </span>
                   </div>
                   <div className="mt-1 text-xs text-[var(--secondary)]">
@@ -392,7 +395,7 @@ export default function Home() {
                   </div>
                 </>
               ) : (
-                <span className="truncate text-sm font-semibold text-[var(--foreground)]">Tous les Zikr</span>
+                <span className="truncate text-sm font-semibold text-[var(--foreground)]">{t("counter.allZikr")}</span>
               )}
             </div>
             <span className="ml-3 text-lg text-[var(--secondary)]">{dropdownOpen ? "⌃" : "⌄"}</span>
@@ -402,7 +405,7 @@ export default function Home() {
             <div
               id="zikr-selection-dropdown"
               role="region"
-              aria-label="Selection de Zikr"
+              aria-label={t("counter.dropdownLabel")}
               className="mt-2 max-h-[60vh] w-full overflow-x-hidden overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--card)] py-1 shadow-[0_10px_28px_rgba(0,0,0,0.45)]"
             >
               <div className="border-b border-[var(--border)] px-4 py-3">
@@ -410,7 +413,7 @@ export default function Home() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onBlur={(e) => setSearchQuery(e.target.value.trim())}
-                  placeholder="Rechercher un Zikr ou une catégorie"
+                  placeholder={t("counter.searchPlaceholder")}
                   className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base text-[var(--foreground)] placeholder:text-[var(--secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                 />
               </div>
@@ -422,7 +425,7 @@ export default function Home() {
               >
                 <span className="flex items-center gap-2">
                   <span className="text-[0.78rem]">◫</span>
-                  <span>BIBLIOTHÈQUE</span>
+                  <span>{t("counter.library")}</span>
                 </span>
                 <span className="text-sm">{libraryExpanded ? "⌄" : "›"}</span>
               </button>
@@ -432,7 +435,7 @@ export default function Home() {
               {filteredGroupEntries.length === 0 &&
                 Object.keys(filteredCustomLists).length === 0 && (
                   <div className="px-4 py-3 text-sm text-[var(--secondary)]">
-                    Aucun résultat trouvé
+                    {t("counter.noResults")}
                   </div>
                 )}
 
@@ -443,7 +446,7 @@ export default function Home() {
                     <div
                       role="button"
                       tabIndex={0}
-                      aria-label={`Selectionner ${category}`}
+                      aria-label={t("counter.ariaSelect", { name: category })}
                       className="flex cursor-pointer items-center justify-between px-4 py-3 hover:bg-white/[0.03]"
                       onClick={() => {
                         selectList(category);
@@ -480,7 +483,7 @@ export default function Home() {
                             }));
                           }}
                           className="ml-2 flex h-7 w-7 items-center justify-center rounded-md text-base text-gray-500 hover:bg-white/5"
-                          aria-label={expanded ? "Réduire" : "Développer"}
+                          aria-label={expanded ? t("counter.ariaCollapse") : t("counter.ariaExpand")}
                         >
                           {expanded ? "⌄" : "›"}
                         </button>
@@ -522,7 +525,7 @@ export default function Home() {
               >
                 <span className="flex items-center gap-2">
                   <span className="text-[0.78rem]">≡</span>
-                  <span>LISTES PERSONNALISÉES</span>
+                  <span>{t("counter.customLists")}</span>
                 </span>
                 <span className="text-sm">{customListsExpanded ? "⌄" : "›"}</span>
               </button>
@@ -530,7 +533,7 @@ export default function Home() {
               {customListsExpanded && (
                 <>
               {Object.keys(filteredCustomLists).length === 0 ? (
-                <div className="px-4 py-2 text-sm text-[var(--secondary)]">Aucune liste créée</div>
+                <div className="px-4 py-2 text-sm text-[var(--secondary)]">{t("counter.noListsCreated")}</div>
               ) : (
                 Object.entries(filteredCustomLists).map(([listId, ids]) => {
                   const expanded = isSearching ? true : expandedGroups[listId] ?? false;
@@ -542,7 +545,7 @@ export default function Home() {
                       <div
                         role="button"
                         tabIndex={0}
-                        aria-label={`Selectionner ${listId}`}
+                        aria-label={t("counter.ariaSelect", { name: listId })}
                         className="flex cursor-pointer items-center justify-between px-4 py-3 hover:bg-white/[0.03]"
                         onClick={() => {
                           selectList(listId);
@@ -579,7 +582,7 @@ export default function Home() {
                               }));
                             }}
                             className="ml-2 flex h-7 w-7 items-center justify-center rounded-md text-base text-gray-500 hover:bg-white/5"
-                            aria-label={expanded ? "Réduire" : "Développer"}
+                            aria-label={expanded ? t("counter.ariaCollapse") : t("counter.ariaExpand")}
                           >
                             {expanded ? "⌄" : "›"}
                           </button>
@@ -640,7 +643,7 @@ export default function Home() {
           pulseTrigger={pulseTrigger}
         />
         <div className="text-center">
-          <div className="text-sm font-semibold text-[var(--secondary)]">CIBLE</div>
+          <div className="text-sm font-semibold text-[var(--secondary)]">{t("counter.target")}</div>
           {!isListMode && !isCompleted ? (
             <input
               type="number"
@@ -678,7 +681,7 @@ export default function Home() {
             isCompleted ? "pointer-events-none cursor-not-allowed" : ""
           }`}
         >
-          Appuyer
+          {t("counter.tap")}
         </motion.button>
 
         <AnimatePresence>
@@ -691,7 +694,7 @@ export default function Home() {
               transition={{ duration: 0.18 }}
               className="w-full rounded-xl bg-[#22C55E] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
             >
-              → Zikr suivant
+              {t("counter.nextZikr")}
             </motion.button>
           )}
         </AnimatePresence>
@@ -699,16 +702,16 @@ export default function Home() {
         <div className="flex items-center justify-between gap-4">
           <button
             onClick={undoLast}
-            aria-label="Annuler la dernière action"
+            aria-label={t("counter.ariaUndo")}
             className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"
           >
-            ↩ Annuler
+            {t("counter.undo")}
           </button>
           <button
             onClick={handleResetRequest}
             className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"
           >
-            Reinitialiser
+            {t("counter.reset")}
           </button>
         </div>
       </motion.div>
@@ -757,7 +760,7 @@ export default function Home() {
             type="button"
             onClick={toggleMode}
             className="rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)]"
-            aria-label="Changer le mode d'execution"
+            aria-label={t("counter.ariaChangeMode")}
           >
             Mode: {executionModeLabel}
           </button>
@@ -803,7 +806,7 @@ export default function Home() {
               isCompleted ? "pointer-events-none cursor-not-allowed" : ""
             }`}
           >
-            Appuyer
+            {t("counter.tap")}
           </motion.button>
 
           <AnimatePresence>
@@ -816,7 +819,7 @@ export default function Home() {
                 transition={{ duration: 0.18 }}
                 className="w-full rounded-xl bg-[#22C55E] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
               >
-                → Zikr suivant
+                {t("counter.nextZikr")}
               </motion.button>
             )}
           </AnimatePresence>
@@ -824,16 +827,16 @@ export default function Home() {
           <div className="flex items-center justify-between gap-4">
             <button
               onClick={undoLast}
-              aria-label="Annuler la dernière action"
+              aria-label={t("counter.ariaUndo")}
               className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"
             >
-              ↩ Annuler
+              {t("counter.undo")}
             </button>
             <button
               onClick={handleResetRequest}
               className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"
             >
-              Reinitialiser
+              {t("counter.reset")}
             </button>
           </div>
 
@@ -841,13 +844,13 @@ export default function Home() {
             onClick={handleQuitList}
             className="mt-4 mb-4 self-center rounded-lg px-4 py-1.5 text-center text-sm font-semibold text-[var(--secondary)] underline"
           >
-            ↩ Retour au compteur simple
+            {t("counter.backToSimple")}
           </button>
         </motion.div>
 
         {showListCompleteToast && (
           <div className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-full bg-[#22C55E] px-4 py-2 text-sm font-semibold text-white shadow-lg">
-            ✓ Liste complète !
+            {t("counter.listComplete")}
           </div>
         )}
       </div>
@@ -868,7 +871,7 @@ export default function Home() {
 
       <Modal
         isOpen={showResetConfirm}
-        title="Reinitialiser le compteur ?"
+        title={t("counter.resetModal.title")}
         onClose={() => setShowResetConfirm(false)}
         closeOnOverlayClick={false}
         footer={
@@ -877,19 +880,19 @@ export default function Home() {
               onClick={() => setShowResetConfirm(false)}
               className="rounded-xl bg-[var(--card)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
             >
-              Annuler
+              {t("counter.resetModal.cancel")}
             </button>
             <button
               onClick={handleResetConfirm}
               className="rounded-xl bg-[#EF4444] px-4 py-2 text-sm font-semibold text-white"
             >
-              Reinitialiser
+              {t("counter.resetModal.confirm")}
             </button>
           </div>
         }
       >
         <div className="text-sm text-[var(--secondary)]">
-          Cette action remettra votre progression actuelle a zero.
+          {t("counter.resetModal.body")}
         </div>
       </Modal>
 

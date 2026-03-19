@@ -8,6 +8,7 @@ import { dhikrs } from "../../data/dhikrs";
 import type { Dhikr } from "../../data/dhikrs";
 import { BottomNav } from "../../components/BottomNav";
 import { Modal } from "../../components/Modal";
+import { useT } from "@/hooks/useT";
 
 type CreateListItem = {
   source: "library" | "manual";
@@ -134,6 +135,7 @@ export default function ListesPage() {
   const selectList = useTasbihStore((s) => s.selectList);
   const listesUI = useTasbihStore((s) => s.listesUI);
   const setListesUI = useTasbihStore((s) => s.setListesUI);
+  const t = useT();
 
   const libraryExpanded = listesUI.libraryExpanded;
   const expandedCategories = listesUI.expandedCategories;
@@ -428,7 +430,7 @@ export default function ListesPage() {
               <BookOpen className="h-6 w-6 text-[var(--primary)]" strokeWidth={1.8} />
               <div>
                 <div className="text-[0.875rem] font-semibold text-[var(--foreground)]">
-                  Bibliothèque de zikr
+                  {t("lists.libraryTitle")}
                   <span className="ml-2 text-[var(--secondary)]">({dhikrs.length})</span>
                 </div>
               </div>
@@ -449,7 +451,7 @@ export default function ListesPage() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     onBlur={(e) => setSearch(e.target.value.trim())}
-                    placeholder="Rechercher un zikr..."
+                    placeholder={t("lists.searchPlaceholder")}
                     className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] py-2.5 pl-11 pr-4 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
                   />
                 </div>
@@ -457,7 +459,7 @@ export default function ListesPage() {
 
               <div className="max-h-[40vh] overflow-y-auto overscroll-contain border-t border-[var(--border)]">
                 {categoryEntries.length === 0 ? (
-                  <div className="px-6 py-4 text-sm text-[var(--secondary)]">Aucun résultat trouvé</div>
+                  <div className="px-6 py-4 text-sm text-[var(--secondary)]">{t("lists.noResults")}</div>
                 ) : (
                   categoryEntries.map(([category, items]) => {
                     const expanded = isSearching ? true : expandedCategories[category] ?? false;
@@ -511,19 +513,19 @@ export default function ListesPage() {
         <section>
           <div className="flex items-center justify-between gap-3">
             <div className="whitespace-nowrap text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-[var(--secondary)]">
-              LISTES PERSONNALISÉES
+              {t("lists.personalListsTitle")}
             </div>
             <button
               onClick={openCreateModal}
               className="whitespace-nowrap rounded-2xl border border-[var(--primary)] bg-[var(--card)] px-3.5 py-1.5 text-[0.82rem] font-semibold text-[var(--primary)]"
             >
-              ＋ Nouvelle liste
+              {t("lists.newListBtn")}
             </button>
           </div>
 
           <div className="mt-4 space-y-4">
             {Object.keys(customLists).length === 0 ? (
-              <div className="text-sm text-[var(--secondary)]">Aucune liste personnelle. Créez-en une.</div>
+              <div className="text-sm text-[var(--secondary)]">{t("lists.noPersonalLists")}</div>
             ) : (
               Object.entries(customLists).map(([listId, items]) => {
                 const expanded = expandedLists[listId] ?? false;
@@ -562,7 +564,7 @@ export default function ListesPage() {
                             }));
                           }}
                           className="text-[var(--secondary)]"
-                          aria-label={expanded ? "Réduire" : "Développer"}
+                          aria-label={expanded ? t("lists.ariaCollapse") : t("lists.ariaExpand")}
                         >
                           {expanded ? <ChevronUp className="h-5 w-5" strokeWidth={2} /> : <ChevronDown className="h-5 w-5" strokeWidth={2} />}
                         </button>
@@ -572,7 +574,7 @@ export default function ListesPage() {
                             openEditListView(listId);
                           }}
                           className="text-[var(--secondary)]"
-                          aria-label="Renommer"
+                          aria-label={t("lists.ariaRename")}
                         >
                           <Pencil className="h-5 w-5" strokeWidth={2} />
                         </button>
@@ -582,7 +584,7 @@ export default function ListesPage() {
                             openDeleteModal(listId);
                           }}
                           className="text-[var(--secondary)]"
-                          aria-label="Supprimer"
+                          aria-label={t("lists.ariaDelete")}
                         >
                           <Trash2 className="h-5 w-5" strokeWidth={2} />
                         </button>
@@ -592,7 +594,7 @@ export default function ListesPage() {
                     {expanded && (
                       <div className="space-y-2 border-t border-[var(--border)] bg-[var(--background)] px-5 py-3">
                         {items.length === 0 ? (
-                          <div className="text-sm text-[var(--secondary)]">Aucun Zikr dans cette liste.</div>
+                          <div className="text-sm text-[var(--secondary)]">{t("lists.noZikrInList")}</div>
                         ) : (
                           items.map((dhikrId) => {
                             const dhikr = allDhikrsById.get(dhikrId);
@@ -632,27 +634,27 @@ export default function ListesPage() {
         {isListFormMode && (
           <section className="flex flex-col gap-5 pb-2">
             <h2 className="text-[2.15rem] font-semibold tracking-tight text-[var(--foreground)]">
-              {isEditMode ? "Modifier la liste" : "Nouvelle liste"}
+              {isEditMode ? t("lists.editListTitle") : t("lists.newListTitle")}
             </h2>
 
             <div>
-              <label className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--secondary)]">Nom de la liste</label>
+              <label className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--secondary)]">{t("lists.listNameLabel")}</label>
               <input
                 value={modalInput}
                 onChange={(e) => setModalInput(e.target.value)}
-                placeholder={isEditMode ? "Nom de la liste" : "Ex: Après la prière"}
+                placeholder={isEditMode ? t("lists.listNameEditPlaceholder") : t("lists.listNamePlaceholder")}
                 className="mt-3 w-full rounded-3xl border border-[var(--border)] bg-[var(--card)] px-5 py-4 text-[0.95rem] font-semibold text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
               />
               {hasDuplicateListName && (
-                <p className="mt-2 text-xs text-[#D32F2F]">Ce nom de liste existe déjà.</p>
+                <p className="mt-2 text-xs text-[#D32F2F]">{t("lists.duplicateName")}</p>
               )}
             </div>
 
             <div>
-              <div className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--secondary)]">Zikrs</div>
+              <div className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--secondary)]">{t("lists.zikrsLabel")}</div>
               <div className="mt-3 space-y-3 rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-4">
                 {createListItems.length === 0 ? (
-                  <div className="text-sm text-[var(--secondary)]">Ajoute au moins un zikr depuis la bibliothèque ou l&apos;ajout manuel.</div>
+                  <div className="text-sm text-[var(--secondary)]">{t("lists.addAtLeastOne")}</div>
                 ) : (
                   createListItems.map(({ source, dhikr }, idx) => {
                     return (
@@ -667,7 +669,7 @@ export default function ListesPage() {
                           </div>
                           <div className="text-xs text-[var(--secondary)]">
                             {dhikr.transliteration} · {dhikr.defaultTarget}
-                            {source === "manual" ? " · Manuel" : ""}
+                            {source === "manual" ? ` · ${t("lists.manualTag")}` : ""}
                           </div>
                         </div>
                         <button
@@ -688,7 +690,7 @@ export default function ListesPage() {
               onClick={() => setManualDhikrShow((prev) => !prev)}
               className="rounded-3xl border border-dashed border-[var(--border)] py-4 text-[1.05rem] font-semibold text-[var(--secondary)] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
             >
-              + Ajouter manuellement
+              {t("lists.addManualBtn")}
             </button>
 
             {manualDhikrShow && (
@@ -696,26 +698,26 @@ export default function ListesPage() {
                 <input
                   value={manualArabic}
                   onChange={(e) => setManualArabic(e.target.value)}
-                  placeholder="(ex: سُبْحَانَ اللهِ) Texte arabe"
+                  placeholder={t("lists.arabicPlaceholder")}
                   className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
                 />
                 <input
                   value={manualTranslit}
                   onChange={(e) => setManualTranslit(e.target.value)}
                   onBlur={handleManualTranslitBlur}
-                  placeholder="Translittération / nom"
+                  placeholder={t("lists.translitPlaceholder")}
                   className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
                 />
                 {manualArabicSuggestion ? (
                   <p className="text-xs text-[var(--primary)]">
-                    Auto-complétion disponible: {manualArabicSuggestion}
+                    {t("lists.autocompleteHint")} {manualArabicSuggestion}
                     {manualAutocompleteSuggestion?.transliteration
                       ? ` · ${manualAutocompleteSuggestion.transliteration}`
                       : ""}
                   </p>
                 ) : null}
                 <div className="flex items-center gap-2">
-                  <label className="text-[1rem] font-semibold text-[var(--foreground)]">Répétitions :</label>
+                  <label className="text-[1rem] font-semibold text-[var(--foreground)]">{t("lists.repsLabel")}</label>
                   <input
                     type="number"
                     min="1"
@@ -724,13 +726,13 @@ export default function ListesPage() {
                     className="w-36 rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-[2rem] font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
                   />
                 </div>
-                <p className="text-xs text-[var(--secondary)]">Pour ajouter manuellement, il faut un nombre de répétitions supérieur à 0 et au moins un des champs Texte arabe ou Translittération.</p>
+                <p className="text-xs text-[var(--secondary)]">{t("lists.manualHint")}</p>
                 <button
                   onClick={handleAddManualDhikr}
                   disabled={!canAddManualDhikr}
                   className="w-full rounded-xl bg-[var(--primary)] py-2.5 text-sm font-semibold text-black transition hover:bg-[color:var(--primary)]/90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Ajouter
+                  {t("lists.addBtn")}
                 </button>
               </div>
             )}
@@ -743,7 +745,7 @@ export default function ListesPage() {
               >
                 <span className="text-[2rem] text-[var(--primary)]">◫</span>
                 <span className="ml-3 flex-1 text-[0.95rem] font-semibold text-[var(--foreground)]">
-                  Bibliothèque de zikr
+                  {t("lists.libraryTitle")}
                   <span className="ml-2 text-[var(--secondary)]">({dhikrs.length})</span>
                 </span>
                 <span className="text-[var(--secondary)]">{createLibraryExpanded ? "⌃" : "⌄"}</span>
@@ -755,7 +757,7 @@ export default function ListesPage() {
                     value={createSearchQuery}
                     onChange={(e) => setCreateSearchQuery(e.target.value)}
                     onBlur={(e) => setCreateSearchQuery(e.target.value.trim())}
-                    placeholder="Rechercher..."
+                    placeholder={t("lists.searchInLibrary")}
                     className="w-full rounded-xl bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]"
                   />
                   <div className="max-h-52 space-y-1 overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--background)] p-2">
@@ -814,14 +816,14 @@ export default function ListesPage() {
                 onClick={closeModal}
                 className="rounded-3xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[1.05rem] font-semibold text-[var(--foreground)]"
               >
-                Annuler
+                {t("lists.cancel")}
               </button>
               <button
                 onClick={handleSaveListForm}
                 disabled={!canSaveList}
                 className="rounded-3xl bg-[var(--card)] px-4 py-3 text-[1.05rem] font-semibold text-[var(--foreground)] transition enabled:bg-[var(--primary)] enabled:text-black disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {isEditMode ? "Mettre à jour" : "Sauvegarder"}
+                {isEditMode ? t("lists.updateBtn") : t("lists.saveBtn")}
               </button>
             </div>
           </section>
@@ -829,7 +831,7 @@ export default function ListesPage() {
 
         <Modal
           isOpen={modalType === "delete"}
-          title="Supprimer la liste"
+          title={t("lists.deleteModalTitle")}
           onClose={closeModal}
           closeOnOverlayClick={false}
           footer={
@@ -838,25 +840,25 @@ export default function ListesPage() {
                 onClick={closeModal}
                 className="rounded-xl bg-[var(--card)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
               >
-                Annuler
+                {t("lists.cancel")}
               </button>
               <button
                 onClick={handleDeleteConfirm}
                 className="rounded-xl bg-[#EF4444] px-4 py-2 text-sm font-semibold text-white"
               >
-                Supprimer
+                {t("lists.deleteConfirm")}
               </button>
             </div>
           }
         >
           <div className="text-sm text-[var(--secondary)]">
-            Supprimer <span className="font-semibold text-[var(--foreground)]">{modalListId}</span> ?
+            {t("lists.deleteModalBody", { name: modalListId ?? "" })}
           </div>
         </Modal>
 
         <Modal
           isOpen={Boolean(selectedLibraryDhikr)}
-          title="Aperçu du zikr"
+          title={t("lists.previewTitle")}
           onClose={() => setSelectedLibraryDhikr(null)}
           closeOnOverlayClick
         >
@@ -869,7 +871,7 @@ export default function ListesPage() {
                 {selectedLibraryDhikr.transliteration}
               </div>
               <div className="mt-1 text-sm text-[var(--secondary)]">
-                Objectif: {selectedLibraryDhikr.defaultTarget}
+                {t("lists.previewTarget", { count: selectedLibraryDhikr.defaultTarget })}
               </div>
             </div>
           ) : null}

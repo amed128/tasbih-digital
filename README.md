@@ -14,11 +14,6 @@ Tasbih Digital is a mobile-first zikr counter built with Next.js. It provides a 
 
 ## Screenshots
 
-Add app captures under `docs/screenshots/` and keep them mobile-focused.
-
-Use this exact Markdown block once the files exist:
-
-```md
 ![Counter screen](docs/screenshots/counter.png)
 
 ![Lists screen](docs/screenshots/lists.png)
@@ -26,7 +21,6 @@ Use this exact Markdown block once the files exist:
 ![Stats screen](docs/screenshots/stats.png)
 
 ![Settings screen](docs/screenshots/settings.png)
-```
 
 ## Tech Stack
 

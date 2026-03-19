@@ -1,0 +1,23 @@
+changelog:
+  exclude:
+    labels:
+      - skip-changelog
+  categories:
+    - title: Features
+      labels:
+        - enhancement
+        - ui
+        - mobile
+    - title: Fixes
+      labels:
+        - bug
+        - accessibility
+        - state
+    - title: Documentation
+      labels:
+        - documentation
+        - translations
+    - title: Tooling and Tests
+      labels:
+        - pwa
+        - chore

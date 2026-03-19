@@ -8,7 +8,11 @@
     "start": "next start",
     "lint": "eslint",
     "test:e2e": "playwright test",
-    "test:e2e:smoke": "playwright test tests/e2e/smoke.spec.ts --project=chromium"
+    "test:e2e:smoke": "playwright test tests/e2e/smoke.spec.ts --project=chromium",
+    "release:patch": "npm version patch -m \"chore(release): %s\"",
+    "release:minor": "npm version minor -m \"chore(release): %s\"",
+    "release:major": "npm version major -m \"chore(release): %s\"",
+    "release:push": "git push && git push --tags"
   },
   "dependencies": {
     "@types/canvas-confetti": "^1.9.0",

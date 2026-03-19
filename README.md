@@ -156,6 +156,20 @@ npm run lint
 npm run test:e2e:smoke
 ```
 
+### Release (Tag + GitHub Release)
+
+```bash
+# choose one
+npm run release:patch
+npm run release:minor
+npm run release:major
+
+# then publish commit + tag
+npm run release:push
+```
+
+Pushing a tag like `v0.2.0` triggers the release workflow and creates a GitHub Release with generated notes.
+
 ## Deployment
 
 The app can be deployed on any platform that supports Next.js. Vercel is the simplest option.

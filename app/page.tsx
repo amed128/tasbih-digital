@@ -269,7 +269,11 @@ export default function Home() {
   const chipsContainerRef = useRef<HTMLDivElement | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
-  useEffect(() => () => { audioCtxRef.current?.close(); }, []);
+  useEffect(() => () => {
+    if (audioCtxRef.current && audioCtxRef.current.state !== "closed") {
+      audioCtxRef.current.close();
+    }
+  }, []);
 
   useEffect(() => {
     if (!dropdownOpen) setSearchQuery("");

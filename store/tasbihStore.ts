@@ -26,6 +26,7 @@ export type Preferences = {
   vibration: boolean;
   tapSound: TapSound;
   language: "fr" | "en";
+  confetti: boolean;
 };
 
 export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
@@ -74,6 +75,7 @@ export type TasbihStoreState = {
   resetStats: () => void;
   setTheme: (theme: Theme) => void;
   toggleVibration: () => void;
+  toggleConfetti: () => void;
   setTapSound: (sound: TapSound) => void;
   setLanguage: (lang: "fr" | "en") => void;
   createList: (listName: string) => void;
@@ -122,6 +124,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       vibration: true,
       tapSound: "tap-soft",
       language: "fr",
+      confetti: true,
     },
   };
 }
@@ -645,6 +648,21 @@ const createStore = () =>
             preferences: {
               ...state.preferences,
               vibration: !state.preferences.vibration,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      toggleConfetti: () =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              confetti: !state.preferences.confetti,
             },
           };
           persistState({

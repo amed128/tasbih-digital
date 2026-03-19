@@ -18,6 +18,7 @@ export default function Home() {
   const isStarted = useTasbihStore((s) => s.isStarted);
   const mode = useTasbihStore((s) => s.mode);
   const vibrationEnabled = useTasbihStore((s) => s.preferences.vibration);
+  const confettiEnabled = useTasbihStore((s) => s.preferences.confetti);
   const tapSound = useTasbihStore((s) => s.preferences.tapSound);
   const customTarget = useTasbihStore((s) => s.customTarget);
   const increment = useTasbihStore((s) => s.increment);
@@ -167,12 +168,14 @@ export default function Home() {
   useEffect(() => {
     if (isCompleted && !prevIsCompleted.current) {
       triggerHaptic([35, 40, 35]);
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { x: 0.5, y: 0.4 },
-        colors: ["#E4B15A", "#FFFFFF"],
-      });
+      if (confettiEnabled) {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { x: 0.5, y: 0.4 },
+          colors: ["#E4B15A", "#FFFFFF"],
+        });
+      }
       setHasFiredConfetti(true);
     }
 

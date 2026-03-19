@@ -429,14 +429,14 @@ export default function ListesPage() {
               <div>
                 <div className="text-[0.875rem] font-semibold text-[var(--foreground)]">
                   Bibliothèque de zikr
-                  <span className="ml-2 text-[#5D5D5D]">({dhikrs.length})</span>
+                  <span className="ml-2 text-[var(--secondary)]">({dhikrs.length})</span>
                 </div>
               </div>
             </div>
             {libraryExpanded ? (
-              <ChevronUp className="h-5 w-5 text-[#666666]" strokeWidth={2} />
+              <ChevronUp className="h-5 w-5 text-[var(--secondary)]" strokeWidth={2} />
             ) : (
-              <ChevronDown className="h-5 w-5 text-[#666666]" strokeWidth={2} />
+              <ChevronDown className="h-5 w-5 text-[var(--secondary)]" strokeWidth={2} />
             )}
           </button>
 
@@ -444,20 +444,20 @@ export default function ListesPage() {
             <div className="border-t border-[var(--border)]">
               <div className="px-4 py-3">
                 <div className="relative">
-                  <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#6B6B6B]" strokeWidth={2} />
+                  <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--secondary)]" strokeWidth={2} />
                   <input
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     onBlur={(e) => setSearch(e.target.value.trim())}
                     placeholder="Rechercher un zikr..."
-                    className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] py-2.5 pl-11 pr-4 text-[0.95rem] text-[var(--foreground)] placeholder:text-[#5A5A5A] outline-none focus:border-[var(--primary)]"
+                    className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] py-2.5 pl-11 pr-4 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
                   />
                 </div>
               </div>
 
               <div className="max-h-[40vh] overflow-y-auto overscroll-contain border-t border-[var(--border)]">
                 {categoryEntries.length === 0 ? (
-                  <div className="px-6 py-4 text-sm text-[#7A7A7A]">Aucun résultat trouvé</div>
+                  <div className="px-6 py-4 text-sm text-[var(--secondary)]">Aucun résultat trouvé</div>
                 ) : (
                   categoryEntries.map(([category, items]) => {
                     const expanded = isSearching ? true : expandedCategories[category] ?? false;
@@ -477,8 +477,8 @@ export default function ListesPage() {
                           <span className="flex-1 text-[0.95rem] font-semibold text-[var(--primary)]">
                             {category}
                           </span>
-                          <span className="text-[0.95rem] font-semibold text-[#666666]">{items.length}</span>
-                          <span className="ml-4 text-[0.95rem] text-[#5A5A5A]">{expanded ? "⌃" : "⌄"}</span>
+                          <span className="text-[0.95rem] font-semibold text-[var(--secondary)]">{items.length}</span>
+                          <span className="ml-4 text-[0.95rem] text-[var(--secondary)]">{expanded ? "⌃" : "⌄"}</span>
                         </button>
 
                         {expanded && (
@@ -491,9 +491,9 @@ export default function ListesPage() {
                                 className="group w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 text-left transition hover:border-[#3E3E3E]"
                               >
                                 <div className="text-[0.95rem] font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">{d.arabic}</div>
-                                <div className="mt-0.5 flex items-center justify-between gap-3 text-[#7A7A7A]">
+                                <div className="mt-0.5 flex items-center justify-between gap-3 text-[var(--secondary)]">
                                   <span className="min-w-0 flex-1 truncate text-[0.86rem] font-semibold">{d.transliteration}</span>
-                                  <span className="flex-shrink-0 font-semibold text-[#8A8A8A]">×{d.defaultTarget}</span>
+                                  <span className="flex-shrink-0 font-semibold text-[var(--secondary)]">×{d.defaultTarget}</span>
                                 </div>
                               </button>
                             ))}
@@ -510,7 +510,7 @@ export default function ListesPage() {
 
         <section>
           <div className="flex items-center justify-between gap-3">
-            <div className="whitespace-nowrap text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-[#8A8A90]">
+            <div className="whitespace-nowrap text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-[var(--secondary)]">
               LISTES PERSONNALISÉES
             </div>
             <button
@@ -523,7 +523,7 @@ export default function ListesPage() {
 
           <div className="mt-4 space-y-4">
             {Object.keys(customLists).length === 0 ? (
-              <div className="text-sm text-[#7A7A7A]">Aucune liste personnelle. Créez-en une.</div>
+              <div className="text-sm text-[var(--secondary)]">Aucune liste personnelle. Créez-en une.</div>
             ) : (
               Object.entries(customLists).map(([listId, items]) => {
                 const expanded = expandedLists[listId] ?? false;
@@ -544,11 +544,11 @@ export default function ListesPage() {
                       className="flex items-center justify-between px-4 py-4.5"
                     >
                       <div className="flex min-w-0 flex-1 items-center gap-4">
-                        <Grip className="h-4 w-4 text-[#595959]" strokeWidth={2} />
+                        <Grip className="h-4 w-4 text-[var(--secondary)]" strokeWidth={2} />
                         <div className="min-w-0 flex-1 text-left">
                           <div className="truncate text-[0.9rem] font-semibold text-[var(--foreground)]">
                             {listId}
-                            <span className="ml-2 text-[0.86rem] text-[#656565]">({formatZikrCount(items.length)})</span>
+                            <span className="ml-2 text-[0.86rem] text-[var(--secondary)]">({formatZikrCount(items.length)})</span>
                           </div>
                         </div>
                       </div>
@@ -561,7 +561,7 @@ export default function ListesPage() {
                               [listId]: !expanded,
                             }));
                           }}
-                          className="text-[#747474]"
+                          className="text-[var(--secondary)]"
                           aria-label={expanded ? "Réduire" : "Développer"}
                         >
                           {expanded ? <ChevronUp className="h-5 w-5" strokeWidth={2} /> : <ChevronDown className="h-5 w-5" strokeWidth={2} />}
@@ -571,7 +571,7 @@ export default function ListesPage() {
                             e.stopPropagation();
                             openEditListView(listId);
                           }}
-                          className="text-[#8A8A8A]"
+                          className="text-[var(--secondary)]"
                           aria-label="Renommer"
                         >
                           <Pencil className="h-5 w-5" strokeWidth={2} />
@@ -581,7 +581,7 @@ export default function ListesPage() {
                             e.stopPropagation();
                             openDeleteModal(listId);
                           }}
-                          className="text-[#8A8A8A]"
+                          className="text-[var(--secondary)]"
                           aria-label="Supprimer"
                         >
                           <Trash2 className="h-5 w-5" strokeWidth={2} />
@@ -592,7 +592,7 @@ export default function ListesPage() {
                     {expanded && (
                       <div className="space-y-2 border-t border-[var(--border)] bg-[var(--background)] px-5 py-3">
                         {items.length === 0 ? (
-                          <div className="text-sm text-[#7A7A7A]">Aucun Zikr dans cette liste.</div>
+                          <div className="text-sm text-[var(--secondary)]">Aucun Zikr dans cette liste.</div>
                         ) : (
                           items.map((dhikrId) => {
                             const dhikr = allDhikrsById.get(dhikrId);
@@ -608,11 +608,11 @@ export default function ListesPage() {
                                   <div className="truncate text-[1.05rem] font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">
                                     {dhikr.arabic}
                                   </div>
-                                  <div className="truncate text-[0.86rem] font-semibold text-[#6F6F73]">
+                                  <div className="truncate text-[0.86rem] font-semibold text-[var(--secondary)]">
                                     {dhikr.transliteration}
                                   </div>
                                 </div>
-                                <span className="ml-4 flex-shrink-0 text-[1rem] font-semibold text-[#79797E]">×{dhikr.defaultTarget}</span>
+                                <span className="ml-4 flex-shrink-0 text-[1rem] font-semibold text-[var(--secondary)]">×{dhikr.defaultTarget}</span>
                               </button>
                             );
                           })
@@ -636,23 +636,23 @@ export default function ListesPage() {
             </h2>
 
             <div>
-              <label className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#7E7E83]">Nom de la liste</label>
+              <label className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--secondary)]">Nom de la liste</label>
               <input
                 value={modalInput}
                 onChange={(e) => setModalInput(e.target.value)}
                 placeholder={isEditMode ? "Nom de la liste" : "Ex: Après la prière"}
-                className="mt-3 w-full rounded-3xl border border-[var(--border)] bg-[var(--card)] px-5 py-4 text-[0.95rem] font-semibold text-[var(--foreground)] placeholder:text-[#5B5B5B] outline-none focus:border-[var(--primary)]"
+                className="mt-3 w-full rounded-3xl border border-[var(--border)] bg-[var(--card)] px-5 py-4 text-[0.95rem] font-semibold text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
               />
               {hasDuplicateListName && (
-                <p className="mt-2 text-xs text-[#E07A7A]">Ce nom de liste existe déjà.</p>
+                <p className="mt-2 text-xs text-[#D32F2F]">Ce nom de liste existe déjà.</p>
               )}
             </div>
 
             <div>
-              <div className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#7E7E83]">Zikrs</div>
+              <div className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--secondary)]">Zikrs</div>
               <div className="mt-3 space-y-3 rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-4">
                 {createListItems.length === 0 ? (
-                  <div className="text-sm text-[#7D7D7D]">Ajoute au moins un zikr depuis la bibliothèque ou l&apos;ajout manuel.</div>
+                  <div className="text-sm text-[var(--secondary)]">Ajoute au moins un zikr depuis la bibliothèque ou l&apos;ajout manuel.</div>
                 ) : (
                   createListItems.map(({ source, dhikr }, idx) => {
                     return (
@@ -662,17 +662,17 @@ export default function ListesPage() {
                       >
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-[#7E7E7E]">#{idx + 1}</span>
+                            <span className="text-xs text-[var(--secondary)]">#{idx + 1}</span>
                             <div className="text-xs font-semibold text-[var(--foreground)]">{dhikr.arabic}</div>
                           </div>
-                          <div className="text-xs text-[#8B8B8B]">
+                          <div className="text-xs text-[var(--secondary)]">
                             {dhikr.transliteration} · {dhikr.defaultTarget}
                             {source === "manual" ? " · Manuel" : ""}
                           </div>
                         </div>
                         <button
                           onClick={() => handleRemoveDhikrFromCreate(dhikr.id)}
-                          className="ml-2 text-lg text-[#8B8B8B] hover:text-white"
+                          className="ml-2 text-lg text-[var(--secondary)] hover:text-[var(--foreground)]"
                         >
                           ✕
                         </button>
@@ -686,7 +686,7 @@ export default function ListesPage() {
             <button
               type="button"
               onClick={() => setManualDhikrShow((prev) => !prev)}
-              className="rounded-3xl border border-dashed border-[#C9C9C9] py-4 text-[1.05rem] font-semibold text-[#9C9C9C] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
+              className="rounded-3xl border border-dashed border-[var(--border)] py-4 text-[1.05rem] font-semibold text-[var(--secondary)] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
             >
               + Ajouter manuellement
             </button>
@@ -697,17 +697,17 @@ export default function ListesPage() {
                   value={manualArabic}
                   onChange={(e) => setManualArabic(e.target.value)}
                   placeholder="(ex: سُبْحَانَ اللهِ) Texte arabe"
-                  className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[#666666] outline-none focus:border-[var(--primary)]"
+                  className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
                 />
                 <input
                   value={manualTranslit}
                   onChange={(e) => setManualTranslit(e.target.value)}
                   onBlur={handleManualTranslitBlur}
                   placeholder="Translittération / nom"
-                  className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[#666666] outline-none focus:border-[var(--primary)]"
+                  className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
                 />
                 {manualArabicSuggestion ? (
-                  <p className="text-xs text-[#C89B32]">
+                  <p className="text-xs text-[var(--primary)]">
                     Auto-complétion disponible: {manualArabicSuggestion}
                     {manualAutocompleteSuggestion?.transliteration
                       ? ` · ${manualAutocompleteSuggestion.transliteration}`
@@ -715,7 +715,7 @@ export default function ListesPage() {
                   </p>
                 ) : null}
                 <div className="flex items-center gap-2">
-                  <label className="text-[1rem] font-semibold text-[#8D8D8D]">Répétitions :</label>
+                  <label className="text-[1rem] font-semibold text-[var(--foreground)]">Répétitions :</label>
                   <input
                     type="number"
                     min="1"
@@ -724,7 +724,7 @@ export default function ListesPage() {
                     className="w-36 rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-[2rem] font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
                   />
                 </div>
-                <p className="text-xs text-[#8A8A8A]">Pour ajouter manuellement, il faut un nombre de répétitions supérieur à 0 et au moins un des champs Texte arabe ou Translittération.</p>
+                <p className="text-xs text-[var(--secondary)]">Pour ajouter manuellement, il faut un nombre de répétitions supérieur à 0 et au moins un des champs Texte arabe ou Translittération.</p>
                 <button
                   onClick={handleAddManualDhikr}
                   disabled={!canAddManualDhikr}
@@ -744,9 +744,9 @@ export default function ListesPage() {
                 <span className="text-[2rem] text-[var(--primary)]">◫</span>
                 <span className="ml-3 flex-1 text-[0.95rem] font-semibold text-[var(--foreground)]">
                   Bibliothèque de zikr
-                  <span className="ml-2 text-[#666666]">({dhikrs.length})</span>
+                  <span className="ml-2 text-[var(--secondary)]">({dhikrs.length})</span>
                 </span>
-                <span className="text-[#666666]">{createLibraryExpanded ? "⌃" : "⌄"}</span>
+                <span className="text-[var(--secondary)]">{createLibraryExpanded ? "⌃" : "⌄"}</span>
               </button>
 
               {createLibraryExpanded && (
@@ -756,7 +756,7 @@ export default function ListesPage() {
                     onChange={(e) => setCreateSearchQuery(e.target.value)}
                     onBlur={(e) => setCreateSearchQuery(e.target.value.trim())}
                     placeholder="Rechercher..."
-                    className="w-full rounded-xl bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-gray-500 outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]"
+                    className="w-full rounded-xl bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]"
                   />
                   <div className="max-h-52 space-y-1 overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--background)] p-2">
                     {Array.from(createCategories.entries()).map(([category, items]) => {
@@ -783,11 +783,11 @@ export default function ListesPage() {
                                 return (
                                   <div
                                     key={d.id}
-                                    className="flex items-center justify-between rounded px-2 py-1 text-xs text-gray-300 hover:bg-[var(--card)]"
+                                    className="flex items-center justify-between rounded px-2 py-1 text-xs text-[var(--secondary)] hover:bg-[var(--card)]"
                                   >
                                     <div className="flex-1 truncate">
                                       <div className="truncate text-[var(--foreground)]">{d.arabic}</div>
-                                      <div className="text-gray-500">{d.transliteration}</div>
+                                      <div className="text-[var(--secondary)]">{d.transliteration}</div>
                                     </div>
                                     <button
                                       onClick={() => handleAddDhikrToCreate(d.id)}
@@ -849,8 +849,8 @@ export default function ListesPage() {
             </div>
           }
         >
-          <div className="text-sm text-gray-200">
-            Supprimer <span className="font-semibold text-white">{modalListId}</span> ?
+          <div className="text-sm text-[var(--secondary)]">
+            Supprimer <span className="font-semibold text-[var(--foreground)]">{modalListId}</span> ?
           </div>
         </Modal>
 
@@ -865,10 +865,10 @@ export default function ListesPage() {
               <div className="text-[1.7rem] font-semibold leading-relaxed text-[var(--foreground)]">
                 {selectedLibraryDhikr.arabic}
               </div>
-              <div className="mt-3 text-[0.95rem] font-semibold text-[var(--foreground)] opacity-80">
+              <div className="mt-3 text-[0.95rem] font-semibold text-[var(--secondary)]">
                 {selectedLibraryDhikr.transliteration}
               </div>
-              <div className="mt-1 text-sm text-[var(--foreground)] opacity-60">
+              <div className="mt-1 text-sm text-[var(--secondary)]">
                 Objectif: {selectedLibraryDhikr.defaultTarget}
               </div>
             </div>

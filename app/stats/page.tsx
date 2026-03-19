@@ -121,32 +121,32 @@ export default function StatsPage() {
       >
         <header className="flex flex-col gap-1">
           <h1 className="text-xl font-semibold text-[var(--foreground)]">📊 Stats</h1>
-          <p className="text-sm text-gray-400">Suivi de votre pratique de Zikr</p>
+          <p className="text-sm text-[var(--secondary)]">Suivi de votre pratique de Zikr</p>
         </header>
 
         <section className="grid grid-cols-2 gap-3">
           <div className="rounded-2xl bg-[var(--card)] p-4">
-            <div className="text-xs font-semibold text-gray-400">Total zikrs</div>
+            <div className="text-xs font-semibold text-[var(--secondary)]">Total zikrs</div>
             <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{total}</div>
           </div>
           <div className="rounded-2xl bg-[var(--card)] p-4">
-            <div className="text-xs font-semibold text-gray-400">Moy. / jour</div>
+            <div className="text-xs font-semibold text-[var(--secondary)]">Moy. / jour</div>
             <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{Math.round(moyenneJour)}</div>
           </div>
           <div className="rounded-2xl bg-[var(--card)] p-4">
-            <div className="text-xs font-semibold text-gray-400">Moy. / sem.</div>
+            <div className="text-xs font-semibold text-[var(--secondary)]">Moy. / sem.</div>
             <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{Math.round(moyenneSem)}</div>
           </div>
           <div className="rounded-2xl bg-[var(--card)] p-4">
-            <div className="text-xs font-semibold text-gray-400">Sessions</div>
+            <div className="text-xs font-semibold text-[var(--secondary)]">Sessions</div>
             <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{sessions}</div>
           </div>
           <div className="rounded-2xl bg-[var(--card)] p-4">
-            <div className="text-xs font-semibold text-gray-400">Moy. session</div>
+            <div className="text-xs font-semibold text-[var(--secondary)]">Moy. session</div>
             <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{Math.round(moyenneSession)}</div>
           </div>
           <div className="rounded-2xl bg-[var(--card)] p-4">
-            <div className="text-xs font-semibold text-gray-400">Jours actifs</div>
+            <div className="text-xs font-semibold text-[var(--secondary)]">Jours actifs</div>
             <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{activeDays}</div>
           </div>
         </section>
@@ -155,7 +155,7 @@ export default function StatsPage() {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-sm font-semibold text-[var(--foreground)]">Hebdomadaire</div>
-              <div className="text-xs text-gray-400">Zikrs sur les 7 derniers jours</div>
+              <div className="text-xs text-[var(--secondary)]">Zikrs sur les 7 derniers jours</div>
             </div>
             <div className="text-sm font-semibold text-[var(--primary)]">{streak}j streak</div>
           </div>
@@ -178,14 +178,14 @@ export default function StatsPage() {
 
         <section className="grid gap-3">
           <div className="rounded-2xl bg-[var(--card)] p-4">
-            <div className="text-sm font-semibold text-gray-400">Zikr le plus pratiqué</div>
+            <div className="text-sm font-semibold text-[var(--secondary)]">Zikr le plus pratiqué</div>
             <div className="mt-2 text-[var(--foreground)]">{mostPracticed.label}</div>
-            <div className="mt-1 text-xs text-gray-400">Total : {mostPracticed.count}</div>
+            <div className="mt-1 text-xs text-[var(--secondary)]">Total : {mostPracticed.count}</div>
           </div>
 
           <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold text-gray-400">Historique des sessions</div>
+              <div className="text-sm font-semibold text-[var(--secondary)]">Historique des sessions</div>
               <button
                 onClick={resetStats}
                 className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-1 text-xs font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)]"
@@ -195,7 +195,7 @@ export default function StatsPage() {
             </div>
             <div className="mt-3 space-y-2">
               {recentHistory.length === 0 ? (
-                <div className="text-sm text-gray-400">Aucune session enregistrée.</div>
+                <div className="text-sm text-[var(--secondary)]">Aucune session enregistrée.</div>
               ) : (
                 recentHistory.map((entry) => {
                   const dhikr = dhikrs.find((d) => d.id === entry.dhikrId);
@@ -208,7 +208,7 @@ export default function StatsPage() {
                         <div className="text-sm text-[var(--foreground)]">
                           {formatDate(entry.startAt)} — {dhikr?.arabic ?? "—"}
                         </div>
-                        <div className="text-xs text-gray-400">{dhikr?.transliteration ?? ""}</div>
+                        <div className="text-xs text-[var(--secondary)]">{dhikr?.transliteration ?? ""}</div>
                       </div>
                       <div className="text-sm font-semibold text-[var(--foreground)]">{entry.dhikrCount}</div>
                     </div>

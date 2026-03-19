@@ -71,7 +71,7 @@ export default function ReglagesPage() {
       >
         <header className="flex flex-col gap-1">
           <h1 className="text-xl font-semibold text-[var(--foreground)]">⚙️ Réglages</h1>
-          <p className="text-sm text-gray-400">Personnalisez votre expérience</p>
+          <p className="text-sm text-[var(--secondary)]">Personnalisez votre expérience</p>
         </header>
 
         <section className="rounded-2xl bg-[var(--card)] p-4">
@@ -104,7 +104,7 @@ export default function ReglagesPage() {
           <div className="flex items-center justify-between gap-4">
             <div>
               <div className="text-sm font-semibold text-[var(--foreground)]">Thème</div>
-              <div className="text-xs text-gray-400">Choix global de palette</div>
+              <div className="text-xs text-[var(--secondary)]">Choix global de palette</div>
             </div>
             <select
               value={preferences.theme}
@@ -125,7 +125,7 @@ export default function ReglagesPage() {
           <div className="flex items-center justify-between gap-4">
             <div>
               <div className="text-sm font-semibold text-[var(--foreground)]">Son</div>
-              <div className="text-xs text-gray-400">
+              <div className="text-xs text-[var(--secondary)]">
                 Simule un retour d&apos;appui ou une sensation de vibration
               </div>
             </div>
@@ -148,7 +148,7 @@ export default function ReglagesPage() {
           <div className="flex items-center justify-between gap-4">
             <div>
               <div className="text-sm font-semibold text-[var(--foreground)]">Vibration</div>
-              <div className="text-xs text-gray-400">
+              <div className="text-xs text-[var(--secondary)]">
                 {isIOS ? "Non disponible sur iOS" : "Retour haptique si supporte"}
               </div>
             </div>
@@ -191,7 +191,7 @@ export default function ReglagesPage() {
           </div>
         </section>
 
-        <div className="mt-6 text-center text-xs text-gray-500">
+        <div className="mt-6 text-center text-xs text-[var(--secondary)]">
           Tasbih Digital — v1.0
         </div>
       </motion.main>

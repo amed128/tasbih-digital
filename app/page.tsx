@@ -350,7 +350,7 @@ export default function Home() {
     <div className="flex flex-col gap-6 px-5 pt-6">
       <header className="flex flex-col items-center gap-2">
         <h1 className="text-xl font-semibold text-[var(--foreground)]">🌙 Tasbih Digital</h1>
-        <p className="text-sm text-gray-400">Compteur de Zikr</p>
+        <p className="text-sm text-[var(--secondary)]">Compteur de Zikr</p>
         <button
           type="button"
           onClick={toggleMode}
@@ -380,7 +380,7 @@ export default function Home() {
                       Sélection
                     </span>
                   </div>
-                  <div className="mt-1 text-xs text-gray-400">
+                  <div className="mt-1 text-xs text-[var(--secondary)]">
                     {formatZikrCount(activeList.length)}
                   </div>
                 </>
@@ -388,7 +388,7 @@ export default function Home() {
                 <span className="truncate text-sm font-semibold text-[var(--foreground)]">Tous les Zikr</span>
               )}
             </div>
-            <span className="ml-3 text-lg text-gray-500">{dropdownOpen ? "⌃" : "⌄"}</span>
+            <span className="ml-3 text-lg text-[var(--secondary)]">{dropdownOpen ? "⌃" : "⌄"}</span>
           </button>
 
           {dropdownOpen && (
@@ -404,14 +404,14 @@ export default function Home() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onBlur={(e) => setSearchQuery(e.target.value.trim())}
                   placeholder="Rechercher un Zikr ou une catégorie"
-                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base text-[var(--foreground)] placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base text-[var(--foreground)] placeholder:text-[var(--secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                 />
               </div>
 
               <button
                 type="button"
                 onClick={() => setLibraryExpanded(!libraryExpanded)}
-                className="flex w-full items-center justify-between border-b border-[var(--border)] px-4 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[#666666] hover:bg-white/[0.03]"
+                className="flex w-full items-center justify-between border-b border-[var(--border)] px-4 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[var(--secondary)] hover:bg-white/[0.03]"
               >
                 <span className="flex items-center gap-2">
                   <span className="text-[0.78rem]">◫</span>
@@ -424,7 +424,7 @@ export default function Home() {
                 <>
               {filteredGroupEntries.length === 0 &&
                 Object.keys(filteredCustomLists).length === 0 && (
-                  <div className="px-4 py-3 text-sm text-gray-400">
+                  <div className="px-4 py-3 text-sm text-[var(--secondary)]">
                     Aucun résultat trouvé
                   </div>
                 )}
@@ -458,7 +458,7 @@ export default function Home() {
                             {highlightMatch(category)}
                           </span>
                         </div>
-                        <span className="mt-0.5 block pl-5 text-sm text-gray-400">
+                        <span className="mt-0.5 block pl-5 text-sm text-[var(--secondary)]">
                           {formatZikrCount(items.length)}
                         </span>
                       </div>
@@ -511,7 +511,7 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => setCustomListsExpanded(!customListsExpanded)}
-                className="flex w-full items-center justify-between border-b border-[#242424] px-4 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[#666666] hover:bg-white/[0.03]"
+                className="flex w-full items-center justify-between border-b border-[#242424] px-4 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[var(--secondary)] hover:bg-white/[0.03]"
               >
                 <span className="flex items-center gap-2">
                   <span className="text-[0.78rem]">≡</span>
@@ -523,7 +523,7 @@ export default function Home() {
               {customListsExpanded && (
                 <>
               {Object.keys(filteredCustomLists).length === 0 ? (
-                <div className="px-4 py-2 text-sm text-gray-500">Aucune liste créée</div>
+                <div className="px-4 py-2 text-sm text-[var(--secondary)]">Aucune liste créée</div>
               ) : (
                 Object.entries(filteredCustomLists).map(([listId, ids]) => {
                   const expanded = isSearching ? true : expandedGroups[listId] ?? false;
@@ -557,7 +557,7 @@ export default function Home() {
                               {highlightMatch(listId)}
                             </span>
                           </div>
-                          <span className="mt-0.5 block pl-5 text-sm text-gray-400">
+                          <span className="mt-0.5 block pl-5 text-sm text-[var(--secondary)]">
                             {formatZikrCount(items.length)}
                           </span>
                         </div>
@@ -594,9 +594,9 @@ export default function Home() {
                             >
                               <div className="min-w-0 flex-1">
                                 <span className="truncate text-base leading-tight">{highlightMatch(d.arabic)}</span>
-                                <span className="mt-0.5 block truncate text-sm text-gray-400">{highlightMatch(d.transliteration)}</span>
+                                <span className="truncate text-sm text-[var(--secondary)]">{highlightMatch(d.transliteration)}</span>
                               </div>
-                              <span className="ml-3 w-14 flex-shrink-0 self-center text-right text-sm text-gray-500 tabular-nums">×{d.defaultTarget}</span>
+                              <span className="ml-3 w-14 flex-shrink-0 self-center text-right text-sm text-[var(--secondary)] tabular-nums">×{d.defaultTarget}</span>
                             </button>
                           ))}
                         </div>
@@ -616,7 +616,7 @@ export default function Home() {
             <span className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-black">
               {currentDhikr.transliteration}
             </span>
-            <span className="rounded-full bg-[var(--border)] px-4 py-2 text-sm text-gray-300">
+            <span className="rounded-full bg-[var(--border)] px-4 py-2 text-sm text-[var(--secondary)]">
               {currentDhikr.arabic}
             </span>
           </div>
@@ -633,7 +633,7 @@ export default function Home() {
           pulseTrigger={pulseTrigger}
         />
         <div className="text-center">
-          <div className="text-sm font-semibold text-gray-400">CIBLE</div>
+          <div className="text-sm font-semibold text-[var(--secondary)]">CIBLE</div>
           {!isListMode && !isCompleted ? (
             <input
               type="number"
@@ -723,7 +723,7 @@ export default function Home() {
         : isCurrent
         ? "bg-[var(--primary)]"
         : "bg-[var(--border)]";
-      const textClass = isDone ? "text-white" : isCurrent ? "text-black" : "text-[#666666]";
+      const textClass = isDone ? "text-white" : isCurrent ? "text-black" : "text-[var(--secondary)]" ;
 
       return (
         <div
@@ -739,10 +739,10 @@ export default function Home() {
     return (
       <div className="flex flex-col gap-6 px-5 pt-6">
         <header className="flex items-center justify-between">
-          <div className="text-sm font-semibold uppercase tracking-wide text-gray-300">
+          <div className="text-sm font-semibold uppercase tracking-wide text-[var(--secondary)]">
             {activeListId}
           </div>
-          <div className="text-sm font-semibold text-gray-400">{listPosition}</div>
+          <div className="text-sm font-semibold text-[var(--secondary)]">{listPosition}</div>
         </header>
 
         <div className="flex justify-center">
@@ -832,7 +832,7 @@ export default function Home() {
 
           <button
             onClick={handleQuitList}
-            className="mt-4 mb-4 self-center rounded-lg px-4 py-1.5 text-center text-sm font-semibold text-gray-400 underline"
+            className="mt-4 mb-4 self-center rounded-lg px-4 py-1.5 text-center text-sm font-semibold text-[var(--secondary)] underline"
           >
             ↩ Retour au compteur simple
           </button>
@@ -881,7 +881,7 @@ export default function Home() {
           </div>
         }
       >
-        <div className="text-sm text-gray-200">
+        <div className="text-sm text-[var(--secondary)]">
           Cette action remettra votre progression actuelle a zero.
         </div>
       </Modal>

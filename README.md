@@ -150,6 +150,12 @@ npm run start
 npm run lint
 ```
 
+### E2E Smoke Tests
+
+```bash
+npm run test:e2e:smoke
+```
+
 ## Deployment
 
 The app can be deployed on any platform that supports Next.js. Vercel is the simplest option.

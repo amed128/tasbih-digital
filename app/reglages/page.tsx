@@ -7,6 +7,8 @@ import type { Theme } from "../../store/tasbihStore";
 import type { TapSound } from "../../store/tasbihStore";
 import { BottomNav } from "../../components/BottomNav";
 import { useT } from "@/hooks/useT";
+import { useFeatureAvailability } from "@/hooks/useFeatureAvailability";
+import type { FeatureStatus } from "@/lib/featureAvailability";
 import Link from "next/link";
 
 export default function ReglagesPage() {
@@ -17,6 +19,10 @@ export default function ReglagesPage() {
   );
 
   const preferences = useTasbihStore((s) => s.preferences);
+
+  const vibrationAvail = useFeatureAvailability("vibration");
+  const wakeLockAvail = useFeatureAvailability("wakeLock");
+  const notificationsAvail = useFeatureAvailability("notifications");
 
   const isIOS =
     typeof navigator !== "undefined" &&
@@ -154,6 +160,38 @@ export default function ReglagesPage() {
             >
               {preferences.confetti ? t("settings.on") : t("settings.off")}
             </button>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="mb-3 text-sm font-semibold text-[var(--foreground)]">{t("settings.deviceSupportTitle")}</div>
+          <div className="flex flex-col gap-3">
+            {([
+              { key: "vibration", labelKey: "settings.featureVibration", avail: vibrationAvail },
+              { key: "wakeLock", labelKey: "settings.featureWakeLock", avail: wakeLockAvail },
+              { key: "notifications", labelKey: "settings.featureNotifications", avail: notificationsAvail },
+            ] as { key: string; labelKey: string; avail: { status: FeatureStatus } }[]).map(({ key, labelKey, avail }) => {
+              const badgeStyles: Record<FeatureStatus, string> = {
+                available: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+                limited: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-500",
+                "permission-required": "bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400",
+                unsupported: "opacity-50 bg-[var(--background)] text-[var(--secondary)] border border-[var(--border)]",
+              };
+              const statusLabelKey: Record<FeatureStatus, string> = {
+                available: "settings.statusAvailable",
+                limited: "settings.statusLimited",
+                "permission-required": "settings.statusPermissionRequired",
+                unsupported: "settings.statusUnsupported",
+              };
+              return (
+                <div key={key} className="flex items-center justify-between">
+                  <span className="text-sm text-[var(--foreground)]">{t(labelKey)}</span>
+                  <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${badgeStyles[avail.status]}`}>
+                    {t(statusLabelKey[avail.status])}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </section>
 

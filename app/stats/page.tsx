@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useSyncExternalStore } from "react";
+import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import {
   Bar,
@@ -14,6 +14,11 @@ import {
   YAxis,
 } from "recharts";
 import { useTasbihStore } from "../../store/tasbihStore";
+import {
+  TASBIH_STORAGE_KEY,
+  createBackupPayload,
+  parseBackupPayload,
+} from "../../store/tasbihStore";
 import { zikrs } from "../../data/zikrs";
 import { BottomNav } from "../../components/BottomNav";
 import { useT } from "@/hooks/useT";
@@ -127,7 +132,39 @@ export default function StatsPage() {
   const resetStats = useTasbihStore((s) => s.resetStats);
   const language = useTasbihStore((s) => s.preferences.language);
   const t = useT();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [backupMessage, setBackupMessage] = useState("");
   const locale = language === "fr" ? "fr-FR" : "en-US";
+
+  const handleExportBackup = () => {
+    const payload = createBackupPayload();
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const stamp = payload.exportedAt.slice(0, 10);
+    a.href = url;
+    a.download = `tasbih-backup-${stamp}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setBackupMessage(t("settings.backupExported"));
+  };
+
+  const handleImportBackupFile = async (file: File) => {
+    const raw = await file.text();
+    const parsed = parseBackupPayload(raw);
+    if (!parsed.ok) {
+      setBackupMessage(t("settings.backupImportError"));
+      return;
+    }
+
+    window.localStorage.setItem(TASBIH_STORAGE_KEY, JSON.stringify(parsed.state));
+    setBackupMessage(t("settings.backupImported"));
+    window.setTimeout(() => {
+      window.location.reload();
+    }, 400);
+  };
 
   const total = stats.totalZikr;
   const sessions = stats.sessions;
@@ -192,6 +229,43 @@ export default function StatsPage() {
           <h1 className="text-xl font-semibold text-[var(--foreground)]">{t("stats.title")}</h1>
           <p className="text-sm text-[var(--secondary)]">{t("stats.subtitle")}</p>
         </header>
+
+        <section className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={handleExportBackup}
+              className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
+            >
+              {t("settings.backupExportBtn")}
+            </button>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex-1 rounded-xl bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-black"
+            >
+              {t("settings.backupImportBtn")}
+            </button>
+          </div>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                void handleImportBackupFile(file);
+              }
+              e.currentTarget.value = "";
+            }}
+          />
+
+          {backupMessage ? (
+            <div className="text-xs text-[var(--secondary)]">{backupMessage}</div>
+          ) : null}
+        </section>
 
         <section className="grid grid-cols-2 gap-3">
           <div className="rounded-2xl bg-[var(--card)] p-4">

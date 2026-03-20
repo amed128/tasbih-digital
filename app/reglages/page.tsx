@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { useTasbihStore } from "../../store/tasbihStore";
 import type { Theme } from "../../store/tasbihStore";
@@ -38,8 +38,6 @@ export default function ReglagesPage() {
   const setReminderIntervalMinutes = useTasbihStore((s) => s.setReminderIntervalMinutes);
   const setOptionalSyncEnabled = useTasbihStore((s) => s.setOptionalSyncEnabled);
   const t = useT();
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [backupMessage, setBackupMessage] = useState("");
   const [syncCode, setSyncCode] = useState("");
   const [syncMessage, setSyncMessage] = useState("");
   const [notificationPermission, setNotificationPermission] = useState<
@@ -81,36 +79,6 @@ export default function ReglagesPage() {
   const handleThemeChange = (theme: Theme) => {
     setTheme(theme);
     applyThemeToDom(theme);
-  };
-
-  const handleExportBackup = () => {
-    const payload = createBackupPayload();
-    const blob = new Blob([JSON.stringify(payload, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    const stamp = payload.exportedAt.slice(0, 10);
-    a.href = url;
-    a.download = `tasbih-backup-${stamp}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    setBackupMessage(t("settings.backupExported"));
-  };
-
-  const handleImportBackupFile = async (file: File) => {
-    const raw = await file.text();
-    const parsed = parseBackupPayload(raw);
-    if (!parsed.ok) {
-      setBackupMessage(t("settings.backupImportError"));
-      return;
-    }
-
-    window.localStorage.setItem(TASBIH_STORAGE_KEY, JSON.stringify(parsed.state));
-    setBackupMessage(t("settings.backupImported"));
-    window.setTimeout(() => {
-      window.location.reload();
-    }, 400);
   };
 
   const requestNotificationPermission = async () => {
@@ -296,46 +264,6 @@ export default function ReglagesPage() {
               {preferences.confetti ? t("settings.on") : t("settings.off")}
             </button>
           </div>
-        </section>
-
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.backupTitle")}</div>
-          <div className="mt-1 text-xs text-[var(--secondary)]">{t("settings.backupHint")}</div>
-
-          <div className="mt-3 flex gap-2">
-            <button
-              type="button"
-              onClick={handleExportBackup}
-              className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
-            >
-              {t("settings.backupExportBtn")}
-            </button>
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="flex-1 rounded-xl bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-black"
-            >
-              {t("settings.backupImportBtn")}
-            </button>
-          </div>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="application/json"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                void handleImportBackupFile(file);
-              }
-              e.currentTarget.value = "";
-            }}
-          />
-
-          {backupMessage ? (
-            <div className="mt-2 text-xs text-[var(--secondary)]">{backupMessage}</div>
-          ) : null}
         </section>
 
         <section className="rounded-2xl bg-[var(--card)] p-4">

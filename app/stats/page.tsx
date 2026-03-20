@@ -169,6 +169,10 @@ export default function StatsPage() {
   const total = stats.totalZikr;
   const sessions = stats.sessions;
   const activeDays = stats.activeDays;
+  const hasStatsData =
+    total > 0 || sessions > 0 || activeDays > 0 || stats.history.length > 0;
+  const canExport = hasStatsData;
+  const canImport = !hasStatsData;
 
   const moyenneJour = activeDays ? total / activeDays : 0;
   const moyenneSem = activeDays ? (total / activeDays) * 7 : 0;
@@ -234,17 +238,27 @@ export default function StatsPage() {
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={handleExportBackup}
-              className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={!canImport}
+              className={`flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                canImport
+                  ? "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:border-[var(--primary)]"
+                  : "cursor-not-allowed border border-[var(--border)] bg-[var(--background)] text-[var(--secondary)] opacity-60 blur-[1px]"
+              }`}
             >
-              {t("settings.backupExportBtn")}
+              {t("settings.backupImportBtn")}
             </button>
             <button
               type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="flex-1 rounded-xl bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-black"
+              onClick={handleExportBackup}
+              disabled={!canExport}
+              className={`flex-1 rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                canExport
+                  ? "border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:border-[var(--primary)]"
+                  : "cursor-not-allowed border-[var(--border)] bg-[var(--background)] text-[var(--secondary)] opacity-60 blur-[1px]"
+              }`}
             >
-              {t("settings.backupImportBtn")}
+              {t("settings.backupExportBtn")}
             </button>
           </div>
 

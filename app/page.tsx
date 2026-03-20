@@ -59,6 +59,7 @@ export default function Home() {
 
   const isListMode = activeListId !== DEFAULT_LIST_ID && activeList.length > 0;
   const isAutoMode = mode === "auto";
+  const isAudioMode = mode === "audio";
   const isDownMode = mode === "down";
 
   const effectiveTarget = isListMode ? target : (customTarget ?? target);
@@ -297,6 +298,8 @@ export default function Home() {
     isListMode && isCompleted && activeIndex === activeList.length - 1;
   const executionModeLabel = isAutoMode
     ? t("counter.modeAuto")
+    : isAudioMode
+      ? t("counter.modeAudio")
     : isDownMode
       ? t("counter.modeDecrement")
       : t("counter.modeIncrement");
@@ -432,6 +435,15 @@ export default function Home() {
           <option value={2000}>2s</option>
         </select>
       </div>
+    </section>
+  );
+
+  const renderAudioComingSoonPanel = () => (
+    <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-3">
+      <div className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--secondary)]">
+        {t("counter.audioComingSoonTitle")}
+      </div>
+      <div className="mt-1 text-sm text-[var(--secondary)]">{t("counter.audioComingSoonBody")}</div>
     </section>
   );
 
@@ -752,6 +764,8 @@ export default function Home() {
       <motion.div layout className="flex flex-col gap-3 pb-6">
         {isAutoMode ? (
           renderAutoControls()
+        ) : isAudioMode ? (
+          renderAudioComingSoonPanel()
         ) : (
           <motion.button
             onClick={handleIncrement}
@@ -883,6 +897,8 @@ export default function Home() {
         <motion.div layout className="flex flex-col gap-3">
           {isAutoMode ? (
             renderAutoControls()
+          ) : isAudioMode ? (
+            renderAudioComingSoonPanel()
           ) : (
             <motion.button
               onClick={handleIncrement}

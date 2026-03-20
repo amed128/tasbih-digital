@@ -3,16 +3,16 @@ import { devtools } from "zustand/middleware";
 import { DEFAULT_LIST_ID, zikrs, predefinedLists } from "../data/zikrs";
 import type { Zikr } from "../data/zikrs";
 
-export type Mode = "up" | "down" | "auto";
+export type Mode = "up" | "down" | "auto" | "audio";
 
-const MODE_SEQUENCE: Mode[] = ["up", "down", "auto"];
+const MODE_SEQUENCE: Mode[] = ["up", "down", "auto", "audio"];
 
 const isDownMode = (mode: Mode) => mode === "down";
 
 const initialCounterForMode = (mode: Mode, target: number) => (isDownMode(mode) ? target : 0);
 
 const normalizeMode = (value: unknown): Mode => {
-  if (value === "up" || value === "down" || value === "auto") return value;
+  if (value === "up" || value === "down" || value === "auto" || value === "audio") return value;
   return "up";
 };
 

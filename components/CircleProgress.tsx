@@ -7,7 +7,7 @@ import { useT } from "@/hooks/useT";
 type CircleProgressProps = {
   value: number;
   target: number;
-  mode: "up" | "down" | "auto";
+  mode: "up" | "down" | "auto" | "audio";
   isCompleted: boolean;
   pulseTrigger?: number;
   size?: number;

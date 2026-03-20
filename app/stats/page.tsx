@@ -137,6 +137,7 @@ export default function StatsPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const toastTimerRef = useRef<number | null>(null);
   const [toastMessage, setToastMessage] = useState("");
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [historyRangeMode, setHistoryRangeMode] = useState<HistoryRangeMode>("month");
   const [historyDate, setHistoryDate] = useState(() => new Date().toISOString().slice(0, 10));
   const locale = language === "fr" ? "fr-FR" : "en-US";
@@ -180,7 +181,6 @@ export default function StatsPage() {
     const raw = await file.text();
     const parsed = parseBackupPayload(raw);
     if (!parsed.ok) {
-      showToast(t("settings.backupImportError"));
       return;
     }
 
@@ -191,8 +191,9 @@ export default function StatsPage() {
     }, 900);
   };
 
-  const handleResetStats = () => {
+  const handleResetStatsConfirm = () => {
     resetStats();
+    setShowResetConfirm(false);
     showToast(t("stats.toastReset"));
   };
 
@@ -531,7 +532,7 @@ export default function StatsPage() {
         <div className="flex justify-center">
           <button
             type="button"
-            onClick={handleResetStats}
+            onClick={() => setShowResetConfirm(true)}
             className="rounded-xl border border-[#E7B4B4] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[#C62828] transition hover:border-[#C62828]"
           >
             {t("stats.resetStats")}
@@ -539,8 +540,35 @@ export default function StatsPage() {
         </div>
       </motion.main>
       {toastMessage ? (
-        <div className="pointer-events-none fixed bottom-24 left-1/2 z-50 w-[calc(100%-2.5rem)] max-w-md -translate-x-1/2 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-center text-sm font-semibold text-[var(--foreground)] shadow-lg">
-          {toastMessage}
+        <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center px-6">
+          <div className="rounded-md bg-black/75 px-3 py-2 text-center text-xs font-semibold text-white shadow-lg">
+            {toastMessage}
+          </div>
+        </div>
+      ) : null}
+
+      {showResetConfirm ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
+          <div className="w-full max-w-sm rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4">
+            <h2 className="text-base font-semibold text-[var(--foreground)]">{t("stats.resetConfirmTitle")}</h2>
+            <p className="mt-2 text-sm text-[var(--secondary)]">{t("stats.resetConfirmBody")}</p>
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setShowResetConfirm(false)}
+                className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)]"
+              >
+                {t("stats.resetConfirmCancel")}
+              </button>
+              <button
+                type="button"
+                onClick={handleResetStatsConfirm}
+                className="flex-1 rounded-xl border border-[#E7B4B4] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[#C62828]"
+              >
+                {t("stats.resetConfirmConfirm")}
+              </button>
+            </div>
+          </div>
         </div>
       ) : null}
       <BottomNav />

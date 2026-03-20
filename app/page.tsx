@@ -801,7 +801,7 @@ export default function Home() {
         </AnimatePresence>
 
         <div className="flex items-center justify-between gap-4">
-          {!focusMode && (
+          {!focusMode && !isAutoMode && (
             <button
               onClick={undoLast}
               aria-label={t("counter.ariaUndo")}
@@ -812,7 +812,7 @@ export default function Home() {
           )}
           <button
             onClick={handleResetRequest}
-            className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"
+            className={`${!focusMode && !isAutoMode ? "flex-1" : "w-full"} rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95`}
           >
             {t("counter.reset")}
           </button>
@@ -934,16 +934,18 @@ export default function Home() {
           </AnimatePresence>
 
           <div className="flex items-center justify-between gap-4">
-            <button
-              onClick={undoLast}
-              aria-label={t("counter.ariaUndo")}
-              className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"
-            >
-              {t("counter.undo")}
-            </button>
+            {!isAutoMode && (
+              <button
+                onClick={undoLast}
+                aria-label={t("counter.ariaUndo")}
+                className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"
+              >
+                {t("counter.undo")}
+              </button>
+            )}
             <button
               onClick={handleResetRequest}
-              className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"
+              className={`${!isAutoMode ? "flex-1" : "w-full"} rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95`}
             >
               {t("counter.reset")}
             </button>

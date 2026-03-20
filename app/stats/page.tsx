@@ -2,7 +2,17 @@
 
 import { useMemo, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { useTasbihStore } from "../../store/tasbihStore";
 import { zikrs } from "../../data/zikrs";
 import { BottomNav } from "../../components/BottomNav";
@@ -36,6 +46,54 @@ function buildLast7DaysZikrData(history: { startAt: string; zikrCount: number }[
   });
 
   return data;
+}
+
+function buildLast30DaysData(history: { startAt: string; zikrCount: number }[]) {
+  const today = new Date();
+  const start = new Date(today);
+  start.setHours(0, 0, 0, 0);
+  const data: { date: string; label: string; total: number }[] = [];
+
+  for (let i = 29; i >= 0; i -= 1) {
+    const d = new Date(start);
+    d.setDate(start.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    data.push({ date: key, label: key.slice(5), total: 0 });
+  }
+
+  history.forEach((entry) => {
+    const key = entry.startAt.slice(0, 10);
+    const row = data.find((r) => r.date === key);
+    if (row) row.total += entry.zikrCount;
+  });
+
+  return data;
+}
+
+function buildWeekdayDistribution(history: { startAt: string; zikrCount: number }[], locale: string) {
+  const labels: { key: number; label: string; total: number }[] = [0, 1, 2, 3, 4, 5, 6].map((d) => ({
+    key: d,
+    label: new Date(2024, 0, d + 7).toLocaleDateString(locale, { weekday: "short" }),
+    total: 0,
+  }));
+
+  history.forEach((entry) => {
+    const day = new Date(entry.startAt).getDay();
+    const row = labels.find((d) => d.key === day);
+    if (row) row.total += entry.zikrCount;
+  });
+
+  return labels;
+}
+
+function buildHourlyHeatmap(history: { startAt: string; zikrCount: number }[]) {
+  const hours = Array.from({ length: 24 }, (_, hour) => ({ hour, total: 0 }));
+  history.forEach((entry) => {
+    const hour = new Date(entry.startAt).getHours();
+    const row = hours[hour];
+    if (row) row.total += entry.zikrCount;
+  });
+  return hours;
 }
 
 function computeStreak(dates: string[]) {
@@ -106,6 +164,13 @@ export default function StatsPage() {
   }, [stats.history, t]);
 
   const weeklyData = useMemo(() => buildLast7DaysZikrData(stats.history, locale), [stats.history, locale]);
+  const trend30Data = useMemo(() => buildLast30DaysData(stats.history), [stats.history]);
+  const weekdayData = useMemo(() => buildWeekdayDistribution(stats.history, locale), [stats.history, locale]);
+  const hourlyHeatmap = useMemo(() => buildHourlyHeatmap(stats.history), [stats.history]);
+  const peakHour = useMemo(() => {
+    if (hourlyHeatmap.length === 0) return 0;
+    return hourlyHeatmap.reduce((best, row) => (row.total > best.total ? row : best), hourlyHeatmap[0]).hour;
+  }, [hourlyHeatmap]);
 
   const recentHistory = useMemo(() => {
     return [...stats.history]
@@ -177,6 +242,66 @@ export default function StatsPage() {
                 <Bar dataKey="total" fill="var(--primary)" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="text-sm font-semibold text-[var(--foreground)]">{t("stats.trend30Title")}</div>
+          <div className="text-xs text-[var(--secondary)]">{t("stats.trend30Subtitle")}</div>
+          <div className="mt-4" style={{ height: 220 }}>
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart data={trend30Data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
+                <XAxis dataKey="label" tick={{ fill: "var(--secondary)", fontSize: 11 }} interval={4} />
+                <YAxis tick={{ fill: "var(--secondary)", fontSize: 12 }} />
+                <Tooltip
+                  wrapperStyle={{ borderRadius: 12, background: "var(--card)", border: "1px solid var(--border)" }}
+                  contentStyle={{ background: "var(--card)", border: "none" }}
+                />
+                <Line type="monotone" dataKey="total" stroke="var(--primary)" strokeWidth={2.5} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="text-sm font-semibold text-[var(--foreground)]">{t("stats.weekdayTitle")}</div>
+          <div className="text-xs text-[var(--secondary)]">{t("stats.weekdaySubtitle")}</div>
+          <div className="mt-4" style={{ height: 220 }}>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={weekdayData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
+                <XAxis dataKey="label" tick={{ fill: "var(--secondary)", fontSize: 12 }} />
+                <YAxis tick={{ fill: "var(--secondary)", fontSize: 12 }} />
+                <Tooltip
+                  wrapperStyle={{ borderRadius: 12, background: "var(--card)", border: "1px solid var(--border)" }}
+                  contentStyle={{ background: "var(--card)", border: "none" }}
+                />
+                <Bar dataKey="total" fill="var(--primary)" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="text-sm font-semibold text-[var(--foreground)]">{t("stats.hourlyTitle")}</div>
+          <div className="text-xs text-[var(--secondary)]">{t("stats.hourlySubtitle")}</div>
+          <div className="mt-3 text-xs font-semibold text-[var(--primary)]">{t("stats.peakHour", { hour: peakHour })}</div>
+          <div className="mt-3 grid grid-cols-6 gap-2">
+            {hourlyHeatmap.map((entry) => {
+              const max = Math.max(1, ...hourlyHeatmap.map((h) => h.total));
+              const intensity = entry.total / max;
+              return (
+                <div
+                  key={entry.hour}
+                  className="rounded-lg border border-[var(--border)] p-2 text-center"
+                  style={{ backgroundColor: `rgba(228, 177, 90, ${0.1 + intensity * 0.55})` }}
+                >
+                  <div className="text-[10px] font-semibold text-[var(--foreground)]">{String(entry.hour).padStart(2, "0")}h</div>
+                  <div className="text-[10px] text-[var(--secondary)]">{entry.total}</div>
+                </div>
+              );
+            })}
           </div>
         </section>
 

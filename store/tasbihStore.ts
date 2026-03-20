@@ -38,6 +38,9 @@ export type Preferences = {
   tapSound: TapSound;
   language: "fr" | "en";
   confetti: boolean;
+  remindersEnabled: boolean;
+  reminderIntervalMinutes: number;
+  optionalSyncEnabled: boolean;
 };
 
 export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
@@ -89,6 +92,9 @@ export type TasbihStoreState = {
   toggleConfetti: () => void;
   setTapSound: (sound: TapSound) => void;
   setLanguage: (lang: "fr" | "en") => void;
+  setRemindersEnabled: (enabled: boolean) => void;
+  setReminderIntervalMinutes: (minutes: number) => void;
+  setOptionalSyncEnabled: (enabled: boolean) => void;
   createList: (listName: string) => void;
   deleteList: (listId: string) => void;
   renameList: (oldId: string, newId: string) => void;
@@ -258,6 +264,9 @@ function getInitialState(): Partial<TasbihStoreState> {
       tapSound: "tap-soft",
       language: "fr",
       confetti: true,
+      remindersEnabled: false,
+      reminderIntervalMinutes: 60,
+      optionalSyncEnabled: false,
     },
   };
 }
@@ -891,6 +900,52 @@ const createStore = () =>
             preferences: {
               ...state.preferences,
               language: lang,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      setRemindersEnabled: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              remindersEnabled: enabled,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      setReminderIntervalMinutes: (minutes: number) =>
+        set((state) => {
+          const nextMinutes = Math.max(5, Math.min(720, Math.floor(minutes || 60)));
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              reminderIntervalMinutes: nextMinutes,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      setOptionalSyncEnabled: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              optionalSyncEnabled: enabled,
             },
           };
           persistState({

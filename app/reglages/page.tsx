@@ -37,9 +37,22 @@ export default function ReglagesPage() {
   const toggleConfetti = useTasbihStore((s) => s.toggleConfetti);
   const setTapSound = useTasbihStore((s) => s.setTapSound);
   const setLanguage = useTasbihStore((s) => s.setLanguage);
+  const setRemindersEnabled = useTasbihStore((s) => s.setRemindersEnabled);
+  const setReminderIntervalMinutes = useTasbihStore((s) => s.setReminderIntervalMinutes);
+  const setOptionalSyncEnabled = useTasbihStore((s) => s.setOptionalSyncEnabled);
   const t = useT();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [backupMessage, setBackupMessage] = useState("");
+  const [syncCode, setSyncCode] = useState("");
+  const [syncMessage, setSyncMessage] = useState("");
+  const [notificationPermission, setNotificationPermission] = useState<
+    NotificationPermission | "unsupported"
+  >(() => {
+    if (typeof window === "undefined" || typeof Notification === "undefined") {
+      return "unsupported";
+    }
+    return Notification.permission;
+  });
 
   const soundOptions: { value: TapSound; label: string }[] = [
     { value: "off", label: t("settings.soundOff") },
@@ -99,6 +112,69 @@ export default function ReglagesPage() {
     window.setTimeout(() => {
       window.location.reload();
     }, 400);
+  };
+
+  const requestNotificationPermission = async () => {
+    if (typeof Notification === "undefined") {
+      setNotificationPermission("unsupported");
+      return;
+    }
+    const permission = await Notification.requestPermission();
+    setNotificationPermission(permission);
+  };
+
+  const sendTestNotification = () => {
+    if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
+    const title = preferences.language === "fr" ? "Tasbih Digital" : "Tasbih Digital";
+    const body =
+      preferences.language === "fr"
+        ? "Rappel de zikr: qu'Allah accepte vos invocations."
+        : "Zikr reminder: may Allah accept your invocations.";
+    new Notification(title, { body, tag: "tasbih-test-reminder" });
+  };
+
+  const encodeSyncCode = (value: string) => {
+    const bytes = new TextEncoder().encode(value);
+    let binary = "";
+    bytes.forEach((b) => {
+      binary += String.fromCharCode(b);
+    });
+    return btoa(binary);
+  };
+
+  const decodeSyncCode = (value: string) => {
+    const binary = atob(value);
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  };
+
+  const handleGenerateSyncCode = () => {
+    const payload = createBackupPayload();
+    const code = encodeSyncCode(JSON.stringify(payload));
+    setSyncCode(code);
+    setSyncMessage("");
+  };
+
+  const handleCopySyncCode = async () => {
+    if (!syncCode) return;
+    await navigator.clipboard.writeText(syncCode);
+    setSyncMessage(t("settings.syncCopied"));
+  };
+
+  const handleImportSyncCode = () => {
+    try {
+      const decoded = decodeSyncCode(syncCode.trim());
+      const parsed = parseBackupPayload(decoded);
+      if (!parsed.ok) {
+        setSyncMessage(t("settings.syncInvalid"));
+        return;
+      }
+      window.localStorage.setItem(TASBIH_STORAGE_KEY, JSON.stringify(parsed.state));
+      setSyncMessage(t("settings.syncImported"));
+      window.setTimeout(() => window.location.reload(), 400);
+    } catch {
+      setSyncMessage(t("settings.syncInvalid"));
+    }
   };
 
   if (!mounted) return null;
@@ -269,6 +345,144 @@ export default function ReglagesPage() {
 
           {backupMessage ? (
             <div className="mt-2 text-xs text-[var(--secondary)]">{backupMessage}</div>
+          ) : null}
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.remindersTitle")}</div>
+          <div className="mt-1 text-xs text-[var(--secondary)]">{t("settings.remindersHint")}</div>
+          <div className="mt-2 text-xs text-[var(--secondary)]">
+            {t("settings.remindersStatus", {
+              status:
+                notificationPermission === "granted"
+                  ? t("settings.remindersGranted")
+                  : notificationPermission === "denied"
+                    ? t("settings.remindersDenied")
+                    : notificationPermission === "unsupported"
+                      ? t("settings.remindersUnsupported")
+                      : t("settings.remindersDefault"),
+            })}
+          </div>
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                void requestNotificationPermission();
+              }}
+              className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
+            >
+              {t("settings.remindersAskPermission")}
+            </button>
+            <button
+              type="button"
+              onClick={sendTestNotification}
+              disabled={notificationPermission !== "granted"}
+              className={`rounded-xl px-4 py-2 text-sm font-semibold ${
+                notificationPermission === "granted"
+                  ? "bg-[var(--primary)] text-black"
+                  : "cursor-not-allowed border border-[var(--border)] bg-[var(--background)] text-[var(--secondary)]"
+              }`}
+            >
+              {t("settings.remindersTest")}
+            </button>
+          </div>
+
+          <div className="mt-3 flex items-center justify-between gap-3">
+            <span className="text-sm text-[var(--foreground)]">{t("settings.remindersEnabled")}</span>
+            <button
+              type="button"
+              onClick={() => setRemindersEnabled(!preferences.remindersEnabled)}
+              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                preferences.remindersEnabled
+                  ? "bg-[var(--primary)] text-black"
+                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+              }`}
+            >
+              {preferences.remindersEnabled ? t("settings.on") : t("settings.off")}
+            </button>
+          </div>
+
+          <div className="mt-3 flex items-center justify-between gap-3">
+            <label htmlFor="reminder-interval" className="text-sm text-[var(--foreground)]">
+              {t("settings.remindersInterval")}
+            </label>
+            <select
+              id="reminder-interval"
+              value={preferences.reminderIntervalMinutes}
+              onChange={(e) => setReminderIntervalMinutes(Number(e.target.value) || 60)}
+              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+            >
+              <option value={15}>15 min</option>
+              <option value={30}>30 min</option>
+              <option value={60}>60 min</option>
+              <option value={180}>180 min</option>
+            </select>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.syncTitle")}</div>
+          <div className="mt-1 text-xs text-[var(--secondary)]">{t("settings.syncHint")}</div>
+
+          <div className="mt-3 flex items-center justify-between gap-3">
+            <span className="text-sm text-[var(--foreground)]">{t("settings.syncEnable")}</span>
+            <button
+              type="button"
+              onClick={() => setOptionalSyncEnabled(!preferences.optionalSyncEnabled)}
+              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                preferences.optionalSyncEnabled
+                  ? "bg-[var(--primary)] text-black"
+                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+              }`}
+            >
+              {preferences.optionalSyncEnabled ? t("settings.on") : t("settings.off")}
+            </button>
+          </div>
+
+          {preferences.optionalSyncEnabled ? (
+            <>
+              <div className="mt-3 flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleGenerateSyncCode}
+                  className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
+                >
+                  {t("settings.syncGenerate")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    void handleCopySyncCode();
+                  }}
+                  disabled={!syncCode}
+                  className={`flex-1 rounded-xl px-4 py-2 text-sm font-semibold ${
+                    syncCode
+                      ? "bg-[var(--primary)] text-black"
+                      : "cursor-not-allowed border border-[var(--border)] bg-[var(--background)] text-[var(--secondary)]"
+                  }`}
+                >
+                  {t("settings.syncCopy")}
+                </button>
+              </div>
+
+              <textarea
+                value={syncCode}
+                onChange={(e) => setSyncCode(e.target.value)}
+                placeholder={t("settings.syncPlaceholder")}
+                className="mt-3 min-h-[90px] w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-xs text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+              />
+
+              <button
+                type="button"
+                onClick={handleImportSyncCode}
+                className="mt-2 w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
+              >
+                {t("settings.syncImport")}
+              </button>
+
+              {syncMessage ? <div className="mt-2 text-xs text-[var(--secondary)]">{syncMessage}</div> : null}
+            </>
           ) : null}
         </section>
 

@@ -82,6 +82,7 @@ export type TasbihStoreState = {
   nextZikrInList: () => void;
   selectZikr: (zikrId: string) => void;
   selectZikrAsList: (zikrId: string) => void;
+  selectRoutine: (label: string, zikrIds: string[]) => void;
   selectList: (listId: string) => void;
   setCustomTarget: (target?: number) => void;
   toggleMode: () => void;
@@ -595,6 +596,29 @@ const createStore = () =>
             activeIndex: 0,
             currentZikrId: zikrId,
             currentZikr: zikr,
+            customTarget: undefined,
+            counter: initialCounterForMode(state.mode, target),
+            isStarted: false,
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      selectRoutine: (label: string, zikrIds: string[]) =>
+        set((state) => {
+          const list = zikrIds.filter((zikrId) => resolveZikr(zikrId, state.customZikrs));
+          const firstId = list[0] ?? state.currentZikrId;
+          const firstZikr = resolveZikr(firstId, state.customZikrs);
+          const target = firstZikr?.defaultTarget ?? 0;
+          const newState = {
+            activeListId: label,
+            activeList: list,
+            activeIndex: 0,
+            currentZikrId: firstId,
+            currentZikr: firstZikr,
             customTarget: undefined,
             counter: initialCounterForMode(state.mode, target),
             isStarted: false,

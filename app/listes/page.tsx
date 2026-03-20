@@ -3,6 +3,7 @@
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { BookOpen, ChevronDown, ChevronUp, Grip, Pencil, Search, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTasbihStore } from "../../store/tasbihStore";
 import { zikrs } from "../../data/zikrs";
 import type { Zikr } from "../../data/zikrs";
@@ -178,6 +179,7 @@ const PRESET_ROUTINES: PresetRoutine[] = [
 ];
 
 export default function ListesPage() {
+  const router = useRouter();
   const mounted = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -193,6 +195,7 @@ export default function ListesPage() {
   const addToList = useTasbihStore((s) => s.addToList);
   const removeFromList = useTasbihStore((s) => s.removeFromList);
   const selectList = useTasbihStore((s) => s.selectList);
+  const selectRoutine = useTasbihStore((s) => s.selectRoutine);
   const listesUI = useTasbihStore((s) => s.listesUI);
   const setListesUI = useTasbihStore((s) => s.setListesUI);
   const t = useT();
@@ -216,7 +219,7 @@ export default function ListesPage() {
   const [createLibraryExpanded, setCreateLibraryExpanded] = useState(false);
   const [createSearchQuery, setCreateSearchQuery] = useState("");
   const [createListItems, setCreateListItems] = useState<CreateListItem[]>([]);
-  const [presetMessage, setPresetMessage] = useState("");
+  const [expandedPresets, setExpandedPresets] = useState<Record<string, boolean>>({});
   const [manualZikrShow, setManualZikrShow] = useState(false);
   const [manualEditModalOpen, setManualEditModalOpen] = useState(false);
   const [manualEditingZikrId, setManualEditingZikrId] = useState<string | null>(null);
@@ -306,25 +309,16 @@ export default function ListesPage() {
     setCreateCategoryExpanded({});
   };
 
-  const getUniqueListName = (baseName: string): string => {
-    if (!customLists[baseName]) return baseName;
-    let idx = 2;
-    while (customLists[`${baseName} (${idx})`]) {
-      idx += 1;
-    }
-    return `${baseName} (${idx})`;
+  const applyPresetRoutine = (preset: PresetRoutine) => {
+    selectRoutine(t(preset.nameKey), preset.zikrIds);
+    router.push("/");
   };
 
-  const applyPresetRoutine = (preset: PresetRoutine) => {
-    const name = getUniqueListName(t(preset.nameKey));
-    createList(name);
-    preset.zikrIds.forEach((zikrId) => {
-      addToList(name, zikrId);
-    });
-    setExpandedLists((prev) => ({ ...prev, [name]: true }));
-    selectList(name);
-    setPresetMessage(t("lists.presetImported", { name }));
-    window.setTimeout(() => setPresetMessage(""), 1800);
+  const togglePresetRoutine = (presetId: string) => {
+    setExpandedPresets((prev) => ({
+      ...prev,
+      [presetId]: !(prev[presetId] ?? false),
+    }));
   };
 
   const createFilteredZikrs = useMemo(() => {
@@ -665,28 +659,78 @@ export default function ListesPage() {
           </div>
           <div className="mt-4 space-y-3">
             {PRESET_ROUTINES.map((preset) => (
-              <div
-                key={preset.id}
-                className="rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-sm font-semibold text-[var(--foreground)]">{t(preset.nameKey)}</div>
-                    <div className="text-xs text-[var(--secondary)]">{t(preset.hintKey)}</div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => applyPresetRoutine(preset)}
-                    className="rounded-xl bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold text-black"
+              (() => {
+                const expanded = expandedPresets[preset.id] ?? false;
+                return (
+                  <div
+                    key={preset.id}
+                    className="overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--card)]"
                   >
-                    {t("lists.presetApplyBtn")}
-                  </button>
-                </div>
-              </div>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => togglePresetRoutine(preset.id)}
+                      onKeyDown={(e) => {
+                        if (e.key !== "Enter" && e.key !== " ") return;
+                        e.preventDefault();
+                        togglePresetRoutine(preset.id);
+                      }}
+                      className="flex items-center justify-between gap-3 px-4 py-4"
+                    >
+                      <div className="min-w-0 flex-1 text-left">
+                        <div className="truncate text-sm font-semibold text-[var(--foreground)]">
+                          {t(preset.nameKey)}
+                        </div>
+                        <div className="truncate text-xs text-[var(--secondary)]">{t(preset.hintKey)}</div>
+                      </div>
+                      <div className="flex flex-shrink-0 items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            applyPresetRoutine(preset);
+                          }}
+                          className="rounded-xl bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold text-black"
+                        >
+                          {t("lists.presetApplyBtn")}
+                        </button>
+                        <span className="text-[var(--secondary)]" aria-hidden="true">
+                          {expanded ? <ChevronUp className="h-5 w-5" strokeWidth={2} /> : <ChevronDown className="h-5 w-5" strokeWidth={2} />}
+                        </span>
+                      </div>
+                    </div>
+
+                    {expanded && (
+                      <div className="space-y-2 border-t border-[var(--border)] bg-[var(--background)] px-5 py-3">
+                        {preset.zikrIds.map((zikrId) => {
+                          const zikr = allZikrsById.get(zikrId);
+                          if (!zikr) return null;
+
+                          return (
+                            <button
+                              type="button"
+                              key={zikrId}
+                              onClick={() => setSelectedLibraryZikr(zikr)}
+                              className="group flex w-full items-center justify-between gap-4 rounded-xl px-2 py-1 text-left transition hover:bg-[color:var(--border)]/45"
+                            >
+                              <div className="min-w-0 flex-1">
+                                <div className="truncate text-[1.05rem] font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">
+                                  {zikr.arabic}
+                                </div>
+                                <div className="truncate text-[0.86rem] font-semibold text-[var(--secondary)]">
+                                  {zikr.transliteration}
+                                </div>
+                              </div>
+                              <span className="ml-4 flex-shrink-0 text-[1rem] font-semibold text-[var(--secondary)]">×{zikr.defaultTarget}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()
             ))}
-            {presetMessage ? (
-              <div className="text-xs text-[var(--secondary)]">{presetMessage}</div>
-            ) : null}
           </div>
         </section>
 

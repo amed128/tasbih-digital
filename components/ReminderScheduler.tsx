@@ -17,7 +17,7 @@ export function ReminderScheduler() {
     if (typeof window === "undefined" || typeof Notification === "undefined") return;
     if (Notification.permission !== "granted") return;
 
-    const tick = () => {
+    const tick = async () => {
       const now = new Date();
       const weekday = now.getDay();
       const h = now.getHours();
@@ -37,7 +37,12 @@ export function ReminderScheduler() {
             ? "Petit rappel: prenez un moment pour votre zikr."
             : "Gentle reminder: take a moment for your zikr.";
         try {
-          new Notification("Tasbih Digital", { body, tag: `tasbih-reminder-${slotKey}` });
+          if (navigator.serviceWorker?.controller) {
+            const reg = await navigator.serviceWorker.ready;
+            await reg.showNotification("Tasbih Digital", { body, tag: `tasbih-reminder-${slotKey}` });
+          } else {
+            new Notification("Tasbih Digital", { body, tag: `tasbih-reminder-${slotKey}` });
+          }
         } catch {
           // Ignore notification runtime failures.
         }

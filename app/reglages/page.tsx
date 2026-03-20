@@ -120,14 +120,22 @@ export default function ReglagesPage() {
     setNotificationPermission(permission);
   };
 
-  const sendTestNotification = () => {
+  const sendTestNotification = async () => {
     if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
-    const title = preferences.language === "fr" ? "Tasbih Digital" : "Tasbih Digital";
     const body =
       preferences.language === "fr"
         ? "Rappel de zikr: qu'Allah accepte vos invocations."
         : "Zikr reminder: may Allah accept your invocations.";
-    new Notification(title, { body, tag: "tasbih-test-reminder" });
+    try {
+      if (navigator.serviceWorker?.controller) {
+        const reg = await navigator.serviceWorker.ready;
+        await reg.showNotification("Tasbih Digital", { body, tag: "tasbih-test-reminder" });
+      } else {
+        new Notification("Tasbih Digital", { body, tag: "tasbih-test-reminder" });
+      }
+    } catch {
+      // ignore
+    }
   };
 
   const encodeSyncCode = (value: string) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import {
   Bar,
@@ -22,6 +22,8 @@ import {
 import { zikrs } from "../../data/zikrs";
 import { BottomNav } from "../../components/BottomNav";
 import { useT } from "@/hooks/useT";
+
+type HistoryRangeMode = "day" | "week" | "month";
 
 function formatDate(dateStr: string, locale: string) {
   const date = new Date(dateStr);
@@ -133,8 +135,31 @@ export default function StatsPage() {
   const language = useTasbihStore((s) => s.preferences.language);
   const t = useT();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [backupMessage, setBackupMessage] = useState("");
+  const toastTimerRef = useRef<number | null>(null);
+  const [toastMessage, setToastMessage] = useState("");
+  const [historyRangeMode, setHistoryRangeMode] = useState<HistoryRangeMode>("month");
+  const [historyDate, setHistoryDate] = useState(() => new Date().toISOString().slice(0, 10));
   const locale = language === "fr" ? "fr-FR" : "en-US";
+
+  const showToast = (message: string) => {
+    setToastMessage(message);
+    if (toastTimerRef.current !== null) {
+      window.clearTimeout(toastTimerRef.current);
+    }
+    toastTimerRef.current = window.setTimeout(() => {
+      setToastMessage("");
+      toastTimerRef.current = null;
+    }, 1300);
+  };
+
+  useEffect(
+    () => () => {
+      if (toastTimerRef.current !== null) {
+        window.clearTimeout(toastTimerRef.current);
+      }
+    },
+    []
+  );
 
   const handleExportBackup = () => {
     const payload = createBackupPayload();
@@ -148,27 +173,37 @@ export default function StatsPage() {
     a.download = `tasbih-backup-${stamp}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    setBackupMessage("");
+    showToast(t("stats.toastExported"));
   };
 
   const handleImportBackupFile = async (file: File) => {
     const raw = await file.text();
     const parsed = parseBackupPayload(raw);
     if (!parsed.ok) {
-      setBackupMessage(t("settings.backupImportError"));
+      showToast(t("settings.backupImportError"));
       return;
     }
 
     window.localStorage.setItem(TASBIH_STORAGE_KEY, JSON.stringify(parsed.state));
-    setBackupMessage(t("settings.backupImported"));
+    showToast(t("stats.toastImported"));
     window.setTimeout(() => {
       window.location.reload();
-    }, 400);
+    }, 900);
+  };
+
+  const handleResetStats = () => {
+    resetStats();
+    showToast(t("stats.toastReset"));
   };
 
   const total = stats.totalZikr;
   const sessions = stats.sessions;
   const activeDays = stats.activeDays;
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const last30StartDate = new Date();
+  last30StartDate.setHours(0, 0, 0, 0);
+  last30StartDate.setDate(last30StartDate.getDate() - 29);
+  const last30StartKey = last30StartDate.toISOString().slice(0, 10);
   const hasStatsData =
     total > 0 || sessions > 0 || activeDays > 0 || stats.history.length > 0;
   const canExport = hasStatsData;
@@ -213,11 +248,39 @@ export default function StatsPage() {
     return hourlyHeatmap.reduce((best, row) => (row.total > best.total ? row : best), hourlyHeatmap[0]).hour;
   }, [hourlyHeatmap]);
 
-  const recentHistory = useMemo(() => {
-    return [...stats.history]
-      .sort((a, b) => (a.startAt < b.startAt ? 1 : -1))
-      .slice(0, 10);
-  }, [stats.history]);
+  const filteredHistory = useMemo(() => {
+    const last30History = stats.history.filter((entry) => {
+      const entryDate = entry.startAt.slice(0, 10);
+      return entryDate >= last30StartKey && entryDate <= todayKey;
+    });
+
+    if (historyRangeMode === "month") {
+      return [...last30History].sort((a, b) => (a.startAt < b.startAt ? 1 : -1));
+    }
+
+    if (historyRangeMode === "day") {
+      return last30History
+        .filter((entry) => entry.startAt.slice(0, 10) === historyDate)
+        .sort((a, b) => (a.startAt < b.startAt ? 1 : -1));
+    }
+
+    const selected = new Date(`${historyDate}T00:00:00`);
+    const day = selected.getDay();
+    const mondayOffset = day === 0 ? -6 : 1 - day;
+    const weekStart = new Date(selected);
+    weekStart.setDate(selected.getDate() + mondayOffset);
+    weekStart.setHours(0, 0, 0, 0);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    weekEnd.setHours(23, 59, 59, 999);
+
+    return last30History
+      .filter((entry) => {
+        const entryDate = new Date(entry.startAt);
+        return entryDate >= weekStart && entryDate <= weekEnd;
+      })
+      .sort((a, b) => (a.startAt < b.startAt ? 1 : -1));
+  }, [stats.history, historyRangeMode, historyDate, last30StartKey, todayKey]);
 
   if (!mounted) return null;
 
@@ -276,9 +339,6 @@ export default function StatsPage() {
             }}
           />
 
-          {backupMessage ? (
-            <div className="text-xs text-[var(--secondary)]">{backupMessage}</div>
-          ) : null}
         </section>
 
         <section className="grid grid-cols-2 gap-3">
@@ -401,20 +461,52 @@ export default function StatsPage() {
           </div>
 
           <div className="rounded-2xl bg-[var(--card)] p-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-3">
               <div className="text-sm font-semibold text-[var(--secondary)]">{t("stats.historyTitle")}</div>
-              <button
-                onClick={resetStats}
-                className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-1 text-xs font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)]"
-              >
-                {t("stats.resetStats")}
-              </button>
+              <div className="inline-flex rounded-xl border border-[var(--border)] bg-[var(--background)] p-1">
+                {([
+                  { key: "day", label: t("stats.filterDay") },
+                  { key: "week", label: t("stats.filterWeek") },
+                  { key: "month", label: t("stats.filterMonth") },
+                ] as { key: HistoryRangeMode; label: string }[]).map((option) => (
+                  <button
+                    key={option.key}
+                    type="button"
+                    onClick={() => setHistoryRangeMode(option.key)}
+                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
+                      historyRangeMode === option.key
+                        ? "bg-[var(--primary)] text-black"
+                        : "text-[var(--secondary)]"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {historyRangeMode !== "month" ? (
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <label htmlFor="history-date" className="text-xs font-semibold text-[var(--secondary)]">
+                  {historyRangeMode === "day" ? t("stats.filterDayLabel") : t("stats.filterWeekLabel")}
+                </label>
+                <input
+                  id="history-date"
+                  type="date"
+                  value={historyDate}
+                  min={last30StartKey}
+                  max={todayKey}
+                  onChange={(e) => setHistoryDate(e.target.value)}
+                  className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-2.5 py-1.5 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+                />
+              </div>
+            ) : null}
+
             <div className="mt-3 space-y-2">
-              {recentHistory.length === 0 ? (
+              {filteredHistory.length === 0 ? (
                 <div className="text-sm text-[var(--secondary)]">{t("stats.noSessions")}</div>
               ) : (
-                recentHistory.map((entry) => {
+                filteredHistory.map((entry) => {
                   const zikr = zikrs.find((d) => d.id === entry.zikrId);
                   return (
                     <div
@@ -435,7 +527,22 @@ export default function StatsPage() {
             </div>
           </div>
         </section>
+
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={handleResetStats}
+            className="rounded-xl border border-[#E7B4B4] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[#C62828] transition hover:border-[#C62828]"
+          >
+            {t("stats.resetStats")}
+          </button>
+        </div>
       </motion.main>
+      {toastMessage ? (
+        <div className="pointer-events-none fixed bottom-24 left-1/2 z-50 w-[calc(100%-2.5rem)] max-w-md -translate-x-1/2 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-center text-sm font-semibold text-[var(--foreground)] shadow-lg">
+          {toastMessage}
+        </div>
+      ) : null}
       <BottomNav />
     </div>
   );

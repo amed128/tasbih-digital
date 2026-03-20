@@ -72,6 +72,7 @@ export default function ReglagesPage() {
   const [syncCode, setSyncCode] = useState("");
   const [syncMessage, setSyncMessage] = useState("");
   const [showRestoreConfirm, setShowRestoreConfirm] = useState(false);
+  const [permissionResetPending, setPermissionResetPending] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState<
     NotificationPermission | "unsupported"
   >(() => {
@@ -118,11 +119,7 @@ export default function ReglagesPage() {
       setNotificationPermission("unsupported");
       return;
     }
-    if (Notification.permission === "granted") {
-      setNotificationPermission("granted");
-      window.alert(t("settings.remindersPermissionResetHelp"));
-      return;
-    }
+    setPermissionResetPending(false);
     const permission = await Notification.requestPermission();
     setNotificationPermission(permission);
   };
@@ -192,15 +189,17 @@ export default function ReglagesPage() {
   const handleRestoreDefaultSettings = () => {
     resetPreferences();
     applyThemeToDom("light");
-    if (typeof Notification === "undefined") {
-      setNotificationPermission("unsupported");
-    } else {
-      setNotificationPermission(Notification.permission);
-    }
+    setNotificationPermission("default");
+    setPermissionResetPending(true);
     setSyncCode("");
     setSyncMessage("");
     setShowRestoreConfirm(false);
   };
+
+  const effectiveNotificationPermission: NotificationPermission | "unsupported" =
+    permissionResetPending && notificationPermission !== "unsupported"
+      ? "default"
+      : notificationPermission;
 
   if (!mounted) return null;
 
@@ -334,9 +333,9 @@ export default function ReglagesPage() {
               onClick={() => {
                 void requestNotificationPermission();
               }}
-              disabled={notificationPermission === "granted"}
+              disabled={effectiveNotificationPermission === "granted"}
               className={`self-start rounded-xl border border-[var(--border)] px-4 py-2 text-sm font-semibold transition ${
-                notificationPermission === "granted"
+                effectiveNotificationPermission === "granted"
                   ? "cursor-not-allowed bg-[var(--background)] text-[var(--secondary)] opacity-50"
                   : "bg-[var(--background)] text-[var(--foreground)]"
               }`}
@@ -344,7 +343,7 @@ export default function ReglagesPage() {
               {t("settings.remindersAskPermission")}
             </button>
             <span className="text-xs text-[var(--secondary)]">
-              {notificationPermission === "granted"
+              {effectiveNotificationPermission === "granted"
                 ? t("settings.remindersPermissionGrantedStatus")
                 : t("settings.remindersPermissionNotGrantedStatus")}
             </span>
@@ -365,104 +364,113 @@ export default function ReglagesPage() {
             </button>
           </div>
 
-          <div className="mt-3 flex items-center justify-between gap-3">
-            <span className="text-sm text-[var(--foreground)]">{t("settings.remindersScheduleType")}</span>
-            <div className="flex overflow-hidden rounded-xl border border-[var(--border)]">
-              <button
-                type="button"
-                onClick={() => setReminderScheduleType("daily")}
-                className={`px-3 py-2 text-sm font-semibold transition ${
-                  preferences.reminderScheduleType === "daily"
-                    ? "bg-[var(--primary)] text-black"
-                    : "bg-[var(--background)] text-[var(--foreground)]"
-                }`}
-              >
-                {t("settings.remindersScheduleDaily")}
-              </button>
-              <button
-                type="button"
-                onClick={() => setReminderScheduleType("weekly")}
-                className={`px-3 py-2 text-sm font-semibold transition ${
-                  preferences.reminderScheduleType === "weekly"
-                    ? "bg-[var(--primary)] text-black"
-                    : "bg-[var(--background)] text-[var(--foreground)]"
-                }`}
-              >
-                {t("settings.remindersScheduleWeekly")}
-              </button>
-            </div>
-          </div>
-
-          {preferences.reminderScheduleType === "weekly" && (
-            <div className="mt-3">
-              <div className="mb-1 text-sm text-[var(--foreground)]">{t("settings.remindersDaysLabel")}</div>
-              <div className="flex flex-wrap gap-1">
-                {weekdays.map(({ value, label }) => (
+          {preferences.remindersEnabled ? (
+            <>
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <span className="text-sm text-[var(--foreground)]">{t("settings.remindersScheduleType")}</span>
+                <div className="flex overflow-hidden rounded-xl border border-[var(--border)]">
                   <button
-                    key={value}
                     type="button"
-                    onClick={() => {
-                      const next = preferences.reminderDays.includes(value)
-                        ? preferences.reminderDays.filter((d) => d !== value)
-                        : [...preferences.reminderDays, value];
-                      setReminderDays(next);
-                    }}
-                    className={`rounded-lg px-3 py-1 text-sm font-semibold transition ${
-                      preferences.reminderDays.includes(value)
+                    onClick={() => setReminderScheduleType("daily")}
+                    className={`px-3 py-2 text-sm font-semibold transition ${
+                      preferences.reminderScheduleType === "daily"
                         ? "bg-[var(--primary)] text-black"
-                        : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
+                        : "bg-[var(--background)] text-[var(--foreground)]"
                     }`}
                   >
-                    {label}
+                    {t("settings.remindersScheduleDaily")}
                   </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="mt-3 flex flex-col gap-2">
-            {preferences.reminderTimes.map((time, index) => (
-              <div key={index} className="flex items-center justify-between gap-2">
-                <span className="text-sm text-[var(--foreground)]">
-                  {index === 0 ? t("settings.remindersTime1") : t("settings.remindersTime2")}
-                </span>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="time"
-                    value={timeToString(time)}
-                    onChange={(e) => {
-                      const next = [...preferences.reminderTimes];
-                      next[index] = stringToTime(e.target.value);
-                      setReminderTimes(next);
-                    }}
-                    className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
-                  />
-                  {index > 0 && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setReminderTimes(preferences.reminderTimes.filter((_, i) => i !== index))
-                      }
-                      className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)]"
-                    >
-                      {t("settings.remindersRemoveTime")}
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => setReminderScheduleType("weekly")}
+                    className={`px-3 py-2 text-sm font-semibold transition ${
+                      preferences.reminderScheduleType === "weekly"
+                        ? "bg-[var(--primary)] text-black"
+                        : "bg-[var(--background)] text-[var(--foreground)]"
+                    }`}
+                  >
+                    {t("settings.remindersScheduleWeekly")}
+                  </button>
                 </div>
               </div>
-            ))}
-            {preferences.reminderTimes.length < 2 && (
-              <button
-                type="button"
-                onClick={() =>
-                  setReminderTimes([...preferences.reminderTimes, { hour: 8, minute: 0 }])
-                }
-                className="self-start rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
-              >
-                {t("settings.remindersAddTime")}
-              </button>
-            )}
-          </div>
+
+              {preferences.reminderScheduleType === "weekly" && (
+                <div className="mt-3">
+                  <div className="mb-1 text-sm text-[var(--foreground)]">{t("settings.remindersDaysLabel")}</div>
+                  <div className="flex flex-wrap gap-1">
+                    {weekdays.map(({ value, label }) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => {
+                          const next = preferences.reminderDays.includes(value)
+                            ? preferences.reminderDays.filter((d) => d !== value)
+                            : [...preferences.reminderDays, value];
+                          if (next.length === 7) {
+                            setReminderScheduleType("daily");
+                            setReminderDays([]);
+                            return;
+                          }
+                          setReminderDays(next);
+                        }}
+                        className={`rounded-lg px-3 py-1 text-sm font-semibold transition ${
+                          preferences.reminderDays.includes(value)
+                            ? "bg-[var(--primary)] text-black"
+                            : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-3 flex flex-col gap-2">
+                {preferences.reminderTimes.map((time, index) => (
+                  <div key={index} className="flex items-center justify-between gap-2">
+                    <span className="text-sm text-[var(--foreground)]">
+                      {index === 0 ? t("settings.remindersTime1") : t("settings.remindersTime2")}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="time"
+                        value={timeToString(time)}
+                        onChange={(e) => {
+                          const next = [...preferences.reminderTimes];
+                          next[index] = stringToTime(e.target.value);
+                          setReminderTimes(next);
+                        }}
+                        className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+                      />
+                      {index > 0 && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setReminderTimes(preferences.reminderTimes.filter((_, i) => i !== index))
+                          }
+                          className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)]"
+                        >
+                          {t("settings.remindersRemoveTime")}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {preferences.reminderTimes.length < 2 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setReminderTimes([...preferences.reminderTimes, { hour: 8, minute: 0 }])
+                    }
+                    className="self-start rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
+                  >
+                    {t("settings.remindersAddTime")}
+                  </button>
+                )}
+              </div>
+            </>
+          ) : null}
 
           <div className="mt-3">
             <button

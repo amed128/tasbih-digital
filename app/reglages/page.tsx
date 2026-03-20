@@ -405,28 +405,17 @@ export default function ReglagesPage() {
         </section>
 
         <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.langTitle")}</div>
-          <div className="mt-3 flex gap-2">
-            <button
-              onClick={() => setLanguage("fr")}
-              className={`flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                preferences.language === "fr"
-                  ? "bg-[var(--primary)] text-black"
-                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-              }`}
+          <div className="flex items-center justify-between gap-4">
+            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.langTitle")}</div>
+            <select
+              value={preferences.language}
+              onChange={(e) => setLanguage(e.target.value as "fr" | "en")}
+              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+              aria-label={t("settings.ariaLanguage")}
             >
-              FR
-            </button>
-            <button
-              onClick={() => setLanguage("en")}
-              className={`flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                preferences.language === "en"
-                  ? "bg-[var(--primary)] text-black"
-                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-              }`}
-            >
-              EN
-            </button>
+              <option value="en">EN</option>
+              <option value="fr">FR</option>
+            </select>
           </div>
         </section>
 

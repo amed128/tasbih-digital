@@ -58,10 +58,13 @@ export default function Home() {
   const selectList = useTasbihStore((s) => s.selectList);
 
   const isListMode = activeListId !== DEFAULT_LIST_ID && activeList.length > 0;
+  const isAutoMode = mode === "auto";
+  const isDownMode = mode === "down";
 
   const effectiveTarget = isListMode ? target : (customTarget ?? target);
-  const isCompleted =
-    mode === "up" ? counter >= effectiveTarget && effectiveTarget > 0 : counter <= 0;
+  const isCompleted = isDownMode
+    ? counter <= 0
+    : counter >= effectiveTarget && effectiveTarget > 0;
   const isTargetLocked = !isListMode && isStarted && !isCompleted;
 
   const alignCurrentListChip = (behavior: ScrollBehavior = "smooth") => {
@@ -292,8 +295,12 @@ export default function Home() {
   const listPosition = `${activeIndex + 1} / ${activeList.length}`;
   const isListComplete =
     isListMode && isCompleted && activeIndex === activeList.length - 1;
-  const executionModeLabel = mode === "up" ? t("counter.modeIncrement") : t("counter.modeDecrement");
-  const initialCounter = mode === "up" ? 0 : effectiveTarget;
+  const executionModeLabel = isAutoMode
+    ? t("counter.modeAuto")
+    : isDownMode
+      ? t("counter.modeDecrement")
+      : t("counter.modeIncrement");
+  const initialCounter = isDownMode ? effectiveTarget : 0;
   const hasProgressToReset = counter !== initialCounter || (isListMode && activeIndex > 0);
 
   const handleResetRequest = () => {
@@ -363,7 +370,7 @@ export default function Home() {
     };
   }, []);
 
-  const autoRunning = autoEnabled && !isCompleted;
+  const autoRunning = isAutoMode && autoEnabled && !isCompleted;
   const canAutoRun = autoRunning && isDocumentVisible && isWindowFocused;
 
   useEffect(() => {
@@ -742,25 +749,27 @@ export default function Home() {
         </div>
       </motion.div>
 
-      {!focusMode && renderAutoControls()}
-
       <motion.div layout className="flex flex-col gap-3 pb-6">
-        <motion.button
-          onClick={handleIncrement}
-          disabled={isCompleted}
-          whileTap={{ scale: 0.95 }}
-          animate={{
-            backgroundColor: isCompleted ? "var(--card)" : "var(--primary)",
-            color: isCompleted ? "#9CA3AF" : "#000000",
-            opacity: isCompleted ? 0.55 : 1,
-          }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
-          className={`w-full rounded-xl px-6 py-5 text-lg font-bold shadow-sm transition hover:brightness-110 active:brightness-95 ${
-            isCompleted ? "pointer-events-none cursor-not-allowed" : ""
-          }`}
-        >
-          {t("counter.tap")}
-        </motion.button>
+        {isAutoMode ? (
+          renderAutoControls()
+        ) : (
+          <motion.button
+            onClick={handleIncrement}
+            disabled={isCompleted}
+            whileTap={{ scale: 0.95 }}
+            animate={{
+              backgroundColor: isCompleted ? "var(--card)" : "var(--primary)",
+              color: isCompleted ? "#9CA3AF" : "#000000",
+              opacity: isCompleted ? 0.55 : 1,
+            }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className={`w-full rounded-xl px-6 py-5 text-lg font-bold shadow-sm transition hover:brightness-110 active:brightness-95 ${
+              isCompleted ? "pointer-events-none cursor-not-allowed" : ""
+            }`}
+          >
+            {t("counter.tap")}
+          </motion.button>
+        )}
 
         <AnimatePresence>
           {isListMode && isCompleted && !isListComplete && (
@@ -871,25 +880,27 @@ export default function Home() {
           />
         </motion.div>
 
-        {renderAutoControls()}
-
         <motion.div layout className="flex flex-col gap-3">
-          <motion.button
-            onClick={handleIncrement}
-            disabled={isCompleted}
-            whileTap={{ scale: 0.95 }}
-            animate={{
-              backgroundColor: isCompleted ? "var(--card)" : "var(--primary)",
-              color: isCompleted ? "#9CA3AF" : "#000000",
-              opacity: isCompleted ? 0.55 : 1,
-            }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className={`w-full rounded-xl px-6 py-5 text-lg font-bold shadow-sm transition hover:brightness-110 active:brightness-95 ${
-              isCompleted ? "pointer-events-none cursor-not-allowed" : ""
-            }`}
-          >
-            {t("counter.tap")}
-          </motion.button>
+          {isAutoMode ? (
+            renderAutoControls()
+          ) : (
+            <motion.button
+              onClick={handleIncrement}
+              disabled={isCompleted}
+              whileTap={{ scale: 0.95 }}
+              animate={{
+                backgroundColor: isCompleted ? "var(--card)" : "var(--primary)",
+                color: isCompleted ? "#9CA3AF" : "#000000",
+                opacity: isCompleted ? 0.55 : 1,
+              }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className={`w-full rounded-xl px-6 py-5 text-lg font-bold shadow-sm transition hover:brightness-110 active:brightness-95 ${
+                isCompleted ? "pointer-events-none cursor-not-allowed" : ""
+              }`}
+            >
+              {t("counter.tap")}
+            </motion.button>
+          )}
 
           <AnimatePresence>
             {isCompleted && !isListComplete && (

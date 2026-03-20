@@ -3,7 +3,18 @@ import { devtools } from "zustand/middleware";
 import { DEFAULT_LIST_ID, zikrs, predefinedLists } from "../data/zikrs";
 import type { Zikr } from "../data/zikrs";
 
-export type Mode = "up" | "down";
+export type Mode = "up" | "down" | "auto";
+
+const MODE_SEQUENCE: Mode[] = ["up", "down", "auto"];
+
+const isDownMode = (mode: Mode) => mode === "down";
+
+const initialCounterForMode = (mode: Mode, target: number) => (isDownMode(mode) ? target : 0);
+
+const normalizeMode = (value: unknown): Mode => {
+  if (value === "up" || value === "down" || value === "auto") return value;
+  return "up";
+};
 
 export type SessionRecord = {
   id: string;
@@ -182,6 +193,7 @@ function migrateStoredState(rawState: unknown): Partial<TasbihStoreState> | null
 
   return {
     ...(legacy as Partial<TasbihStoreState>),
+    mode: normalizeMode(legacy.mode),
     currentZikrId: currentZikrId ? normalizeZikrId(currentZikrId) : undefined,
     currentZikr: normalizeStoredZikr(legacy.currentZikr ?? legacy.currentDhikr),
     activeListId:
@@ -404,11 +416,11 @@ const createStore = () =>
       increment: () =>
         set((state) => {
           const target = state.customTarget ?? state.currentZikr?.defaultTarget ?? 0;
-          const initial = state.mode === "up" ? 0 : target;
-          const next = state.mode === "up" ? state.counter + 1 : state.counter - 1;
+          const initial = initialCounterForMode(state.mode, target);
+          const next = isDownMode(state.mode) ? state.counter - 1 : state.counter + 1;
           const bounded = Math.max(0, Math.min(target, next));
 
-          const goalReached = state.mode === "up" ? bounded === target : bounded === 0;
+          const goalReached = isDownMode(state.mode) ? bounded === 0 : bounded === target;
           const isStarted = bounded !== initial && !goalReached;
 
           const startedSession = state.currentSessionCount > 0;
@@ -434,11 +446,11 @@ const createStore = () =>
       decrement: () =>
         set((state) => {
           const target = state.customTarget ?? state.currentZikr?.defaultTarget ?? 0;
-          const initial = state.mode === "up" ? 0 : target;
-          const next = state.mode === "up" ? state.counter - 1 : state.counter + 1;
+          const initial = initialCounterForMode(state.mode, target);
+          const next = isDownMode(state.mode) ? state.counter + 1 : state.counter - 1;
           const bounded = Math.max(0, Math.min(target, next));
 
-          const goalReached = state.mode === "up" ? bounded === target : bounded === 0;
+          const goalReached = isDownMode(state.mode) ? bounded === 0 : bounded === target;
           const isStarted = bounded !== initial && !goalReached;
 
           const newState = {
@@ -481,7 +493,7 @@ const createStore = () =>
           );
 
           const target = state.customTarget ?? state.currentZikr?.defaultTarget ?? 0;
-          const initial = state.mode === "up" ? 0 : target;
+          const initial = initialCounterForMode(state.mode, target);
 
           const newState: Partial<TasbihStoreState> = {
             counter: initial,
@@ -506,7 +518,7 @@ const createStore = () =>
         set((state) => {
           // undo will decrement totalZikr and reverse counter by one step
           const target = state.customTarget ?? state.currentZikr?.defaultTarget ?? 0;
-          const direction = state.mode === "up" ? -1 : 1;
+          const direction = isDownMode(state.mode) ? 1 : -1;
           const next = state.counter + direction;
           const bounded = Math.max(0, Math.min(target, next));
           const newTotal = Math.max(0, state.stats.totalZikr - 1);
@@ -535,7 +547,7 @@ const createStore = () =>
             currentZikrId: nextZikrId,
             currentZikr: nextZikr,
             customTarget: undefined,
-            counter: state.mode === "down" ? target : 0,
+            counter: initialCounterForMode(state.mode, target),
             isStarted: false,
           };
           persistState({
@@ -553,7 +565,7 @@ const createStore = () =>
             currentZikrId: zikrId,
             currentZikr: zikr,
             customTarget: undefined,
-            counter: state.mode === "down" ? target : 0,
+            counter: initialCounterForMode(state.mode, target),
             isStarted: false,
           };
           persistState({
@@ -575,7 +587,7 @@ const createStore = () =>
             currentZikrId: zikrId,
             currentZikr: zikr,
             customTarget: undefined,
-            counter: state.mode === "down" ? target : 0,
+            counter: initialCounterForMode(state.mode, target),
             isStarted: false,
           };
           persistState({
@@ -609,7 +621,7 @@ const createStore = () =>
             currentZikrId: firstId,
             currentZikr: firstZikr,
             customTarget: undefined,
-            counter: state.mode === "down" ? target : 0,
+            counter: initialCounterForMode(state.mode, target),
             isStarted: false,
           };
           persistState({
@@ -774,7 +786,7 @@ const createStore = () =>
               ? Math.max(1, Math.floor(target))
               : undefined;
           const effectiveTarget = parsed ?? state.currentZikr?.defaultTarget ?? 0;
-          const initial = state.mode === "up" ? 0 : effectiveTarget;
+          const initial = initialCounterForMode(state.mode, effectiveTarget);
           const nextCounter = state.isStarted
             ? Math.max(0, Math.min(state.counter, effectiveTarget))
             : initial;
@@ -792,15 +804,19 @@ const createStore = () =>
 
       toggleMode: () =>
         set((state) => {
-          const nextMode: Mode = state.mode === "up" ? "down" : "up";
+          const currentIndex = MODE_SEQUENCE.indexOf(state.mode);
+          const safeIndex = currentIndex === -1 ? 0 : currentIndex;
+          const nextMode: Mode = MODE_SEQUENCE[(safeIndex + 1) % MODE_SEQUENCE.length];
           const target = state.customTarget ?? state.currentZikr?.defaultTarget ?? 0;
-          const mirroredCounter = Math.max(0, Math.min(target, target - state.counter));
-          const initial = nextMode === "up" ? 0 : target;
-          const goalReached = nextMode === "up" ? mirroredCounter === target : mirroredCounter === 0;
+          const switchesDirection = isDownMode(state.mode) !== isDownMode(nextMode);
+          const nextCounterRaw = switchesDirection ? target - state.counter : state.counter;
+          const nextCounter = Math.max(0, Math.min(target, nextCounterRaw));
+          const initial = initialCounterForMode(nextMode, target);
+          const goalReached = isDownMode(nextMode) ? nextCounter === 0 : nextCounter === target;
           const newState: Partial<TasbihStoreState> = {
             mode: nextMode,
-            counter: mirroredCounter,
-            isStarted: mirroredCounter !== initial && !goalReached,
+            counter: nextCounter,
+            isStarted: nextCounter !== initial && !goalReached,
           };
           persistState({
             ...state,

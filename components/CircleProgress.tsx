@@ -7,7 +7,7 @@ import { useT } from "@/hooks/useT";
 type CircleProgressProps = {
   value: number;
   target: number;
-  mode: "up" | "down";
+  mode: "up" | "down" | "auto";
   isCompleted: boolean;
   pulseTrigger?: number;
   size?: number;
@@ -72,13 +72,15 @@ export function CircleProgress({
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
 
+  const countsDown = mode === "down";
+
   const progress =
     target > 0
       ? Math.min(
           1,
           Math.max(
             0,
-            mode === "up" ? value / target : (target - value) / target
+            countsDown ? (target - value) / target : value / target
           )
         )
       : 0;
@@ -121,7 +123,7 @@ export function CircleProgress({
           aria-live="polite"
           aria-atomic="true"
           aria-label={
-            mode === "up"
+            !countsDown
               ? t("circle.ariaUp", {
                   value,
                   target,
@@ -138,7 +140,7 @@ export function CircleProgress({
           {value}
         </motion.div>
         <div className="mt-1 text-sm font-semibold text-[var(--secondary)]">
-          {mode === "up" ? `/ ${target}` : t("circle.remaining")}
+          {!countsDown ? `/ ${target}` : t("circle.remaining")}
         </div>
         {isCompleted && (
           <div

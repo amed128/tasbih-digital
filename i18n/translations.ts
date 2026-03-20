@@ -200,6 +200,8 @@ export const translations = {
       remindersDefault: "À demander",
       remindersPermissionGrantedStatus: "Permission déjà accordée",
       remindersPermissionNotGrantedStatus: "Permission pas encore accordée",
+      remindersPermissionDeniedHelp:
+        "La permission notifications est refusee. iOS/Safari ne peut pas re-afficher la popup apres un refus. Activez les notifications dans les reglages iOS de l'app/navigateur puis revenez ici.",
       remindersPermissionResetHelp:
         "La permission notifications est deja accordee sur cet appareil. iOS ne re-affiche pas cette popup automatiquement. Pour la revoir, retirez la permission dans les reglages du navigateur/app puis reessayez.",
       remindersScheduleType: "Calendrier",
@@ -481,6 +483,8 @@ export const translations = {
       remindersDefault: "Not requested",
       remindersPermissionGrantedStatus: "Permission already granted",
       remindersPermissionNotGrantedStatus: "Permission not granted yet",
+      remindersPermissionDeniedHelp:
+        "Notification permission is denied. iOS/Safari cannot show the system prompt again after denial. Enable notifications in iOS app/browser settings, then return here.",
       remindersPermissionResetHelp:
         "Notification permission is already granted on this device. iOS does not show that system prompt again automatically. To see it again, remove permission in browser/app settings and try again.",
       remindersScheduleType: "Schedule",

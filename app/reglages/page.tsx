@@ -120,6 +120,11 @@ export default function ReglagesPage() {
       return;
     }
     setPermissionResetPending(false);
+    if (Notification.permission === "denied") {
+      setNotificationPermission("denied");
+      window.alert(t("settings.remindersPermissionDeniedHelp"));
+      return;
+    }
     const permission = await Notification.requestPermission();
     setNotificationPermission(permission);
   };
@@ -353,12 +358,19 @@ export default function ReglagesPage() {
             <span className="text-sm text-[var(--foreground)]">{t("settings.remindersEnabled")}</span>
             <button
               type="button"
-              onClick={() => setRemindersEnabled(!preferences.remindersEnabled)}
+              onClick={() => {
+                if (effectiveNotificationPermission !== "granted") {
+                  setRemindersEnabled(false);
+                  return;
+                }
+                setRemindersEnabled(!preferences.remindersEnabled);
+              }}
+              disabled={effectiveNotificationPermission !== "granted"}
               className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
                 preferences.remindersEnabled
                   ? "bg-[var(--primary)] text-black"
                   : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-              }`}
+              } ${effectiveNotificationPermission !== "granted" ? "cursor-not-allowed opacity-50" : ""}`}
             >
               {preferences.remindersEnabled ? t("settings.on") : t("settings.off")}
             </button>

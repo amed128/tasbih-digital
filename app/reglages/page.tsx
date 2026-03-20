@@ -269,41 +269,27 @@ export default function ReglagesPage() {
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.remindersTitle")}</div>
           <div className="mt-1 text-xs text-[var(--secondary)]">{t("settings.remindersHint")}</div>
-          <div className="mt-2 text-xs text-[var(--secondary)]">
-            {t("settings.remindersStatus", {
-              status:
-                notificationPermission === "granted"
-                  ? t("settings.remindersGranted")
-                  : notificationPermission === "denied"
-                    ? t("settings.remindersDenied")
-                    : notificationPermission === "unsupported"
-                      ? t("settings.remindersUnsupported")
-                      : t("settings.remindersDefault"),
-            })}
-          </div>
 
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-3 flex flex-col gap-1">
             <button
               type="button"
               onClick={() => {
                 void requestNotificationPermission();
               }}
-              className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
+              disabled={notificationPermission === "granted"}
+              className={`self-start rounded-xl border border-[var(--border)] px-4 py-2 text-sm font-semibold transition ${
+                notificationPermission === "granted"
+                  ? "cursor-not-allowed bg-[var(--background)] text-[var(--secondary)] opacity-50"
+                  : "bg-[var(--background)] text-[var(--foreground)]"
+              }`}
             >
               {t("settings.remindersAskPermission")}
             </button>
-            <button
-              type="button"
-              onClick={sendTestNotification}
-              disabled={notificationPermission !== "granted"}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold ${
-                notificationPermission === "granted"
-                  ? "bg-[var(--primary)] text-black"
-                  : "cursor-not-allowed border border-[var(--border)] bg-[var(--background)] text-[var(--secondary)]"
-              }`}
-            >
-              {t("settings.remindersTest")}
-            </button>
+            <span className="text-xs text-[var(--secondary)]">
+              {notificationPermission === "granted"
+                ? t("settings.remindersPermissionGrantedStatus")
+                : t("settings.remindersPermissionNotGrantedStatus")}
+            </span>
           </div>
 
           <div className="mt-3 flex items-center justify-between gap-3">
@@ -325,17 +311,31 @@ export default function ReglagesPage() {
             <label htmlFor="reminder-interval" className="text-sm text-[var(--foreground)]">
               {t("settings.remindersInterval")}
             </label>
-            <select
-              id="reminder-interval"
-              value={preferences.reminderIntervalMinutes}
-              onChange={(e) => setReminderIntervalMinutes(Number(e.target.value) || 60)}
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
-            >
-              <option value={15}>15 min</option>
-              <option value={30}>30 min</option>
-              <option value={60}>60 min</option>
-              <option value={180}>180 min</option>
-            </select>
+            <div className="flex items-center gap-2">
+              <select
+                id="reminder-interval"
+                value={preferences.reminderIntervalMinutes}
+                onChange={(e) => setReminderIntervalMinutes(Number(e.target.value) || 60)}
+                className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+              >
+                <option value={15}>15 min</option>
+                <option value={30}>30 min</option>
+                <option value={60}>60 min</option>
+                <option value={180}>180 min</option>
+              </select>
+              <button
+                type="button"
+                onClick={sendTestNotification}
+                disabled={notificationPermission !== "granted"}
+                className={`rounded-xl px-4 py-2 text-sm font-semibold ${
+                  notificationPermission === "granted"
+                    ? "bg-[var(--primary)] text-black"
+                    : "cursor-not-allowed border border-[var(--border)] bg-[var(--background)] text-[var(--secondary)] opacity-50"
+                }`}
+              >
+                {t("settings.remindersTest")}
+              </button>
+            </div>
           </div>
         </section>
 

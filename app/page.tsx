@@ -36,6 +36,7 @@ export default function Home() {
   const t = useT();
 
   const [pulseTrigger, setPulseTrigger] = useState(0);
+  const [focusMode, setFocusMode] = useState(false);
   const [autoEnabled, setAutoEnabled] = useState(false);
   const [autoIntervalMs, setAutoIntervalMs] = useState(1000);
   const [isDocumentVisible, setIsDocumentVisible] = useState(
@@ -433,18 +434,34 @@ export default function Home() {
     <div className="flex flex-col gap-6 px-5 pt-6">
       <header className="flex flex-col items-center gap-2">
         <h1 className="text-xl font-semibold text-[var(--foreground)]">🌙 Tasbih Digital</h1>
-        <p className="text-sm text-[var(--secondary)]">{ t("counter.subtitle") }</p>
-        <button
-          type="button"
-          onClick={toggleMode}
-          className="rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)]"
-          aria-label={t("counter.ariaChangeMode")}
-        >
-          Mode: {executionModeLabel}
-        </button>
+        {!focusMode && (
+          <p className="text-sm text-[var(--secondary)]">{ t("counter.subtitle") }</p>
+        )}
+        <div className="flex gap-2 items-center justify-center flex-wrap">
+          <button
+            type="button"
+            onClick={toggleMode}
+            className="rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)]"
+            aria-label={t("counter.ariaChangeMode")}
+          >
+            Mode: {executionModeLabel}
+          </button>
+          <button
+            type="button"
+            onClick={() => setFocusMode((v) => !v)}
+            className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
+              focusMode
+                ? "border-[var(--primary)] bg-[var(--primary)] text-black"
+                : "border-[var(--border)] bg-[var(--card)] text-[var(--primary)] hover:border-[var(--primary)]"
+            }`}
+            aria-label={focusMode ? t("counter.focusExitAriaLabel") : t("counter.focusEnterAriaLabel")}
+          >
+            {focusMode ? "✕ Focus" : "⊙ Focus"}
+          </button>
+        </div>
       </header>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4" style={{ display: focusMode ? "none" : "flex" }}>
         <div className="flex flex-col gap-2" ref={dropdownRef}>
           <button
             type="button"
@@ -725,7 +742,7 @@ export default function Home() {
         </div>
       </motion.div>
 
-      {renderAutoControls()}
+      {!focusMode && renderAutoControls()}
 
       <motion.div layout className="flex flex-col gap-3 pb-6">
         <motion.button
@@ -761,13 +778,15 @@ export default function Home() {
         </AnimatePresence>
 
         <div className="flex items-center justify-between gap-4">
-          <button
-            onClick={undoLast}
-            aria-label={t("counter.ariaUndo")}
-            className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"
-          >
-            {t("counter.undo")}
-          </button>
+          {!focusMode && (
+            <button
+              onClick={undoLast}
+              aria-label={t("counter.ariaUndo")}
+              className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"
+            >
+              {t("counter.undo")}
+            </button>
+          )}
           <button
             onClick={handleResetRequest}
             className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"

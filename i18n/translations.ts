@@ -211,6 +211,11 @@ export const translations = {
       restoreDefaults: "Restaurer les parametres par defaut",
       restoreDefaultsConfirm:
         "Restaurer les parametres par defaut ? Cette action remettra tous les reglages a leur etat initial.",
+      restoreDefaultsConfirmTitle: "Restaurer les reglages",
+      restoreDefaultsConfirmBody:
+        "Voulez-vous restaurer les reglages par defaut ? Cette action remettra tous les reglages a leur etat initial.",
+      restoreDefaultsConfirmCancel: "Annuler",
+      restoreDefaultsConfirmConfirm: "Restaurer",
       languageEnglish: "English",
       languageFrench: "French",
       syncTitle: "Sync optionnelle",
@@ -485,6 +490,11 @@ export const translations = {
       restoreDefaults: "Restore default settings",
       restoreDefaultsConfirm:
         "Restore default settings? This will reset all settings to their initial values.",
+      restoreDefaultsConfirmTitle: "Restore settings",
+      restoreDefaultsConfirmBody:
+        "Do you want to restore default settings? This will reset all settings to their initial values.",
+      restoreDefaultsConfirmCancel: "Cancel",
+      restoreDefaultsConfirmConfirm: "Restore",
       languageEnglish: "English",
       languageFrench: "French",
       syncTitle: "Optional sync",

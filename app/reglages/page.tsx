@@ -71,6 +71,7 @@ export default function ReglagesPage() {
         ];
   const [syncCode, setSyncCode] = useState("");
   const [syncMessage, setSyncMessage] = useState("");
+  const [showRestoreConfirm, setShowRestoreConfirm] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState<
     NotificationPermission | "unsupported"
   >(() => {
@@ -184,12 +185,12 @@ export default function ReglagesPage() {
   };
 
   const handleRestoreDefaultSettings = () => {
-    if (!window.confirm(t("settings.restoreDefaultsConfirm"))) return;
     resetPreferences();
     applyThemeToDom("light");
     setNotificationPermission("default");
     setSyncCode("");
     setSyncMessage("");
+    setShowRestoreConfirm(false);
   };
 
   if (!mounted) return null;
@@ -553,8 +554,8 @@ export default function ReglagesPage() {
         <div className="flex justify-center">
           <button
             type="button"
-            onClick={handleRestoreDefaultSettings}
-            className="rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-500"
+            onClick={() => setShowRestoreConfirm(true)}
+            className="rounded-xl border border-[#A5D6A7] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[#2E7D32] transition hover:border-[#2E7D32]"
           >
             {t("settings.restoreDefaults")}
           </button>
@@ -579,6 +580,35 @@ export default function ReglagesPage() {
           {t("settings.version")}
         </div>
       </motion.main>
+
+      {showRestoreConfirm ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
+          <div className="w-full max-w-sm rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4">
+            <h2 className="text-base font-semibold text-[var(--foreground)]">
+              {t("settings.restoreDefaultsConfirmTitle")}
+            </h2>
+            <p className="mt-2 text-sm text-[var(--secondary)]">
+              {t("settings.restoreDefaultsConfirmBody")}
+            </p>
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setShowRestoreConfirm(false)}
+                className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)]"
+              >
+                {t("settings.restoreDefaultsConfirmCancel")}
+              </button>
+              <button
+                type="button"
+                onClick={handleRestoreDefaultSettings}
+                className="flex-1 rounded-xl border border-[#A5D6A7] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[#2E7D32]"
+              >
+                {t("settings.restoreDefaultsConfirmConfirm")}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <BottomNav />
     </div>

@@ -88,8 +88,16 @@ export type TasbihStoreState = {
 };
 
 const STORAGE_KEY = "tasbihDigitalStateV1";
+export const TASBIH_STORAGE_KEY = STORAGE_KEY;
 const LEGACY_DEFAULT_LIST_LABEL = "Zikr de base";
 const LEGACY_DEFAULT_LIST_ID = "base-dhikr";
+
+export type TasbihBackupPayload = {
+  app: "tasbih-digital";
+  version: 1;
+  exportedAt: string;
+  state: Partial<TasbihStoreState>;
+};
 
 const normalizeListId = (listId: string): string =>
   listId === LEGACY_DEFAULT_LIST_LABEL || listId === LEGACY_DEFAULT_LIST_ID
@@ -259,6 +267,62 @@ function persistState(state: Partial<TasbihStoreState>) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch {
     // ignore write errors
+  }
+}
+
+const toPersistedState = (state: TasbihStoreState): Partial<TasbihStoreState> => ({
+  currentZikrId: state.currentZikrId,
+  currentZikr: state.currentZikr,
+  counter: state.counter,
+  isStarted: state.isStarted,
+  mode: state.mode,
+  customTarget: state.customTarget,
+  activeListId: state.activeListId,
+  activeList: state.activeList,
+  activeIndex: state.activeIndex,
+  stats: state.stats,
+  currentSessionCount: state.currentSessionCount,
+  sessionStartAt: state.sessionStartAt,
+  customLists: state.customLists,
+  customZikrs: state.customZikrs,
+  preferences: state.preferences,
+  listesUI: state.listesUI,
+});
+
+export function createBackupPayload(): TasbihBackupPayload {
+  const state = useTasbihStore.getState();
+  return {
+    app: "tasbih-digital",
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    state: toPersistedState(state),
+  };
+}
+
+export function parseBackupPayload(
+  raw: string
+): { ok: true; state: Partial<TasbihStoreState> } | { ok: false; error: string } {
+  try {
+    const parsed = JSON.parse(raw) as
+      | TasbihBackupPayload
+      | {
+          state?: unknown;
+        }
+      | unknown;
+
+    const maybeState =
+      parsed && typeof parsed === "object" && "state" in parsed
+        ? (parsed as { state?: unknown }).state
+        : parsed;
+
+    const migrated = migrateStoredState(maybeState);
+    if (!migrated) {
+      return { ok: false, error: "Invalid backup structure" };
+    }
+
+    return { ok: true, state: migrated };
+  } catch {
+    return { ok: false, error: "Invalid JSON file" };
   }
 }
 

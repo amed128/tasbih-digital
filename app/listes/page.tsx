@@ -149,6 +149,34 @@ function formatZikrCount(count: number) {
   return `${count} ${count === 1 ? "zikr" : "zikrs"}`;
 }
 
+type PresetRoutine = {
+  id: string;
+  nameKey: string;
+  hintKey: string;
+  zikrIds: string[];
+};
+
+const PRESET_ROUTINES: PresetRoutine[] = [
+  {
+    id: "after-prayer",
+    nameKey: "lists.presetAfterPrayerName",
+    hintKey: "lists.presetAfterPrayerHint",
+    zikrIds: ["tasbih-1", "hamd-1", "takbir-1"],
+  },
+  {
+    id: "morning-evening",
+    nameKey: "lists.presetMorningEveningName",
+    hintKey: "lists.presetMorningEveningHint",
+    zikrIds: ["matin-soir-1", "matin-soir-2", "matin-soir-4", "istighfar-1"],
+  },
+  {
+    id: "istighfar-intensive",
+    nameKey: "lists.presetIstighfarName",
+    hintKey: "lists.presetIstighfarHint",
+    zikrIds: ["istighfar-1", "istighfar-2", "salawat-1"],
+  },
+];
+
 export default function ListesPage() {
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -188,6 +216,7 @@ export default function ListesPage() {
   const [createLibraryExpanded, setCreateLibraryExpanded] = useState(false);
   const [createSearchQuery, setCreateSearchQuery] = useState("");
   const [createListItems, setCreateListItems] = useState<CreateListItem[]>([]);
+  const [presetMessage, setPresetMessage] = useState("");
   const [manualZikrShow, setManualZikrShow] = useState(false);
   const [manualEditModalOpen, setManualEditModalOpen] = useState(false);
   const [manualEditingZikrId, setManualEditingZikrId] = useState<string | null>(null);
@@ -275,6 +304,27 @@ export default function ListesPage() {
     setCreateLibraryExpanded(false);
     setCreateSearchQuery("");
     setCreateCategoryExpanded({});
+  };
+
+  const getUniqueListName = (baseName: string): string => {
+    if (!customLists[baseName]) return baseName;
+    let idx = 2;
+    while (customLists[`${baseName} (${idx})`]) {
+      idx += 1;
+    }
+    return `${baseName} (${idx})`;
+  };
+
+  const applyPresetRoutine = (preset: PresetRoutine) => {
+    const name = getUniqueListName(t(preset.nameKey));
+    createList(name);
+    preset.zikrIds.forEach((zikrId) => {
+      addToList(name, zikrId);
+    });
+    setExpandedLists((prev) => ({ ...prev, [name]: true }));
+    selectList(name);
+    setPresetMessage(t("lists.presetImported", { name }));
+    window.setTimeout(() => setPresetMessage(""), 1800);
   };
 
   const createFilteredZikrs = useMemo(() => {
@@ -607,6 +657,37 @@ export default function ListesPage() {
               </div>
             </div>
           )}
+        </section>
+
+        <section>
+          <div className="whitespace-nowrap text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-[var(--secondary)]">
+            {t("lists.presetsTitle")}
+          </div>
+          <div className="mt-4 space-y-3">
+            {PRESET_ROUTINES.map((preset) => (
+              <div
+                key={preset.id}
+                className="rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-semibold text-[var(--foreground)]">{t(preset.nameKey)}</div>
+                    <div className="text-xs text-[var(--secondary)]">{t(preset.hintKey)}</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => applyPresetRoutine(preset)}
+                    className="rounded-xl bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold text-black"
+                  >
+                    {t("lists.presetApplyBtn")}
+                  </button>
+                </div>
+              </div>
+            ))}
+            {presetMessage ? (
+              <div className="text-xs text-[var(--secondary)]">{presetMessage}</div>
+            ) : null}
+          </div>
         </section>
 
         <section>

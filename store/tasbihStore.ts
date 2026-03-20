@@ -35,6 +35,7 @@ export type Stats = {
 export type Preferences = {
   theme: Theme;
   vibration: boolean;
+  wakeLockEnabled: boolean;
   tapSound: TapSound;
   language: "fr" | "en";
   confetti: boolean;
@@ -90,6 +91,7 @@ export type TasbihStoreState = {
   resetStats: () => void;
   setTheme: (theme: Theme) => void;
   toggleVibration: () => void;
+  setWakeLockEnabled: (enabled: boolean) => void;
   toggleConfetti: () => void;
   setTapSound: (sound: TapSound) => void;
   setLanguage: (lang: "fr" | "en") => void;
@@ -263,6 +265,7 @@ function getInitialState(): Partial<TasbihStoreState> {
     preferences: {
       theme: "blue",
       vibration: true,
+      wakeLockEnabled: false,
       tapSound: "tap-soft",
       language: "fr",
       confetti: true,
@@ -377,6 +380,12 @@ const resolveStoredTheme = (preferences: unknown): Theme => {
   return "blue";
 };
 
+const resolveStoredWakeLockEnabled = (preferences: unknown): boolean => {
+  if (!preferences || typeof preferences !== "object") return false;
+  const prefs = preferences as { wakeLockEnabled?: unknown };
+  return typeof prefs.wakeLockEnabled === "boolean" ? prefs.wakeLockEnabled : false;
+};
+
 const baseInitialState = getInitialState();
 const storedState = loadStateFromStorage();
 const normalizedStoredActiveListId =
@@ -392,6 +401,7 @@ const initialState: Partial<TasbihStoreState> = {
     ...baseInitialState.preferences,
     ...storedState?.preferences,
     theme: resolveStoredTheme(storedState?.preferences),
+    wakeLockEnabled: resolveStoredWakeLockEnabled(storedState?.preferences),
     tapSound: normalizeTapSound(storedState?.preferences?.tapSound),
   } as Preferences,
 };
@@ -894,6 +904,21 @@ const createStore = () =>
             preferences: {
               ...state.preferences,
               vibration: !state.preferences.vibration,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      setWakeLockEnabled: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              wakeLockEnabled: enabled,
             },
           };
           persistState({

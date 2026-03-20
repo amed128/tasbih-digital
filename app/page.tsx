@@ -10,6 +10,12 @@ import { CircleProgress } from "../components/CircleProgress";
 import { BottomNav } from "../components/BottomNav";
 import { Modal } from "../components/Modal";
 
+type WakeLockSentinelLike = {
+  released: boolean;
+  release: () => Promise<void>;
+  addEventListener?: (type: "release", listener: () => void) => void;
+};
+
 export default function Home() {
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -22,6 +28,7 @@ export default function Home() {
   const isStarted = useTasbihStore((s) => s.isStarted);
   const mode = useTasbihStore((s) => s.mode);
   const vibrationEnabled = useTasbihStore((s) => s.preferences.vibration);
+  const wakeLockEnabled = useTasbihStore((s) => s.preferences.wakeLockEnabled);
   const confettiEnabled = useTasbihStore((s) => s.preferences.confetti);
   const tapSound = useTasbihStore((s) => s.preferences.tapSound);
   const customTarget = useTasbihStore((s) => s.customTarget);
@@ -286,12 +293,47 @@ export default function Home() {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const chipsContainerRef = useRef<HTMLDivElement | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const wakeLockRef = useRef<WakeLockSentinelLike | null>(null);
 
   useEffect(() => () => {
     if (audioCtxRef.current && audioCtxRef.current.state !== "closed") {
       audioCtxRef.current.close();
     }
   }, []);
+
+  const releaseWakeLock = useEffectEvent(async () => {
+    const sentinel = wakeLockRef.current;
+    if (!sentinel) return;
+
+    wakeLockRef.current = null;
+    try {
+      await sentinel.release();
+    } catch {
+      // Ignore release failures from transient browser state.
+    }
+  });
+
+  const requestWakeLock = useEffectEvent(async () => {
+    if (typeof navigator === "undefined") return;
+
+    const nav = navigator as Navigator & {
+      wakeLock?: {
+        request: (type: "screen") => Promise<WakeLockSentinelLike>;
+      };
+    };
+
+    if (!nav.wakeLock || wakeLockRef.current) return;
+
+    try {
+      const sentinel = await nav.wakeLock.request("screen");
+      wakeLockRef.current = sentinel;
+      sentinel.addEventListener?.("release", () => {
+        wakeLockRef.current = null;
+      });
+    } catch {
+      // Request can fail when tab is hidden or browser rejects wake lock.
+    }
+  });
 
   const listPosition = `${activeIndex + 1} / ${activeList.length}`;
   const isListComplete =
@@ -375,6 +417,12 @@ export default function Home() {
 
   const autoRunning = isAutoMode && autoEnabled && !isCompleted;
   const canAutoRun = autoRunning && isDocumentVisible && isWindowFocused;
+  const shouldHoldWakeLock =
+    wakeLockEnabled &&
+    !isCompleted &&
+    isDocumentVisible &&
+    isWindowFocused &&
+    (isStarted || autoRunning);
 
   useEffect(() => {
     if (!canAutoRun) return;
@@ -386,6 +434,23 @@ export default function Home() {
       window.clearInterval(timer);
     };
   }, [canAutoRun, autoIntervalMs]);
+
+  useEffect(() => {
+    if (shouldHoldWakeLock) {
+      void requestWakeLock();
+      return;
+    }
+
+    void releaseWakeLock();
+  }, [shouldHoldWakeLock]);
+
+  useEffect(
+    () => () => {
+      void releaseWakeLock();
+    },
+    []
+  );
+
   const autoStatusLabel = !autoEnabled
     ? t("counter.autoStatusOff")
     : !isDocumentVisible

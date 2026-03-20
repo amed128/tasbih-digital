@@ -12,6 +12,7 @@ import {
 } from "../../store/tasbihStore";
 import { BottomNav } from "../../components/BottomNav";
 import { useT } from "@/hooks/useT";
+import { useFeatureAvailability } from "@/hooks/useFeatureAvailability";
 import Link from "next/link";
 
 export default function ReglagesPage() {
@@ -22,12 +23,14 @@ export default function ReglagesPage() {
   );
 
   const preferences = useTasbihStore((s) => s.preferences);
+  const wakeLockAvail = useFeatureAvailability("wakeLock");
 
   const isIOS =
     typeof navigator !== "undefined" &&
     /iPad|iPhone|iPod/.test(navigator.userAgent);
   const setTheme = useTasbihStore((s) => s.setTheme);
   const toggleVibration = useTasbihStore((s) => s.toggleVibration);
+  const setWakeLockEnabled = useTasbihStore((s) => s.setWakeLockEnabled);
   const toggleConfetti = useTasbihStore((s) => s.toggleConfetti);
   const setTapSound = useTasbihStore((s) => s.setTapSound);
   const setLanguage = useTasbihStore((s) => s.setLanguage);
@@ -60,6 +63,8 @@ export default function ReglagesPage() {
     { value: "dark", label: t("settings.themeDark") },
     { value: "blue", label: t("settings.themeBlue") },
   ];
+
+  const wakeLockToggleDisabled = wakeLockAvail.status !== "available";
 
   const applyThemeToDom = (theme: Theme) => {
     if (typeof document === "undefined") return;
@@ -247,6 +252,29 @@ export default function ReglagesPage() {
               }`}
             >
               {preferences.vibration ? t("settings.on") : t("settings.off")}
+            </button>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.wakeLockTitle")}</div>
+              <div className="text-xs text-[var(--secondary)]">
+                {wakeLockToggleDisabled ? t("settings.wakeLockLimitedHint") : t("settings.wakeLockHint")}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setWakeLockEnabled(!preferences.wakeLockEnabled)}
+              disabled={wakeLockToggleDisabled}
+              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                preferences.wakeLockEnabled
+                  ? "bg-[var(--primary)] text-black"
+                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+              } ${wakeLockToggleDisabled ? "cursor-not-allowed opacity-50" : ""}`}
+            >
+              {preferences.wakeLockEnabled ? t("settings.on") : t("settings.off")}
             </button>
           </div>
         </section>

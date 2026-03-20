@@ -47,6 +47,7 @@ export default function ReglagesPage() {
   const setReminderTimes = useTasbihStore((s) => s.setReminderTimes);
   const setReminderDays = useTasbihStore((s) => s.setReminderDays);
   const setOptionalSyncEnabled = useTasbihStore((s) => s.setOptionalSyncEnabled);
+  const resetPreferences = useTasbihStore((s) => s.resetPreferences);
   const t = useT();
   const weekdays =
     preferences.language === "fr"
@@ -180,6 +181,15 @@ export default function ReglagesPage() {
     } catch {
       setSyncMessage(t("settings.syncInvalid"));
     }
+  };
+
+  const handleRestoreDefaultSettings = () => {
+    if (!window.confirm(t("settings.restoreDefaultsConfirm"))) return;
+    resetPreferences();
+    applyThemeToDom("light");
+    setNotificationPermission("default");
+    setSyncCode("");
+    setSyncMessage("");
   };
 
   if (!mounted) return null;
@@ -534,11 +544,21 @@ export default function ReglagesPage() {
               className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
               aria-label={t("settings.ariaLanguage")}
             >
-              <option value="en">EN</option>
-              <option value="fr">FR</option>
+              <option value="en">{t("settings.languageEnglish")}</option>
+              <option value="fr">{t("settings.languageFrench")}</option>
             </select>
           </div>
         </section>
+
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={handleRestoreDefaultSettings}
+            className="rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-500"
+          >
+            {t("settings.restoreDefaults")}
+          </button>
+        </div>
 
         <Link
           href="/about"

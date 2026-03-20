@@ -104,6 +104,7 @@ export type TasbihStoreState = {
   setReminderTimes: (times: ReminderTime[]) => void;
   setReminderDays: (days: number[]) => void;
   setOptionalSyncEnabled: (enabled: boolean) => void;
+  resetPreferences: () => void;
   createList: (listName: string) => void;
   deleteList: (listId: string) => void;
   renameList: (oldId: string, newId: string) => void;
@@ -269,12 +270,12 @@ function getInitialState(): Partial<TasbihStoreState> {
       expandedLists: {},
     },
     preferences: {
-      theme: "blue",
-      vibration: true,
+      theme: "light",
+      vibration: false,
       wakeLockEnabled: false,
-      tapSound: "tap-soft",
-      language: "fr",
-      confetti: true,
+      tapSound: "off",
+      language: "en",
+      confetti: false,
       remindersEnabled: false,
       reminderScheduleType: "daily" as ReminderScheduleType,
       reminderTimes: [] as ReminderTime[],
@@ -1034,6 +1035,31 @@ const createStore = () =>
             preferences: {
               ...state.preferences,
               optionalSyncEnabled: enabled,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      resetPreferences: () =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              theme: "light" as Theme,
+              vibration: false,
+              wakeLockEnabled: false,
+              tapSound: "off" as TapSound,
+              language: "en" as const,
+              confetti: false,
+              remindersEnabled: false,
+              reminderScheduleType: "daily" as ReminderScheduleType,
+              reminderTimes: [] as ReminderTime[],
+              reminderDays: [] as number[],
+              optionalSyncEnabled: false,
             },
           };
           persistState({

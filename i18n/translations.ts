@@ -208,6 +208,11 @@ export const translations = {
       remindersTime2: "Heure 2",
       remindersAddTime: "+ Ajouter une heure",
       remindersRemoveTime: "✕",
+      restoreDefaults: "Restaurer les parametres par defaut",
+      restoreDefaultsConfirm:
+        "Restaurer les parametres par defaut ? Cette action remettra tous les reglages a leur etat initial.",
+      languageEnglish: "English",
+      languageFrench: "French",
       syncTitle: "Sync optionnelle",
       syncHint: "Transfert manuel entre appareils via code",
       syncEnable: "Activer la sync manuelle",
@@ -477,6 +482,11 @@ export const translations = {
       remindersTime2: "Time 2",
       remindersAddTime: "+ Add time",
       remindersRemoveTime: "✕",
+      restoreDefaults: "Restore default settings",
+      restoreDefaultsConfirm:
+        "Restore default settings? This will reset all settings to their initial values.",
+      languageEnglish: "English",
+      languageFrench: "French",
       syncTitle: "Optional sync",
       syncHint: "Manual transfer between devices using a code",
       syncEnable: "Enable manual sync",

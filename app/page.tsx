@@ -36,6 +36,16 @@ export default function Home() {
   const t = useT();
 
   const [pulseTrigger, setPulseTrigger] = useState(0);
+  const [autoEnabled, setAutoEnabled] = useState(false);
+  const [autoIntervalMs, setAutoIntervalMs] = useState(1000);
+  const [isDocumentVisible, setIsDocumentVisible] = useState(
+    typeof document === "undefined" ? true : document.visibilityState === "visible"
+  );
+  const [isWindowFocused, setIsWindowFocused] = useState(
+    typeof document === "undefined" || typeof document.hasFocus !== "function"
+      ? true
+      : document.hasFocus()
+  );
   const prevIsCompleted = useRef(false);
 
   const target = currentZikr?.defaultTarget ?? 0;
@@ -160,6 +170,11 @@ export default function Home() {
     triggerHaptic(18);
     setPulseTrigger((t) => t + 1);
   };
+
+  const handleAutoIncrement = useEffectEvent(() => {
+    increment();
+    setPulseTrigger((t) => t + 1);
+  });
 
   const handleQuitList = () => {
     selectList(DEFAULT_LIST_ID);
@@ -328,6 +343,89 @@ export default function Home() {
     if (!isListMode) return;
     scheduleAlignCurrentListChip("auto");
   }, [pulseTrigger, isListMode]);
+
+  useEffect(() => {
+    const updateVisibility = () => {
+      setIsDocumentVisible(document.visibilityState === "visible");
+    };
+    const onFocus = () => setIsWindowFocused(true);
+    const onBlur = () => setIsWindowFocused(false);
+
+    document.addEventListener("visibilitychange", updateVisibility);
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("blur", onBlur);
+
+    return () => {
+      document.removeEventListener("visibilitychange", updateVisibility);
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("blur", onBlur);
+    };
+  }, []);
+
+  const autoRunning = autoEnabled && !isCompleted;
+  const canAutoRun = autoRunning && isDocumentVisible && isWindowFocused;
+
+  useEffect(() => {
+    if (!canAutoRun) return;
+    const timer = window.setInterval(() => {
+      handleAutoIncrement();
+    }, autoIntervalMs);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [canAutoRun, autoIntervalMs]);
+  const autoStatusLabel = !autoEnabled
+    ? t("counter.autoStatusOff")
+    : !isDocumentVisible
+      ? t("counter.autoStatusPausedHidden")
+      : !isWindowFocused
+        ? t("counter.autoStatusPausedFocus")
+        : isCompleted
+          ? t("counter.autoStatusDone")
+          : t("counter.autoStatusRunning");
+
+  const renderAutoControls = () => (
+    <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-3">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--secondary)]">
+            {t("counter.autoTitle")}
+          </div>
+          <div className="text-xs text-[var(--secondary)]">{autoStatusLabel}</div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setAutoEnabled((v) => !v)}
+          disabled={isCompleted}
+          className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
+            autoRunning
+              ? "bg-[var(--primary)] text-black"
+              : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
+          } ${isCompleted ? "cursor-not-allowed opacity-50" : ""}`}
+        >
+          {autoRunning ? t("counter.autoStop") : t("counter.autoStart")}
+        </button>
+      </div>
+
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <label className="text-xs font-semibold text-[var(--secondary)]" htmlFor="auto-speed">
+          {t("counter.autoSpeed")}
+        </label>
+        <select
+          id="auto-speed"
+          value={autoIntervalMs}
+          onChange={(e) => setAutoIntervalMs(Number(e.target.value) || 1000)}
+          className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+        >
+          <option value={500}>0.5s</option>
+          <option value={1000}>1s</option>
+          <option value={2000}>2s</option>
+        </select>
+      </div>
+    </section>
+  );
 
   if (!mounted) return null;
 
@@ -627,6 +725,8 @@ export default function Home() {
         </div>
       </motion.div>
 
+      {renderAutoControls()}
+
       <motion.div layout className="flex flex-col gap-3 pb-6">
         <motion.button
           onClick={handleIncrement}
@@ -751,6 +851,8 @@ export default function Home() {
             pulseTrigger={pulseTrigger}
           />
         </motion.div>
+
+        {renderAutoControls()}
 
         <motion.div layout className="flex flex-col gap-3">
           <motion.button

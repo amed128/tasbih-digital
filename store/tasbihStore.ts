@@ -40,12 +40,16 @@ export type Preferences = {
   language: "fr" | "en";
   confetti: boolean;
   remindersEnabled: boolean;
-  reminderIntervalMinutes: number;
+  reminderScheduleType: ReminderScheduleType;
+  reminderTimes: ReminderTime[];
+  reminderDays: number[];
   optionalSyncEnabled: boolean;
 };
 
 export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
 export type Theme = "light" | "dark" | "blue";
+export type ReminderTime = { hour: number; minute: number };
+export type ReminderScheduleType = "daily" | "weekly";
 
 export type TasbihStoreState = {
   // Current selected zikr
@@ -96,7 +100,9 @@ export type TasbihStoreState = {
   setTapSound: (sound: TapSound) => void;
   setLanguage: (lang: "fr" | "en") => void;
   setRemindersEnabled: (enabled: boolean) => void;
-  setReminderIntervalMinutes: (minutes: number) => void;
+  setReminderScheduleType: (type: ReminderScheduleType) => void;
+  setReminderTimes: (times: ReminderTime[]) => void;
+  setReminderDays: (days: number[]) => void;
   setOptionalSyncEnabled: (enabled: boolean) => void;
   createList: (listName: string) => void;
   deleteList: (listId: string) => void;
@@ -270,7 +276,9 @@ function getInitialState(): Partial<TasbihStoreState> {
       language: "fr",
       confetti: true,
       remindersEnabled: false,
-      reminderIntervalMinutes: 60,
+      reminderScheduleType: "daily" as ReminderScheduleType,
+      reminderTimes: [] as ReminderTime[],
+      reminderDays: [] as number[],
       optionalSyncEnabled: false,
     },
   };
@@ -988,19 +996,35 @@ const createStore = () =>
           return newState;
         }),
 
-      setReminderIntervalMinutes: (minutes: number) =>
+      setReminderScheduleType: (type: ReminderScheduleType) =>
         set((state) => {
-          const nextMinutes = Math.max(5, Math.min(720, Math.floor(minutes || 60)));
           const newState = {
-            preferences: {
-              ...state.preferences,
-              reminderIntervalMinutes: nextMinutes,
-            },
+            preferences: { ...state.preferences, reminderScheduleType: type },
           };
-          persistState({
-            ...state,
-            ...newState,
-          });
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
+      setReminderTimes: (times: ReminderTime[]) =>
+        set((state) => {
+          const clamped = times.slice(0, 2).map((t) => ({
+            hour: Math.max(0, Math.min(23, Math.floor(t.hour))),
+            minute: Math.max(0, Math.min(59, Math.floor(t.minute))),
+          }));
+          const newState = {
+            preferences: { ...state.preferences, reminderTimes: clamped },
+          };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
+      setReminderDays: (days: number[]) =>
+        set((state) => {
+          const valid = [...new Set(days.filter((d) => d >= 0 && d <= 6))];
+          const newState = {
+            preferences: { ...state.preferences, reminderDays: valid },
+          };
+          persistState({ ...state, ...newState });
           return newState;
         }),
 

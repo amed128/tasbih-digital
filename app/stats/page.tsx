@@ -148,7 +148,7 @@ export default function StatsPage() {
     a.download = `tasbih-backup-${stamp}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    setBackupMessage(t("settings.backupExported"));
+    setBackupMessage("");
   };
 
   const handleImportBackupFile = async (file: File) => {
@@ -242,8 +242,8 @@ export default function StatsPage() {
               disabled={!canImport}
               className={`flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition ${
                 canImport
-                  ? "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:border-[var(--primary)]"
-                  : "cursor-not-allowed border border-[var(--border)] bg-[var(--background)] text-[var(--secondary)] opacity-60 blur-[1px]"
+                  ? "border border-[var(--border)] bg-white text-black hover:border-[var(--primary)]"
+                  : "cursor-not-allowed border border-[var(--border)] bg-white text-[var(--secondary)] opacity-60 blur-[0.5px]"
               }`}
             >
               {t("settings.backupImportBtn")}
@@ -254,8 +254,8 @@ export default function StatsPage() {
               disabled={!canExport}
               className={`flex-1 rounded-xl border px-4 py-2 text-sm font-semibold transition ${
                 canExport
-                  ? "border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:border-[var(--primary)]"
-                  : "cursor-not-allowed border-[var(--border)] bg-[var(--background)] text-[var(--secondary)] opacity-60 blur-[1px]"
+                  ? "border-[var(--border)] bg-white text-black hover:border-[var(--primary)]"
+                  : "cursor-not-allowed border-[var(--border)] bg-white text-[var(--secondary)] opacity-60 blur-[0.5px]"
               }`}
             >
               {t("settings.backupExportBtn")}

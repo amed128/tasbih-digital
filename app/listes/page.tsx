@@ -196,6 +196,7 @@ export default function ListesPage() {
   const removeFromList = useTasbihStore((s) => s.removeFromList);
   const selectList = useTasbihStore((s) => s.selectList);
   const selectRoutine = useTasbihStore((s) => s.selectRoutine);
+  const reorderLists = useTasbihStore((s) => s.reorderLists);
   const listesUI = useTasbihStore((s) => s.listesUI);
   const setListesUI = useTasbihStore((s) => s.setListesUI);
   const t = useT();
@@ -220,6 +221,8 @@ export default function ListesPage() {
   const [createSearchQuery, setCreateSearchQuery] = useState("");
   const [createListItems, setCreateListItems] = useState<CreateListItem[]>([]);
   const [expandedPresets, setExpandedPresets] = useState<Record<string, boolean>>({});
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [manualZikrShow, setManualZikrShow] = useState(false);
   const [manualEditModalOpen, setManualEditModalOpen] = useState(false);
   const [manualEditingZikrId, setManualEditingZikrId] = useState<string | null>(null);
@@ -536,7 +539,11 @@ export default function ListesPage() {
       ...prev,
       [listId]: !(prev[listId] ?? false),
     }));
+  };
+
+  const handleUseList = (listId: string) => {
     selectList(listId);
+    router.push("/");
   };
 
   if (!mounted) return null;
@@ -756,7 +763,16 @@ export default function ListesPage() {
                 return (
                   <div
                     key={listId}
-                    className="overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--card)]"
+                    draggable
+                    onDragStart={() => setDragId(listId)}
+                    onDragEnd={() => { setDragId(null); setDragOverId(null); }}
+                    onDragOver={(e) => { e.preventDefault(); setDragOverId(listId); }}
+                    onDrop={(e) => { e.preventDefault(); if (dragId && dragId !== listId) { reorderLists(dragId, listId); } setDragId(null); setDragOverId(null); }}
+                    className={`overflow-hidden rounded-[28px] border bg-[var(--card)] transition-opacity ${
+                      dragId === listId ? "opacity-40" : "opacity-100"
+                    } ${
+                      dragOverId === listId && dragId !== listId ? "border-[var(--primary)]" : "border-[var(--border)]"
+                    }`}
                   >
                     <div
                       role="button"
@@ -770,7 +786,7 @@ export default function ListesPage() {
                       className="flex items-center justify-between px-4 py-4.5"
                     >
                       <div className="flex min-w-0 flex-1 items-center gap-4">
-                        <Grip className="h-4 w-4 text-[var(--secondary)]" strokeWidth={2} />
+                        <Grip className="h-4 w-4 cursor-grab text-[var(--secondary)] active:cursor-grabbing" strokeWidth={2} />
                         <div className="min-w-0 flex-1 text-left">
                           <div className="truncate text-[0.9rem] font-semibold text-[var(--foreground)]">
                             {listId}
@@ -779,19 +795,6 @@ export default function ListesPage() {
                         </div>
                       </div>
                       <div className="flex flex-shrink-0 items-center gap-3">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setExpandedLists((prev) => ({
-                              ...prev,
-                              [listId]: !expanded,
-                            }));
-                          }}
-                          className="text-[var(--secondary)]"
-                          aria-label={expanded ? t("lists.ariaCollapse") : t("lists.ariaExpand")}
-                        >
-                          {expanded ? <ChevronUp className="h-5 w-5" strokeWidth={2} /> : <ChevronDown className="h-5 w-5" strokeWidth={2} />}
-                        </button>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -812,6 +815,19 @@ export default function ListesPage() {
                         >
                           <Trash2 className="h-5 w-5" strokeWidth={2} />
                         </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUseList(listId);
+                          }}
+                          className="rounded-xl bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold text-black"
+                        >
+                          {t("lists.presetApplyBtn")}
+                        </button>
+                        <span className="pointer-events-none text-[var(--secondary)]">
+                          {expanded ? <ChevronUp className="h-5 w-5" strokeWidth={2} /> : <ChevronDown className="h-5 w-5" strokeWidth={2} />}
+                        </span>
                       </div>
                     </div>
 

@@ -103,6 +103,7 @@ export type TasbihStoreState = {
   addToList: (listId: string, zikrId: string) => void;
   removeFromList: (listId: string, zikrId: string) => void;
   moveInList: (listId: string, fromIndex: number, toIndex: number) => void;
+  reorderLists: (fromId: string, toId: string) => void;
 };
 
 const STORAGE_KEY = "tasbihDigitalStateV1";
@@ -809,6 +810,20 @@ const createStore = () =>
             ...state,
             ...newState,
           });
+          return newState;
+        }),
+
+      reorderLists: (fromId: string, toId: string) =>
+        set((state) => {
+          const entries = Object.entries(state.customLists);
+          const fromIndex = entries.findIndex(([id]) => id === fromId);
+          const toIndex = entries.findIndex(([id]) => id === toId);
+          if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) return state;
+          const next = [...entries];
+          const [moved] = next.splice(fromIndex, 1);
+          next.splice(toIndex, 0, moved);
+          const newState = { customLists: Object.fromEntries(next) };
+          persistState({ ...state, ...newState });
           return newState;
         }),
 

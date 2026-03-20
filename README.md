@@ -200,6 +200,10 @@ Both pages are designed to support app-store submission requirements where a pub
 
 See `docs/repository-setup.md` for recommended GitHub labels, branch protection, and review settings.
 
+## Architecture Reference
+
+See `docs/app-architecture.md` for the current app architecture, state model, feature integration rules, and platform-aware feature design plan.
+
 ## Roadmap Ideas
 
 - import/export of user data

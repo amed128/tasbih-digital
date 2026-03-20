@@ -118,6 +118,11 @@ export default function ReglagesPage() {
       setNotificationPermission("unsupported");
       return;
     }
+    if (Notification.permission === "granted") {
+      setNotificationPermission("granted");
+      window.alert(t("settings.remindersPermissionResetHelp"));
+      return;
+    }
     const permission = await Notification.requestPermission();
     setNotificationPermission(permission);
   };
@@ -187,7 +192,11 @@ export default function ReglagesPage() {
   const handleRestoreDefaultSettings = () => {
     resetPreferences();
     applyThemeToDom("light");
-    setNotificationPermission("default");
+    if (typeof Notification === "undefined") {
+      setNotificationPermission("unsupported");
+    } else {
+      setNotificationPermission(Notification.permission);
+    }
     setSyncCode("");
     setSyncMessage("");
     setShowRestoreConfirm(false);

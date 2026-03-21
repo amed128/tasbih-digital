@@ -580,13 +580,14 @@ export default function Home() {
       setAudioLastMatchedText(rawTranscript.trim());
       setAudioMatchFlash(true);
       handleAudioIncrement();
-      // Clear heard + last matched after a short delay so the user sees the glow then a clean slate
       window.setTimeout(() => {
         setAudioTranscript("");
         setAudioMatchProgress(0);
         setAudioLastMatchedText("");
         setAudioMatchFlash(false);
-      }, 750);
+        // Re-arm so the next spoken zikr can trigger another increment
+        speechCanIncrementRef.current = true;
+      }, 400);
       return;
     }
 

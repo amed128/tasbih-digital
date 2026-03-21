@@ -105,7 +105,7 @@ export const translations = {
       previewTarget: "Objectif: {{count}}",
     },
     stats: {
-      title: "📊 Statistics",
+      title: "📊 Statistiques",
       subtitle: "Suivi de votre pratique de zikr",
       none: "Aucun",
       totalZikrs: "Total zikrs",

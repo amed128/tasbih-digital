@@ -61,7 +61,8 @@ function normalizePronouncedText(value: string): string {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/[\u064b-\u065f\u0670\u06d6-\u06ed]/g, "")
+    .replace(/[^\p{Letter}\p{Number}\s]/gu, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -426,11 +427,13 @@ export default function Home() {
     ("SpeechRecognition" in window || "webkitSpeechRecognition" in window);
 
   const normalizedSpeechTargets = useMemo(() => {
+    const arabic = normalizePronouncedText(currentZikr?.arabic ?? "");
     const transliteration = normalizePronouncedText(currentZikr?.transliteration ?? "");
     const englishTranslation = normalizePronouncedText(currentZikr?.translation_en ?? "");
     const frenchTranslation = normalizePronouncedText(currentZikr?.translation_fr ?? "");
 
     const candidates = new Set<string>();
+    if (arabic) candidates.add(arabic);
     if (transliteration) candidates.add(transliteration);
     if (englishTranslation) candidates.add(englishTranslation);
     if (frenchTranslation) candidates.add(frenchTranslation);
@@ -448,9 +451,14 @@ export default function Home() {
     return Array.from(candidates)
       .map((value) => value.trim())
       .filter((value) => value.length > 0);
-  }, [currentZikr?.transliteration, currentZikr?.translation_en, currentZikr?.translation_fr]);
+  }, [
+    currentZikr?.arabic,
+    currentZikr?.transliteration,
+    currentZikr?.translation_en,
+    currentZikr?.translation_fr,
+  ]);
 
-  const targetDisplayText = currentZikr?.transliteration ?? "";
+  const targetDisplayText = currentZikr?.arabic || currentZikr?.transliteration || "";
   const showSpeechDebug = process.env.NODE_ENV !== "production";
   const normalizedAudioTranscript = normalizePronouncedText(audioTranscript);
 

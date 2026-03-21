@@ -49,3 +49,14 @@ body {
   color: var(--foreground);
   touch-action: pan-x pan-y pinch-zoom;
 }
+
+@keyframes match-glow {
+  0%   { text-shadow: 0 0 0px var(--primary); opacity: 1; }
+  20%  { text-shadow: 0 0 14px var(--primary), 0 0 28px var(--primary); opacity: 1; }
+  60%  { text-shadow: 0 0 8px var(--primary); opacity: 1; }
+  100% { text-shadow: 0 0 0px var(--primary); opacity: 1; }
+}
+
+.audio-match-glow {
+  animation: match-glow 0.75s ease-out forwards;
+}

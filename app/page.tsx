@@ -162,6 +162,7 @@ export default function Home() {
   const [audioTranscript, setAudioTranscript] = useState("");
   const [audioMatchProgress, setAudioMatchProgress] = useState(0);
   const [audioLastMatchedText, setAudioLastMatchedText] = useState("");
+  const [audioMatchFlash, setAudioMatchFlash] = useState(false);
   const [isDocumentVisible, setIsDocumentVisible] = useState(
     typeof document === "undefined" ? true : document.visibilityState === "visible"
   );
@@ -577,7 +578,15 @@ export default function Home() {
       speechCanIncrementRef.current = false;
       speechLastIncrementAtRef.current = now;
       setAudioLastMatchedText(rawTranscript.trim());
+      setAudioMatchFlash(true);
       handleAudioIncrement();
+      // Clear heard + last matched after a short delay so the user sees the glow then a clean slate
+      window.setTimeout(() => {
+        setAudioTranscript("");
+        setAudioMatchProgress(0);
+        setAudioLastMatchedText("");
+        setAudioMatchFlash(false);
+      }, 750);
       return;
     }
 
@@ -986,7 +995,15 @@ export default function Home() {
 
       <div className="mt-4 space-y-1 text-xs text-[var(--secondary)]">
         <div>
-          {t("counter.audioExpected")}: <span className="text-[var(--foreground)]">{targetDisplayText || "-"}</span>
+          {t("counter.audioExpected")}:{" "}
+          <span
+            key={audioMatchFlash ? "flash" : "idle"}
+            className={`text-[var(--foreground)] font-semibold${
+              audioMatchFlash ? " audio-match-glow" : ""
+            }`}
+          >
+            {targetDisplayText || "-"}
+          </span>
         </div>
         <div>
           {t("counter.audioHeard")}: <span className="text-[var(--foreground)]">{audioTranscript || "-"}</span>

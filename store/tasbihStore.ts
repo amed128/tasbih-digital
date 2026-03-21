@@ -38,6 +38,7 @@ export type Preferences = {
   wakeLockEnabled: boolean;
   tapSound: TapSound;
   speechTolerance: SpeechTolerance;
+  speechRecognitionLanguage: SpeechRecognitionLanguage;
   language: "fr" | "en";
   confetti: boolean;
   remindersEnabled: boolean;
@@ -49,6 +50,7 @@ export type Preferences = {
 
 export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
 export type SpeechTolerance = "strict" | "balanced" | "tolerant";
+export type SpeechRecognitionLanguage = "ar-SA" | "ar-EG" | "ar-MA" | "fr-FR" | "en-US";
 export type Theme = "light" | "dark" | "blue";
 export type ReminderTime = { hour: number; minute: number };
 export type ReminderScheduleType = "daily" | "weekly";
@@ -101,6 +103,7 @@ export type TasbihStoreState = {
   toggleConfetti: () => void;
   setTapSound: (sound: TapSound) => void;
   setSpeechTolerance: (tolerance: SpeechTolerance) => void;
+  setSpeechRecognitionLanguage: (language: SpeechRecognitionLanguage) => void;
   setLanguage: (lang: "fr" | "en") => void;
   setRemindersEnabled: (enabled: boolean) => void;
   setReminderScheduleType: (type: ReminderScheduleType) => void;
@@ -278,6 +281,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       wakeLockEnabled: false,
       tapSound: "off",
       speechTolerance: "balanced",
+      speechRecognitionLanguage: "ar-SA",
       language: "en",
       confetti: false,
       remindersEnabled: false,
@@ -380,6 +384,15 @@ const normalizeSpeechTolerance = (value: unknown): SpeechTolerance => {
   return "balanced";
 };
 
+const normalizeSpeechRecognitionLanguage = (value: unknown): SpeechRecognitionLanguage => {
+  if (value === "ar-SA") return "ar-SA";
+  if (value === "ar-EG") return "ar-EG";
+  if (value === "ar-MA") return "ar-MA";
+  if (value === "fr-FR") return "fr-FR";
+  if (value === "en-US") return "en-US";
+  return "ar-SA";
+};
+
 const normalizeTheme = (value: unknown): Theme => {
   if (value === "light") return "light";
   if (value === "dark") return "dark";
@@ -424,6 +437,9 @@ const initialState: Partial<TasbihStoreState> = {
     wakeLockEnabled: resolveStoredWakeLockEnabled(storedState?.preferences),
     tapSound: normalizeTapSound(storedState?.preferences?.tapSound),
     speechTolerance: normalizeSpeechTolerance(storedState?.preferences?.speechTolerance),
+    speechRecognitionLanguage: normalizeSpeechRecognitionLanguage(
+      storedState?.preferences?.speechRecognitionLanguage
+    ),
   } as Preferences,
 };
 
@@ -994,6 +1010,21 @@ const createStore = () =>
           return newState;
         }),
 
+      setSpeechRecognitionLanguage: (language: SpeechRecognitionLanguage) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              speechRecognitionLanguage: normalizeSpeechRecognitionLanguage(language),
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
       setLanguage: (lang: "fr" | "en") =>
         set((state) => {
           const newState = {
@@ -1081,6 +1112,7 @@ const createStore = () =>
               wakeLockEnabled: false,
               tapSound: "off" as TapSound,
               speechTolerance: "balanced" as SpeechTolerance,
+              speechRecognitionLanguage: "ar-SA" as SpeechRecognitionLanguage,
               language: "en" as const,
               confetti: false,
               remindersEnabled: false,

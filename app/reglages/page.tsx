@@ -6,6 +6,7 @@ import { useTasbihStore } from "../../store/tasbihStore";
 import type { Theme, ReminderTime } from "../../store/tasbihStore";
 import type { TapSound } from "../../store/tasbihStore";
 import type { SpeechTolerance } from "../../store/tasbihStore";
+import type { SpeechRecognitionLanguage } from "../../store/tasbihStore";
 import {
   TASBIH_STORAGE_KEY,
   createBackupPayload,
@@ -43,6 +44,7 @@ export default function ReglagesPage() {
   const toggleConfetti = useTasbihStore((s) => s.toggleConfetti);
   const setTapSound = useTasbihStore((s) => s.setTapSound);
   const setSpeechTolerance = useTasbihStore((s) => s.setSpeechTolerance);
+  const setSpeechRecognitionLanguage = useTasbihStore((s) => s.setSpeechRecognitionLanguage);
   const setLanguage = useTasbihStore((s) => s.setLanguage);
   const setRemindersEnabled = useTasbihStore((s) => s.setRemindersEnabled);
   const setReminderTimes = useTasbihStore((s) => s.setReminderTimes);
@@ -73,6 +75,17 @@ export default function ReglagesPage() {
     { value: "strict", label: t("settings.speechToleranceStrict") },
     { value: "balanced", label: t("settings.speechToleranceBalanced") },
     { value: "tolerant", label: t("settings.speechToleranceTolerant") },
+  ];
+
+  const speechRecognitionLanguageOptions: {
+    value: SpeechRecognitionLanguage;
+    label: string;
+  }[] = [
+    { value: "ar-SA", label: t("settings.speechRecognitionLanguageArSa") },
+    { value: "ar-EG", label: t("settings.speechRecognitionLanguageArEg") },
+    { value: "ar-MA", label: t("settings.speechRecognitionLanguageArMa") },
+    { value: "fr-FR", label: t("settings.speechRecognitionLanguageFrFr") },
+    { value: "en-US", label: t("settings.speechRecognitionLanguageEnUs") },
   ];
 
   const themeOptions: { value: Theme; label: string }[] = [
@@ -264,6 +277,33 @@ export default function ReglagesPage() {
               aria-label={t("settings.ariaSpeechTolerance")}
             >
               {speechToleranceOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">
+                {t("settings.speechRecognitionLanguageTitle")}
+              </div>
+              <div className="text-xs text-[var(--secondary)]">
+                {t("settings.speechRecognitionLanguageHint")}
+              </div>
+            </div>
+            <select
+              value={preferences.speechRecognitionLanguage}
+              onChange={(e) =>
+                setSpeechRecognitionLanguage(e.target.value as SpeechRecognitionLanguage)
+              }
+              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+              aria-label={t("settings.ariaSpeechRecognitionLanguage")}
+            >
+              {speechRecognitionLanguageOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>

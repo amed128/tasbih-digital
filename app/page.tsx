@@ -145,7 +145,9 @@ export default function Home() {
   const toggleMode = useTasbihStore((s) => s.toggleMode);
   const selectZikrAsList = useTasbihStore((s) => s.selectZikrAsList);
   const customLists = useTasbihStore((s) => s.customLists);
-  const language = useTasbihStore((s) => s.preferences.language);
+  const speechRecognitionLanguage = useTasbihStore(
+    (s) => s.preferences.speechRecognitionLanguage
+  );
   const speechTolerance = useTasbihStore((s) => s.preferences.speechTolerance);
 
   const t = useT();
@@ -593,7 +595,7 @@ export default function Home() {
     }
 
     const recognition = new SpeechRecognitionClass();
-    recognition.lang = "ar-SA";
+    recognition.lang = speechRecognitionLanguage;
     recognition.continuous = true;
     recognition.interimResults = true;
 
@@ -836,7 +838,13 @@ export default function Home() {
     }
 
     startSpeechRecognition();
-  }, [isAudioMode, audioEnabled, canAudioRun, supportsSpeechRecognition, language]);
+  }, [
+    isAudioMode,
+    audioEnabled,
+    canAudioRun,
+    supportsSpeechRecognition,
+    speechRecognitionLanguage,
+  ]);
 
   const audioStatusLabel = !supportsSpeechRecognition
     ? t("counter.audioStatusUnsupported")

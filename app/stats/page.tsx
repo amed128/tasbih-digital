@@ -103,38 +103,43 @@ function buildHourlyHeatmap(history: { startAt: string; zikrCount: number }[]) {
   return hours;
 }
 
-function toLocalDateKey(value: string) {
+function toUtcDateKey(value: string) {
+  if (typeof value === "string" && value.length >= 10) {
+    const directKey = value.slice(0, 10);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(directKey)) {
+      return directKey;
+    }
+  }
+
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return null;
-  const year = parsed.getFullYear();
-  const month = String(parsed.getMonth() + 1).padStart(2, "0");
-  const day = String(parsed.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+  return parsed.toISOString().slice(0, 10);
 }
 
 function computeStreak(history: { startAt: string }[]) {
   const activeDays = new Set(
     history
-      .map((entry) => toLocalDateKey(entry.startAt))
+      .map((entry) => toUtcDateKey(entry.startAt))
       .filter((key): key is string => key !== null)
   );
 
-  let streak = 0;
+  if (activeDays.size === 0) return 0;
+
   const cursor = new Date();
-  cursor.setHours(0, 0, 0, 0);
+  cursor.setUTCHours(0, 0, 0, 0);
+  const todayKey = cursor.toISOString().slice(0, 10);
 
+  // If user has not practiced yet today, continue streak from yesterday.
+  if (!activeDays.has(todayKey)) {
+    cursor.setUTCDate(cursor.getUTCDate() - 1);
+  }
+
+  let streak = 0;
   while (true) {
-    const year = cursor.getFullYear();
-    const month = String(cursor.getMonth() + 1).padStart(2, "0");
-    const day = String(cursor.getDate()).padStart(2, "0");
-    const key = `${year}-${month}-${day}`;
-
-    if (!activeDays.has(key)) {
-      break;
-    }
-
+    const key = cursor.toISOString().slice(0, 10);
+    if (!activeDays.has(key)) break;
     streak += 1;
-    cursor.setDate(cursor.getDate() - 1);
+    cursor.setUTCDate(cursor.getUTCDate() - 1);
   }
 
   return streak;

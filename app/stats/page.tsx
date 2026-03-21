@@ -103,21 +103,38 @@ function buildHourlyHeatmap(history: { startAt: string; zikrCount: number }[]) {
   return hours;
 }
 
-function computeStreak(dates: string[]) {
-  const unique = Array.from(new Set(dates)).sort((a, b) => (a < b ? 1 : -1));
-  let streak = 0;
-  const current = new Date();
-  current.setHours(0, 0, 0, 0);
+function toLocalDateKey(value: string) {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+  const year = parsed.getFullYear();
+  const month = String(parsed.getMonth() + 1).padStart(2, "0");
+  const day = String(parsed.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
-  for (let i = 0; i < unique.length; i += 1) {
-    const day = new Date(unique[i]);
-    if (Number.isNaN(day.getTime())) continue;
-    if (day.getTime() === current.getTime()) {
-      streak += 1;
-      current.setDate(current.getDate() - 1);
-    } else if (day.getTime() < current.getTime()) {
+function computeStreak(history: { startAt: string }[]) {
+  const activeDays = new Set(
+    history
+      .map((entry) => toLocalDateKey(entry.startAt))
+      .filter((key): key is string => key !== null)
+  );
+
+  let streak = 0;
+  const cursor = new Date();
+  cursor.setHours(0, 0, 0, 0);
+
+  while (true) {
+    const year = cursor.getFullYear();
+    const month = String(cursor.getMonth() + 1).padStart(2, "0");
+    const day = String(cursor.getDate()).padStart(2, "0");
+    const key = `${year}-${month}-${day}`;
+
+    if (!activeDays.has(key)) {
       break;
     }
+
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
   }
 
   return streak;
@@ -214,10 +231,7 @@ export default function StatsPage() {
   const moyenneSem = activeDays ? (total / activeDays) * 7 : 0;
   const moyenneSession = sessions ? total / sessions : 0;
 
-  const streak = useMemo(() => {
-    const dates = stats.history.map((h) => h.startAt.slice(0, 10));
-    return computeStreak(dates);
-  }, [stats.history]);
+  const streak = useMemo(() => computeStreak(stats.history), [stats.history]);
 
   const mostPracticed = useMemo(() => {
     const counts = new Map<string, number>();

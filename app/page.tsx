@@ -107,6 +107,7 @@ export default function Home() {
   const selectZikrAsList = useTasbihStore((s) => s.selectZikrAsList);
   const customLists = useTasbihStore((s) => s.customLists);
   const language = useTasbihStore((s) => s.preferences.language);
+  const speechTolerance = useTasbihStore((s) => s.preferences.speechTolerance);
 
   const t = useT();
 
@@ -410,6 +411,33 @@ export default function Home() {
 
   const targetDisplayText = currentZikr?.transliteration ?? "";
 
+  const speechToleranceConfig = useMemo(() => {
+    if (speechTolerance === "strict") {
+      return {
+        requiredWordRatio: 1,
+        cooldownMs: 1400,
+        rearmProgress: 0.1,
+        allowContainedPartial: false,
+      };
+    }
+
+    if (speechTolerance === "tolerant") {
+      return {
+        requiredWordRatio: 0.7,
+        cooldownMs: 700,
+        rearmProgress: 0.3,
+        allowContainedPartial: true,
+      };
+    }
+
+    return {
+      requiredWordRatio: 0.85,
+      cooldownMs: 900,
+      rearmProgress: 0.2,
+      allowContainedPartial: false,
+    };
+  }, [speechTolerance]);
+
   useEffect(() => () => {
     if (audioCtxRef.current && audioCtxRef.current.state !== "closed") {
       audioCtxRef.current.close();
@@ -461,10 +489,22 @@ export default function Home() {
         bestTargetLength = targetWords.length;
       }
 
+      const requiredMatchedWords = Math.max(
+        targetWords.length === 1 ? 1 : 2,
+        Math.ceil(targetWords.length * speechToleranceConfig.requiredWordRatio)
+      );
+
+      const spokenWordCount = spokenWords.length;
+      const hasContainedPartial =
+        speechToleranceConfig.allowContainedPartial &&
+        targetText.includes(normalizedSpoken) &&
+        spokenWordCount >= Math.max(1, requiredMatchedWords - 1) &&
+        normalizedSpoken.length >= Math.floor(targetText.length * 0.6);
+
       if (
-        prefixCount >= targetWords.length ||
+        prefixCount >= requiredMatchedWords ||
         normalizedSpoken.includes(targetText) ||
-        targetText.includes(normalizedSpoken)
+        hasContainedPartial
       ) {
         fullMatch = true;
       }
@@ -474,7 +514,11 @@ export default function Home() {
     setAudioMatchProgress(progress);
 
     const now = Date.now();
-    if (fullMatch && speechCanIncrementRef.current && now - speechLastIncrementAtRef.current >= 900) {
+    if (
+      fullMatch &&
+      speechCanIncrementRef.current &&
+      now - speechLastIncrementAtRef.current >= speechToleranceConfig.cooldownMs
+    ) {
       speechCanIncrementRef.current = false;
       speechLastIncrementAtRef.current = now;
       setAudioLastMatchedText(rawTranscript.trim());
@@ -482,7 +526,7 @@ export default function Home() {
       return;
     }
 
-    if (!fullMatch && progress < 0.25) {
+    if (!fullMatch && progress < speechToleranceConfig.rearmProgress) {
       speechCanIncrementRef.current = true;
     }
   });

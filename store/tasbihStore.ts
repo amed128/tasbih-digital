@@ -37,6 +37,7 @@ export type Preferences = {
   vibration: boolean;
   wakeLockEnabled: boolean;
   tapSound: TapSound;
+  speechTolerance: SpeechTolerance;
   language: "fr" | "en";
   confetti: boolean;
   remindersEnabled: boolean;
@@ -47,6 +48,7 @@ export type Preferences = {
 };
 
 export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
+export type SpeechTolerance = "strict" | "balanced" | "tolerant";
 export type Theme = "light" | "dark" | "blue";
 export type ReminderTime = { hour: number; minute: number };
 export type ReminderScheduleType = "daily" | "weekly";
@@ -98,6 +100,7 @@ export type TasbihStoreState = {
   setWakeLockEnabled: (enabled: boolean) => void;
   toggleConfetti: () => void;
   setTapSound: (sound: TapSound) => void;
+  setSpeechTolerance: (tolerance: SpeechTolerance) => void;
   setLanguage: (lang: "fr" | "en") => void;
   setRemindersEnabled: (enabled: boolean) => void;
   setReminderScheduleType: (type: ReminderScheduleType) => void;
@@ -274,6 +277,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       vibration: false,
       wakeLockEnabled: false,
       tapSound: "off",
+      speechTolerance: "balanced",
       language: "en",
       confetti: false,
       remindersEnabled: false,
@@ -369,6 +373,13 @@ const normalizeTapSound = (value: unknown): TapSound => {
   return "tap-soft";
 };
 
+const normalizeSpeechTolerance = (value: unknown): SpeechTolerance => {
+  if (value === "strict") return "strict";
+  if (value === "balanced") return "balanced";
+  if (value === "tolerant") return "tolerant";
+  return "balanced";
+};
+
 const normalizeTheme = (value: unknown): Theme => {
   if (value === "light") return "light";
   if (value === "dark") return "dark";
@@ -412,6 +423,7 @@ const initialState: Partial<TasbihStoreState> = {
     theme: resolveStoredTheme(storedState?.preferences),
     wakeLockEnabled: resolveStoredWakeLockEnabled(storedState?.preferences),
     tapSound: normalizeTapSound(storedState?.preferences?.tapSound),
+    speechTolerance: normalizeSpeechTolerance(storedState?.preferences?.speechTolerance),
   } as Preferences,
 };
 
@@ -967,6 +979,21 @@ const createStore = () =>
           return newState;
         }),
 
+      setSpeechTolerance: (tolerance: SpeechTolerance) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              speechTolerance: normalizeSpeechTolerance(tolerance),
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
       setLanguage: (lang: "fr" | "en") =>
         set((state) => {
           const newState = {
@@ -1053,6 +1080,7 @@ const createStore = () =>
               vibration: false,
               wakeLockEnabled: false,
               tapSound: "off" as TapSound,
+              speechTolerance: "balanced" as SpeechTolerance,
               language: "en" as const,
               confetti: false,
               remindersEnabled: false,

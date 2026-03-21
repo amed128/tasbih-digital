@@ -66,6 +66,45 @@ function normalizePronouncedText(value: string): string {
     .trim();
 }
 
+function normalizeWordForLooseMatch(word: string): string {
+  return normalizePronouncedText(word).replace(/\s+/g, "");
+}
+
+function consonantSkeleton(word: string): string {
+  return normalizeWordForLooseMatch(word)
+    .replace(/[aeiouy]/g, "")
+    .replace(/(.)\1+/g, "$1");
+}
+
+function wordsLooselyMatch(spokenWord: string, targetWord: string): boolean {
+  const spoken = normalizeWordForLooseMatch(spokenWord);
+  const target = normalizeWordForLooseMatch(targetWord);
+  if (!spoken || !target) return false;
+
+  if (spoken === target) return true;
+  if (spoken.startsWith(target) || target.startsWith(spoken)) return true;
+
+  const spokenSkeleton = consonantSkeleton(spoken);
+  const targetSkeleton = consonantSkeleton(target);
+  if (!spokenSkeleton || !targetSkeleton) return false;
+
+  if (spokenSkeleton === targetSkeleton) return true;
+  if (spokenSkeleton.startsWith(targetSkeleton) || targetSkeleton.startsWith(spokenSkeleton)) {
+    return true;
+  }
+
+  // Accept very small near-miss pronunciations (e.g. "akba" vs "akbar").
+  if (
+    Math.abs(spokenSkeleton.length - targetSkeleton.length) <= 1 &&
+    spokenSkeleton.slice(0, Math.min(spokenSkeleton.length, targetSkeleton.length)) ===
+      targetSkeleton.slice(0, Math.min(spokenSkeleton.length, targetSkeleton.length))
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 function bestSequentialWordMatchCount(spokenWords: string[], targetWords: string[]): number {
   if (spokenWords.length === 0 || targetWords.length === 0) return 0;
 
@@ -75,7 +114,7 @@ function bestSequentialWordMatchCount(spokenWords: string[], targetWords: string
     for (let index = 0; index < targetWords.length; index += 1) {
       const spoken = spokenWords[start + index];
       if (!spoken) break;
-      if (spoken !== targetWords[index]) break;
+      if (!wordsLooselyMatch(spoken, targetWords[index])) break;
       matched += 1;
     }
     if (matched > best) best = matched;
@@ -414,27 +453,30 @@ export default function Home() {
   const speechToleranceConfig = useMemo(() => {
     if (speechTolerance === "strict") {
       return {
-        requiredWordRatio: 1,
-        cooldownMs: 1400,
-        rearmProgress: 0.1,
-        allowContainedPartial: false,
+        requiredWordRatio: 0.8,
+        cooldownMs: 1200,
+        rearmProgress: 0.18,
+        allowContainedPartial: true,
+        containedMinLengthRatio: 0.72,
       };
     }
 
     if (speechTolerance === "tolerant") {
       return {
-        requiredWordRatio: 0.7,
-        cooldownMs: 700,
-        rearmProgress: 0.3,
+        requiredWordRatio: 0.5,
+        cooldownMs: 600,
+        rearmProgress: 0.35,
         allowContainedPartial: true,
+        containedMinLengthRatio: 0.5,
       };
     }
 
     return {
-      requiredWordRatio: 0.85,
-      cooldownMs: 900,
-      rearmProgress: 0.2,
-      allowContainedPartial: false,
+      requiredWordRatio: 0.65,
+      cooldownMs: 800,
+      rearmProgress: 0.28,
+      allowContainedPartial: true,
+      containedMinLengthRatio: 0.62,
     };
   }, [speechTolerance]);
 
@@ -499,7 +541,8 @@ export default function Home() {
         speechToleranceConfig.allowContainedPartial &&
         targetText.includes(normalizedSpoken) &&
         spokenWordCount >= Math.max(1, requiredMatchedWords - 1) &&
-        normalizedSpoken.length >= Math.floor(targetText.length * 0.6);
+        normalizedSpoken.length >=
+          Math.floor(targetText.length * speechToleranceConfig.containedMinLengthRatio);
 
       if (
         prefixCount >= requiredMatchedWords ||

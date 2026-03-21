@@ -29,6 +29,7 @@ export async function GET(request: Request) {
 
   const now = new Date();
   const subscribers = await listSubscribers();
+  let eligible = 0;
   let sent = 0;
   let removed = 0;
   const errors: string[] = [];
@@ -36,6 +37,7 @@ export async function GET(request: Request) {
   for (const subscriber of subscribers) {
     const slot = resolveDueSlot(subscriber, now);
     if (!slot) continue;
+    eligible += 1;
     if (subscriber.lastSentSlot === slot) continue;
 
     try {
@@ -62,6 +64,7 @@ export async function GET(request: Request) {
   return NextResponse.json({
     ok: true,
     scanned: subscribers.length,
+    eligible,
     sent,
     removed,
     errors,

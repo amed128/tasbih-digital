@@ -7,6 +7,7 @@ type NextConfigWithPWA = NextConfig & {
     disable?: boolean;
     register?: boolean;
     skipWaiting?: boolean;
+    customWorkerDir?: string;
   };
 };
 
@@ -17,6 +18,7 @@ let nextConfig: NextConfigWithPWA = {
     disable: process.env.NODE_ENV === "development",
     register: true,
     skipWaiting: true,
+    customWorkerDir: "worker",
   },
 };
 

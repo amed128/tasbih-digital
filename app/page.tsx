@@ -593,7 +593,7 @@ export default function Home() {
     }
 
     const recognition = new SpeechRecognitionClass();
-    recognition.lang = language === "fr" ? "fr-FR" : "en-US";
+    recognition.lang = "ar-SA";
     recognition.continuous = true;
     recognition.interimResults = true;
 

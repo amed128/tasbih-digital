@@ -557,11 +557,17 @@ export default function Home() {
         normalizedSpoken.length >=
           Math.floor(targetText.length * speechToleranceConfig.containedMinLengthRatio);
 
-      if (
-        prefixCount >= requiredMatchedWords ||
-        normalizedSpoken.includes(targetText) ||
-        hasContainedPartial
-      ) {
+      const hasFullOrderedMatch =
+        prefixCount >= targetWords.length || normalizedSpoken.includes(targetText);
+
+      if (targetWords.length > 1) {
+        if (hasFullOrderedMatch) {
+          fullMatch = true;
+        }
+        continue;
+      }
+
+      if (prefixCount >= requiredMatchedWords || hasFullOrderedMatch || hasContainedPartial) {
         fullMatch = true;
       }
     }
@@ -889,20 +895,7 @@ export default function Home() {
         : t("counter.audioHint");
 
   const renderPronunciationText = (text: string, className: string) => {
-    const clampedProgress = Math.max(0, Math.min(1, audioMatchProgress));
-    return (
-      <span className={`relative inline-block ${className}`}>
-        <span className="text-[var(--primary)]">{text}</span>
-        {isAudioMode && audioEnabled && (
-          <span
-            className="pointer-events-none absolute left-0 top-0 overflow-hidden whitespace-nowrap text-[#F3F4F6] transition-[width] duration-100"
-            style={{ width: `${Math.round(clampedProgress * 100)}%` }}
-          >
-            {text}
-          </span>
-        )}
-      </span>
-    );
+    return <span className={`text-[var(--primary)] ${className}`}>{text}</span>;
   };
 
   const renderAutoControls = () => (

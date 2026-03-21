@@ -16,6 +16,73 @@ type WakeLockSentinelLike = {
   addEventListener?: (type: "release", listener: () => void) => void;
 };
 
+type AudioAccessState = "idle" | "granted" | "denied" | "error" | "unsupported";
+
+type SpeechRecognitionAlternativeLike = {
+  transcript: string;
+};
+
+type SpeechRecognitionResultLike = {
+  isFinal: boolean;
+  length: number;
+  [index: number]: SpeechRecognitionAlternativeLike;
+};
+
+type SpeechRecognitionEventLike = {
+  resultIndex: number;
+  results: {
+    length: number;
+    [index: number]: SpeechRecognitionResultLike;
+  };
+};
+
+type SpeechRecognitionErrorEventLike = {
+  error: string;
+};
+
+type SpeechRecognitionLike = {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+};
+
+type SpeechRecognitionWindow = Window & {
+  SpeechRecognition?: new () => SpeechRecognitionLike;
+  webkitSpeechRecognition?: new () => SpeechRecognitionLike;
+};
+
+function normalizePronouncedText(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function bestSequentialWordMatchCount(spokenWords: string[], targetWords: string[]): number {
+  if (spokenWords.length === 0 || targetWords.length === 0) return 0;
+
+  let best = 0;
+  for (let start = 0; start < spokenWords.length; start += 1) {
+    let matched = 0;
+    for (let index = 0; index < targetWords.length; index += 1) {
+      const spoken = spokenWords[start + index];
+      if (!spoken) break;
+      if (spoken !== targetWords[index]) break;
+      matched += 1;
+    }
+    if (matched > best) best = matched;
+  }
+  return best;
+}
+
 export default function Home() {
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -39,6 +106,7 @@ export default function Home() {
   const toggleMode = useTasbihStore((s) => s.toggleMode);
   const selectZikrAsList = useTasbihStore((s) => s.selectZikrAsList);
   const customLists = useTasbihStore((s) => s.customLists);
+  const language = useTasbihStore((s) => s.preferences.language);
 
   const t = useT();
 
@@ -46,6 +114,11 @@ export default function Home() {
   const [focusMode, setFocusMode] = useState(false);
   const [autoEnabled, setAutoEnabled] = useState(false);
   const [autoIntervalMs, setAutoIntervalMs] = useState(1000);
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [audioAccessState, setAudioAccessState] = useState<AudioAccessState>("idle");
+  const [audioTranscript, setAudioTranscript] = useState("");
+  const [audioMatchProgress, setAudioMatchProgress] = useState(0);
+  const [audioLastMatchedText, setAudioLastMatchedText] = useState("");
   const [isDocumentVisible, setIsDocumentVisible] = useState(
     typeof document === "undefined" ? true : document.visibilityState === "visible"
   );
@@ -113,7 +186,7 @@ export default function Home() {
     window.requestAnimationFrame(() => alignCurrentListChip(behavior));
   });
 
-  const triggerHaptic = (pattern: number | number[]) => {
+  const triggerHaptic = (pattern: number | number[], options?: { playSound?: boolean }) => {
     if (!vibrationEnabled && tapSound === "off") return;
     if (typeof window === "undefined") return;
 
@@ -122,7 +195,7 @@ export default function Home() {
       window.navigator.vibrate(pattern);
     }
 
-    if (tapSound === "off") return;
+    if (options?.playSound === false || tapSound === "off") return;
 
     const kind = Array.isArray(pattern) ? "complete" : "tap";
 
@@ -185,6 +258,12 @@ export default function Home() {
 
   const handleAutoIncrement = useEffectEvent(() => {
     increment();
+    setPulseTrigger((t) => t + 1);
+  });
+
+  const handleAudioIncrement = useEffectEvent(() => {
+    increment();
+    triggerHaptic(12, { playSound: false });
     setPulseTrigger((t) => t + 1);
   });
 
@@ -293,13 +372,182 @@ export default function Home() {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const chipsContainerRef = useRef<HTMLDivElement | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const recognitionRestartTimerRef = useRef<number | null>(null);
+  const speechCanIncrementRef = useRef(true);
+  const speechLastIncrementAtRef = useRef(0);
+  const speechShouldRunRef = useRef(false);
   const wakeLockRef = useRef<WakeLockSentinelLike | null>(null);
+
+  const supportsSpeechRecognition =
+    typeof window !== "undefined" &&
+    ("SpeechRecognition" in window || "webkitSpeechRecognition" in window);
+
+  const normalizedSpeechTargets = useMemo(() => {
+    const transliteration = normalizePronouncedText(currentZikr?.transliteration ?? "");
+    const englishTranslation = normalizePronouncedText(currentZikr?.translation_en ?? "");
+    const frenchTranslation = normalizePronouncedText(currentZikr?.translation_fr ?? "");
+
+    const candidates = new Set<string>();
+    if (transliteration) candidates.add(transliteration);
+    if (englishTranslation) candidates.add(englishTranslation);
+    if (frenchTranslation) candidates.add(frenchTranslation);
+
+    const base = transliteration || englishTranslation || frenchTranslation;
+    if (base) {
+      candidates.add(base.replace(/allah/g, "llah"));
+      candidates.add(base.replace(/llah/g, "allah"));
+      candidates.add(base.replace(/\bwa\b/g, "oua"));
+      candidates.add(base.replace(/\boua\b/g, "wa"));
+      candidates.add(base.replace(/\bal\b/g, "el"));
+      candidates.add(base.replace(/\bel\b/g, "al"));
+    }
+
+    return Array.from(candidates)
+      .map((value) => value.trim())
+      .filter((value) => value.length > 0);
+  }, [currentZikr?.transliteration, currentZikr?.translation_en, currentZikr?.translation_fr]);
+
+  const targetDisplayText = currentZikr?.transliteration ?? "";
 
   useEffect(() => () => {
     if (audioCtxRef.current && audioCtxRef.current.state !== "closed") {
       audioCtxRef.current.close();
     }
   }, []);
+
+  const stopSpeechRecognition = useEffectEvent(() => {
+    if (recognitionRestartTimerRef.current !== null) {
+      window.clearTimeout(recognitionRestartTimerRef.current);
+      recognitionRestartTimerRef.current = null;
+    }
+
+    const recognition = recognitionRef.current;
+    if (recognition) {
+      recognition.onresult = null;
+      recognition.onerror = null;
+      recognition.onend = null;
+      recognition.stop();
+      recognitionRef.current = null;
+    }
+
+    speechCanIncrementRef.current = true;
+    setAudioTranscript("");
+    setAudioMatchProgress(0);
+  });
+
+  const processSpeechTranscript = useEffectEvent((rawTranscript: string) => {
+    const normalizedSpoken = normalizePronouncedText(rawTranscript);
+    setAudioTranscript(rawTranscript);
+
+    if (!normalizedSpoken || normalizedSpeechTargets.length === 0) {
+      speechCanIncrementRef.current = true;
+      setAudioMatchProgress(0);
+      return;
+    }
+
+    const spokenWords = normalizedSpoken.split(" ").filter(Boolean);
+    let bestPrefixCount = 0;
+    let bestTargetLength = 1;
+    let fullMatch = false;
+
+    for (const targetText of normalizedSpeechTargets) {
+      const targetWords = targetText.split(" ").filter(Boolean);
+      if (targetWords.length === 0) continue;
+
+      const prefixCount = bestSequentialWordMatchCount(spokenWords, targetWords);
+      if (prefixCount > bestPrefixCount) {
+        bestPrefixCount = prefixCount;
+        bestTargetLength = targetWords.length;
+      }
+
+      if (
+        prefixCount >= targetWords.length ||
+        normalizedSpoken.includes(targetText) ||
+        targetText.includes(normalizedSpoken)
+      ) {
+        fullMatch = true;
+      }
+    }
+
+    const progress = Math.min(1, bestPrefixCount / bestTargetLength);
+    setAudioMatchProgress(progress);
+
+    const now = Date.now();
+    if (fullMatch && speechCanIncrementRef.current && now - speechLastIncrementAtRef.current >= 900) {
+      speechCanIncrementRef.current = false;
+      speechLastIncrementAtRef.current = now;
+      setAudioLastMatchedText(rawTranscript.trim());
+      handleAudioIncrement();
+      return;
+    }
+
+    if (!fullMatch && progress < 0.25) {
+      speechCanIncrementRef.current = true;
+    }
+  });
+
+  const startSpeechRecognition = useEffectEvent(function bootSpeechRecognition() {
+    if (!supportsSpeechRecognition) {
+      setAudioAccessState("unsupported");
+      return;
+    }
+
+    if (recognitionRef.current) return;
+
+    const recognitionWindow = window as SpeechRecognitionWindow;
+    const SpeechRecognitionClass =
+      recognitionWindow.SpeechRecognition ?? recognitionWindow.webkitSpeechRecognition;
+    if (!SpeechRecognitionClass) {
+      setAudioAccessState("unsupported");
+      return;
+    }
+
+    const recognition = new SpeechRecognitionClass();
+    recognition.lang = language === "fr" ? "fr-FR" : "en-US";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onresult = (event: SpeechRecognitionEventLike) => {
+      let transcript = "";
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        const result = event.results[index];
+        if (!result || result.length === 0) continue;
+        transcript += `${result[0].transcript} `;
+      }
+      processSpeechTranscript(transcript.trim());
+    };
+
+    recognition.onerror = (event: SpeechRecognitionErrorEventLike) => {
+      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+        setAudioAccessState("denied");
+      } else {
+        setAudioAccessState("error");
+      }
+      setAudioEnabled(false);
+      stopSpeechRecognition();
+    };
+
+    recognition.onend = () => {
+      recognitionRef.current = null;
+      if (!speechShouldRunRef.current) return;
+      recognitionRestartTimerRef.current = window.setTimeout(() => {
+        recognitionRestartTimerRef.current = null;
+        bootSpeechRecognition();
+      }, 200);
+    };
+
+    recognitionRef.current = recognition;
+    setAudioAccessState("granted");
+
+    try {
+      recognition.start();
+    } catch {
+      setAudioAccessState("error");
+      setAudioEnabled(false);
+      stopSpeechRecognition();
+    }
+  });
 
   const releaseWakeLock = useEffectEvent(async () => {
     const sentinel = wakeLockRef.current;
@@ -398,6 +646,12 @@ export default function Home() {
   }, [pulseTrigger, isListMode]);
 
   useEffect(() => {
+    setAudioTranscript("");
+    setAudioMatchProgress(0);
+    speechCanIncrementRef.current = true;
+  }, [currentZikr?.id]);
+
+  useEffect(() => {
     const updateVisibility = () => {
       setIsDocumentVisible(document.visibilityState === "visible");
     };
@@ -416,13 +670,15 @@ export default function Home() {
   }, []);
 
   const autoRunning = isAutoMode && autoEnabled && !isCompleted;
+  const audioRunning = isAudioMode && audioEnabled && !isCompleted;
   const canAutoRun = autoRunning && isDocumentVisible && isWindowFocused;
+  const canAudioRun = audioRunning && isDocumentVisible && isWindowFocused;
   const shouldHoldWakeLock =
     wakeLockEnabled &&
     !isCompleted &&
     isDocumentVisible &&
     isWindowFocused &&
-    (isStarted || autoRunning);
+    (isStarted || autoRunning || audioRunning);
 
   useEffect(() => {
     if (!canAutoRun) return;
@@ -451,6 +707,13 @@ export default function Home() {
     []
   );
 
+  useEffect(
+    () => () => {
+      stopSpeechRecognition();
+    },
+    []
+  );
+
   const autoStatusLabel = !autoEnabled
     ? t("counter.autoStatusOff")
     : !isDocumentVisible
@@ -460,6 +723,72 @@ export default function Home() {
         : isCompleted
           ? t("counter.autoStatusDone")
           : t("counter.autoStatusRunning");
+
+  const speechShouldRun = isAudioMode && audioEnabled && canAudioRun;
+
+  useEffect(() => {
+    speechShouldRunRef.current = speechShouldRun;
+  }, [speechShouldRun]);
+
+  useEffect(() => {
+    if (!isAudioMode || !audioEnabled) {
+      stopSpeechRecognition();
+      return;
+    }
+
+    if (!supportsSpeechRecognition) {
+      stopSpeechRecognition();
+      return;
+    }
+
+    if (!canAudioRun) {
+      stopSpeechRecognition();
+      return;
+    }
+
+    startSpeechRecognition();
+  }, [isAudioMode, audioEnabled, canAudioRun, supportsSpeechRecognition, language]);
+
+  const audioStatusLabel = !supportsSpeechRecognition
+    ? t("counter.audioStatusUnsupported")
+    : audioAccessState === "denied"
+      ? t("counter.audioStatusDenied")
+      : audioAccessState === "error"
+        ? t("counter.audioStatusError")
+        : !audioEnabled
+          ? t("counter.audioStatusOff")
+          : !isDocumentVisible
+            ? t("counter.audioStatusPausedHidden")
+            : !isWindowFocused
+              ? t("counter.audioStatusPausedFocus")
+              : isCompleted
+                ? t("counter.audioStatusDone")
+                : t("counter.audioStatusListening");
+
+  const audioHelpText = !supportsSpeechRecognition
+    ? t("counter.audioUnsupportedHelp")
+    : audioAccessState === "denied"
+      ? t("counter.audioDeniedHelp")
+      : audioAccessState === "error"
+        ? t("counter.audioErrorHelp")
+        : t("counter.audioHint");
+
+  const renderPronunciationText = (text: string, className: string) => {
+    const clampedProgress = Math.max(0, Math.min(1, audioMatchProgress));
+    return (
+      <span className={`relative inline-block ${className}`}>
+        <span className="text-[var(--primary)]">{text}</span>
+        {isAudioMode && audioEnabled && (
+          <span
+            className="pointer-events-none absolute left-0 top-0 overflow-hidden whitespace-nowrap text-[#F3F4F6] transition-[width] duration-100"
+            style={{ width: `${Math.round(clampedProgress * 100)}%` }}
+          >
+            {text}
+          </span>
+        )}
+      </span>
+    );
+  };
 
   const renderAutoControls = () => (
     <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-3">
@@ -503,12 +832,72 @@ export default function Home() {
     </section>
   );
 
-  const renderAudioComingSoonPanel = () => (
+  const renderAudioControls = () => (
     <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-3">
-      <div className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--secondary)]">
-        {t("counter.audioComingSoonTitle")}
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--secondary)]">
+            {t("counter.audioTitle")}
+          </div>
+          <div className="text-xs text-[var(--secondary)]">{audioStatusLabel}</div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            if (audioEnabled) {
+              setAudioEnabled(false);
+              return;
+            }
+
+            setAudioAccessState((current) => (current === "unsupported" ? current : "idle"));
+            setAudioEnabled(true);
+          }}
+          disabled={!supportsSpeechRecognition}
+          className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
+            audioRunning
+              ? "bg-[var(--primary)] text-black"
+              : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
+          } ${!supportsSpeechRecognition ? "cursor-not-allowed opacity-50" : ""}`}
+        >
+          {audioRunning ? t("counter.audioStop") : t("counter.audioStart")}
+        </button>
       </div>
-      <div className="mt-1 text-sm text-[var(--secondary)]">{t("counter.audioComingSoonBody")}</div>
+
+      <div className="mt-2 text-sm text-[var(--secondary)]">{audioHelpText}</div>
+
+      <div className="mt-4">
+        <div className="flex items-center justify-between text-xs font-semibold text-[var(--secondary)]">
+          <span>{t("counter.audioMatchProgress")}</span>
+          <span>{Math.round(audioMatchProgress * 100)}%</span>
+        </div>
+        <div className="relative mt-2 h-3 overflow-hidden rounded-full bg-[var(--background)]">
+          <div
+            className="h-full rounded-full bg-[var(--primary)] transition-[width] duration-75"
+            style={{ width: `${Math.round(audioMatchProgress * 100)}%` }}
+          />
+        </div>
+      </div>
+
+      <div className="mt-4 space-y-1 text-xs text-[var(--secondary)]">
+        <div>
+          {t("counter.audioExpected")}: <span className="text-[var(--foreground)]">{targetDisplayText || "-"}</span>
+        </div>
+        <div>
+          {t("counter.audioHeard")}: <span className="text-[var(--foreground)]">{audioTranscript || "-"}</span>
+        </div>
+        <div>
+          {t("counter.audioLastMatched")}: <span className="text-[var(--foreground)]">{audioLastMatchedText || "-"}</span>
+        </div>
+      </div>
+
+      <div className="mt-2 text-xs text-[var(--secondary)]">{t("counter.audioSpeechModeHint")}</div>
+
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {audioLastMatchedText
+          ? t("counter.audioMatchedAnnouncement", { zikr: targetDisplayText })
+          : ""}
+      </div>
     </section>
   );
 
@@ -795,6 +1184,15 @@ export default function Home() {
       </div>
 
       <motion.div layout className="flex flex-col items-center gap-4">
+        {currentZikr && (
+          <div className="text-center">
+            <div className="text-[2rem] font-bold">
+              {renderPronunciationText(currentZikr.transliteration, "")}
+            </div>
+            <div className="mt-2 text-sm text-[var(--secondary)]">{currentZikr.arabic}</div>
+          </div>
+        )}
+
         <CircleProgress
           value={counter}
           target={effectiveTarget}
@@ -830,7 +1228,7 @@ export default function Home() {
         {isAutoMode ? (
           renderAutoControls()
         ) : isAudioMode ? (
-          renderAudioComingSoonPanel()
+          renderAudioControls()
         ) : (
           <motion.button
             onClick={handleIncrement}
@@ -942,10 +1340,12 @@ export default function Home() {
 
         <motion.div layout className="flex flex-col items-center gap-4">
           <div className="text-center">
-            <div className="text-[2rem] font-bold text-[var(--primary)]">
-              {currentZikrInList?.transliteration}
+            <div className="text-[2rem] font-bold">
+              {currentZikrInList
+                ? renderPronunciationText(currentZikrInList.transliteration, "")
+                : null}
             </div>
-            <div className="mt-2 text-sm text-white">
+            <div className="mt-2 text-sm text-[var(--secondary)]">
               {currentZikrInList?.arabic}
             </div>
           </div>
@@ -963,7 +1363,7 @@ export default function Home() {
           {isAutoMode ? (
             renderAutoControls()
           ) : isAudioMode ? (
-            renderAudioComingSoonPanel()
+            renderAudioControls()
           ) : (
             <motion.button
               onClick={handleIncrement}

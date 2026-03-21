@@ -1318,9 +1318,9 @@ export default function Home() {
         {currentZikr && (
           <div className="text-center">
             <div className="text-[2rem] font-bold">
-              {renderPronunciationText(currentZikr.transliteration, "")}
+              {renderPronunciationText(currentZikr.arabic, "")}
             </div>
-            <div className="mt-2 text-sm text-[var(--secondary)]">{currentZikr.arabic}</div>
+            <div className="mt-2 text-sm text-[var(--secondary)]">{currentZikr.transliteration}</div>
           </div>
         )}
 
@@ -1473,11 +1473,11 @@ export default function Home() {
           <div className="text-center">
             <div className="text-[2rem] font-bold">
               {currentZikrInList
-                ? renderPronunciationText(currentZikrInList.transliteration, "")
+                ? renderPronunciationText(currentZikrInList.arabic, "")
                 : null}
             </div>
             <div className="mt-2 text-sm text-[var(--secondary)]">
-              {currentZikrInList?.arabic}
+              {currentZikrInList?.transliteration}
             </div>
           </div>
 

@@ -12,6 +12,17 @@ type SubscribeBody = {
   timezone?: string;
 };
 
+function normalizeTimezone(timezone: unknown): string {
+  const value = typeof timezone === "string" ? timezone.trim() : "";
+  if (!value) return "UTC";
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: value });
+    return value;
+  } catch {
+    return "UTC";
+  }
+}
+
 export async function POST(request: Request) {
   let body: SubscribeBody;
   try {
@@ -25,26 +36,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Missing push subscription endpoint" }, { status: 400 });
   }
 
-  const reminderTimes = Array.isArray(body.reminderTimes)
-    ? body.reminderTimes.slice(0, 2).map((t) => ({
-        hour: Math.max(0, Math.min(23, Math.floor(Number(t.hour) || 0))),
-        minute: Math.max(0, Math.min(59, Math.floor(Number(t.minute) || 0))),
-      }))
-    : [];
-
-  const reminderDays = Array.isArray(body.reminderDays)
-    ? [...new Set(body.reminderDays.filter((d) => Number.isInteger(d) && d >= 0 && d <= 6))]
-    : [];
+  const firstTime = Array.isArray(body.reminderTimes) ? body.reminderTimes[0] : undefined;
+  const reminderTime = {
+    hour: Math.max(0, Math.min(23, Math.floor(Number(firstTime?.hour) || 8))),
+    minute: Math.max(0, Math.min(59, Math.floor(Number(firstTime?.minute) || 0))),
+  };
 
   await upsertSubscriber({
     endpoint: subscription.endpoint,
     subscription,
     remindersEnabled: Boolean(body.remindersEnabled),
-    reminderScheduleType: body.reminderScheduleType === "weekly" ? "weekly" : "daily",
-    reminderTimes,
-    reminderDays,
+    reminderScheduleType: "daily",
+    reminderTimes: [reminderTime],
+    reminderDays: [],
     language: body.language === "fr" ? "fr" : "en",
-    timezone: body.timezone && body.timezone.trim() ? body.timezone : "UTC",
+    timezone: normalizeTimezone(body.timezone),
     updatedAt: new Date().toISOString(),
   });
 

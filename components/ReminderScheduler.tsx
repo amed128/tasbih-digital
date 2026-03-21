@@ -12,9 +12,7 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 
 export function ReminderScheduler() {
   const remindersEnabled = useTasbihStore((s) => s.preferences.remindersEnabled);
-  const reminderScheduleType = useTasbihStore((s) => s.preferences.reminderScheduleType);
   const reminderTimes = useTasbihStore((s) => s.preferences.reminderTimes);
-  const reminderDays = useTasbihStore((s) => s.preferences.reminderDays);
   const language = useTasbihStore((s) => s.preferences.language);
 
   useEffect(() => {
@@ -51,15 +49,16 @@ export function ReminderScheduler() {
       }
 
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+      const dailyTime = reminderTimes[0] ?? { hour: 8, minute: 0 };
       await fetch("/api/push/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           subscription: subscription.toJSON(),
           remindersEnabled,
-          reminderScheduleType,
-          reminderTimes,
-          reminderDays,
+          reminderScheduleType: "daily",
+          reminderTimes: [dailyTime],
+          reminderDays: [],
           language,
           timezone,
         }),
@@ -69,7 +68,7 @@ export function ReminderScheduler() {
     void syncPushSubscription();
 
     return undefined;
-  }, [remindersEnabled, reminderScheduleType, reminderTimes, reminderDays, language]);
+  }, [remindersEnabled, reminderTimes, language]);
 
   return null;
 }

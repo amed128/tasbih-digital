@@ -188,7 +188,7 @@ export const translations = {
       backupImported: "Sauvegarde restaurée. Rechargement...",
       backupImportError: "Fichier de sauvegarde invalide",
       remindersTitle: "Rappels",
-      remindersHint: "Notifications périodiques (si permission accordée)",
+      remindersHint: "Un rappel quotidien (si permission accordée)",
       remindersStatus: "Statut notifications : {{status}}",
       remindersAskPermission: "Demander permission",
       remindersEnabled: "Activer les rappels",
@@ -204,7 +204,7 @@ export const translations = {
         "La permission notifications est refusee. iOS/Safari ne peut pas re-afficher la popup apres un refus. Activez les notifications dans les reglages iOS de l'app/navigateur puis revenez ici.",
       remindersPermissionResetHelp:
         "La permission notifications est deja accordee sur cet appareil. iOS ne re-affiche pas cette popup automatiquement. Pour la revoir, retirez la permission dans les reglages du navigateur/app puis reessayez.",
-      remindersScheduleType: "Calendrier",
+      remindersScheduleType: "Rappel quotidien",
       remindersScheduleDaily: "Quotidien",
       remindersScheduleWeekly: "Hebdomadaire",
       remindersDaysLabel: "Jours",
@@ -244,11 +244,11 @@ export const translations = {
       title: "À propos",
       appSectionTitle: "Application",
       appDescription:
-        "Compteur de zikr mobile-first — sans compte, sans serveur, sans données tierces.",
-      version: "Version 0.1.0",
+        "Compteur de zikr mobile-first — sans compte, avec rappels push optionnels.",
+      version: "Version 0.2.1",
       dataSectionTitle: "Confidentialité",
       dataDescription:
-        "Cette application ne collecte aucune donnée personnelle. Toutes vos informations (listes, compteurs, préférences) sont stockées uniquement sur votre appareil dans le stockage local du navigateur. Rien n'est envoyé en dehors de votre appareil.",
+        "Cette application ne collecte aucune donnée personnelle. Vos listes, compteurs et préférences restent sur votre appareil (stockage local). Si vous activez les rappels push, les données techniques nécessaires (abonnement push, langue, fuseau horaire et heure du rappel) sont envoyées uniquement pour délivrer les notifications.",
       storageSectionTitle: "Stockage local",
       storageDescription:
         "Vous pouvez effacer toutes les données de l'application en supprimant les données du site dans les réglages de votre navigateur.",
@@ -263,16 +263,16 @@ export const translations = {
       policyTitle: "Politique de confidentialité",
       policyUpdated: "Dernière mise à jour: 20 mars 2026",
       policyIntro:
-        "Tasbih Digital respecte votre vie privée. Cette application fonctionne sans compte et sans serveur.",
+        "Tasbih Digital respecte votre vie privée. Cette application fonctionne sans compte, et les rappels push sont optionnels.",
       policyCollectionTitle: "1. Données collectées",
       policyCollectionBody:
-        "Aucune donnée personnelle n'est collectée, transmise ou vendue.",
+        "Aucune donnée personnelle n'est collectée, transmise ou vendue. Si vous activez les rappels push, des données techniques minimales sont traitées pour envoyer les notifications.",
       policyStorageTitle: "2. Stockage local",
       policyStorageBody:
-        "Les données (listes, compteurs, préférences) sont conservées uniquement sur votre appareil via le stockage local du navigateur.",
+        "Les données principales (listes, compteurs, préférences) sont conservées sur votre appareil via le stockage local du navigateur.",
       policyThirdPartyTitle: "3. Services tiers",
       policyThirdPartyBody:
-        "Aucun service tiers d'analyse, de publicité ou de suivi n'est utilisé.",
+        "Aucun service tiers d'analyse, de publicité ou de suivi n'est utilisé. Les rappels utilisent le service push natif du navigateur.",
       policyControlTitle: "4. Contrôle utilisateur",
       policyControlBody:
         "Vous pouvez supprimer toutes les données de l'application en effaçant les données du site dans les paramètres de votre navigateur.",
@@ -471,7 +471,7 @@ export const translations = {
       backupImported: "Backup restored. Reloading...",
       backupImportError: "Invalid backup file",
       remindersTitle: "Reminders",
-      remindersHint: "Periodic notifications (with permission)",
+      remindersHint: "One daily reminder (with permission)",
       remindersStatus: "Notification status: {{status}}",
       remindersAskPermission: "Request permission",
       remindersEnabled: "Enable reminders",
@@ -487,7 +487,7 @@ export const translations = {
         "Notification permission is denied. iOS/Safari cannot show the system prompt again after denial. Enable notifications in iOS app/browser settings, then return here.",
       remindersPermissionResetHelp:
         "Notification permission is already granted on this device. iOS does not show that system prompt again automatically. To see it again, remove permission in browser/app settings and try again.",
-      remindersScheduleType: "Schedule",
+      remindersScheduleType: "Daily reminder",
       remindersScheduleDaily: "Daily",
       remindersScheduleWeekly: "Weekly",
       remindersDaysLabel: "Days",
@@ -527,11 +527,11 @@ export const translations = {
       title: "About",
       appSectionTitle: "Application",
       appDescription:
-        "Mobile-first zikr counter — no account, no server, no third-party data.",
-      version: "Version 0.1.0",
+        "Mobile-first zikr counter — no account, with optional push reminders.",
+      version: "Version 0.2.1",
       dataSectionTitle: "Privacy",
       dataDescription:
-        "This application does not collect any personal data. All your information (lists, counters, preferences) is stored only on your device in the browser's local storage. Nothing is sent outside your device.",
+        "This application does not collect personal data. Your lists, counters, and preferences stay on your device (browser local storage). If you enable push reminders, only technical data needed to deliver notifications (push subscription, language, timezone, reminder time) is sent.",
       storageSectionTitle: "Local storage",
       storageDescription:
         "You can erase all app data by clearing the site data in your browser settings.",
@@ -546,16 +546,16 @@ export const translations = {
       policyTitle: "Privacy policy",
       policyUpdated: "Last updated: March 20, 2026",
       policyIntro:
-        "Tasbih Digital respects your privacy. This application works without an account and without a server.",
+        "Tasbih Digital respects your privacy. This application works without an account, and push reminders are optional.",
       policyCollectionTitle: "1. Data collection",
       policyCollectionBody:
-        "No personal data is collected, transmitted, or sold.",
+        "No personal data is collected, transmitted, or sold. If you enable push reminders, minimal technical data is processed to send notifications.",
       policyStorageTitle: "2. Local storage",
       policyStorageBody:
-        "Data (lists, counters, preferences) is stored only on your device using browser local storage.",
+        "Core data (lists, counters, preferences) is stored on your device using browser local storage.",
       policyThirdPartyTitle: "3. Third-party services",
       policyThirdPartyBody:
-        "No analytics, ads, or tracking third-party services are used.",
+        "No analytics, ads, or tracking third-party services are used. Reminders rely on the browser's native push service.",
       policyControlTitle: "4. User control",
       policyControlBody:
         "You can delete all application data by clearing the site data in your browser settings.",

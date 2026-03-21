@@ -24,6 +24,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Validate Vercel config
+        run: npm run validate:vercel
+
       - name: Build
         run: npm run build
 

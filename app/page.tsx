@@ -449,6 +449,8 @@ export default function Home() {
   }, [currentZikr?.transliteration, currentZikr?.translation_en, currentZikr?.translation_fr]);
 
   const targetDisplayText = currentZikr?.transliteration ?? "";
+  const showSpeechDebug = process.env.NODE_ENV !== "production";
+  const normalizedAudioTranscript = normalizePronouncedText(audioTranscript);
 
   const speechToleranceConfig = useMemo(() => {
     if (speechTolerance === "strict") {
@@ -979,6 +981,14 @@ export default function Home() {
       </div>
 
       <div className="mt-2 text-xs text-[var(--secondary)]">{t("counter.audioSpeechModeHint")}</div>
+
+      {showSpeechDebug && (
+        <div className="mt-2 rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 text-[10px] text-[var(--secondary)]">
+          <div>debug: heard(norm) = {normalizedAudioTranscript || "-"}</div>
+          <div>debug: targets = {normalizedSpeechTargets.join(" | ") || "-"}</div>
+          <div>debug: tolerance = {speechTolerance}</div>
+        </div>
+      )}
 
       <div className="sr-only" aria-live="polite" aria-atomic="true">
         {audioLastMatchedText

@@ -39,6 +39,7 @@ export type Preferences = {
   tapSound: TapSound;
   speechTolerance: SpeechTolerance;
   speechRecognitionLanguage: SpeechRecognitionLanguage;
+  audioSilenceTimeoutSec: number;
   language: "fr" | "en";
   confetti: boolean;
   remindersEnabled: boolean;
@@ -104,6 +105,7 @@ export type TasbihStoreState = {
   setTapSound: (sound: TapSound) => void;
   setSpeechTolerance: (tolerance: SpeechTolerance) => void;
   setSpeechRecognitionLanguage: (language: SpeechRecognitionLanguage) => void;
+  setAudioSilenceTimeoutSec: (seconds: number) => void;
   setLanguage: (lang: "fr" | "en") => void;
   setRemindersEnabled: (enabled: boolean) => void;
   setReminderScheduleType: (type: ReminderScheduleType) => void;
@@ -282,6 +284,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       tapSound: "off",
       speechTolerance: "balanced",
       speechRecognitionLanguage: "ar-SA",
+      audioSilenceTimeoutSec: 15,
       language: "en",
       confetti: false,
       remindersEnabled: false,
@@ -393,6 +396,11 @@ const normalizeSpeechRecognitionLanguage = (value: unknown): SpeechRecognitionLa
   return "ar-SA";
 };
 
+const normalizeAudioSilenceTimeoutSec = (value: unknown): number => {
+  if (typeof value !== "number" || !Number.isFinite(value)) return 15;
+  return Math.max(15, Math.min(120, Math.floor(value)));
+};
+
 const normalizeTheme = (value: unknown): Theme => {
   if (value === "light") return "light";
   if (value === "dark") return "dark";
@@ -439,6 +447,9 @@ const initialState: Partial<TasbihStoreState> = {
     speechTolerance: normalizeSpeechTolerance(storedState?.preferences?.speechTolerance),
     speechRecognitionLanguage: normalizeSpeechRecognitionLanguage(
       storedState?.preferences?.speechRecognitionLanguage
+    ),
+    audioSilenceTimeoutSec: normalizeAudioSilenceTimeoutSec(
+      storedState?.preferences?.audioSilenceTimeoutSec
     ),
   } as Preferences,
 };
@@ -1025,6 +1036,21 @@ const createStore = () =>
           return newState;
         }),
 
+      setAudioSilenceTimeoutSec: (seconds: number) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              audioSilenceTimeoutSec: normalizeAudioSilenceTimeoutSec(seconds),
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
       setLanguage: (lang: "fr" | "en") =>
         set((state) => {
           const newState = {
@@ -1113,6 +1139,7 @@ const createStore = () =>
               tapSound: "off" as TapSound,
               speechTolerance: "balanced" as SpeechTolerance,
               speechRecognitionLanguage: "ar-SA" as SpeechRecognitionLanguage,
+              audioSilenceTimeoutSec: 15,
               language: "en" as const,
               confetti: false,
               remindersEnabled: false,

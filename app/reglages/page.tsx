@@ -45,6 +45,7 @@ export default function ReglagesPage() {
   const setTapSound = useTasbihStore((s) => s.setTapSound);
   const setSpeechTolerance = useTasbihStore((s) => s.setSpeechTolerance);
   const setSpeechRecognitionLanguage = useTasbihStore((s) => s.setSpeechRecognitionLanguage);
+  const setAudioSilenceTimeoutSec = useTasbihStore((s) => s.setAudioSilenceTimeoutSec);
   const setLanguage = useTasbihStore((s) => s.setLanguage);
   const setRemindersEnabled = useTasbihStore((s) => s.setRemindersEnabled);
   const setReminderTimes = useTasbihStore((s) => s.setReminderTimes);
@@ -87,6 +88,8 @@ export default function ReglagesPage() {
     { value: "fr-FR", label: t("settings.speechRecognitionLanguageFrFr") },
     { value: "en-US", label: t("settings.speechRecognitionLanguageEnUs") },
   ];
+
+  const audioSilenceTimeoutOptions = [15, 30, 45, 60, 90, 120];
 
   const themeOptions: { value: Theme; label: string }[] = [
     { value: "light", label: t("settings.themeLight") },
@@ -306,6 +309,31 @@ export default function ReglagesPage() {
               {speechRecognitionLanguageOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">
+                {t("settings.audioSilenceTimeoutTitle")}
+              </div>
+              <div className="text-xs text-[var(--secondary)]">
+                {t("settings.audioSilenceTimeoutHint")}
+              </div>
+            </div>
+            <select
+              value={preferences.audioSilenceTimeoutSec}
+              onChange={(e) => setAudioSilenceTimeoutSec(Number(e.target.value) || 15)}
+              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+              aria-label={t("settings.ariaAudioSilenceTimeout")}
+            >
+              {audioSilenceTimeoutOptions.map((seconds) => (
+                <option key={seconds} value={seconds}>
+                  {t("settings.audioSilenceTimeoutOption", { seconds })}
                 </option>
               ))}
             </select>

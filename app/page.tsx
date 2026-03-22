@@ -149,6 +149,7 @@ export default function Home() {
   const speechRecognitionLanguage = useTasbihStore(
     (s) => s.preferences.speechRecognitionLanguage
   );
+  const audioSilenceTimeoutSec = useTasbihStore((s) => s.preferences.audioSilenceTimeoutSec);
   const speechTolerance = useTasbihStore((s) => s.preferences.speechTolerance);
 
   const t = useT();
@@ -419,6 +420,7 @@ export default function Home() {
   const audioCtxRef = useRef<AudioContext | null>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const recognitionRestartTimerRef = useRef<number | null>(null);
+  const audioSilenceTimerRef = useRef<number | null>(null);
   const speechCanIncrementRef = useRef(true);
   const speechLastIncrementAtRef = useRef(0);
   const speechRecentWordsRef = useRef<string[]>([]);
@@ -503,6 +505,11 @@ export default function Home() {
   }, []);
 
   const stopSpeechRecognition = useEffectEvent(() => {
+    if (audioSilenceTimerRef.current !== null) {
+      window.clearTimeout(audioSilenceTimerRef.current);
+      audioSilenceTimerRef.current = null;
+    }
+
     if (recognitionRestartTimerRef.current !== null) {
       window.clearTimeout(recognitionRestartTimerRef.current);
       recognitionRestartTimerRef.current = null;
@@ -525,6 +532,22 @@ export default function Home() {
     setAudioLastMatchedText("");
   });
 
+  const resetAudioSilenceTimer = useEffectEvent(() => {
+    if (audioSilenceTimerRef.current !== null) {
+      window.clearTimeout(audioSilenceTimerRef.current);
+      audioSilenceTimerRef.current = null;
+    }
+
+    if (!isAudioMode || !audioEnabled || !canAudioRun || !hasAudioSelection) return;
+
+    const timeoutMs = Math.max(15, Math.min(120, audioSilenceTimeoutSec)) * 1000;
+    audioSilenceTimerRef.current = window.setTimeout(() => {
+      audioSilenceTimerRef.current = null;
+      setAudioEnabled(false);
+      stopSpeechRecognition();
+    }, timeoutMs);
+  });
+
   const processSpeechTranscript = useEffectEvent((rawTranscript: string) => {
     const normalizedSegment = normalizePronouncedText(rawTranscript);
 
@@ -542,6 +565,7 @@ export default function Home() {
     }
 
     speechLastSegmentRef.current = normalizedSegment;
+    resetAudioSilenceTimer();
     const mergedWords = [
       ...speechRecentWordsRef.current,
       ...normalizedSegment.split(" ").filter(Boolean),
@@ -901,6 +925,7 @@ export default function Home() {
       return;
     }
 
+    resetAudioSilenceTimer();
     startSpeechRecognition();
   }, [
     isAudioMode,
@@ -909,6 +934,7 @@ export default function Home() {
     canAudioRun,
     supportsSpeechRecognition,
     speechRecognitionLanguage,
+    audioSilenceTimeoutSec,
   ]);
 
   const audioStatusLabel = !supportsSpeechRecognition

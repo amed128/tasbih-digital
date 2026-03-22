@@ -7,6 +7,7 @@ import type { Theme, ReminderTime } from "../../store/tasbihStore";
 import type { TapSound } from "../../store/tasbihStore";
 import type { SpeechTolerance } from "../../store/tasbihStore";
 import type { SpeechRecognitionLanguage } from "../../store/tasbihStore";
+import type { ChipTextFormat } from "../../store/tasbihStore";
 import {
   TASBIH_STORAGE_KEY,
   createBackupPayload,
@@ -50,6 +51,7 @@ export default function ReglagesPage() {
   const setBlurActionControlsWhileListening = useTasbihStore(
     (s) => s.setBlurActionControlsWhileListening
   );
+  const setChipTextFormat = useTasbihStore((s) => s.setChipTextFormat);
   const setLanguage = useTasbihStore((s) => s.setLanguage);
   const setRemindersEnabled = useTasbihStore((s) => s.setRemindersEnabled);
   const setReminderTimes = useTasbihStore((s) => s.setReminderTimes);
@@ -95,6 +97,11 @@ export default function ReglagesPage() {
 
   const audioSilenceTimeoutOptions = [15, 30, 45, 60, 90, 120];
   const audioTranscriptClearDelayOptions = [0, 2, 3, 5];
+  const chipTextFormatOptions: { value: ChipTextFormat; label: string }[] = [
+    { value: "transliteration", label: t("settings.chipTextFormatTransliteration") },
+    { value: "arabic", label: t("settings.chipTextFormatArabic") },
+    { value: "both", label: t("settings.chipTextFormatBoth") },
+  ];
 
   const themeOptions: { value: Theme; label: string }[] = [
     { value: "light", label: t("settings.themeLight") },
@@ -397,6 +404,31 @@ export default function ReglagesPage() {
             >
               {preferences.blurActionControlsWhileListening ? t("settings.on") : t("settings.off")}
             </button>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">
+                {t("settings.chipTextFormatTitle")}
+              </div>
+              <div className="text-xs text-[var(--secondary)]">
+                {t("settings.chipTextFormatHint")}
+              </div>
+            </div>
+            <select
+              value={preferences.chipTextFormat}
+              onChange={(e) => setChipTextFormat(e.target.value as ChipTextFormat)}
+              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+              aria-label={t("settings.ariaChipTextFormat")}
+            >
+              {chipTextFormatOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
         </section>
 

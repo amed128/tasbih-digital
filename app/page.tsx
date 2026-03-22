@@ -183,6 +183,7 @@ export default function Home() {
   const blurActionControlsWhileListening = useTasbihStore(
     (s) => s.preferences.blurActionControlsWhileListening
   );
+  const chipTextFormat = useTasbihStore((s) => s.preferences.chipTextFormat);
   const speechTolerance = useTasbihStore((s) => s.preferences.speechTolerance);
 
   const t = useT();
@@ -1575,15 +1576,21 @@ export default function Home() {
         ? "bg-[var(--primary)]"
         : "bg-[var(--border)]";
       const textClass = isDone ? "text-white" : isCurrent ? "text-black" : "text-[var(--secondary)]" ;
+      const chipText =
+        chipTextFormat === "arabic"
+          ? zikr.arabic
+          : chipTextFormat === "both"
+            ? `${zikr.transliteration} - ${zikr.arabic}`
+            : zikr.transliteration;
 
       return (
         <div
           key={zikrId}
           data-chip-index={index}
-          title={zikr.transliteration}
+          title={chipText}
           className={`w-full min-w-0 truncate rounded-full px-3 py-1 text-xs font-semibold ${bgClass} ${textClass}`}
         >
-          {zikr.transliteration}
+          {chipText}
         </div>
       );
     };

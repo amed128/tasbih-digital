@@ -42,6 +42,7 @@ export type Preferences = {
   audioSilenceTimeoutSec: number;
   audioTranscriptClearDelaySec: number;
   blurActionControlsWhileListening: boolean;
+  chipTextFormat: ChipTextFormat;
   language: "fr" | "en";
   confetti: boolean;
   remindersEnabled: boolean;
@@ -54,6 +55,7 @@ export type Preferences = {
 export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
 export type SpeechTolerance = "strict" | "balanced" | "tolerant";
 export type SpeechRecognitionLanguage = "ar-SA" | "ar-EG" | "ar-MA" | "fr-FR" | "en-US";
+export type ChipTextFormat = "transliteration" | "arabic" | "both";
 export type Theme = "light" | "dark" | "blue";
 export type ReminderTime = { hour: number; minute: number };
 export type ReminderScheduleType = "daily" | "weekly";
@@ -110,6 +112,7 @@ export type TasbihStoreState = {
   setAudioSilenceTimeoutSec: (seconds: number) => void;
   setAudioTranscriptClearDelaySec: (seconds: number) => void;
   setBlurActionControlsWhileListening: (enabled: boolean) => void;
+  setChipTextFormat: (format: ChipTextFormat) => void;
   setLanguage: (lang: "fr" | "en") => void;
   setRemindersEnabled: (enabled: boolean) => void;
   setReminderScheduleType: (type: ReminderScheduleType) => void;
@@ -291,6 +294,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       audioSilenceTimeoutSec: 15,
       audioTranscriptClearDelaySec: 3,
       blurActionControlsWhileListening: false,
+      chipTextFormat: "transliteration",
       language: "en",
       confetti: false,
       remindersEnabled: false,
@@ -417,6 +421,12 @@ const normalizeBlurActionControlsWhileListening = (value: unknown): boolean => {
   return value;
 };
 
+const normalizeChipTextFormat = (value: unknown): ChipTextFormat => {
+  if (value === "arabic") return "arabic";
+  if (value === "both") return "both";
+  return "transliteration";
+};
+
 const normalizeTheme = (value: unknown): Theme => {
   if (value === "light") return "light";
   if (value === "dark") return "dark";
@@ -473,6 +483,7 @@ const initialState: Partial<TasbihStoreState> = {
     blurActionControlsWhileListening: normalizeBlurActionControlsWhileListening(
       storedState?.preferences?.blurActionControlsWhileListening
     ),
+    chipTextFormat: normalizeChipTextFormat(storedState?.preferences?.chipTextFormat),
   } as Preferences,
 };
 
@@ -1103,6 +1114,21 @@ const createStore = () =>
           return newState;
         }),
 
+      setChipTextFormat: (format: ChipTextFormat) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              chipTextFormat: normalizeChipTextFormat(format),
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
       setLanguage: (lang: "fr" | "en") =>
         set((state) => {
           const newState = {
@@ -1194,6 +1220,7 @@ const createStore = () =>
               audioSilenceTimeoutSec: 15,
               audioTranscriptClearDelaySec: 3,
               blurActionControlsWhileListening: false,
+              chipTextFormat: "transliteration" as ChipTextFormat,
               language: "en" as const,
               confetti: false,
               remindersEnabled: false,

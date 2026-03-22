@@ -937,6 +937,12 @@ export default function Home() {
     audioSilenceTimeoutSec,
   ]);
 
+  useEffect(() => {
+    if (hasAudioSelection || !audioEnabled) return;
+    setAudioEnabled(false);
+    stopSpeechRecognition();
+  }, [hasAudioSelection, audioEnabled]);
+
   const audioStatusLabel = !supportsSpeechRecognition
     ? t("counter.audioStatusUnsupported")
     : audioAccessState === "denied"

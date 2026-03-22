@@ -39,8 +39,12 @@ export const translations = {
       autoStatusDone: "Objectif atteint",
       audioTitle: "Audio-compteur",
       audioHint: "Prononcez le zikr sélectionné pour incrémenter le compteur.",
-      audioStart: "Écouter",
+      audioStart: "Start listening",
       audioStop: "Stop",
+      audioSelectionHint:
+        "Sélectionnez d'abord un zikr ou un groupe depuis le menu déroulant, ou via l'onglet Listes.",
+      audioSelectionRequired:
+        "Veuillez d'abord sélectionner un zikr ou un groupe depuis le menu déroulant, ou depuis l'onglet Listes.",
       audioStatusOff: "Micro arrêté",
       audioStatusListening: "Écoute en cours",
       audioStatusPausedHidden: "En pause (onglet masqué)",
@@ -355,8 +359,12 @@ export const translations = {
       autoStatusDone: "Goal reached",
       audioTitle: "Audio-counter",
       audioHint: "Recite the selected zikr to increment the counter.",
-      audioStart: "Listen",
+      audioStart: "Start listening",
       audioStop: "Stop",
+      audioSelectionHint:
+        "Select a zikr or a group first from the dropdown, or from the Lists tab.",
+      audioSelectionRequired:
+        "Please select a zikr or a group first from the dropdown, or from the Lists tab.",
       audioStatusOff: "Mic off",
       audioStatusListening: "Listening",
       audioStatusPausedHidden: "Paused (tab hidden)",

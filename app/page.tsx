@@ -182,6 +182,7 @@ export default function Home() {
   const selectList = useTasbihStore((s) => s.selectList);
 
   const isListMode = activeListId !== DEFAULT_LIST_ID && activeList.length > 0;
+  const hasAudioSelection = isListMode;
   const isAutoMode = mode === "auto";
   const isAudioMode = mode === "audio";
   const isDownMode = mode === "down";
@@ -749,6 +750,12 @@ export default function Home() {
     setShowResetConfirm(false);
   };
 
+  const showAudioSelectionRequiredPrompt = () => {
+    window.alert(t("counter.audioSelectionRequired"));
+    setDropdownOpen(true);
+    setSearchQuery("");
+  };
+
   useEffect(() => {
     const handler = (event: MouseEvent) => {
       if (!dropdownOpen) return;
@@ -879,6 +886,11 @@ export default function Home() {
       return;
     }
 
+    if (!hasAudioSelection) {
+      stopSpeechRecognition();
+      return;
+    }
+
     if (!supportsSpeechRecognition) {
       stopSpeechRecognition();
       return;
@@ -893,6 +905,7 @@ export default function Home() {
   }, [
     isAudioMode,
     audioEnabled,
+    hasAudioSelection,
     canAudioRun,
     supportsSpeechRecognition,
     speechRecognitionLanguage,
@@ -916,6 +929,8 @@ export default function Home() {
 
   const audioHelpText = !supportsSpeechRecognition
     ? t("counter.audioUnsupportedHelp")
+    : !hasAudioSelection
+      ? t("counter.audioSelectionHint")
     : audioAccessState === "denied"
       ? t("counter.audioDeniedHelp")
       : audioAccessState === "error"
@@ -979,6 +994,11 @@ export default function Home() {
           onClick={() => {
             if (audioEnabled) {
               setAudioEnabled(false);
+              return;
+            }
+
+            if (!hasAudioSelection) {
+              showAudioSelectionRequiredPrompt();
               return;
             }
 

@@ -189,7 +189,7 @@ export default function Home() {
   const [audioAccessState, setAudioAccessState] = useState<AudioAccessState>("idle");
   const [audioTranscript, setAudioTranscript] = useState("");
   const [audioMatchProgress, setAudioMatchProgress] = useState(0);
-  const [audioLastMatchedText, setAudioLastMatchedText] = useState("");
+
   const [audioMatchFlash, setAudioMatchFlash] = useState(false);
   const [isDocumentVisible, setIsDocumentVisible] = useState(
     typeof document === "undefined" ? true : document.visibilityState === "visible"
@@ -448,6 +448,7 @@ export default function Home() {
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const recognitionRestartTimerRef = useRef<number | null>(null);
   const audioSilenceTimerRef = useRef<number | null>(null);
+  const transcriptResetTimerRef = useRef<number | null>(null);
   const speechCanIncrementRef = useRef(true);
   const speechLastIncrementAtRef = useRef(0);
   const speechRecentWordsRef = useRef<string[]>([]);
@@ -545,6 +546,11 @@ export default function Home() {
       audioSilenceTimerRef.current = null;
     }
 
+    if (transcriptResetTimerRef.current !== null) {
+      window.clearTimeout(transcriptResetTimerRef.current);
+      transcriptResetTimerRef.current = null;
+    }
+
     if (recognitionRestartTimerRef.current !== null) {
       window.clearTimeout(recognitionRestartTimerRef.current);
       recognitionRestartTimerRef.current = null;
@@ -564,7 +570,6 @@ export default function Home() {
     speechLastSegmentRef.current = "";
     setAudioTranscript("");
     setAudioMatchProgress(0);
-    setAudioLastMatchedText("");
   });
 
   const restartSpeechRecognitionAfterMatch = useEffectEvent(() => {
@@ -601,6 +606,10 @@ export default function Home() {
       speechRecentWordsRef.current = [];
       speechLastSegmentRef.current = "";
       speechCanIncrementRef.current = true;
+      if (transcriptResetTimerRef.current !== null) {
+        window.clearTimeout(transcriptResetTimerRef.current);
+        transcriptResetTimerRef.current = null;
+      }
       setAudioTranscript("");
       setAudioMatchProgress(0);
       return;
@@ -621,6 +630,17 @@ export default function Home() {
 
     const normalizedSpoken = mergedWords.join(" ");
     setAudioTranscript(normalizedSpoken);
+
+    if (transcriptResetTimerRef.current !== null) {
+      window.clearTimeout(transcriptResetTimerRef.current);
+    }
+    transcriptResetTimerRef.current = window.setTimeout(() => {
+      transcriptResetTimerRef.current = null;
+      speechRecentWordsRef.current = [];
+      speechLastSegmentRef.current = "";
+      setAudioTranscript("");
+      setAudioMatchProgress(0);
+    }, 3000);
 
     const spokenWords = normalizedSpoken.split(" ").filter(Boolean);
     let bestPrefixCount = 0;
@@ -675,15 +695,17 @@ export default function Home() {
     ) {
       speechCanIncrementRef.current = false;
       speechLastIncrementAtRef.current = now;
-      setAudioLastMatchedText(normalizedSpoken);
       setAudioMatchFlash(true);
       handleAudioIncrement();
 
       speechRecentWordsRef.current = [];
       speechLastSegmentRef.current = "";
+      if (transcriptResetTimerRef.current !== null) {
+        window.clearTimeout(transcriptResetTimerRef.current);
+        transcriptResetTimerRef.current = null;
+      }
       setAudioTranscript("");
       setAudioMatchProgress(0);
-      setAudioLastMatchedText("");
       restartSpeechRecognitionAfterMatch();
 
       window.setTimeout(() => {
@@ -821,11 +843,6 @@ export default function Home() {
     setShowResetConfirm(false);
   };
 
-  const showAudioSelectionRequiredPrompt = () => {
-    window.alert(t("counter.audioSelectionRequired"));
-    setDropdownOpen(true);
-    setSearchQuery("");
-  };
 
   useEffect(() => {
     const handler = (event: MouseEvent) => {
@@ -866,7 +883,6 @@ export default function Home() {
   useEffect(() => {
     setAudioTranscript("");
     setAudioMatchProgress(0);
-    setAudioLastMatchedText("");
     speechCanIncrementRef.current = true;
     speechRecentWordsRef.current = [];
     speechLastSegmentRef.current = "";
@@ -1076,26 +1092,33 @@ export default function Home() {
               return;
             }
 
-            if (!hasAudioSelection) {
-              showAudioSelectionRequiredPrompt();
-              return;
-            }
+            if (!hasAudioSelection) return;
 
             setAudioAccessState((current) => (current === "unsupported" ? current : "idle"));
             setAudioEnabled(true);
           }}
-          disabled={!supportsSpeechRecognition}
+          disabled={!supportsSpeechRecognition || !hasAudioSelection}
           className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
             audioRunning
               ? "bg-[var(--primary)] text-black"
               : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
-          } ${!supportsSpeechRecognition ? "cursor-not-allowed opacity-50" : ""}`}
+          } ${
+            !supportsSpeechRecognition
+              ? "cursor-not-allowed opacity-50"
+              : !hasAudioSelection
+                ? "cursor-not-allowed blur-[1.5px] opacity-50"
+                : ""
+          }`}
         >
           {audioRunning ? t("counter.audioStop") : t("counter.audioStart")}
         </button>
       </div>
 
-      <div className="mt-2 text-sm text-[var(--secondary)]">{audioHelpText}</div>
+      <div className={`mt-2 text-sm ${
+        !hasAudioSelection
+          ? "font-semibold text-[var(--primary)]"
+          : "text-[var(--secondary)]"
+      }`}>{audioHelpText}</div>
 
       <div className="mt-4">
         <div className="flex items-center justify-between text-xs font-semibold text-[var(--secondary)]">
@@ -1119,14 +1142,11 @@ export default function Home() {
               audioMatchFlash ? " audio-match-glow" : ""
             }`}
           >
-            {targetDisplayText || "-"}
+            {hasAudioSelection ? (targetDisplayText || "-") : "-"}
           </span>
         </div>
         <div>
           {t("counter.audioHeard")}: <span className="text-[var(--foreground)]">{audioTranscript || "-"}</span>
-        </div>
-        <div>
-          {t("counter.audioLastMatched")}: <span className="text-[var(--foreground)]">{audioLastMatchedText || "-"}</span>
         </div>
       </div>
 
@@ -1141,7 +1161,7 @@ export default function Home() {
       )}
 
       <div className="sr-only" aria-live="polite" aria-atomic="true">
-        {audioLastMatchedText
+        {audioMatchFlash
           ? t("counter.audioMatchedAnnouncement", { zikr: targetDisplayText })
           : ""}
       </div>
@@ -1541,7 +1561,8 @@ export default function Home() {
         <div
           key={zikrId}
           data-chip-index={index}
-          className={`flex-shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${bgClass} ${textClass}`}
+          title={zikr.transliteration}
+          className={`max-w-[140px] truncate flex-shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${bgClass} ${textClass}`}
         >
           {zikr.transliteration}
         </div>

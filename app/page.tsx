@@ -106,21 +106,21 @@ function wordsLooselyMatch(spokenWord: string, targetWord: string): boolean {
   return false;
 }
 
-function bestSequentialWordMatchCount(spokenWords: string[], targetWords: string[]): number {
+function orderedTailMatchCount(spokenWords: string[], targetWords: string[]): number {
   if (spokenWords.length === 0 || targetWords.length === 0) return 0;
 
-  let best = 0;
-  for (let start = 0; start < spokenWords.length; start += 1) {
-    let matched = 0;
-    for (let index = 0; index < targetWords.length; index += 1) {
-      const spoken = spokenWords[start + index];
-      if (!spoken) break;
-      if (!wordsLooselyMatch(spoken, targetWords[index])) break;
-      matched += 1;
-    }
-    if (matched > best) best = matched;
+  const maxComparable = Math.min(spokenWords.length, targetWords.length);
+  let matched = 0;
+
+  for (let offset = 1; offset <= maxComparable; offset += 1) {
+    const spoken = spokenWords[spokenWords.length - offset];
+    const target = targetWords[targetWords.length - offset];
+    if (!spoken || !target) break;
+    if (!wordsLooselyMatch(spoken, target)) break;
+    matched += 1;
   }
-  return best;
+
+  return matched;
 }
 
 export default function Home() {
@@ -538,7 +538,7 @@ export default function Home() {
       const targetWords = targetText.split(" ").filter(Boolean);
       if (targetWords.length === 0) continue;
 
-      const prefixCount = bestSequentialWordMatchCount(spokenWords, targetWords);
+      const prefixCount = orderedTailMatchCount(spokenWords, targetWords);
       if (prefixCount > bestPrefixCount) {
         bestPrefixCount = prefixCount;
         bestTargetLength = targetWords.length;
@@ -557,8 +557,7 @@ export default function Home() {
         normalizedSpoken.length >=
           Math.floor(targetText.length * speechToleranceConfig.containedMinLengthRatio);
 
-      const hasFullOrderedMatch =
-        prefixCount >= targetWords.length || normalizedSpoken.includes(targetText);
+      const hasFullOrderedMatch = prefixCount >= targetWords.length;
 
       if (targetWords.length > 1) {
         if (hasFullOrderedMatch) {
@@ -625,12 +624,13 @@ export default function Home() {
 
     recognition.onresult = (event: SpeechRecognitionEventLike) => {
       let transcript = "";
-      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+      for (let index = event.results.length - 1; index >= event.resultIndex; index -= 1) {
         const result = event.results[index];
         if (!result || result.length === 0) continue;
-        transcript += `${result[0].transcript} `;
+        transcript = result[0].transcript.trim();
+        if (transcript) break;
       }
-      processSpeechTranscript(transcript.trim());
+      processSpeechTranscript(transcript);
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEventLike) => {

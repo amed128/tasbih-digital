@@ -41,6 +41,7 @@ export type Preferences = {
   speechRecognitionLanguage: SpeechRecognitionLanguage;
   audioSilenceTimeoutSec: number;
   audioTranscriptClearDelaySec: number;
+  blurActionControlsWhileListening: boolean;
   language: "fr" | "en";
   confetti: boolean;
   remindersEnabled: boolean;
@@ -108,6 +109,7 @@ export type TasbihStoreState = {
   setSpeechRecognitionLanguage: (language: SpeechRecognitionLanguage) => void;
   setAudioSilenceTimeoutSec: (seconds: number) => void;
   setAudioTranscriptClearDelaySec: (seconds: number) => void;
+  setBlurActionControlsWhileListening: (enabled: boolean) => void;
   setLanguage: (lang: "fr" | "en") => void;
   setRemindersEnabled: (enabled: boolean) => void;
   setReminderScheduleType: (type: ReminderScheduleType) => void;
@@ -288,6 +290,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       speechRecognitionLanguage: "ar-SA",
       audioSilenceTimeoutSec: 15,
       audioTranscriptClearDelaySec: 3,
+      blurActionControlsWhileListening: false,
       language: "en",
       confetti: false,
       remindersEnabled: false,
@@ -409,6 +412,11 @@ const normalizeAudioTranscriptClearDelaySec = (value: unknown): number => {
   return Math.max(0, Math.min(15, Math.floor(value)));
 };
 
+const normalizeBlurActionControlsWhileListening = (value: unknown): boolean => {
+  if (typeof value !== "boolean") return false;
+  return value;
+};
+
 const normalizeTheme = (value: unknown): Theme => {
   if (value === "light") return "light";
   if (value === "dark") return "dark";
@@ -461,6 +469,9 @@ const initialState: Partial<TasbihStoreState> = {
     ),
     audioTranscriptClearDelaySec: normalizeAudioTranscriptClearDelaySec(
       storedState?.preferences?.audioTranscriptClearDelaySec
+    ),
+    blurActionControlsWhileListening: normalizeBlurActionControlsWhileListening(
+      storedState?.preferences?.blurActionControlsWhileListening
     ),
   } as Preferences,
 };
@@ -1077,6 +1088,21 @@ const createStore = () =>
           return newState;
         }),
 
+      setBlurActionControlsWhileListening: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              blurActionControlsWhileListening: enabled,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
       setLanguage: (lang: "fr" | "en") =>
         set((state) => {
           const newState = {
@@ -1167,6 +1193,7 @@ const createStore = () =>
               speechRecognitionLanguage: "ar-SA" as SpeechRecognitionLanguage,
               audioSilenceTimeoutSec: 15,
               audioTranscriptClearDelaySec: 3,
+              blurActionControlsWhileListening: false,
               language: "en" as const,
               confetti: false,
               remindersEnabled: false,

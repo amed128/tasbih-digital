@@ -200,6 +200,9 @@ export const translations = {
         "Vide le texte entendu après un court silence pendant l'écoute",
       audioTranscriptClearDelayOff: "Jamais",
       audioTranscriptClearDelayOption: "{{seconds}} s",
+      blurActionControlsWhileListeningTitle: "Flou léger des actions pendant l'écoute",
+      blurActionControlsWhileListeningHint:
+        "Applique un léger flou sur Mode, Annuler et Réinitialiser pendant l'écoute",
       vibrationTitle: "Vibration",
       vibrationIOS: "Non disponible sur iOS",
       vibrationHint: "Retour haptique si supporté",
@@ -531,6 +534,9 @@ export const translations = {
         "Clears heard text after a short silence while listening",
       audioTranscriptClearDelayOff: "Never",
       audioTranscriptClearDelayOption: "{{seconds}} s",
+      blurActionControlsWhileListeningTitle: "Light blur on actions while listening",
+      blurActionControlsWhileListeningHint:
+        "Applies a subtle blur to Mode, Undo, and Reset while listening",
       vibrationTitle: "Vibration",
       vibrationIOS: "Not available on iOS",
       vibrationHint: "Haptic feedback if supported",

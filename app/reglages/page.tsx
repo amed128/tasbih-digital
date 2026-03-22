@@ -47,6 +47,9 @@ export default function ReglagesPage() {
   const setSpeechRecognitionLanguage = useTasbihStore((s) => s.setSpeechRecognitionLanguage);
   const setAudioSilenceTimeoutSec = useTasbihStore((s) => s.setAudioSilenceTimeoutSec);
   const setAudioTranscriptClearDelaySec = useTasbihStore((s) => s.setAudioTranscriptClearDelaySec);
+  const setBlurActionControlsWhileListening = useTasbihStore(
+    (s) => s.setBlurActionControlsWhileListening
+  );
   const setLanguage = useTasbihStore((s) => s.setLanguage);
   const setRemindersEnabled = useTasbihStore((s) => s.setRemindersEnabled);
   const setReminderTimes = useTasbihStore((s) => s.setReminderTimes);
@@ -366,6 +369,34 @@ export default function ReglagesPage() {
                 </option>
               ))}
             </select>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">
+                {t("settings.blurActionControlsWhileListeningTitle")}
+              </div>
+              <div className="text-xs text-[var(--secondary)]">
+                {t("settings.blurActionControlsWhileListeningHint")}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() =>
+                setBlurActionControlsWhileListening(
+                  !preferences.blurActionControlsWhileListening
+                )
+              }
+              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                preferences.blurActionControlsWhileListening
+                  ? "bg-[var(--primary)] text-black"
+                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+              }`}
+            >
+              {preferences.blurActionControlsWhileListening ? t("settings.on") : t("settings.off")}
+            </button>
           </div>
         </section>
 

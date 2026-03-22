@@ -180,6 +180,9 @@ export default function Home() {
   const audioTranscriptClearDelaySec = useTasbihStore(
     (s) => s.preferences.audioTranscriptClearDelaySec
   );
+  const blurActionControlsWhileListening = useTasbihStore(
+    (s) => s.preferences.blurActionControlsWhileListening
+  );
   const speechTolerance = useTasbihStore((s) => s.preferences.speechTolerance);
 
   const t = useT();
@@ -916,6 +919,8 @@ export default function Home() {
 
   const autoRunning = isAutoMode && autoEnabled && !isCompleted;
   const audioRunning = isAudioMode && audioEnabled && !isCompleted;
+  const shouldBlurActionControls =
+    isAudioMode && audioRunning && blurActionControlsWhileListening;
   const canAutoRun = autoRunning && isDocumentVisible && isWindowFocused;
   const canAudioRun = audioRunning && isDocumentVisible && isWindowFocused;
   const shouldHoldWakeLock =
@@ -1189,7 +1194,9 @@ export default function Home() {
           <button
             type="button"
             onClick={toggleMode}
-            className="rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)]"
+            className={`rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)] ${
+              shouldBlurActionControls ? "blur-[0.6px] opacity-85" : ""
+            }`}
             aria-label={t("counter.ariaChangeMode")}
           >
             Mode: {executionModeLabel}
@@ -1534,14 +1541,18 @@ export default function Home() {
             <button
               onClick={undoLast}
               aria-label={t("counter.ariaUndo")}
-              className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"
+              className={`flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
+                shouldBlurActionControls ? "blur-[0.6px] opacity-85" : ""
+              }`}
             >
               {t("counter.undo")}
             </button>
           )}
           <button
             onClick={handleResetRequest}
-            className={`${!focusMode && !isAutoMode ? "flex-1" : "w-full"} rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95`}
+            className={`${!focusMode && !isAutoMode ? "flex-1" : "w-full"} rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
+              shouldBlurActionControls ? "blur-[0.6px] opacity-85" : ""
+            }`}
           >
             {t("counter.reset")}
           </button>
@@ -1590,7 +1601,9 @@ export default function Home() {
           <button
             type="button"
             onClick={toggleMode}
-            className="rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)]"
+            className={`rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)] ${
+              shouldBlurActionControls ? "blur-[0.6px] opacity-85" : ""
+            }`}
             aria-label={t("counter.ariaChangeMode")}
           >
             Mode: {executionModeLabel}
@@ -1666,14 +1679,18 @@ export default function Home() {
               <button
                 onClick={undoLast}
                 aria-label={t("counter.ariaUndo")}
-                className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95"
+                className={`flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
+                  shouldBlurActionControls ? "blur-[0.6px] opacity-85" : ""
+                }`}
               >
                 {t("counter.undo")}
               </button>
             )}
             <button
               onClick={handleResetRequest}
-              className={`${!isAutoMode ? "flex-1" : "w-full"} rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95`}
+              className={`${!isAutoMode ? "flex-1" : "w-full"} rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
+                shouldBlurActionControls ? "blur-[0.6px] opacity-85" : ""
+              }`}
             >
               {t("counter.reset")}
             </button>

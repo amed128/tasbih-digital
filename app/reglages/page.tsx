@@ -52,6 +52,10 @@ export default function ReglagesPage() {
     (s) => s.setBlurActionControlsWhileListening
   );
   const setChipTextFormat = useTasbihStore((s) => s.setChipTextFormat);
+  const setAudioClearTranscriptOnSilence = useTasbihStore(
+    (s) => s.setAudioClearTranscriptOnSilence
+  );
+  const setAudioStopOnSilence = useTasbihStore((s) => s.setAudioStopOnSilence);
   const setLanguage = useTasbihStore((s) => s.setLanguage);
   const setRemindersEnabled = useTasbihStore((s) => s.setRemindersEnabled);
   const setReminderTimes = useTasbihStore((s) => s.setReminderTimes);
@@ -349,6 +353,56 @@ export default function ReglagesPage() {
                 </option>
               ))}
             </select>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">
+                {t("settings.audioClearTranscriptOnSilenceTitle")}
+              </div>
+              <div className="text-xs text-[var(--secondary)]">
+                {t("settings.audioClearTranscriptOnSilenceHint")}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() =>
+                setAudioClearTranscriptOnSilence(!preferences.audioClearTranscriptOnSilence)
+              }
+              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                preferences.audioClearTranscriptOnSilence
+                  ? "bg-[var(--primary)] text-black"
+                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+              }`}
+            >
+              {preferences.audioClearTranscriptOnSilence ? t("settings.on") : t("settings.off")}
+            </button>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">
+                {t("settings.audioStopOnSilenceTitle")}
+              </div>
+              <div className="text-xs text-[var(--secondary)]">
+                {t("settings.audioStopOnSilenceHint")}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setAudioStopOnSilence(!preferences.audioStopOnSilence)}
+              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                preferences.audioStopOnSilence
+                  ? "bg-[var(--primary)] text-black"
+                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+              }`}
+            >
+              {preferences.audioStopOnSilence ? t("settings.on") : t("settings.off")}
+            </button>
           </div>
         </section>
 

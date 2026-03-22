@@ -184,6 +184,10 @@ export default function Home() {
     (s) => s.preferences.blurActionControlsWhileListening
   );
   const chipTextFormat = useTasbihStore((s) => s.preferences.chipTextFormat);
+  const audioClearTranscriptOnSilence = useTasbihStore(
+    (s) => s.preferences.audioClearTranscriptOnSilence
+  );
+  const audioStopOnSilence = useTasbihStore((s) => s.preferences.audioStopOnSilence);
   const speechTolerance = useTasbihStore((s) => s.preferences.speechTolerance);
 
   const t = useT();
@@ -596,7 +600,9 @@ export default function Home() {
       audioSilenceTimerRef.current = null;
     }
 
-    if (!isAudioMode || !audioEnabled || !canAudioRun || !hasAudioSelection) return;
+    if (!isAudioMode || !audioEnabled || !canAudioRun || !hasAudioSelection || !audioStopOnSilence) {
+      return;
+    }
 
     const timeoutMs = Math.max(15, Math.min(120, audioSilenceTimeoutSec)) * 1000;
     audioSilenceTimerRef.current = window.setTimeout(() => {
@@ -641,7 +647,7 @@ export default function Home() {
     if (transcriptResetTimerRef.current !== null) {
       window.clearTimeout(transcriptResetTimerRef.current);
     }
-    if (audioTranscriptClearDelaySec <= 0) {
+    if (!audioClearTranscriptOnSilence || audioTranscriptClearDelaySec <= 0) {
       transcriptResetTimerRef.current = null;
       return;
     }

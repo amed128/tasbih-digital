@@ -43,6 +43,8 @@ export type Preferences = {
   audioTranscriptClearDelaySec: number;
   blurActionControlsWhileListening: boolean;
   chipTextFormat: ChipTextFormat;
+  audioClearTranscriptOnSilence: boolean;
+  audioStopOnSilence: boolean;
   language: "fr" | "en";
   confetti: boolean;
   remindersEnabled: boolean;
@@ -113,6 +115,8 @@ export type TasbihStoreState = {
   setAudioTranscriptClearDelaySec: (seconds: number) => void;
   setBlurActionControlsWhileListening: (enabled: boolean) => void;
   setChipTextFormat: (format: ChipTextFormat) => void;
+  setAudioClearTranscriptOnSilence: (enabled: boolean) => void;
+  setAudioStopOnSilence: (enabled: boolean) => void;
   setLanguage: (lang: "fr" | "en") => void;
   setRemindersEnabled: (enabled: boolean) => void;
   setReminderScheduleType: (type: ReminderScheduleType) => void;
@@ -295,6 +299,8 @@ function getInitialState(): Partial<TasbihStoreState> {
       audioTranscriptClearDelaySec: 3,
       blurActionControlsWhileListening: false,
       chipTextFormat: "transliteration",
+      audioClearTranscriptOnSilence: true,
+      audioStopOnSilence: true,
       language: "en",
       confetti: false,
       remindersEnabled: false,
@@ -427,6 +433,11 @@ const normalizeChipTextFormat = (value: unknown): ChipTextFormat => {
   return "transliteration";
 };
 
+const normalizeBooleanWithDefault = (value: unknown, fallback: boolean): boolean => {
+  if (typeof value !== "boolean") return fallback;
+  return value;
+};
+
 const normalizeTheme = (value: unknown): Theme => {
   if (value === "light") return "light";
   if (value === "dark") return "dark";
@@ -484,6 +495,14 @@ const initialState: Partial<TasbihStoreState> = {
       storedState?.preferences?.blurActionControlsWhileListening
     ),
     chipTextFormat: normalizeChipTextFormat(storedState?.preferences?.chipTextFormat),
+    audioClearTranscriptOnSilence: normalizeBooleanWithDefault(
+      storedState?.preferences?.audioClearTranscriptOnSilence,
+      true
+    ),
+    audioStopOnSilence: normalizeBooleanWithDefault(
+      storedState?.preferences?.audioStopOnSilence,
+      true
+    ),
   } as Preferences,
 };
 
@@ -1129,6 +1148,36 @@ const createStore = () =>
           return newState;
         }),
 
+      setAudioClearTranscriptOnSilence: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              audioClearTranscriptOnSilence: enabled,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      setAudioStopOnSilence: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              audioStopOnSilence: enabled,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
       setLanguage: (lang: "fr" | "en") =>
         set((state) => {
           const newState = {
@@ -1221,6 +1270,8 @@ const createStore = () =>
               audioTranscriptClearDelaySec: 3,
               blurActionControlsWhileListening: false,
               chipTextFormat: "transliteration" as ChipTextFormat,
+              audioClearTranscriptOnSilence: true,
+              audioStopOnSilence: true,
               language: "en" as const,
               confetti: false,
               remindersEnabled: false,

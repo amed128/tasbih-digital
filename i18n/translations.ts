@@ -195,6 +195,12 @@ export const translations = {
       audioSilenceTimeoutHint:
         "Le mode écoute s'arrête automatiquement après ce délai sans voix détectée",
       audioSilenceTimeoutOption: "{{seconds}} s",
+      audioClearTranscriptOnSilenceTitle: "Effacer le texte entendu sur silence",
+      audioClearTranscriptOnSilenceHint:
+        "Vide le texte entendu après le délai configuré de silence",
+      audioStopOnSilenceTitle: "Arrêter l'écoute sur silence prolongé",
+      audioStopOnSilenceHint:
+        "Coupe le mode écoute après le délai d'arrêt auto sans voix détectée",
       audioTranscriptClearDelayTitle: "Effacer \"texte entendu\" après silence",
       audioTranscriptClearDelayHint:
         "Vide le texte entendu après un court silence pendant l'écoute",
@@ -535,6 +541,12 @@ export const translations = {
       audioSilenceTimeoutHint:
         "Listening stops automatically after this time if no voice is detected",
       audioSilenceTimeoutOption: "{{seconds}} s",
+      audioClearTranscriptOnSilenceTitle: "Clear heard text on silence",
+      audioClearTranscriptOnSilenceHint:
+        "Clears heard text after the configured silence delay",
+      audioStopOnSilenceTitle: "Stop listening on extended silence",
+      audioStopOnSilenceHint:
+        "Stops listening after the auto-stop silence timeout with no voice detected",
       audioTranscriptClearDelayTitle: "Clear \"heard text\" after silence",
       audioTranscriptClearDelayHint:
         "Clears heard text after a short silence while listening",

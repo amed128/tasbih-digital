@@ -922,10 +922,6 @@ export default function Home() {
         ? t("counter.audioErrorHelp")
         : t("counter.audioHint");
 
-  const renderPronunciationText = (text: string, className: string) => {
-    return <span className={`text-[var(--primary)] ${className}`}>{text}</span>;
-  };
-
   const renderAutoControls = () => (
     <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-3">
       <div className="flex items-center justify-between gap-3">
@@ -1336,15 +1332,6 @@ export default function Home() {
       </div>
 
       <motion.div layout className="flex flex-col items-center gap-4">
-        {currentZikr && (
-          <div className="text-center">
-            <div className="text-[2rem] font-bold">
-              {renderPronunciationText(currentZikr.arabic, "")}
-            </div>
-            <div className="mt-2 text-sm text-[var(--secondary)]">{currentZikr.transliteration}</div>
-          </div>
-        )}
-
         <CircleProgress
           value={counter}
           target={effectiveTarget}
@@ -1437,8 +1424,6 @@ export default function Home() {
   );
 
   const renderListMode = () => {
-    const currentZikrInList = currentZikr;
-
     const renderChip = (zikrId: string, index: number) => {
       const zikr = zikrs.find((d) => d.id === zikrId);
       if (!zikr) return null;
@@ -1491,17 +1476,6 @@ export default function Home() {
         </div>
 
         <motion.div layout className="flex flex-col items-center gap-4">
-          <div className="text-center">
-            <div className="text-[2rem] font-bold">
-              {currentZikrInList
-                ? renderPronunciationText(currentZikrInList.arabic, "")
-                : null}
-            </div>
-            <div className="mt-2 text-sm text-[var(--secondary)]">
-              {currentZikrInList?.transliteration}
-            </div>
-          </div>
-
           <CircleProgress
             value={counter}
             target={effectiveTarget}

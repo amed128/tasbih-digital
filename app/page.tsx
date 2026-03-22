@@ -420,6 +420,8 @@ export default function Home() {
   const recognitionRestartTimerRef = useRef<number | null>(null);
   const speechCanIncrementRef = useRef(true);
   const speechLastIncrementAtRef = useRef(0);
+  const speechRecentWordsRef = useRef<string[]>([]);
+  const speechLastSegmentRef = useRef("");
   const speechShouldRunRef = useRef(false);
   const wakeLockRef = useRef<WakeLockSentinelLike | null>(null);
 
@@ -515,19 +517,38 @@ export default function Home() {
     }
 
     speechCanIncrementRef.current = true;
+    speechRecentWordsRef.current = [];
+    speechLastSegmentRef.current = "";
     setAudioTranscript("");
     setAudioMatchProgress(0);
+    setAudioLastMatchedText("");
   });
 
   const processSpeechTranscript = useEffectEvent((rawTranscript: string) => {
-    const normalizedSpoken = normalizePronouncedText(rawTranscript);
-    setAudioTranscript(rawTranscript);
+    const normalizedSegment = normalizePronouncedText(rawTranscript);
 
-    if (!normalizedSpoken || normalizedSpeechTargets.length === 0) {
+    if (!normalizedSegment || normalizedSpeechTargets.length === 0) {
+      speechRecentWordsRef.current = [];
+      speechLastSegmentRef.current = "";
       speechCanIncrementRef.current = true;
+      setAudioTranscript("");
       setAudioMatchProgress(0);
       return;
     }
+
+    if (speechLastSegmentRef.current === normalizedSegment) {
+      return;
+    }
+
+    speechLastSegmentRef.current = normalizedSegment;
+    const mergedWords = [
+      ...speechRecentWordsRef.current,
+      ...normalizedSegment.split(" ").filter(Boolean),
+    ].slice(-12);
+    speechRecentWordsRef.current = mergedWords;
+
+    const normalizedSpoken = mergedWords.join(" ");
+    setAudioTranscript(normalizedSpoken);
 
     const spokenWords = normalizedSpoken.split(" ").filter(Boolean);
     let bestPrefixCount = 0;
@@ -582,17 +603,21 @@ export default function Home() {
     ) {
       speechCanIncrementRef.current = false;
       speechLastIncrementAtRef.current = now;
-      setAudioLastMatchedText(rawTranscript.trim());
+      setAudioLastMatchedText(normalizedSpoken);
       setAudioMatchFlash(true);
       handleAudioIncrement();
+
+      // Clear instantly after increment so stale words cannot trigger ghost matches.
+      speechRecentWordsRef.current = [];
+      speechLastSegmentRef.current = "";
+      setAudioTranscript("");
+      setAudioMatchProgress(0);
+      setAudioLastMatchedText("");
+
       window.setTimeout(() => {
-        setAudioTranscript("");
-        setAudioMatchProgress(0);
-        setAudioLastMatchedText("");
         setAudioMatchFlash(false);
-        // Re-arm so the next spoken zikr can trigger another increment
         speechCanIncrementRef.current = true;
-      }, 400);
+      }, 250);
       return;
     }
 
@@ -763,7 +788,10 @@ export default function Home() {
   useEffect(() => {
     setAudioTranscript("");
     setAudioMatchProgress(0);
+    setAudioLastMatchedText("");
     speechCanIncrementRef.current = true;
+    speechRecentWordsRef.current = [];
+    speechLastSegmentRef.current = "";
   }, [currentZikr?.id]);
 
   useEffect(() => {

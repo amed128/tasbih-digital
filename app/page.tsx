@@ -1476,6 +1476,15 @@ export default function Home() {
         </div>
 
         <motion.div layout className="flex flex-col items-center gap-4">
+          {currentZikr && (
+            <div className="text-center">
+              <div className="text-[2rem] font-bold text-[var(--primary)]">
+                {currentZikr.transliteration}
+              </div>
+              <div className="mt-2 text-sm text-[var(--secondary)]">{currentZikr.arabic}</div>
+            </div>
+          )}
+
           <CircleProgress
             value={counter}
             target={effectiveTarget}

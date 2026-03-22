@@ -177,6 +177,9 @@ export default function Home() {
     (s) => s.preferences.speechRecognitionLanguage
   );
   const audioSilenceTimeoutSec = useTasbihStore((s) => s.preferences.audioSilenceTimeoutSec);
+  const audioTranscriptClearDelaySec = useTasbihStore(
+    (s) => s.preferences.audioTranscriptClearDelaySec
+  );
   const speechTolerance = useTasbihStore((s) => s.preferences.speechTolerance);
 
   const t = useT();
@@ -634,13 +637,18 @@ export default function Home() {
     if (transcriptResetTimerRef.current !== null) {
       window.clearTimeout(transcriptResetTimerRef.current);
     }
+    if (audioTranscriptClearDelaySec <= 0) {
+      transcriptResetTimerRef.current = null;
+      return;
+    }
+
     transcriptResetTimerRef.current = window.setTimeout(() => {
       transcriptResetTimerRef.current = null;
       speechRecentWordsRef.current = [];
       speechLastSegmentRef.current = "";
       setAudioTranscript("");
       setAudioMatchProgress(0);
-    }, 3000);
+    }, audioTranscriptClearDelaySec * 1000);
 
     const spokenWords = normalizedSpoken.split(" ").filter(Boolean);
     let bestPrefixCount = 0;

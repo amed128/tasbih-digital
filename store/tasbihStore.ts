@@ -40,6 +40,7 @@ export type Preferences = {
   speechTolerance: SpeechTolerance;
   speechRecognitionLanguage: SpeechRecognitionLanguage;
   audioSilenceTimeoutSec: number;
+  audioTranscriptClearDelaySec: number;
   language: "fr" | "en";
   confetti: boolean;
   remindersEnabled: boolean;
@@ -106,6 +107,7 @@ export type TasbihStoreState = {
   setSpeechTolerance: (tolerance: SpeechTolerance) => void;
   setSpeechRecognitionLanguage: (language: SpeechRecognitionLanguage) => void;
   setAudioSilenceTimeoutSec: (seconds: number) => void;
+  setAudioTranscriptClearDelaySec: (seconds: number) => void;
   setLanguage: (lang: "fr" | "en") => void;
   setRemindersEnabled: (enabled: boolean) => void;
   setReminderScheduleType: (type: ReminderScheduleType) => void;
@@ -285,6 +287,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       speechTolerance: "balanced",
       speechRecognitionLanguage: "ar-SA",
       audioSilenceTimeoutSec: 15,
+      audioTranscriptClearDelaySec: 3,
       language: "en",
       confetti: false,
       remindersEnabled: false,
@@ -401,6 +404,11 @@ const normalizeAudioSilenceTimeoutSec = (value: unknown): number => {
   return Math.max(15, Math.min(120, Math.floor(value)));
 };
 
+const normalizeAudioTranscriptClearDelaySec = (value: unknown): number => {
+  if (typeof value !== "number" || !Number.isFinite(value)) return 3;
+  return Math.max(0, Math.min(15, Math.floor(value)));
+};
+
 const normalizeTheme = (value: unknown): Theme => {
   if (value === "light") return "light";
   if (value === "dark") return "dark";
@@ -450,6 +458,9 @@ const initialState: Partial<TasbihStoreState> = {
     ),
     audioSilenceTimeoutSec: normalizeAudioSilenceTimeoutSec(
       storedState?.preferences?.audioSilenceTimeoutSec
+    ),
+    audioTranscriptClearDelaySec: normalizeAudioTranscriptClearDelaySec(
+      storedState?.preferences?.audioTranscriptClearDelaySec
     ),
   } as Preferences,
 };
@@ -1051,6 +1062,21 @@ const createStore = () =>
           return newState;
         }),
 
+      setAudioTranscriptClearDelaySec: (seconds: number) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              audioTranscriptClearDelaySec: normalizeAudioTranscriptClearDelaySec(seconds),
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
       setLanguage: (lang: "fr" | "en") =>
         set((state) => {
           const newState = {
@@ -1140,6 +1166,7 @@ const createStore = () =>
               speechTolerance: "balanced" as SpeechTolerance,
               speechRecognitionLanguage: "ar-SA" as SpeechRecognitionLanguage,
               audioSilenceTimeoutSec: 15,
+              audioTranscriptClearDelaySec: 3,
               language: "en" as const,
               confetti: false,
               remindersEnabled: false,

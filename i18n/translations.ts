@@ -195,6 +195,11 @@ export const translations = {
       audioSilenceTimeoutHint:
         "Le mode écoute s'arrête automatiquement après ce délai sans voix détectée",
       audioSilenceTimeoutOption: "{{seconds}} s",
+      audioTranscriptClearDelayTitle: "Effacer \"texte entendu\" après silence",
+      audioTranscriptClearDelayHint:
+        "Vide le texte entendu après un court silence pendant l'écoute",
+      audioTranscriptClearDelayOff: "Jamais",
+      audioTranscriptClearDelayOption: "{{seconds}} s",
       vibrationTitle: "Vibration",
       vibrationIOS: "Non disponible sur iOS",
       vibrationHint: "Retour haptique si supporté",
@@ -212,6 +217,7 @@ export const translations = {
       ariaSpeechTolerance: "Sélection de la tolérance vocale",
       ariaSpeechRecognitionLanguage: "Sélection de la langue de reconnaissance vocale",
       ariaAudioSilenceTimeout: "Sélection du délai d'arrêt auto sans audio",
+      ariaAudioTranscriptClearDelay: "Sélection du délai d'effacement du texte entendu",
       ariaLanguage: "Sélection de la langue",
       deviceSupportTitle: "Support de l'appareil",
       deviceSupportHint: "Fonctionnalités disponibles sur cet appareil",
@@ -520,6 +526,11 @@ export const translations = {
       audioSilenceTimeoutHint:
         "Listening stops automatically after this time if no voice is detected",
       audioSilenceTimeoutOption: "{{seconds}} s",
+      audioTranscriptClearDelayTitle: "Clear \"heard text\" after silence",
+      audioTranscriptClearDelayHint:
+        "Clears heard text after a short silence while listening",
+      audioTranscriptClearDelayOff: "Never",
+      audioTranscriptClearDelayOption: "{{seconds}} s",
       vibrationTitle: "Vibration",
       vibrationIOS: "Not available on iOS",
       vibrationHint: "Haptic feedback if supported",
@@ -537,6 +548,7 @@ export const translations = {
       ariaSpeechTolerance: "Speech tolerance selection",
       ariaSpeechRecognitionLanguage: "Speech recognition language selection",
       ariaAudioSilenceTimeout: "Audio silence auto-stop timeout selection",
+      ariaAudioTranscriptClearDelay: "Heard text clear delay selection",
       ariaLanguage: "Language selection",
       deviceSupportTitle: "Device support",
       deviceSupportHint: "Features available on this device",

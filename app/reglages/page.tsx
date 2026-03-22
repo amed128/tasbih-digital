@@ -46,6 +46,7 @@ export default function ReglagesPage() {
   const setSpeechTolerance = useTasbihStore((s) => s.setSpeechTolerance);
   const setSpeechRecognitionLanguage = useTasbihStore((s) => s.setSpeechRecognitionLanguage);
   const setAudioSilenceTimeoutSec = useTasbihStore((s) => s.setAudioSilenceTimeoutSec);
+  const setAudioTranscriptClearDelaySec = useTasbihStore((s) => s.setAudioTranscriptClearDelaySec);
   const setLanguage = useTasbihStore((s) => s.setLanguage);
   const setRemindersEnabled = useTasbihStore((s) => s.setRemindersEnabled);
   const setReminderTimes = useTasbihStore((s) => s.setReminderTimes);
@@ -90,6 +91,7 @@ export default function ReglagesPage() {
   ];
 
   const audioSilenceTimeoutOptions = [15, 30, 45, 60, 90, 120];
+  const audioTranscriptClearDelayOptions = [0, 2, 3, 5];
 
   const themeOptions: { value: Theme; label: string }[] = [
     { value: "light", label: t("settings.themeLight") },
@@ -334,6 +336,33 @@ export default function ReglagesPage() {
               {audioSilenceTimeoutOptions.map((seconds) => (
                 <option key={seconds} value={seconds}>
                   {t("settings.audioSilenceTimeoutOption", { seconds })}
+                </option>
+              ))}
+            </select>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">
+                {t("settings.audioTranscriptClearDelayTitle")}
+              </div>
+              <div className="text-xs text-[var(--secondary)]">
+                {t("settings.audioTranscriptClearDelayHint")}
+              </div>
+            </div>
+            <select
+              value={preferences.audioTranscriptClearDelaySec}
+              onChange={(e) => setAudioTranscriptClearDelaySec(Number(e.target.value) || 0)}
+              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+              aria-label={t("settings.ariaAudioTranscriptClearDelay")}
+            >
+              {audioTranscriptClearDelayOptions.map((seconds) => (
+                <option key={seconds} value={seconds}>
+                  {seconds === 0
+                    ? t("settings.audioTranscriptClearDelayOff")
+                    : t("settings.audioTranscriptClearDelayOption", { seconds })}
                 </option>
               ))}
             </select>

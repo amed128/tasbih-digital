@@ -45,6 +45,7 @@ export type Preferences = {
   chipTextFormat: ChipTextFormat;
   audioClearTranscriptOnSilence: boolean;
   audioStopOnSilence: boolean;
+  audioDebugTelemetry: boolean;
   language: "fr" | "en";
   confetti: boolean;
   remindersEnabled: boolean;
@@ -117,6 +118,7 @@ export type TasbihStoreState = {
   setChipTextFormat: (format: ChipTextFormat) => void;
   setAudioClearTranscriptOnSilence: (enabled: boolean) => void;
   setAudioStopOnSilence: (enabled: boolean) => void;
+  setAudioDebugTelemetry: (enabled: boolean) => void;
   setLanguage: (lang: "fr" | "en") => void;
   setRemindersEnabled: (enabled: boolean) => void;
   setReminderScheduleType: (type: ReminderScheduleType) => void;
@@ -301,6 +303,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       chipTextFormat: "transliteration",
       audioClearTranscriptOnSilence: true,
       audioStopOnSilence: true,
+      audioDebugTelemetry: false,
       language: "en",
       confetti: false,
       remindersEnabled: false,
@@ -502,6 +505,10 @@ const initialState: Partial<TasbihStoreState> = {
     audioStopOnSilence: normalizeBooleanWithDefault(
       storedState?.preferences?.audioStopOnSilence,
       true
+    ),
+    audioDebugTelemetry: normalizeBooleanWithDefault(
+      storedState?.preferences?.audioDebugTelemetry,
+      false
     ),
   } as Preferences,
 };
@@ -1178,6 +1185,21 @@ const createStore = () =>
           return newState;
         }),
 
+      setAudioDebugTelemetry: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              audioDebugTelemetry: enabled,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
       setLanguage: (lang: "fr" | "en") =>
         set((state) => {
           const newState = {
@@ -1272,6 +1294,7 @@ const createStore = () =>
               chipTextFormat: "transliteration" as ChipTextFormat,
               audioClearTranscriptOnSilence: true,
               audioStopOnSilence: true,
+              audioDebugTelemetry: false,
               language: "en" as const,
               confetti: false,
               remindersEnabled: false,

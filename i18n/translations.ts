@@ -214,6 +214,9 @@ export const translations = {
       chipTextFormatTransliteration: "Translittération",
       chipTextFormatArabic: "Arabe",
       chipTextFormatBoth: "Translittération + Arabe",
+      audioDebugTelemetryTitle: "Télémetrie debug audio",
+      audioDebugTelemetryHint:
+        "Affiche les infos techniques de reconnaissance vocale dans le panneau audio",
       vibrationTitle: "Vibration",
       vibrationIOS: "Non disponible sur iOS",
       vibrationHint: "Retour haptique si supporté",
@@ -560,6 +563,9 @@ export const translations = {
       chipTextFormatTransliteration: "Transliteration",
       chipTextFormatArabic: "Arabic",
       chipTextFormatBoth: "Transliteration + Arabic",
+      audioDebugTelemetryTitle: "Audio debug telemetry",
+      audioDebugTelemetryHint:
+        "Shows speech recognition technical details in the audio panel",
       vibrationTitle: "Vibration",
       vibrationIOS: "Not available on iOS",
       vibrationHint: "Haptic feedback if supported",

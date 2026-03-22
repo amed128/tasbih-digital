@@ -188,6 +188,7 @@ export default function Home() {
     (s) => s.preferences.audioClearTranscriptOnSilence
   );
   const audioStopOnSilence = useTasbihStore((s) => s.preferences.audioStopOnSilence);
+  const audioDebugTelemetry = useTasbihStore((s) => s.preferences.audioDebugTelemetry);
   const speechTolerance = useTasbihStore((s) => s.preferences.speechTolerance);
 
   const t = useT();
@@ -504,7 +505,7 @@ export default function Home() {
   ]);
 
   const targetDisplayText = currentZikr?.arabic || currentZikr?.transliteration || "";
-  const showSpeechDebug = process.env.NODE_ENV !== "production";
+  const showSpeechDebug = audioDebugTelemetry;
   const normalizedAudioTranscript = normalizePronouncedText(audioTranscript);
   const maxSpeechTargetWords = useMemo(
     () =>

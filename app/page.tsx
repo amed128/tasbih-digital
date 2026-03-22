@@ -123,6 +123,33 @@ function orderedTailMatchCount(spokenWords: string[], targetWords: string[]): nu
   return matched;
 }
 
+function mergeSpokenWordBuffer(existingWords: string[], newWords: string[], maxWords: number): string[] {
+  if (newWords.length === 0) return existingWords.slice(-maxWords);
+  if (existingWords.length === 0) return newWords.slice(-maxWords);
+
+  const maxOverlap = Math.min(existingWords.length, newWords.length);
+  let overlap = 0;
+
+  for (let size = maxOverlap; size >= 1; size -= 1) {
+    let matches = true;
+    for (let index = 0; index < size; index += 1) {
+      const existingWord = existingWords[existingWords.length - size + index];
+      const newWord = newWords[index];
+      if (!wordsLooselyMatch(existingWord, newWord)) {
+        matches = false;
+        break;
+      }
+    }
+
+    if (matches) {
+      overlap = size;
+      break;
+    }
+  }
+
+  return [...existingWords, ...newWords.slice(overlap)].slice(-maxWords);
+}
+
 export default function Home() {
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -467,6 +494,14 @@ export default function Home() {
   const targetDisplayText = currentZikr?.arabic || currentZikr?.transliteration || "";
   const showSpeechDebug = process.env.NODE_ENV !== "production";
   const normalizedAudioTranscript = normalizePronouncedText(audioTranscript);
+  const maxSpeechTargetWords = useMemo(
+    () =>
+      Math.max(
+        4,
+        ...normalizedSpeechTargets.map((targetText) => targetText.split(" ").filter(Boolean).length)
+      ),
+    [normalizedSpeechTargets]
+  );
 
   const speechToleranceConfig = useMemo(() => {
     if (speechTolerance === "strict") {
@@ -532,6 +567,17 @@ export default function Home() {
     setAudioLastMatchedText("");
   });
 
+  const restartSpeechRecognitionAfterMatch = useEffectEvent(() => {
+    stopSpeechRecognition();
+    if (!speechShouldRunRef.current) return;
+
+    recognitionRestartTimerRef.current = window.setTimeout(() => {
+      recognitionRestartTimerRef.current = null;
+      if (!speechShouldRunRef.current) return;
+      startSpeechRecognition();
+    }, 150);
+  });
+
   const resetAudioSilenceTimer = useEffectEvent(() => {
     if (audioSilenceTimerRef.current !== null) {
       window.clearTimeout(audioSilenceTimerRef.current);
@@ -566,10 +612,11 @@ export default function Home() {
 
     speechLastSegmentRef.current = normalizedSegment;
     resetAudioSilenceTimer();
-    const mergedWords = [
-      ...speechRecentWordsRef.current,
-      ...normalizedSegment.split(" ").filter(Boolean),
-    ].slice(-12);
+    const mergedWords = mergeSpokenWordBuffer(
+      speechRecentWordsRef.current,
+      normalizedSegment.split(" ").filter(Boolean),
+      Math.max(12, maxSpeechTargetWords * 2)
+    );
     speechRecentWordsRef.current = mergedWords;
 
     const normalizedSpoken = mergedWords.join(" ");
@@ -632,12 +679,12 @@ export default function Home() {
       setAudioMatchFlash(true);
       handleAudioIncrement();
 
-      // Clear instantly after increment so stale words cannot trigger ghost matches.
       speechRecentWordsRef.current = [];
       speechLastSegmentRef.current = "";
       setAudioTranscript("");
       setAudioMatchProgress(0);
       setAudioLastMatchedText("");
+      restartSpeechRecognitionAfterMatch();
 
       window.setTimeout(() => {
         setAudioMatchFlash(false);

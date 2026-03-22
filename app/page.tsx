@@ -1106,7 +1106,7 @@ export default function Home() {
             !supportsSpeechRecognition
               ? "cursor-not-allowed opacity-50"
               : !hasAudioSelection
-                ? "cursor-not-allowed blur-[1.5px] opacity-50"
+                ? "cursor-not-allowed blur-[0.6px] opacity-50"
                 : ""
           }`}
         >

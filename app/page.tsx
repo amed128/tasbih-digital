@@ -1562,7 +1562,7 @@ export default function Home() {
           key={zikrId}
           data-chip-index={index}
           title={zikr.transliteration}
-          className={`max-w-[140px] truncate flex-shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${bgClass} ${textClass}`}
+          className={`w-full min-w-0 truncate rounded-full px-3 py-1 text-xs font-semibold ${bgClass} ${textClass}`}
         >
           {zikr.transliteration}
         </div>
@@ -1590,7 +1590,7 @@ export default function Home() {
         </div>
 
         <div ref={chipsContainerRef} className="max-h-[104px] overflow-y-auto pr-1">
-          <div className="flex flex-wrap gap-2 pb-2 pt-2">
+          <div className="flex flex-col gap-2 pb-2 pt-2">
           {activeList.map((zikrId, index) => renderChip(zikrId, index))}
           </div>
         </div>

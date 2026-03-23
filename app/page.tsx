@@ -1757,26 +1757,25 @@ export default function Home() {
           <div className="text-sm font-semibold text-[var(--secondary)]">{listPosition}</div>
         </header>
 
-        <div className="flex items-center">
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1">
           <button
             type="button"
             onClick={handleQuitList}
-            className="text-sm font-medium text-[var(--primary)]"
+            className="min-w-0 text-sm font-medium text-[var(--primary)]"
           >
             {t("counter.quitZikr")}
           </button>
-          <div className="flex flex-1 justify-center">
-            <button
-              type="button"
-              onClick={toggleMode}
-              className={`rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)] ${
-                shouldBlurActionControls ? "blur-[0.6px] opacity-85" : ""
-              }`}
-              aria-label={t("counter.ariaChangeMode")}
-            >
-              Mode: {executionModeLabel}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={toggleMode}
+            className={`rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-center text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)] ${
+              shouldBlurActionControls ? "blur-[0.6px] opacity-85" : ""
+            }`}
+            aria-label={t("counter.ariaChangeMode")}
+          >
+            Mode: {executionModeLabel}
+          </button>
+          <div />
         </div>
 
         <div ref={chipsContainerRef} className="max-h-[104px] overflow-y-auto pr-1">

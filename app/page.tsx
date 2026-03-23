@@ -380,9 +380,19 @@ export default function Home() {
     setPulseTrigger((t) => t + 1);
   });
 
-  const handleQuitList = () => {
+  const handleQuitListRequest = () => {
+    if (!hasProgressToReset) {
+      selectList(DEFAULT_LIST_ID);
+      reset();
+      return;
+    }
+    setShowQuitConfirm(true);
+  };
+
+  const handleQuitListConfirm = () => {
     selectList(DEFAULT_LIST_ID);
     reset();
+    setShowQuitConfirm(false);
   };
 
   const triggerCompletionFeedback = useEffectEvent(() => {
@@ -478,6 +488,7 @@ export default function Home() {
       );
 
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [showQuitConfirm, setShowQuitConfirm] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const [libraryExpanded, setLibraryExpanded] = useState(true);
@@ -1760,7 +1771,7 @@ export default function Home() {
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1">
           <button
             type="button"
-            onClick={handleQuitList}
+            onClick={handleQuitListRequest}
             className="min-w-0 text-sm font-medium text-[var(--primary)]"
           >
             {t("counter.quitZikr")}
@@ -1912,6 +1923,33 @@ export default function Home() {
       >
         <div className="text-sm text-[var(--secondary)]">
           {t("counter.resetModal.body")}
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showQuitConfirm}
+        title={t("counter.quitModal.title")}
+        onClose={() => setShowQuitConfirm(false)}
+        closeOnOverlayClick={false}
+        footer={
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => setShowQuitConfirm(false)}
+              className="rounded-xl bg-[var(--card)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
+            >
+              {t("counter.quitModal.cancel")}
+            </button>
+            <button
+              onClick={handleQuitListConfirm}
+              className="rounded-xl bg-[#EF4444] px-4 py-2 text-sm font-semibold text-white"
+            >
+              {t("counter.quitModal.confirm")}
+            </button>
+          </div>
+        }
+      >
+        <div className="text-sm text-[var(--secondary)]">
+          {t("counter.quitModal.body")}
         </div>
       </Modal>
 

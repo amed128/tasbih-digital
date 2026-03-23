@@ -74,6 +74,12 @@ export const translations = {
         confirm: "Réinitialiser",
         cancel: "Annuler",
       },
+      quitModal: {
+        title: "Quitter le zikr ?",
+        body: "Cette action remettra à zéro et reviendra au compteur principal.",
+        confirm: "Quitter",
+        cancel: "Annuler",
+      },
     },
     lists: {
       libraryTitle: "Bibliothèque de zikr",
@@ -447,6 +453,12 @@ export const translations = {
         title: "Reset counter?",
         body: "This action will reset your current progress to zero.",
         confirm: "Reset",
+        cancel: "Cancel",
+      },
+      quitModal: {
+        title: "Quit zikr?",
+        body: "This action will reset and return to the main counter.",
+        confirm: "Quit",
         cancel: "Cancel",
       },
     },

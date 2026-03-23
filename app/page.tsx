@@ -18,6 +18,28 @@ type WakeLockSentinelLike = {
 
 type AudioAccessState = "idle" | "granted" | "denied" | "error" | "unsupported";
 
+/**
+ * Speech tolerance configuration for matching strictness.
+ * - allowPartial: whether partial phrase matches ("contained") are accepted
+ * - minOrderedCoverage: fraction of words that must match in order (0.5-1.0)
+ * - minOrderedWords: minimum ordered words required to count as match
+ * - enableNearMissShortcut: whether wordsLooselyMatch uses consonant skeleton
+ * - partialMinLengthRatio: minimum spoken length as fraction of target phrase
+ * - nearMissMaxLengthDiff: max character length difference for near-miss
+ * - cooldownMs: milliseconds before next increment is allowed
+ * - rearmProgress: progress threshold below which cooldown resets
+ */
+type ToleranceStrictnessConfig = {
+  allowPartial: boolean;
+  minOrderedCoverage: number;
+  minOrderedWords: number;
+  enableNearMissShortcut: boolean;
+  partialMinLengthRatio: number;
+  nearMissMaxLengthDiff: number;
+  cooldownMs: number;
+  rearmProgress: number;
+};
+
 type SpeechRecognitionAlternativeLike = {
   transcript: string;
 };
@@ -77,13 +99,16 @@ function consonantSkeleton(word: string): string {
     .replace(/(.)\1+/g, "$1");
 }
 
-function wordsLooselyMatch(spokenWord: string, targetWord: string): boolean {
+function wordsLooselyMatch(spokenWord: string, targetWord: string, enableNearMiss: boolean = true): boolean {
   const spoken = normalizeWordForLooseMatch(spokenWord);
   const target = normalizeWordForLooseMatch(targetWord);
   if (!spoken || !target) return false;
 
   if (spoken === target) return true;
   if (spoken.startsWith(target) || target.startsWith(spoken)) return true;
+
+  // Only use consonant skeleton matching if near-miss is enabled
+  if (!enableNearMiss) return false;
 
   const spokenSkeleton = consonantSkeleton(spoken);
   const targetSkeleton = consonantSkeleton(target);
@@ -106,7 +131,7 @@ function wordsLooselyMatch(spokenWord: string, targetWord: string): boolean {
   return false;
 }
 
-function orderedTailMatchCount(spokenWords: string[], targetWords: string[]): number {
+function orderedTailMatchCount(spokenWords: string[], targetWords: string[], enableNearMiss: boolean = true): number {
   if (spokenWords.length === 0 || targetWords.length === 0) return 0;
 
   const maxComparable = Math.min(spokenWords.length, targetWords.length);
@@ -116,7 +141,7 @@ function orderedTailMatchCount(spokenWords: string[], targetWords: string[]): nu
     const spoken = spokenWords[spokenWords.length - offset];
     const target = targetWords[targetWords.length - offset];
     if (!spoken || !target) break;
-    if (!wordsLooselyMatch(spoken, target)) break;
+    if (!wordsLooselyMatch(spoken, target, enableNearMiss)) break;
     matched += 1;
   }
 
@@ -190,6 +215,9 @@ export default function Home() {
   const audioStopOnSilence = useTasbihStore((s) => s.preferences.audioStopOnSilence);
   const audioDebugTelemetry = useTasbihStore((s) => s.preferences.audioDebugTelemetry);
   const speechTolerance = useTasbihStore((s) => s.preferences.speechTolerance);
+  const advancedTiming = useTasbihStore((s) => s.preferences.advancedTiming);
+  const customProfiles = useTasbihStore((s) => s.preferences.customProfiles);
+  const activeCustomProfileId = useTasbihStore((s) => s.preferences.activeCustomProfileId);
 
   const t = useT();
 
@@ -467,6 +495,13 @@ export default function Home() {
   const speechLastSegmentRef = useRef("");
   const speechShouldRunRef = useRef(false);
   const wakeLockRef = useRef<WakeLockSentinelLike | null>(null);
+  const speechDebugInfoRef = useRef<{
+    matched: boolean;
+    reason: string;
+    prefixCount: number;
+    requiredWords: number;
+    targetText: string;
+  } | null>(null);
 
   const supportsSpeechRecognition =
     typeof window !== "undefined" &&
@@ -517,34 +552,92 @@ export default function Home() {
   );
 
   const speechToleranceConfig = useMemo(() => {
+    // Phase 4: Check if custom profile is active
+    if (activeCustomProfileId && customProfiles) {
+      const customProfile = customProfiles.find((p) => p.id === activeCustomProfileId);
+      if (customProfile) {
+        const baseConfig = {
+          allowPartial: customProfile.allowPartial,
+          minOrderedCoverage: customProfile.minOrderedCoverage,
+          minOrderedWords: customProfile.minOrderedWords,
+          enableNearMissShortcut: customProfile.enableNearMissShortcut,
+          partialMinLengthRatio: customProfile.partialMinLengthRatio,
+          nearMissMaxLengthDiff: customProfile.nearMissMaxLengthDiff,
+          cooldownMs: customProfile.cooldownMs,
+          rearmProgress: customProfile.rearmProgress,
+        } as ToleranceStrictnessConfig;
+
+        // Apply Phase 2 advanced timing overrides if enabled
+        if (advancedTiming?.enabled) {
+          if (advancedTiming.cooldownMs !== undefined) {
+            baseConfig.cooldownMs = advancedTiming.cooldownMs;
+          }
+          if (advancedTiming.rearmProgress !== undefined) {
+            baseConfig.rearmProgress = advancedTiming.rearmProgress;
+          }
+        }
+
+        return baseConfig;
+      }
+    }
+
+    // Otherwise use profile-based config
+    let baseConfig: ToleranceStrictnessConfig;
+
     if (speechTolerance === "strict") {
-      return {
-        requiredWordRatio: 0.8,
+      baseConfig = {
+        // Matching strictness rules
+        allowPartial: false,
+        minOrderedCoverage: 1.0, // Require 100% of words
+        minOrderedWords: 1,
+        enableNearMissShortcut: false, // Disable consonant skeleton
+        partialMinLengthRatio: 0.72,
+        nearMissMaxLengthDiff: 0,
+        // Timing controls
         cooldownMs: 1200,
         rearmProgress: 0.18,
-        allowContainedPartial: true,
-        containedMinLengthRatio: 0.72,
       };
-    }
-
-    if (speechTolerance === "tolerant") {
-      return {
-        requiredWordRatio: 0.5,
+    } else if (speechTolerance === "tolerant") {
+      baseConfig = {
+        // Matching strictness rules
+        allowPartial: true,
+        minOrderedCoverage: 0.5, // Require 50% of words
+        minOrderedWords: 1,
+        enableNearMissShortcut: true, // Enable consonant skeleton
+        partialMinLengthRatio: 0.5,
+        nearMissMaxLengthDiff: 1,
+        // Timing controls
         cooldownMs: 600,
         rearmProgress: 0.35,
-        allowContainedPartial: true,
-        containedMinLengthRatio: 0.5,
+      };
+    } else {
+      // balanced (default)
+      baseConfig = {
+        // Matching strictness rules
+        allowPartial: true,
+        minOrderedCoverage: 0.75, // Require 75% of words
+        minOrderedWords: 2,
+        enableNearMissShortcut: true, // Enable consonant skeleton
+        partialMinLengthRatio: 0.65,
+        nearMissMaxLengthDiff: 1,
+        // Timing controls
+        cooldownMs: 800,
+        rearmProgress: 0.28,
       };
     }
 
-    return {
-      requiredWordRatio: 0.65,
-      cooldownMs: 800,
-      rearmProgress: 0.28,
-      allowContainedPartial: true,
-      containedMinLengthRatio: 0.62,
-    };
-  }, [speechTolerance]);
+    // Phase 2: Apply advanced timing overrides if enabled
+    if (advancedTiming?.enabled) {
+      if (advancedTiming.cooldownMs !== undefined) {
+        baseConfig.cooldownMs = advancedTiming.cooldownMs;
+      }
+      if (advancedTiming.rearmProgress !== undefined) {
+        baseConfig.rearmProgress = advancedTiming.rearmProgress;
+      }
+    }
+
+    return baseConfig as ToleranceStrictnessConfig;
+  }, [speechTolerance, advancedTiming, activeCustomProfileId, customProfiles]);
 
   useEffect(() => () => {
     if (audioCtxRef.current && audioCtxRef.current.state !== "closed") {
@@ -665,42 +758,76 @@ export default function Home() {
     let bestPrefixCount = 0;
     let bestTargetLength = 1;
     let fullMatch = false;
+    let debugMatchTarget = "";
+    let debugMatchReason = "";
+    let debugPrefixCount = 0;
+    let debugRequiredWords = 0;
 
     for (const targetText of normalizedSpeechTargets) {
       const targetWords = targetText.split(" ").filter(Boolean);
       if (targetWords.length === 0) continue;
 
-      const prefixCount = orderedTailMatchCount(spokenWords, targetWords);
+      const prefixCount = orderedTailMatchCount(
+        spokenWords,
+        targetWords,
+        speechToleranceConfig.enableNearMissShortcut
+      );
       if (prefixCount > bestPrefixCount) {
         bestPrefixCount = prefixCount;
         bestTargetLength = targetWords.length;
       }
 
+      // Calculate minimum ordered words required based on tolerance profile
       const requiredMatchedWords = Math.max(
-        targetWords.length === 1 ? 1 : 2,
-        Math.ceil(targetWords.length * speechToleranceConfig.requiredWordRatio)
+        speechToleranceConfig.minOrderedWords,
+        Math.ceil(targetWords.length * speechToleranceConfig.minOrderedCoverage)
       );
 
       const spokenWordCount = spokenWords.length;
-      const hasContainedPartial =
-        speechToleranceConfig.allowContainedPartial &&
+      const hasPartialMatch =
+        speechToleranceConfig.allowPartial &&
         targetText.includes(normalizedSpoken) &&
         spokenWordCount >= Math.max(1, requiredMatchedWords - 1) &&
         normalizedSpoken.length >=
-          Math.floor(targetText.length * speechToleranceConfig.containedMinLengthRatio);
+          Math.floor(targetText.length * speechToleranceConfig.partialMinLengthRatio);
 
       const hasFullOrderedMatch = prefixCount >= targetWords.length;
 
       if (targetWords.length > 1) {
         if (hasFullOrderedMatch) {
           fullMatch = true;
+          debugMatchTarget = targetText;
+          debugMatchReason = "full-ordered-multi-word";
+          debugPrefixCount = prefixCount;
+          debugRequiredWords = targetWords.length;
         }
         continue;
       }
 
-      if (prefixCount >= requiredMatchedWords || hasFullOrderedMatch || hasContainedPartial) {
+      if (prefixCount >= requiredMatchedWords || hasFullOrderedMatch || hasPartialMatch) {
         fullMatch = true;
+        debugMatchTarget = targetText;
+        if (hasFullOrderedMatch) {
+          debugMatchReason = "full-ordered";
+        } else if (prefixCount >= requiredMatchedWords) {
+          debugMatchReason = "ordered-coverage";
+        } else {
+          debugMatchReason = "partial-phrase";
+        }
+        debugPrefixCount = prefixCount;
+        debugRequiredWords = requiredMatchedWords;
       }
+    }
+
+    // Phase 3: Update debug info for display
+    if (audioDebugTelemetry) {
+      speechDebugInfoRef.current = {
+        matched: fullMatch,
+        reason: debugMatchReason || "no-match",
+        prefixCount: debugPrefixCount,
+        requiredWords: debugRequiredWords,
+        targetText: debugMatchTarget || normalizedSpeechTargets[0] || "",
+      };
     }
 
     const progress = Math.min(1, bestPrefixCount / bestTargetLength);
@@ -1178,6 +1305,25 @@ export default function Home() {
           <div>debug: heard(norm) = {normalizedAudioTranscript || "-"}</div>
           <div>debug: targets = {normalizedSpeechTargets.join(" | ") || "-"}</div>
           <div>debug: tolerance = {speechTolerance}</div>
+          {activeCustomProfileId && (
+            <div>debug: custom profile = {customProfiles?.find((p) => p.id === activeCustomProfileId)?.name}</div>
+          )}
+          {advancedTiming?.enabled && (
+            <div>
+              debug: advanced timing [cooldown={advancedTiming.cooldownMs}ms
+              rearm={advancedTiming.rearmProgress}]
+            </div>
+          )}
+          {speechDebugInfoRef.current && (
+            <>
+              <div>debug: matched = {speechDebugInfoRef.current.matched ? "YES" : "NO"}</div>
+              <div>debug: match reason = {speechDebugInfoRef.current.reason}</div>
+              <div>
+                debug: coverage = {speechDebugInfoRef.current.prefixCount}/{speechDebugInfoRef.current.requiredWords}
+              </div>
+              <div>debug: target = {speechDebugInfoRef.current.targetText.slice(0, 30)}</div>
+            </>
+          )}
         </div>
       )}
 

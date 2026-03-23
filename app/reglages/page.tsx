@@ -8,6 +8,7 @@ import type { TapSound } from "../../store/tasbihStore";
 import type { SpeechTolerance } from "../../store/tasbihStore";
 import type { SpeechRecognitionLanguage } from "../../store/tasbihStore";
 import type { ChipTextFormat } from "../../store/tasbihStore";
+import type { AdvancedTimingConfig, CustomToleranceProfile } from "../../store/tasbihStore";
 import {
   TASBIH_STORAGE_KEY,
   createBackupPayload,
@@ -62,11 +63,21 @@ export default function ReglagesPage() {
   const setReminderTimes = useTasbihStore((s) => s.setReminderTimes);
   const setOptionalSyncEnabled = useTasbihStore((s) => s.setOptionalSyncEnabled);
   const resetPreferences = useTasbihStore((s) => s.resetPreferences);
+  const setAdvancedTiming = useTasbihStore((s) => s.setAdvancedTiming);
+  const createCustomProfile = useTasbihStore((s) => s.createCustomProfile);
+  const updateCustomProfile = useTasbihStore((s) => s.updateCustomProfile);
+  const deleteCustomProfile = useTasbihStore((s) => s.deleteCustomProfile);
+  const setActiveCustomProfile = useTasbihStore((s) => s.setActiveCustomProfile);
   const t = useT();
   const [syncCode, setSyncCode] = useState("");
   const [syncMessage, setSyncMessage] = useState("");
   const [showRestoreConfirm, setShowRestoreConfirm] = useState(false);
   const [permissionResetPending, setPermissionResetPending] = useState(false);
+  const [showAdvancedTiming, setShowAdvancedTiming] = useState(false);
+  const [showCustomProfiles, setShowCustomProfiles] = useState(false);
+  const [customProfileName, setCustomProfileName] = useState("");
+  const [customProfileCooldown, setCustomProfileCooldown] = useState(800);
+  const [customProfileRearm, setCustomProfileRearm] = useState(0.28);
   const [notificationPermission, setNotificationPermission] = useState<
     NotificationPermission | "unsupported"
   >(() => {
@@ -303,6 +314,171 @@ export default function ReglagesPage() {
               ))}
             </select>
           </div>
+        </section>
+
+        {/* Phase 2: Advanced Timing Controls */}
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <button
+            type="button"
+            onClick={() => setShowAdvancedTiming(!showAdvancedTiming)}
+            className="w-full flex items-center justify-between gap-4 text-left"
+          >
+            <div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">⚙️ Advanced Timing</div>
+              <div className="text-xs text-[var(--secondary)]">Override cooldown & rearm thresholds</div>
+            </div>
+            <div className="text-lg">{showAdvancedTiming ? "▼" : "▶"}</div>
+          </button>
+          {showAdvancedTiming && (
+            <div className="mt-4 flex flex-col gap-4 border-t border-[var(--border)] pt-4">
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={preferences.advancedTiming?.enabled ?? false}
+                  onChange={(e) =>
+                    setAdvancedTiming({
+                      enabled: e.target.checked,
+                      cooldownMs: preferences.advancedTiming?.cooldownMs,
+                      rearmProgress: preferences.advancedTiming?.rearmProgress,
+                    })
+                  }
+                  className="w-5 h-5 accent-[var(--primary)]"
+                />
+                <span className="text-sm font-medium text-[var(--foreground)]">Enable Override</span>
+              </label>
+              {preferences.advancedTiming?.enabled && (
+                <>
+                  <div>
+                    <label className="text-xs font-semibold text-[var(--secondary)]">
+                      Cooldown (ms): {preferences.advancedTiming.cooldownMs ?? 800}
+                    </label>
+                    <input
+                      type="range"
+                      min={300}
+                      max={2000}
+                      step={100}
+                      value={preferences.advancedTiming.cooldownMs ?? 800}
+                      onChange={(e) =>
+                        setAdvancedTiming({
+                          enabled: true,
+                          cooldownMs: parseInt(e.target.value),
+                          rearmProgress: preferences.advancedTiming?.rearmProgress,
+                        })
+                      }
+                      className="w-full"
+                    />
+                    <div className="text-[10px] text-[var(--secondary)]">Time to wait after match</div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-[var(--secondary)]">
+                      Rearm (0.0 - 1.0): {(preferences.advancedTiming.rearmProgress ?? 0.28).toFixed(2)}
+                    </label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={1}
+                      step={0.05}
+                      value={preferences.advancedTiming.rearmProgress ?? 0.28}
+                      onChange={(e) =>
+                        setAdvancedTiming({
+                          enabled: true,
+                          cooldownMs: preferences.advancedTiming?.cooldownMs,
+                          rearmProgress: parseFloat(e.target.value),
+                        })
+                      }
+                      className="w-full"
+                    />
+                    <div className="text-[10px] text-[var(--secondary)]">Progress below which cooldown resets</div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </section>
+
+        {/* Phase 4: Custom Profiles */}
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <button
+            type="button"
+            onClick={() => setShowCustomProfiles(!showCustomProfiles)}
+            className="w-full flex items-center justify-between gap-4 text-left"
+          >
+            <div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">📋 Custom Profiles</div>
+              <div className="text-xs text-[var(--secondary)]">Create & manage tolerance profiles</div>
+            </div>
+            <div className="text-lg">{showCustomProfiles ? "▼" : "▶"}</div>
+          </button>
+          {showCustomProfiles && (
+            <div className="mt-4 flex flex-col gap-4 border-t border-[var(--border)] pt-4">
+              {preferences.customProfiles && preferences.customProfiles.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <div className="text-xs font-semibold text-[var(--secondary)]">Active Profile</div>
+                  <select
+                    value={preferences.activeCustomProfileId ?? ""}
+                    onChange={(e) => setActiveCustomProfile(e.target.value || undefined)}
+                    className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)]"
+                  >
+                    <option value="">None (use profile)</option>
+                    {preferences.customProfiles.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <div className="flex flex-col gap-2">
+                <div className="text-xs font-semibold text-[var(--secondary)]">New Profile Name</div>
+                <input
+                  type="text"
+                  value={customProfileName}
+                  onChange={(e) => setCustomProfileName(e.target.value)}
+                  placeholder="e.g., 'Fast & Loose'"
+                  className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)]"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!customProfileName.trim()) return;
+                  createCustomProfile({
+                    name: customProfileName,
+                    allowPartial: true,
+                    minOrderedCoverage: 0.65,
+                    minOrderedWords: 1,
+                    enableNearMissShortcut: true,
+                    partialMinLengthRatio: 0.6,
+                    nearMissMaxLengthDiff: 1,
+                    cooldownMs: customProfileCooldown,
+                    rearmProgress: customProfileRearm,
+                  });
+                  setCustomProfileName("");
+                  setCustomProfileCooldown(800);
+                  setCustomProfileRearm(0.28);
+                }}
+                className="rounded-lg bg-[var(--primary)] px-3 py-2 text-sm font-semibold text-[var(--card)]"
+              >
+                Create Profile
+              </button>
+              {preferences.customProfiles && preferences.customProfiles.length > 0 && (
+                <div className="flex flex-col gap-2 border-t border-[var(--border)] pt-2">
+                  {preferences.customProfiles.map((profile) => (
+                    <div key={profile.id} className="flex items-center justify-between gap-2 text-sm">
+                      <span className="font-medium text-[var(--foreground)]">{profile.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => deleteCustomProfile(profile.id)}
+                        className="text-xs px-2 py-1 rounded bg-red-500 text-white hover:bg-red-600"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </section>
 
         <section className="rounded-2xl bg-[var(--card)] p-4">

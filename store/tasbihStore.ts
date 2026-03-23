@@ -53,6 +53,11 @@ export type Preferences = {
   reminderTimes: ReminderTime[];
   reminderDays: number[];
   optionalSyncEnabled: boolean;
+  // Phase 2: Advanced timing mode (override cooldown/rearm for current profile)
+  advancedTiming?: AdvancedTimingConfig;
+  // Phase 4: Custom profiles (user-defined tolerance profiles)
+  customProfiles?: CustomToleranceProfile[];
+  activeCustomProfileId?: string;
 };
 
 export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
@@ -62,6 +67,32 @@ export type ChipTextFormat = "transliteration" | "arabic" | "both";
 export type Theme = "light" | "dark" | "blue";
 export type ReminderTime = { hour: number; minute: number };
 export type ReminderScheduleType = "daily" | "weekly";
+
+/**
+ * Advanced timing overrides for speech tolerance.
+ * Allows customizing cooldown and rearm behavior while keeping matching strictness from profile.
+ */
+export type AdvancedTimingConfig = {
+  enabled: boolean;
+  cooldownMs?: number;
+  rearmProgress?: number;
+};
+
+/**
+ * Custom tolerance profile with all matching and timing rules.
+ */
+export type CustomToleranceProfile = {
+  id: string;
+  name: string;
+  allowPartial: boolean;
+  minOrderedCoverage: number;
+  minOrderedWords: number;
+  enableNearMissShortcut: boolean;
+  partialMinLengthRatio: number;
+  nearMissMaxLengthDiff: number;
+  cooldownMs: number;
+  rearmProgress: number;
+};
 
 export type TasbihStoreState = {
   // Current selected zikr
@@ -126,6 +157,13 @@ export type TasbihStoreState = {
   setReminderDays: (days: number[]) => void;
   setOptionalSyncEnabled: (enabled: boolean) => void;
   resetPreferences: () => void;
+  // Phase 2: Advanced timing controls
+  setAdvancedTiming: (config: AdvancedTimingConfig) => void;
+  // Phase 4: Custom profile management
+  createCustomProfile: (profile: Omit<CustomToleranceProfile, "id">) => void;
+  updateCustomProfile: (id: string, profile: Omit<CustomToleranceProfile, "id">) => void;
+  deleteCustomProfile: (id: string) => void;
+  setActiveCustomProfile: (id: string | undefined) => void;
   createList: (listName: string) => void;
   deleteList: (listId: string) => void;
   renameList: (oldId: string, newId: string) => void;
@@ -311,6 +349,9 @@ function getInitialState(): Partial<TasbihStoreState> {
       reminderTimes: [] as ReminderTime[],
       reminderDays: [] as number[],
       optionalSyncEnabled: false,
+      advancedTiming: { enabled: false },
+      customProfiles: [],
+      activeCustomProfileId: undefined,
     },
   };
 }
@@ -1302,6 +1343,93 @@ const createStore = () =>
               reminderTimes: [] as ReminderTime[],
               reminderDays: [] as number[],
               optionalSyncEnabled: false,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      setAdvancedTiming: (config: AdvancedTimingConfig) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              advancedTiming: config,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      createCustomProfile: (profile: Omit<CustomToleranceProfile, "id">) =>
+        set((state) => {
+          const id = `custom-${Date.now()}`;
+          const customProfile: CustomToleranceProfile = { ...profile, id };
+          const customProfiles = [...(state.preferences.customProfiles ?? []), customProfile];
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              customProfiles,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      updateCustomProfile: (id: string, profile: Omit<CustomToleranceProfile, "id">) =>
+        set((state) => {
+          const customProfiles = (state.preferences.customProfiles ?? []).map((p) =>
+            p.id === id ? { ...profile, id } : p
+          );
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              customProfiles,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      deleteCustomProfile: (id: string) =>
+        set((state) => {
+          const customProfiles = (state.preferences.customProfiles ?? []).filter((p) => p.id !== id);
+          const activeCustomProfileId =
+            state.preferences.activeCustomProfileId === id
+              ? undefined
+              : state.preferences.activeCustomProfileId;
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              customProfiles,
+              activeCustomProfileId,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      setActiveCustomProfile: (id: string | undefined) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              activeCustomProfileId: id,
             },
           };
           persistState({

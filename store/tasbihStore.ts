@@ -695,9 +695,11 @@ const createStore = () =>
           const direction = isDownMode(state.mode) ? 1 : -1;
           const next = state.counter + direction;
           const bounded = Math.max(0, Math.min(target, next));
+          const initial = initialCounterForMode(state.mode, target);
           const newTotal = Math.max(0, state.stats.totalZikr - 1);
           const newState = {
             counter: bounded,
+            isStarted: bounded !== initial,
             stats: {
               ...state.stats,
               totalZikr: newTotal,

@@ -1757,17 +1757,26 @@ export default function Home() {
           <div className="text-sm font-semibold text-[var(--secondary)]">{listPosition}</div>
         </header>
 
-        <div className="flex justify-center">
+        <div className="flex items-center">
           <button
             type="button"
-            onClick={toggleMode}
-            className={`rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)] ${
-              shouldBlurActionControls ? "blur-[0.6px] opacity-85" : ""
-            }`}
-            aria-label={t("counter.ariaChangeMode")}
+            onClick={handleQuitList}
+            className="text-sm font-medium text-[var(--primary)]"
           >
-            Mode: {executionModeLabel}
+            {t("counter.quitZikr")}
           </button>
+          <div className="flex flex-1 justify-center">
+            <button
+              type="button"
+              onClick={toggleMode}
+              className={`rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)] ${
+                shouldBlurActionControls ? "blur-[0.6px] opacity-85" : ""
+              }`}
+              aria-label={t("counter.ariaChangeMode")}
+            >
+              Mode: {executionModeLabel}
+            </button>
+          </div>
         </div>
 
         <div ref={chipsContainerRef} className="max-h-[104px] overflow-y-auto pr-1">
@@ -1856,12 +1865,7 @@ export default function Home() {
             </button>
           </div>
 
-          <button
-            onClick={handleQuitList}
-            className="mt-4 mb-4 self-center rounded-lg px-4 py-1.5 text-center text-sm font-semibold text-[var(--secondary)] underline"
-          >
-            {t("counter.backToSimple")}
-          </button>
+
         </motion.div>
 
         {isListComplete && (

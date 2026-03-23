@@ -66,7 +66,7 @@ export const translations = {
       ariaUndo: "Annuler la dernière action",
       undo: "↩ Annuler",
       reset: "Réinitialiser",
-      backToSimple: "↩ Retour au compteur simple",
+      quitZikr: "← Quitter le zikr",
       listComplete: "✓ Liste complète !",
       resetModal: {
         title: "Réinitialiser le compteur ?",
@@ -432,7 +432,7 @@ export const translations = {
       ariaUndo: "Undo last action",
       undo: "↩ Undo",
       reset: "Reset",
-      backToSimple: "↩ Back to simple counter",
+      quitZikr: "← Quit zikr",
       listComplete: "✓ List complete!",
       resetModal: {
         title: "Reset counter?",

@@ -3,7 +3,7 @@
 import { useState, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { useTasbihStore } from "../../store/tasbihStore";
-import type { Theme, ReminderTime, IconTheme } from "../../store/tasbihStore";
+import type { Theme, ReminderTime } from "../../store/tasbihStore";
 import type { TapSound } from "../../store/tasbihStore";
 import {
   TASBIH_STORAGE_KEY,
@@ -36,11 +36,7 @@ export default function ReglagesPage() {
   const isIOS =
     typeof navigator !== "undefined" &&
     /iPad|iPhone|iPod/.test(navigator.userAgent);
-  const setTheme = useTasbihStore((s) => s.setTheme);
-  const setIconTheme = useTasbihStore((s) => s.setIconTheme);
   const toggleVibration = useTasbihStore((s) => s.toggleVibration);
-  const setWakeLockEnabled = useTasbihStore((s) => s.setWakeLockEnabled);
-  const toggleConfetti = useTasbihStore((s) => s.toggleConfetti);
   const setTapSound = useTasbihStore((s) => s.setTapSound);
   const setLanguage = useTasbihStore((s) => s.setLanguage);
   const setRemindersEnabled = useTasbihStore((s) => s.setRemindersEnabled);
@@ -68,19 +64,6 @@ export default function ReglagesPage() {
     { value: "haptic-pulse", label: t("settings.soundPulse") },
   ];
 
-  const themeOptions: { value: Theme; label: string }[] = [
-    { value: "light", label: t("settings.themeLight") },
-    { value: "dark", label: t("settings.themeDark") },
-    { value: "blue", label: t("settings.themeBlue") },
-  ];
-
-  const iconThemeOptions: { value: IconTheme; label: string }[] = [
-    { value: "auto", label: t("settings.iconThemeAuto") },
-    { value: "dark", label: t("settings.iconThemeDark") },
-    { value: "blue", label: t("settings.iconThemeBlue") },
-    { value: "light", label: t("settings.iconThemeLight") },
-  ];
-
   const wakeLockToggleDisabled = wakeLockAvail.status !== "available";
 
   const applyThemeToDom = (theme: Theme) => {
@@ -93,11 +76,6 @@ export default function ReglagesPage() {
         theme === "light" ? "#F3F5F8" : theme === "dark" ? "#0A0A0A" : "#0B1118";
       themeMeta.setAttribute("content", metaColor);
     }
-  };
-
-  const handleThemeChange = (theme: Theme) => {
-    setTheme(theme);
-    applyThemeToDom(theme);
   };
 
   const requestNotificationPermission = async () => {
@@ -207,47 +185,20 @@ export default function ReglagesPage() {
           <p className="text-sm text-[var(--secondary)]">{t("settings.subtitle")}</p>
         </header>
 
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.themeTitle")}</div>
-              <div className="text-xs text-[var(--secondary)]">{t("settings.themeHint")}</div>
+        <Link
+          href="/reglages/apparence"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
+        >
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">
+              {t("settings.appearanceTitle")}
             </div>
-            <select
-              value={preferences.theme}
-              onChange={(e) => handleThemeChange(e.target.value as Theme)}
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
-              aria-label={t("settings.ariaTheme")}
-            >
-              {themeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </section>
-
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.iconThemeTitle")}</div>
-              <div className="text-xs text-[var(--secondary)]">{t("settings.iconThemeHint")}</div>
+            <div className="text-xs text-[var(--secondary)]">
+              {t("settings.appearanceHint")}
             </div>
-            <select
-              value={preferences.iconTheme ?? "auto"}
-              onChange={(e) => setIconTheme(e.target.value as IconTheme)}
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
-              aria-label={t("settings.ariaIconTheme")}
-            >
-              {iconThemeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
           </div>
-        </section>
+          <span className="text-base text-[var(--secondary)]">›</span>
+        </Link>
 
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="flex items-center justify-between gap-4">
@@ -327,25 +278,6 @@ export default function ReglagesPage() {
               } ${wakeLockToggleDisabled ? "cursor-not-allowed opacity-50" : ""}`}
             >
               {preferences.wakeLockEnabled ? t("settings.on") : t("settings.off")}
-            </button>
-          </div>
-        </section>
-
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.confettiTitle")}</div>
-              <div className="text-xs text-[var(--secondary)]">{t("settings.confettiHint")}</div>
-            </div>
-            <button
-              onClick={toggleConfetti}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                preferences.confetti
-                  ? "bg-[var(--primary)] text-black"
-                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-              }`}
-            >
-              {preferences.confetti ? t("settings.on") : t("settings.off")}
             </button>
           </div>
         </section>

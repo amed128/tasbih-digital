@@ -1696,7 +1696,7 @@ export default function Home() {
               onClick={undoLast}
               aria-label={t("counter.ariaUndo")}
               className={`flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
-                shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : ""
+                shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : !isStarted ? "opacity-40 blur-[0.5px]" : ""
               }`}
             >
               {t("counter.undo")}
@@ -1705,7 +1705,7 @@ export default function Home() {
           <button
             onClick={handleResetRequest}
             className={`${!focusMode && !isAutoMode ? "flex-1" : "w-full"} rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
-              shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : ""
+              shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : !isStarted ? "opacity-40 blur-[0.5px]" : ""
             }`}
           >
             {t("counter.reset")}
@@ -1848,7 +1848,7 @@ export default function Home() {
                 onClick={undoLast}
                 aria-label={t("counter.ariaUndo")}
                 className={`flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
-                  shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : ""
+                  shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : !isStarted ? "opacity-40 blur-[0.5px]" : ""
                 }`}
               >
                 {t("counter.undo")}
@@ -1857,7 +1857,7 @@ export default function Home() {
             <button
               onClick={handleResetRequest}
               className={`${!isAutoMode ? "flex-1" : "w-full"} rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
-                shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : ""
+                shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : !isStarted ? "opacity-40 blur-[0.5px]" : ""
               }`}
             >
               {t("counter.reset")}

@@ -5,10 +5,6 @@ import { motion } from "framer-motion";
 import { useTasbihStore } from "../../store/tasbihStore";
 import type { Theme, ReminderTime } from "../../store/tasbihStore";
 import type { TapSound } from "../../store/tasbihStore";
-import type { SpeechTolerance } from "../../store/tasbihStore";
-import type { SpeechRecognitionLanguage } from "../../store/tasbihStore";
-import type { ChipTextFormat } from "../../store/tasbihStore";
-import type { AdvancedTimingConfig, CustomToleranceProfile } from "../../store/tasbihStore";
 import {
   TASBIH_STORAGE_KEY,
   createBackupPayload,
@@ -45,39 +41,16 @@ export default function ReglagesPage() {
   const setWakeLockEnabled = useTasbihStore((s) => s.setWakeLockEnabled);
   const toggleConfetti = useTasbihStore((s) => s.toggleConfetti);
   const setTapSound = useTasbihStore((s) => s.setTapSound);
-  const setSpeechTolerance = useTasbihStore((s) => s.setSpeechTolerance);
-  const setSpeechRecognitionLanguage = useTasbihStore((s) => s.setSpeechRecognitionLanguage);
-  const setAudioSilenceTimeoutSec = useTasbihStore((s) => s.setAudioSilenceTimeoutSec);
-  const setAudioTranscriptClearDelaySec = useTasbihStore((s) => s.setAudioTranscriptClearDelaySec);
-  const setBlurActionControlsWhileListening = useTasbihStore(
-    (s) => s.setBlurActionControlsWhileListening
-  );
-  const setChipTextFormat = useTasbihStore((s) => s.setChipTextFormat);
-  const setAudioClearTranscriptOnSilence = useTasbihStore(
-    (s) => s.setAudioClearTranscriptOnSilence
-  );
-  const setAudioStopOnSilence = useTasbihStore((s) => s.setAudioStopOnSilence);
-  const setAudioDebugTelemetry = useTasbihStore((s) => s.setAudioDebugTelemetry);
   const setLanguage = useTasbihStore((s) => s.setLanguage);
   const setRemindersEnabled = useTasbihStore((s) => s.setRemindersEnabled);
   const setReminderTimes = useTasbihStore((s) => s.setReminderTimes);
   const setOptionalSyncEnabled = useTasbihStore((s) => s.setOptionalSyncEnabled);
   const resetPreferences = useTasbihStore((s) => s.resetPreferences);
-  const setAdvancedTiming = useTasbihStore((s) => s.setAdvancedTiming);
-  const createCustomProfile = useTasbihStore((s) => s.createCustomProfile);
-  const updateCustomProfile = useTasbihStore((s) => s.updateCustomProfile);
-  const deleteCustomProfile = useTasbihStore((s) => s.deleteCustomProfile);
-  const setActiveCustomProfile = useTasbihStore((s) => s.setActiveCustomProfile);
   const t = useT();
   const [syncCode, setSyncCode] = useState("");
   const [syncMessage, setSyncMessage] = useState("");
   const [showRestoreConfirm, setShowRestoreConfirm] = useState(false);
   const [permissionResetPending, setPermissionResetPending] = useState(false);
-  const [showAdvancedTiming, setShowAdvancedTiming] = useState(false);
-  const [showCustomProfiles, setShowCustomProfiles] = useState(false);
-  const [customProfileName, setCustomProfileName] = useState("");
-  const [customProfileCooldown, setCustomProfileCooldown] = useState(800);
-  const [customProfileRearm, setCustomProfileRearm] = useState(0.28);
   const [notificationPermission, setNotificationPermission] = useState<
     NotificationPermission | "unsupported"
   >(() => {
@@ -92,31 +65,6 @@ export default function ReglagesPage() {
     { value: "tap-soft", label: t("settings.soundSoft") },
     { value: "button-click", label: t("settings.soundClick") },
     { value: "haptic-pulse", label: t("settings.soundPulse") },
-  ];
-
-  const speechToleranceOptions: { value: SpeechTolerance; label: string }[] = [
-    { value: "strict", label: t("settings.speechToleranceStrict") },
-    { value: "balanced", label: t("settings.speechToleranceBalanced") },
-    { value: "tolerant", label: t("settings.speechToleranceTolerant") },
-  ];
-
-  const speechRecognitionLanguageOptions: {
-    value: SpeechRecognitionLanguage;
-    label: string;
-  }[] = [
-    { value: "ar-SA", label: t("settings.speechRecognitionLanguageArSa") },
-    { value: "ar-EG", label: t("settings.speechRecognitionLanguageArEg") },
-    { value: "ar-MA", label: t("settings.speechRecognitionLanguageArMa") },
-    { value: "fr-FR", label: t("settings.speechRecognitionLanguageFrFr") },
-    { value: "en-US", label: t("settings.speechRecognitionLanguageEnUs") },
-  ];
-
-  const audioSilenceTimeoutOptions = [15, 30, 45, 60, 90, 120];
-  const audioTranscriptClearDelayOptions = [0, 2, 3, 5];
-  const chipTextFormatOptions: { value: ChipTextFormat; label: string }[] = [
-    { value: "transliteration", label: t("settings.chipTextFormatTransliteration") },
-    { value: "arabic", label: t("settings.chipTextFormatArabic") },
-    { value: "both", label: t("settings.chipTextFormatBoth") },
   ];
 
   const themeOptions: { value: Theme; label: string }[] = [
@@ -295,397 +243,20 @@ export default function ReglagesPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.speechToleranceTitle")}</div>
-              <div className="text-xs text-[var(--secondary)]">{t("settings.speechToleranceHint")}</div>
+        <Link
+          href="/reglages/audio"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
+        >
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">
+              {t("settings.audioCounterSettingsTitle")}
             </div>
-            <select
-              value={preferences.speechTolerance}
-              onChange={(e) => setSpeechTolerance(e.target.value as SpeechTolerance)}
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
-              aria-label={t("settings.ariaSpeechTolerance")}
-            >
-              {speechToleranceOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <div className="text-xs text-[var(--secondary)]">
+              {t("settings.audioCounterSettingsHint")}
+            </div>
           </div>
-        </section>
-
-        {/* Phase 2: Advanced Timing Controls */}
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <button
-            type="button"
-            onClick={() => setShowAdvancedTiming(!showAdvancedTiming)}
-            className="w-full flex items-center justify-between gap-4 text-left"
-          >
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">⚙️ Advanced Timing</div>
-              <div className="text-xs text-[var(--secondary)]">Override cooldown & rearm thresholds</div>
-            </div>
-            <div className="text-lg">{showAdvancedTiming ? "▼" : "▶"}</div>
-          </button>
-          {showAdvancedTiming && (
-            <div className="mt-4 flex flex-col gap-4 border-t border-[var(--border)] pt-4">
-              <label className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={preferences.advancedTiming?.enabled ?? false}
-                  onChange={(e) =>
-                    setAdvancedTiming({
-                      enabled: e.target.checked,
-                      cooldownMs: preferences.advancedTiming?.cooldownMs,
-                      rearmProgress: preferences.advancedTiming?.rearmProgress,
-                    })
-                  }
-                  className="w-5 h-5 accent-[var(--primary)]"
-                />
-                <span className="text-sm font-medium text-[var(--foreground)]">Enable Override</span>
-              </label>
-              {preferences.advancedTiming?.enabled && (
-                <>
-                  <div>
-                    <label className="text-xs font-semibold text-[var(--secondary)]">
-                      Cooldown (ms): {preferences.advancedTiming.cooldownMs ?? 800}
-                    </label>
-                    <input
-                      type="range"
-                      min={300}
-                      max={2000}
-                      step={100}
-                      value={preferences.advancedTiming.cooldownMs ?? 800}
-                      onChange={(e) =>
-                        setAdvancedTiming({
-                          enabled: true,
-                          cooldownMs: parseInt(e.target.value),
-                          rearmProgress: preferences.advancedTiming?.rearmProgress,
-                        })
-                      }
-                      className="w-full"
-                    />
-                    <div className="text-[10px] text-[var(--secondary)]">Time to wait after match</div>
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold text-[var(--secondary)]">
-                      Rearm (0.0 - 1.0): {(preferences.advancedTiming.rearmProgress ?? 0.28).toFixed(2)}
-                    </label>
-                    <input
-                      type="range"
-                      min={0}
-                      max={1}
-                      step={0.05}
-                      value={preferences.advancedTiming.rearmProgress ?? 0.28}
-                      onChange={(e) =>
-                        setAdvancedTiming({
-                          enabled: true,
-                          cooldownMs: preferences.advancedTiming?.cooldownMs,
-                          rearmProgress: parseFloat(e.target.value),
-                        })
-                      }
-                      className="w-full"
-                    />
-                    <div className="text-[10px] text-[var(--secondary)]">Progress below which cooldown resets</div>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-        </section>
-
-        {/* Phase 4: Custom Profiles */}
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <button
-            type="button"
-            onClick={() => setShowCustomProfiles(!showCustomProfiles)}
-            className="w-full flex items-center justify-between gap-4 text-left"
-          >
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">📋 Custom Profiles</div>
-              <div className="text-xs text-[var(--secondary)]">Create & manage tolerance profiles</div>
-            </div>
-            <div className="text-lg">{showCustomProfiles ? "▼" : "▶"}</div>
-          </button>
-          {showCustomProfiles && (
-            <div className="mt-4 flex flex-col gap-4 border-t border-[var(--border)] pt-4">
-              {preferences.customProfiles && preferences.customProfiles.length > 0 && (
-                <div className="flex flex-col gap-2">
-                  <div className="text-xs font-semibold text-[var(--secondary)]">Active Profile</div>
-                  <select
-                    value={preferences.activeCustomProfileId ?? ""}
-                    onChange={(e) => setActiveCustomProfile(e.target.value || undefined)}
-                    className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)]"
-                  >
-                    <option value="">None (use profile)</option>
-                    {preferences.customProfiles.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-              <div className="flex flex-col gap-2">
-                <div className="text-xs font-semibold text-[var(--secondary)]">New Profile Name</div>
-                <input
-                  type="text"
-                  value={customProfileName}
-                  onChange={(e) => setCustomProfileName(e.target.value)}
-                  placeholder="e.g., 'Fast & Loose'"
-                  className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)]"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  if (!customProfileName.trim()) return;
-                  createCustomProfile({
-                    name: customProfileName,
-                    allowPartial: true,
-                    minOrderedCoverage: 0.65,
-                    minOrderedWords: 1,
-                    enableNearMissShortcut: true,
-                    partialMinLengthRatio: 0.6,
-                    nearMissMaxLengthDiff: 1,
-                    cooldownMs: customProfileCooldown,
-                    rearmProgress: customProfileRearm,
-                  });
-                  setCustomProfileName("");
-                  setCustomProfileCooldown(800);
-                  setCustomProfileRearm(0.28);
-                }}
-                className="rounded-lg bg-[var(--primary)] px-3 py-2 text-sm font-semibold text-[var(--card)]"
-              >
-                Create Profile
-              </button>
-              {preferences.customProfiles && preferences.customProfiles.length > 0 && (
-                <div className="flex flex-col gap-2 border-t border-[var(--border)] pt-2">
-                  {preferences.customProfiles.map((profile) => (
-                    <div key={profile.id} className="flex items-center justify-between gap-2 text-sm">
-                      <span className="font-medium text-[var(--foreground)]">{profile.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => deleteCustomProfile(profile.id)}
-                        className="text-xs px-2 py-1 rounded bg-red-500 text-white hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </section>
-
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">
-                {t("settings.speechRecognitionLanguageTitle")}
-              </div>
-              <div className="text-xs text-[var(--secondary)]">
-                {t("settings.speechRecognitionLanguageHint")}
-              </div>
-            </div>
-            <select
-              value={preferences.speechRecognitionLanguage}
-              onChange={(e) =>
-                setSpeechRecognitionLanguage(e.target.value as SpeechRecognitionLanguage)
-              }
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
-              aria-label={t("settings.ariaSpeechRecognitionLanguage")}
-            >
-              {speechRecognitionLanguageOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </section>
-
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">
-                {t("settings.audioSilenceTimeoutTitle")}
-              </div>
-              <div className="text-xs text-[var(--secondary)]">
-                {t("settings.audioSilenceTimeoutHint")}
-              </div>
-            </div>
-            <select
-              value={preferences.audioSilenceTimeoutSec}
-              onChange={(e) => setAudioSilenceTimeoutSec(Number(e.target.value) || 15)}
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
-              aria-label={t("settings.ariaAudioSilenceTimeout")}
-            >
-              {audioSilenceTimeoutOptions.map((seconds) => (
-                <option key={seconds} value={seconds}>
-                  {t("settings.audioSilenceTimeoutOption", { seconds })}
-                </option>
-              ))}
-            </select>
-          </div>
-        </section>
-
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">
-                {t("settings.audioClearTranscriptOnSilenceTitle")}
-              </div>
-              <div className="text-xs text-[var(--secondary)]">
-                {t("settings.audioClearTranscriptOnSilenceHint")}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() =>
-                setAudioClearTranscriptOnSilence(!preferences.audioClearTranscriptOnSilence)
-              }
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                preferences.audioClearTranscriptOnSilence
-                  ? "bg-[var(--primary)] text-black"
-                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-              }`}
-            >
-              {preferences.audioClearTranscriptOnSilence ? t("settings.on") : t("settings.off")}
-            </button>
-          </div>
-        </section>
-
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">
-                {t("settings.audioStopOnSilenceTitle")}
-              </div>
-              <div className="text-xs text-[var(--secondary)]">
-                {t("settings.audioStopOnSilenceHint")}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setAudioStopOnSilence(!preferences.audioStopOnSilence)}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                preferences.audioStopOnSilence
-                  ? "bg-[var(--primary)] text-black"
-                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-              }`}
-            >
-              {preferences.audioStopOnSilence ? t("settings.on") : t("settings.off")}
-            </button>
-          </div>
-        </section>
-
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">
-                {t("settings.audioTranscriptClearDelayTitle")}
-              </div>
-              <div className="text-xs text-[var(--secondary)]">
-                {t("settings.audioTranscriptClearDelayHint")}
-              </div>
-            </div>
-            <select
-              value={preferences.audioTranscriptClearDelaySec}
-              onChange={(e) => setAudioTranscriptClearDelaySec(Number(e.target.value) || 0)}
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
-              aria-label={t("settings.ariaAudioTranscriptClearDelay")}
-            >
-              {audioTranscriptClearDelayOptions.map((seconds) => (
-                <option key={seconds} value={seconds}>
-                  {seconds === 0
-                    ? t("settings.audioTranscriptClearDelayOff")
-                    : t("settings.audioTranscriptClearDelayOption", { seconds })}
-                </option>
-              ))}
-            </select>
-          </div>
-        </section>
-
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">
-                {t("settings.blurActionControlsWhileListeningTitle")}
-              </div>
-              <div className="text-xs text-[var(--secondary)]">
-                {t("settings.blurActionControlsWhileListeningHint")}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() =>
-                setBlurActionControlsWhileListening(
-                  !preferences.blurActionControlsWhileListening
-                )
-              }
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                preferences.blurActionControlsWhileListening
-                  ? "bg-[var(--primary)] text-black"
-                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-              }`}
-            >
-              {preferences.blurActionControlsWhileListening ? t("settings.on") : t("settings.off")}
-            </button>
-          </div>
-        </section>
-
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">
-                {t("settings.chipTextFormatTitle")}
-              </div>
-              <div className="text-xs text-[var(--secondary)]">
-                {t("settings.chipTextFormatHint")}
-              </div>
-            </div>
-            <select
-              value={preferences.chipTextFormat}
-              onChange={(e) => setChipTextFormat(e.target.value as ChipTextFormat)}
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
-              aria-label={t("settings.ariaChipTextFormat")}
-            >
-              {chipTextFormatOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </section>
-
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">
-                {t("settings.audioDebugTelemetryTitle")}
-              </div>
-              <div className="text-xs text-[var(--secondary)]">
-                {t("settings.audioDebugTelemetryHint")}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setAudioDebugTelemetry(!preferences.audioDebugTelemetry)}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                preferences.audioDebugTelemetry
-                  ? "bg-[var(--primary)] text-black"
-                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-              }`}
-            >
-              {preferences.audioDebugTelemetry ? t("settings.on") : t("settings.off")}
-            </button>
-          </div>
-        </section>
+          <span className="text-base text-[var(--secondary)]">›</span>
+        </Link>
 
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="flex items-center justify-between gap-4">

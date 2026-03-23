@@ -992,11 +992,6 @@ export default function Home() {
   };
 
   const handleQuitListRequest = () => {
-    if (!hasProgressToReset) {
-      selectList(DEFAULT_LIST_ID);
-      reset();
-      return;
-    }
     setShowQuitConfirm(true);
   };
 

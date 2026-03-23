@@ -76,7 +76,7 @@ export const translations = {
       },
       quitModal: {
         title: "Quitter le zikr ?",
-        body: "Cette action remettra à zéro et reviendra au compteur principal.",
+        body: "Cette action quittera le mode sélection et reviendra au compteur principal. La progression en cours sera abandonnée.",
         confirm: "Quitter",
         cancel: "Annuler",
       },
@@ -457,7 +457,7 @@ export const translations = {
       },
       quitModal: {
         title: "Quit zikr?",
-        body: "This action will reset and return to the main counter.",
+        body: "This action will leave selection mode and return to the main counter. Any current progress will be discarded.",
         confirm: "Quit",
         cancel: "Cancel",
       },

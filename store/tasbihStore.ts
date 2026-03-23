@@ -58,6 +58,8 @@ export type Preferences = {
   // Phase 4: Custom profiles (user-defined tolerance profiles)
   customProfiles?: CustomToleranceProfile[];
   activeCustomProfileId?: string;
+  // Icon theme (auto = follows app theme)
+  iconTheme?: IconTheme;
 };
 
 export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
@@ -65,6 +67,7 @@ export type SpeechTolerance = "strict" | "balanced" | "tolerant";
 export type SpeechRecognitionLanguage = "ar-SA" | "ar-EG" | "ar-MA" | "fr-FR" | "en-US";
 export type ChipTextFormat = "transliteration" | "arabic" | "both";
 export type Theme = "light" | "dark" | "blue";
+export type IconTheme = "auto" | "dark" | "blue" | "light";
 export type ReminderTime = { hour: number; minute: number };
 export type ReminderScheduleType = "daily" | "weekly";
 
@@ -137,6 +140,7 @@ export type TasbihStoreState = {
   setListesUI: (update: Partial<TasbihStoreState["listesUI"]>) => void;
   resetStats: () => void;
   setTheme: (theme: Theme) => void;
+  setIconTheme: (iconTheme: IconTheme) => void;
   toggleVibration: () => void;
   setWakeLockEnabled: (enabled: boolean) => void;
   toggleConfetti: () => void;
@@ -352,6 +356,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       advancedTiming: { enabled: false },
       customProfiles: [],
       activeCustomProfileId: undefined,
+      iconTheme: "auto" as IconTheme,
     },
   };
 }
@@ -1037,6 +1042,21 @@ const createStore = () =>
             preferences: {
               ...state.preferences,
               theme: normalizeTheme(theme),
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      setIconTheme: (iconTheme: IconTheme) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              iconTheme,
             },
           };
           persistState({

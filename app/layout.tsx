@@ -31,7 +31,9 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Tasbih" />
-        <link rel="apple-touch-icon" href="/icon-192.png" />
+        {/* data-app-icon lets ThemeSync swap these dynamically based on the chosen icon theme */}
+        <link rel="icon" href="/icon-192-blue.png" data-app-icon="true" />
+        <link rel="apple-touch-icon" href="/icon-192-blue.png" data-app-icon="true" />
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body

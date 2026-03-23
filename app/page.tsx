@@ -380,15 +380,6 @@ export default function Home() {
     setPulseTrigger((t) => t + 1);
   });
 
-  const handleQuitListRequest = () => {
-    if (!hasProgressToReset) {
-      selectList(DEFAULT_LIST_ID);
-      reset();
-      return;
-    }
-    setShowQuitConfirm(true);
-  };
-
   const handleQuitListConfirm = () => {
     selectList(DEFAULT_LIST_ID);
     reset();
@@ -998,6 +989,15 @@ export default function Home() {
   const handleResetConfirm = () => {
     reset();
     setShowResetConfirm(false);
+  };
+
+  const handleQuitListRequest = () => {
+    if (!hasProgressToReset) {
+      selectList(DEFAULT_LIST_ID);
+      reset();
+      return;
+    }
+    setShowQuitConfirm(true);
   };
 
 

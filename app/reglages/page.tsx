@@ -42,6 +42,7 @@ export default function ReglagesPage() {
   const setRemindersEnabled = useTasbihStore((s) => s.setRemindersEnabled);
   const setReminderTimes = useTasbihStore((s) => s.setReminderTimes);
   const setOptionalSyncEnabled = useTasbihStore((s) => s.setOptionalSyncEnabled);
+  const setWakeLockEnabled = useTasbihStore((s) => s.setWakeLockEnabled);
   const resetPreferences = useTasbihStore((s) => s.resetPreferences);
   const t = useT();
   const [syncCode, setSyncCode] = useState("");

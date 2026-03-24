@@ -404,6 +404,10 @@ export default function Home() {
     nextZikrInList();
   });
 
+
+  // Correction : déclaration anticipée de isListComplete
+  const isListComplete = isListMode && isCompleted && activeIndex === activeList.length - 1;
+
   useEffect(() => {
     if (!autoAdvanceNextZikr) return;
     if (!isCompleted || !isListMode || isListComplete) return;
@@ -981,8 +985,6 @@ export default function Home() {
   });
 
   const listPosition = `${activeIndex + 1} / ${activeList.length}`;
-  const isListComplete =
-    isListMode && isCompleted && activeIndex === activeList.length - 1;
   const [showListCompletePopup, setShowListCompletePopup] = useState(false);
 
   useEffect(() => {

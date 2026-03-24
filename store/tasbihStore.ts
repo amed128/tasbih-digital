@@ -628,27 +628,6 @@ const createStore = () =>
             });
             return newState;
           }),
-        previousZikrInList: () =>
-          set((state) => {
-            if (state.activeIndex <= 0) return state;
-            const prevIndex = state.activeIndex - 1;
-            const prevZikrId = state.activeList[prevIndex] ?? state.currentZikrId;
-            const prevZikr = resolveZikr(prevZikrId, state.customZikrs);
-            const target = prevZikr?.defaultTarget ?? 0;
-            const newState = {
-              activeIndex: prevIndex,
-              currentZikrId: prevZikrId,
-              currentZikr: prevZikr,
-              customTarget: undefined,
-              counter: initialCounterForMode(state.mode, target),
-              isStarted: false,
-            };
-            persistState({
-              ...state,
-              ...newState,
-            });
-            return newState;
-          }),
         decrement: () =>
           set((state) => {
           const target = state.customTarget ?? state.currentZikr?.defaultTarget ?? 0;
@@ -774,23 +753,6 @@ const createStore = () =>
             });
             return newState;
           }),
-        decrement: () =>
-          set((state) => {
-          const zikr = resolveZikr(zikrId, state.customZikrs);
-          const target = zikr?.defaultTarget ?? 0;
-          const newState = {
-            currentZikrId: zikrId,
-            currentZikr: zikr,
-            customTarget: undefined,
-            counter: initialCounterForMode(state.mode, target),
-            isStarted: false,
-          };
-          persistState({
-            ...state,
-            ...newState,
-          });
-          return newState;
-        }),
 
       selectZikrAsList: (zikrId: string) =>
         set((state) => {

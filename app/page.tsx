@@ -248,6 +248,7 @@ export default function Home() {
   const activeIndex = useTasbihStore((s) => s.activeIndex);
   const nextZikrInList = useTasbihStore((s) => s.nextZikrInList);
   const selectList = useTasbihStore((s) => s.selectList);
+  const autoAdvanceNextZikr = useTasbihStore((s) => s.preferences.autoAdvanceNextZikr ?? false);
 
   const isListMode = activeListId !== DEFAULT_LIST_ID && activeList.length > 0;
   const hasAudioSelection = isListMode;
@@ -397,6 +398,19 @@ export default function Home() {
       });
     }
   });
+
+  const triggerAutoAdvance = useEffectEvent(() => {
+    nextZikrInList();
+  });
+
+  useEffect(() => {
+    if (!autoAdvanceNextZikr) return;
+    if (!isCompleted || !isListMode || isListComplete) return;
+    const timer = window.setTimeout(() => {
+      triggerAutoAdvance();
+    }, 600);
+    return () => window.clearTimeout(timer);
+  }, [isCompleted, isListMode, isListComplete, autoAdvanceNextZikr]);
 
   useEffect(() => {
     if (isCompleted && !prevIsCompleted.current) {
@@ -1689,7 +1703,7 @@ export default function Home() {
         )}
 
         <AnimatePresence>
-          {isListMode && isCompleted && !isListComplete && (
+          {!autoAdvanceNextZikr && isListMode && isCompleted && !isListComplete && (
             <motion.button
               onClick={nextZikrInList}
               initial={{ opacity: 0, y: -6 }}
@@ -1841,7 +1855,7 @@ export default function Home() {
           )}
 
           <AnimatePresence>
-            {isCompleted && !isListComplete && (
+            {!autoAdvanceNextZikr && isCompleted && !isListComplete && (
               <motion.button
                 onClick={nextZikrInList}
                 initial={{ opacity: 0, y: -6 }}

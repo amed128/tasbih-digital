@@ -43,6 +43,7 @@ export default function ReglagesPage() {
   const setReminderTimes = useTasbihStore((s) => s.setReminderTimes);
   const setOptionalSyncEnabled = useTasbihStore((s) => s.setOptionalSyncEnabled);
   const setWakeLockEnabled = useTasbihStore((s) => s.setWakeLockEnabled);
+  const setAutoAdvanceNextZikr = useTasbihStore((s) => s.setAutoAdvanceNextZikr);
   const resetPreferences = useTasbihStore((s) => s.resetPreferences);
   const t = useT();
   const [syncCode, setSyncCode] = useState("");
@@ -279,6 +280,26 @@ export default function ReglagesPage() {
               } ${wakeLockToggleDisabled ? "cursor-not-allowed opacity-50" : ""}`}
             >
               {preferences.wakeLockEnabled ? t("settings.on") : t("settings.off")}
+            </button>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.autoAdvanceTitle")}</div>
+              <div className="text-xs text-[var(--secondary)]">{t("settings.autoAdvanceHint")}</div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setAutoAdvanceNextZikr(!(preferences.autoAdvanceNextZikr ?? false))}
+              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                (preferences.autoAdvanceNextZikr ?? false)
+                  ? "bg-[var(--primary)] text-black"
+                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+              }`}
+            >
+              {(preferences.autoAdvanceNextZikr ?? false) ? t("settings.on") : t("settings.off")}
             </button>
           </div>
         </section>

@@ -53,6 +53,7 @@ export type Preferences = {
   reminderTimes: ReminderTime[];
   reminderDays: number[];
   optionalSyncEnabled: boolean;
+  autoAdvanceNextZikr?: boolean;
   // Phase 2: Advanced timing mode (override cooldown/rearm for current profile)
   advancedTiming?: AdvancedTimingConfig;
   // Phase 4: Custom profiles (user-defined tolerance profiles)
@@ -160,6 +161,7 @@ export type TasbihStoreState = {
   setReminderTimes: (times: ReminderTime[]) => void;
   setReminderDays: (days: number[]) => void;
   setOptionalSyncEnabled: (enabled: boolean) => void;
+  setAutoAdvanceNextZikr: (enabled: boolean) => void;
   resetPreferences: () => void;
   // Phase 2: Advanced timing controls
   setAdvancedTiming: (config: AdvancedTimingConfig) => void;
@@ -353,6 +355,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       reminderTimes: [] as ReminderTime[],
       reminderDays: [] as number[],
       optionalSyncEnabled: false,
+      autoAdvanceNextZikr: false,
       advancedTiming: { enabled: false },
       customProfiles: [],
       activeCustomProfileId: undefined,
@@ -1252,6 +1255,21 @@ const createStore = () =>
             preferences: {
               ...state.preferences,
               audioStopOnSilence: enabled,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      setAutoAdvanceNextZikr: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              autoAdvanceNextZikr: enabled,
             },
           };
           persistState({

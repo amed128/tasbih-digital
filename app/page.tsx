@@ -383,6 +383,10 @@ export default function Home() {
   });
 
   const handleQuitListConfirm = () => {
+    // If in simple mode and just completed, stop auto-counter
+    if (!isListMode && isCompleted) {
+      setAutoEnabled(false);
+    }
     selectList(DEFAULT_LIST_ID);
     reset();
     setShowQuitConfirm(false);
@@ -407,6 +411,13 @@ export default function Home() {
 
   // Correction : déclaration anticipée de isListComplete
   const isListComplete = isListMode && isCompleted && activeIndex === activeList.length - 1;
+
+  // Stop auto-counter at list complete
+  useEffect(() => {
+    if (isListComplete) {
+      setAutoEnabled(false);
+    }
+  }, [isListComplete]);
 
   useEffect(() => {
     if (!autoAdvanceNextZikr) return;
@@ -1016,6 +1027,10 @@ export default function Home() {
   };
 
   const handleResetConfirm = () => {
+    // If in simple mode and just completed, stop auto-counter
+    if (!isListMode && isCompleted) {
+      setAutoEnabled(false);
+    }
     reset();
     setShowResetConfirm(false);
   };

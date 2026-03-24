@@ -1,3 +1,98 @@
+    setAutoCounterDefaultEnabled: (enabled: boolean) =>
+      set((state) => {
+        const newState = {
+          preferences: {
+            ...state.preferences,
+            autoCounterDefaultEnabled: enabled,
+          },
+        };
+        persistState({ ...state, ...newState });
+        return newState;
+      }),
+
+    setAutoCounterDefaultSpeed: (speed: number) =>
+      set((state) => {
+        const newState = {
+          preferences: {
+            ...state.preferences,
+            autoCounterDefaultSpeed: speed,
+          },
+        };
+        persistState({ ...state, ...newState });
+        return newState;
+      }),
+
+    setAutoCounterResumeAfterReset: (enabled: boolean) =>
+      set((state) => {
+        const newState = {
+          preferences: {
+            ...state.preferences,
+            autoCounterResumeAfterReset: enabled,
+          },
+        };
+        persistState({ ...state, ...newState });
+        return newState;
+      }),
+
+    setAutoCounterStopAtGoal: (enabled: boolean) =>
+      set((state) => {
+        const newState = {
+          preferences: {
+            ...state.preferences,
+            autoCounterStopAtGoal: enabled,
+          },
+        };
+        persistState({ ...state, ...newState });
+        return newState;
+      }),
+
+    setAutoCounterEntryAutoStart: (enabled: boolean) =>
+      set((state) => {
+        const newState = {
+          preferences: {
+            ...state.preferences,
+            autoCounterEntryAutoStart: enabled,
+          },
+        };
+        persistState({ ...state, ...newState });
+        return newState;
+      }),
+
+    setBlurActionControlsWhileAuto: (enabled: boolean) =>
+      set((state) => {
+        const newState = {
+          preferences: {
+            ...state.preferences,
+            blurActionControlsWhileAuto: enabled,
+          },
+        };
+        persistState({ ...state, ...newState });
+        return newState;
+      }),
+
+    setAutoCounterConfirmOnStop: (enabled: boolean) =>
+      set((state) => {
+        const newState = {
+          preferences: {
+            ...state.preferences,
+            autoCounterConfirmOnStop: enabled,
+          },
+        };
+        persistState({ ...state, ...newState });
+        return newState;
+      }),
+
+    setAutoCounterSoundOnTick: (enabled: boolean) =>
+      set((state) => {
+        const newState = {
+          preferences: {
+            ...state.preferences,
+            autoCounterSoundOnTick: enabled,
+          },
+        };
+        persistState({ ...state, ...newState });
+        return newState;
+      }),
 
 
 import { create } from "zustand";
@@ -37,6 +132,15 @@ export type Stats = {
 };
 
 export type Preferences = {
+    // --- Auto-counter settings ---
+    autoCounterDefaultEnabled: boolean;
+    autoCounterDefaultSpeed: number;
+    autoCounterResumeAfterReset: boolean;
+    autoCounterStopAtGoal: boolean;
+    autoCounterEntryAutoStart: boolean;
+    blurActionControlsWhileAuto: boolean;
+    autoCounterConfirmOnStop: boolean;
+    autoCounterSoundOnTick: boolean;
   theme: Theme;
   vibration: boolean;
   wakeLockEnabled: boolean;
@@ -340,6 +444,15 @@ function getInitialState(): Partial<TasbihStoreState> {
       expandedLists: {},
     },
     preferences: {
+        // --- Auto-counter settings ---
+        autoCounterDefaultEnabled: false,
+        autoCounterDefaultSpeed: 1000,
+        autoCounterResumeAfterReset: false,
+        autoCounterStopAtGoal: true,
+        autoCounterEntryAutoStart: false,
+        blurActionControlsWhileAuto: true,
+        autoCounterConfirmOnStop: false,
+        autoCounterSoundOnTick: false,
       theme: "light",
       vibration: false,
       wakeLockEnabled: false,

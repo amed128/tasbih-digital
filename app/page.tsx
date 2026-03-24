@@ -1419,6 +1419,7 @@ export default function Home() {
           <button
             type="button"
             onClick={() => {
+              if (shouldBlurActionControls) return;
               if (dropdownOpen) setSearchQuery("");
               setDropdownOpen((open) => !open);
             }}
@@ -1426,6 +1427,7 @@ export default function Home() {
             aria-controls="zikr-selection-dropdown"
             aria-haspopup="listbox"
             className={`flex w-full items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-left outline-none transition focus:border-[var(--primary)] ${shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : ""}`}
+            disabled={shouldBlurActionControls}
           >
             <div className="min-w-0">
               {isListMode ? (

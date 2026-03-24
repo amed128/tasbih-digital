@@ -1096,7 +1096,7 @@ export default function Home() {
   const autoRunning = isAutoMode && autoEnabled && !isCompleted;
   const audioRunning = isAudioMode && audioEnabled && !isCompleted;
   const shouldBlurActionControls =
-    isAudioMode && audioRunning && blurActionControlsWhileListening;
+    (isAudioMode && audioRunning && blurActionControlsWhileListening) || autoRunning;
   const canAutoRun = autoRunning && isDocumentVisible && isWindowFocused;
   const canAudioRun = audioRunning && isDocumentVisible && isWindowFocused;
   const shouldHoldWakeLock =
@@ -1389,6 +1389,7 @@ export default function Home() {
           <button
             type="button"
             onClick={toggleMode}
+            disabled={shouldBlurActionControls}
             className={`rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)] ${
               shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : ""
             }`}
@@ -1399,10 +1400,12 @@ export default function Home() {
           <button
             type="button"
             onClick={() => setFocusMode((v) => !v)}
+            disabled={shouldBlurActionControls}
             className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
-              focusMode
+              shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" :
+              (focusMode
                 ? "border-[var(--primary)] bg-[var(--primary)] text-black"
-                : "border-[var(--border)] bg-[var(--card)] text-[var(--primary)] hover:border-[var(--primary)]"
+                : "border-[var(--border)] bg-[var(--card)] text-[var(--primary)] hover:border-[var(--primary)]")
             }`}
             aria-label={focusMode ? t("counter.focusExitAriaLabel") : t("counter.focusEnterAriaLabel")}
           >
@@ -1422,7 +1425,7 @@ export default function Home() {
             aria-expanded={dropdownOpen}
             aria-controls="zikr-selection-dropdown"
             aria-haspopup="listbox"
-            className="flex w-full items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-left outline-none transition focus:border-[var(--primary)]"
+            className={`flex w-full items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-left outline-none transition focus:border-[var(--primary)] ${shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : ""}`}
           >
             <div className="min-w-0">
               {isListMode ? (
@@ -1745,8 +1748,9 @@ export default function Home() {
           )}
           <button
             onClick={handleResetRequest}
+            disabled={shouldBlurActionControls}
             className={`${!focusMode && !isAutoMode ? "flex-1" : "w-full"} rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
-              shouldBlurActionControls ? "opacity-85 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
+              shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
             }`}
           >
             {t("counter.reset")}
@@ -1802,7 +1806,8 @@ export default function Home() {
           <button
             type="button"
             onClick={handleQuitListRequest}
-            className="min-w-0 text-sm font-medium text-[var(--primary)] mr-auto"
+            disabled={shouldBlurActionControls}
+            className={`min-w-0 text-sm font-medium text-[var(--primary)] mr-auto ${shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : ""}`}
             style={{ alignSelf: 'flex-start' }}
           >
             {t("counter.quitZikrSelection")}
@@ -1810,9 +1815,9 @@ export default function Home() {
           <button
             type="button"
             onClick={toggleMode}
+            disabled={shouldBlurActionControls}
             className={`rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-center text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)] ${
-              shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : ""
-            }`}
+              shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : ""}`}
             aria-label={t("counter.ariaChangeMode")}
           >
             Mode: {executionModeLabel}
@@ -1909,8 +1914,9 @@ export default function Home() {
             )}
             <button
               onClick={handleResetRequest}
+              disabled={shouldBlurActionControls}
               className={`${!isAutoMode ? "flex-1" : "w-full"} rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
-                shouldBlurActionControls ? "opacity-85 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
+                shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
               }`}
             >
               {t("counter.reset")}

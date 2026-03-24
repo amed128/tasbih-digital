@@ -67,11 +67,14 @@ export const translations = {
       undo: "↩ Annuler",
       reset: "Réinitialiser",
       quitZikr: "← Quitter le zikr",
+      quitZikrSelection: "← Quitter la sélection de zikr",
       listComplete: "✓ Liste complète !",
       resetModal: {
         title: "Réinitialiser le compteur ?",
         body: "Cette action remettra votre progression actuelle à zéro.",
         confirm: "Réinitialiser",
+        resetZikr: "Reset Zik",
+        resetSelection: "Reset sélection",
         cancel: "Annuler",
       },
       quitModal: {
@@ -448,11 +451,14 @@ export const translations = {
       undo: "↩ Undo",
       reset: "Reset",
       quitZikr: "← Quit zikr",
+      quitZikrSelection: "← Quit zikr selection",
       listComplete: "✓ List complete!",
       resetModal: {
         title: "Reset counter?",
         body: "This action will reset your current progress to zero.",
         confirm: "Reset",
+        resetZikr: "Reset Zik",
+        resetSelection: "Reset selection",
         cancel: "Cancel",
       },
       quitModal: {

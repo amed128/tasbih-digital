@@ -968,6 +968,7 @@ export default function Home() {
   const listPosition = `${activeIndex + 1} / ${activeList.length}`;
   const isListComplete =
     isListMode && isCompleted && activeIndex === activeList.length - 1;
+  const canResetSelection = isListMode && activeList.length > 1 && activeIndex > 0;
   const executionModeLabel = isAutoMode
     ? t("counter.modeAuto")
     : isAudioMode
@@ -988,6 +989,12 @@ export default function Home() {
 
   const handleResetConfirm = () => {
     reset();
+    setShowResetConfirm(false);
+  };
+
+  const handleResetSelectionConfirm = () => {
+    reset();
+    selectList(activeListId);
     setShowResetConfirm(false);
   };
 
@@ -1769,7 +1776,7 @@ export default function Home() {
             onClick={handleQuitListRequest}
             className="min-w-0 text-sm font-medium text-[var(--primary)]"
           >
-            {t("counter.quitZikr")}
+            {t("counter.quitZikrSelection")}
           </button>
           <button
             type="button"
@@ -1900,18 +1907,26 @@ export default function Home() {
         onClose={() => setShowResetConfirm(false)}
         closeOnOverlayClick={false}
         footer={
-          <div className="flex justify-end gap-2">
+          <div className="grid gap-2 sm:grid-cols-3">
+            <button
+              onClick={handleResetConfirm}
+              className="rounded-xl bg-[#EF4444] px-4 py-2 text-sm font-semibold text-white"
+            >
+              {t("counter.resetModal.resetZikr")}
+            </button>
+            {canResetSelection ? (
+              <button
+                onClick={handleResetSelectionConfirm}
+                className="rounded-xl bg-[#F59E0B] px-4 py-2 text-sm font-semibold text-white"
+              >
+                {t("counter.resetModal.resetSelection")}
+              </button>
+            ) : null}
             <button
               onClick={() => setShowResetConfirm(false)}
               className="rounded-xl bg-[var(--card)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
             >
               {t("counter.resetModal.cancel")}
-            </button>
-            <button
-              onClick={handleResetConfirm}
-              className="rounded-xl bg-[#EF4444] px-4 py-2 text-sm font-semibold text-white"
-            >
-              {t("counter.resetModal.confirm")}
             </button>
           </div>
         }

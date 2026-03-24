@@ -754,6 +754,28 @@ const createStore = () =>
             return newState;
           }),
 
+        nextZikrInList: () =>
+          set((state) => {
+            if (state.activeIndex >= state.activeList.length - 1) return state;
+            const nextIndex = state.activeIndex + 1;
+            const nextZikrId = state.activeList[nextIndex] ?? state.currentZikrId;
+            const nextZikr = resolveZikr(nextZikrId, state.customZikrs);
+            const target = nextZikr?.defaultTarget ?? 0;
+            const newState = {
+              activeIndex: nextIndex,
+              currentZikrId: nextZikrId,
+              currentZikr: nextZikr,
+              customTarget: undefined,
+              counter: initialCounterForMode(state.mode, target),
+              isStarted: false,
+            };
+            persistState({
+              ...state,
+              ...newState,
+            });
+            return newState;
+          }),
+
       selectZikrAsList: (zikrId: string) =>
         set((state) => {
           const zikr = resolveZikr(zikrId, state.customZikrs);

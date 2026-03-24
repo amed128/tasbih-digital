@@ -1,106 +1,9 @@
-    setAutoCounterDefaultEnabled: (enabled: boolean) =>
-      set((state) => {
-        const newState = {
-          preferences: {
-            ...state.preferences,
-            autoCounterDefaultEnabled: enabled,
-          },
-        };
-        persistState({ ...state, ...newState });
-        return newState;
-      }),
-
-    setAutoCounterDefaultSpeed: (speed: number) =>
-      set((state) => {
-        const newState = {
-          preferences: {
-            ...state.preferences,
-            autoCounterDefaultSpeed: speed,
-          },
-        };
-        persistState({ ...state, ...newState });
-        return newState;
-      }),
-
-    setAutoCounterResumeAfterReset: (enabled: boolean) =>
-      set((state) => {
-        const newState = {
-          preferences: {
-            ...state.preferences,
-            autoCounterResumeAfterReset: enabled,
-          },
-        };
-        persistState({ ...state, ...newState });
-        return newState;
-      }),
-
-    setAutoCounterStopAtGoal: (enabled: boolean) =>
-      set((state) => {
-        const newState = {
-          preferences: {
-            ...state.preferences,
-            autoCounterStopAtGoal: enabled,
-          },
-        };
-        persistState({ ...state, ...newState });
-        return newState;
-      }),
-
-    setAutoCounterEntryAutoStart: (enabled: boolean) =>
-      set((state) => {
-        const newState = {
-          preferences: {
-            ...state.preferences,
-            autoCounterEntryAutoStart: enabled,
-          },
-        };
-        persistState({ ...state, ...newState });
-        return newState;
-      }),
-
-    setBlurActionControlsWhileAuto: (enabled: boolean) =>
-      set((state) => {
-        const newState = {
-          preferences: {
-            ...state.preferences,
-            blurActionControlsWhileAuto: enabled,
-          },
-        };
-        persistState({ ...state, ...newState });
-        return newState;
-      }),
-
-    setAutoCounterConfirmOnStop: (enabled: boolean) =>
-      set((state) => {
-        const newState = {
-          preferences: {
-            ...state.preferences,
-            autoCounterConfirmOnStop: enabled,
-          },
-        };
-        persistState({ ...state, ...newState });
-        return newState;
-      }),
-
-    setAutoCounterSoundOnTick: (enabled: boolean) =>
-      set((state) => {
-        const newState = {
-          preferences: {
-            ...state.preferences,
-            autoCounterSoundOnTick: enabled,
-          },
-        };
-        persistState({ ...state, ...newState });
-        return newState;
-      }),
 
 
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { DEFAULT_LIST_ID, zikrs, predefinedLists } from "../data/zikrs";
 import type { Zikr } from "../data/zikrs";
-
-
 
 export type Mode = "up" | "down" | "auto" | "audio";
 
@@ -271,6 +174,14 @@ export type TasbihStoreState = {
   setReminderDays: (days: number[]) => void;
   setOptionalSyncEnabled: (enabled: boolean) => void;
   setAutoAdvanceNextZikr: (enabled: boolean) => void;
+  setAutoCounterDefaultEnabled: (enabled: boolean) => void;
+  setAutoCounterDefaultSpeed: (speed: number) => void;
+  setAutoCounterResumeAfterReset: (enabled: boolean) => void;
+  setAutoCounterStopAtGoal: (enabled: boolean) => void;
+  setAutoCounterEntryAutoStart: (enabled: boolean) => void;
+  setBlurActionControlsWhileAuto: (enabled: boolean) => void;
+  setAutoCounterConfirmOnStop: (enabled: boolean) => void;
+  setAutoCounterSoundOnTick: (enabled: boolean) => void;
   resetPreferences: () => void;
   // Phase 2: Advanced timing controls
   setAdvancedTiming: (config: AdvancedTimingConfig) => void;
@@ -1386,6 +1297,7 @@ const createStore = () =>
           return newState;
         }),
 
+
       setAutoAdvanceNextZikr: (enabled: boolean) =>
         set((state) => {
           const newState = {
@@ -1398,6 +1310,102 @@ const createStore = () =>
             ...state,
             ...newState,
           });
+          return newState;
+        }),
+
+      setAutoCounterDefaultEnabled: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              autoCounterDefaultEnabled: enabled,
+            },
+          };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
+      setAutoCounterDefaultSpeed: (speed: number) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              autoCounterDefaultSpeed: speed,
+            },
+          };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
+      setAutoCounterResumeAfterReset: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              autoCounterResumeAfterReset: enabled,
+            },
+          };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
+      setAutoCounterStopAtGoal: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              autoCounterStopAtGoal: enabled,
+            },
+          };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
+      setAutoCounterEntryAutoStart: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              autoCounterEntryAutoStart: enabled,
+            },
+          };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
+      setBlurActionControlsWhileAuto: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              blurActionControlsWhileAuto: enabled,
+            },
+          };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
+      setAutoCounterConfirmOnStop: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              autoCounterConfirmOnStop: enabled,
+            },
+          };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
+      setAutoCounterSoundOnTick: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              autoCounterSoundOnTick: enabled,
+            },
+          };
+          persistState({ ...state, ...newState });
           return newState;
         }),
 

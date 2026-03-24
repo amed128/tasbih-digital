@@ -2,7 +2,7 @@
 
 import { useTasbihStore } from "../../../store/tasbihStore";
 import { useT } from "@/hooks/useT";
-import { useState } from "react";
+
 
 export default function AutoCounterSettings() {
   const t = useT();

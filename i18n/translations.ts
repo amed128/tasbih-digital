@@ -1,12 +1,3 @@
-  autoCounterSettingsTitle: "Auto-counter settings",
-  autoCounterDefaultEnabledTitle: "Enable auto-counter by default",
-  autoCounterDefaultSpeedTitle: "Default auto-counter speed",
-  autoCounterResumeAfterResetTitle: "Resume auto-counter after reset/quit if goal was reached",
-  autoCounterStopAtGoalTitle: "Stop auto-counter when goal is reached",
-  autoCounterEntryAutoStartTitle: "Start auto-counter immediately on entry",
-  blurActionControlsWhileAutoTitle: "Blur/disable actions while auto-counter is running",
-  autoCounterConfirmOnStopTitle: "Show confirmation before stopping auto-counter on reset/quit",
-  autoCounterSoundOnTickTitle: "Play sound/vibrate on each auto-increment",
 export const translations = {
   fr: {
     nav: {
@@ -397,6 +388,15 @@ export const translations = {
   },
 
   en: {
+      autoCounterSettingsTitle: "Auto-counter settings",
+      autoCounterDefaultEnabledTitle: "Enable auto-counter by default",
+      autoCounterDefaultSpeedTitle: "Default auto-counter speed",
+      autoCounterResumeAfterResetTitle: "Resume auto-counter after reset/quit if goal was reached",
+      autoCounterStopAtGoalTitle: "Stop auto-counter when goal is reached",
+      autoCounterEntryAutoStartTitle: "Start auto-counter immediately on entry",
+      blurActionControlsWhileAutoTitle: "Blur/disable actions while auto-counter is running",
+      autoCounterConfirmOnStopTitle: "Show confirmation before stopping auto-counter on reset/quit",
+      autoCounterSoundOnTickTitle: "Play sound/vibrate on each auto-increment",
     nav: {
       counter: "Counter",
       lists: "Lists",

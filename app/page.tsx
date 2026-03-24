@@ -1798,11 +1798,12 @@ export default function Home() {
           <div className="text-sm font-semibold text-[var(--secondary)]">{listPosition}</div>
         </header>
 
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handleQuitListRequest}
-            className="min-w-0 text-sm font-medium text-[var(--primary)]"
+            className="min-w-0 text-sm font-medium text-[var(--primary)] mr-auto"
+            style={{ alignSelf: 'flex-start' }}
           >
             {t("counter.quitZikrSelection")}
           </button>
@@ -1816,7 +1817,6 @@ export default function Home() {
           >
             Mode: {executionModeLabel}
           </button>
-          <div />
         </div>
 
         <div ref={chipsContainerRef} className="max-h-[104px] overflow-y-auto pr-1">

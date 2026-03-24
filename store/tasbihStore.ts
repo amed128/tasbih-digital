@@ -1,28 +1,11 @@
-      previousZikrInList: () =>
-        set((state) => {
-          if (state.activeIndex <= 0) return state;
-          const prevIndex = state.activeIndex - 1;
-          const prevZikrId = state.activeList[prevIndex] ?? state.currentZikrId;
-          const prevZikr = resolveZikr(prevZikrId, state.customZikrs);
-          const target = prevZikr?.defaultTarget ?? 0;
-          const newState = {
-            activeIndex: prevIndex,
-            currentZikrId: prevZikrId,
-            currentZikr: prevZikr,
-            customTarget: undefined,
-            counter: initialCounterForMode(state.mode, target),
-            isStarted: false,
-          };
-          persistState({
-            ...state,
-            ...newState,
-          });
-          return newState;
-        }),
+
+
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { DEFAULT_LIST_ID, zikrs, predefinedLists } from "../data/zikrs";
 import type { Zikr } from "../data/zikrs";
+
+
 
 export type Mode = "up" | "down" | "auto" | "audio";
 
@@ -149,6 +132,7 @@ export type TasbihStoreState = {
   };
   // Actions
   increment: () => void;
+  previousZikrInList: () => void;
   decrement: () => void;
   reset: () => void;
   undoLast: () => void;
@@ -611,42 +595,62 @@ const createStore = () =>
     devtools((set) => ({
       ...initialState,
       currentZikr: resolveZikr(initialState.currentZikrId ?? "", initialState.customZikrs ?? {}),
-      increment: () =>
-        set((state) => {
-          const target = state.customTarget ?? state.currentZikr?.defaultTarget ?? 0;
-          const initial = initialCounterForMode(state.mode, target);
-          const next = isDownMode(state.mode) ? state.counter - 1 : state.counter + 1;
-          const bounded = Math.max(0, Math.min(target, next));
+        increment: () => 
+          set((state) => {
+            const target = state.customTarget ?? state.currentZikr?.defaultTarget ?? 0;
+            const initial = initialCounterForMode(state.mode, target);
+            const next = isDownMode(state.mode) ? state.counter - 1 : state.counter + 1;
+            const bounded = Math.max(0, Math.min(target, next));
 
-          if (bounded === state.counter) {
-            return state;
-          }
+            if (bounded === state.counter) {
+              return state;
+            }
 
-          const goalReached = isDownMode(state.mode) ? bounded === 0 : bounded === target;
-          const isStarted = bounded !== initial && !goalReached;
+            const goalReached = isDownMode(state.mode) ? bounded === 0 : bounded === target;
+            const isStarted = bounded !== initial && !goalReached;
 
-          const startedSession = state.currentSessionCount > 0;
-          const startAt = startedSession ? state.sessionStartAt : new Date().toISOString();
+            const startedSession = state.currentSessionCount > 0;
+            const startAt = startedSession ? state.sessionStartAt : new Date().toISOString();
 
-          const newState = {
-            counter: bounded,
-            isStarted,
-            currentSessionCount: state.currentSessionCount + 1,
-            sessionStartAt: startAt,
-            stats: {
-              ...state.stats,
-              totalZikr: state.stats.totalZikr + 1,
-            },
-          };
-          persistState({
-            ...state,
-            ...newState,
-          });
-          return newState;
-        }),
-
-      decrement: () =>
-        set((state) => {
+            const newState = {
+              counter: bounded,
+              isStarted,
+              currentSessionCount: state.currentSessionCount + 1,
+              sessionStartAt: startAt,
+              stats: {
+                ...state.stats,
+                totalZikr: state.stats.totalZikr + 1,
+              },
+            };
+            persistState({
+              ...state,
+              ...newState,
+            });
+            return newState;
+          }),
+        previousZikrInList: () =>
+          set((state) => {
+            if (state.activeIndex <= 0) return state;
+            const prevIndex = state.activeIndex - 1;
+            const prevZikrId = state.activeList[prevIndex] ?? state.currentZikrId;
+            const prevZikr = resolveZikr(prevZikrId, state.customZikrs);
+            const target = prevZikr?.defaultTarget ?? 0;
+            const newState = {
+              activeIndex: prevIndex,
+              currentZikrId: prevZikrId,
+              currentZikr: prevZikr,
+              customTarget: undefined,
+              counter: initialCounterForMode(state.mode, target),
+              isStarted: false,
+            };
+            persistState({
+              ...state,
+              ...newState,
+            });
+            return newState;
+          }),
+        decrement: () =>
+          set((state) => {
           const target = state.customTarget ?? state.currentZikr?.defaultTarget ?? 0;
           const initial = initialCounterForMode(state.mode, target);
           const next = isDownMode(state.mode) ? state.counter + 1 : state.counter - 1;
@@ -749,29 +753,29 @@ const createStore = () =>
           return newState;
         }),
 
-      nextZikrInList: () =>
-        set((state) => {
-          const nextIndex = Math.min(state.activeList.length - 1, state.activeIndex + 1);
-          const nextZikrId = state.activeList[nextIndex] ?? state.currentZikrId;
-          const nextZikr = resolveZikr(nextZikrId, state.customZikrs);
-          const target = nextZikr?.defaultTarget ?? 0;
-          const newState = {
-            activeIndex: nextIndex,
-            currentZikrId: nextZikrId,
-            currentZikr: nextZikr,
-            customTarget: undefined,
-            counter: initialCounterForMode(state.mode, target),
-            isStarted: false,
-          };
-          persistState({
-            ...state,
-            ...newState,
-          });
-          return newState;
-        }),
-
-      selectZikr: (zikrId: string) =>
-        set((state) => {
+        previousZikrInList: () =>
+          set((state) => {
+            if (state.activeIndex <= 0) return state;
+            const prevIndex = state.activeIndex - 1;
+            const prevZikrId = state.activeList[prevIndex] ?? state.currentZikrId;
+            const prevZikr = resolveZikr(prevZikrId, state.customZikrs);
+            const target = prevZikr?.defaultTarget ?? 0;
+            const newState = {
+              activeIndex: prevIndex,
+              currentZikrId: prevZikrId,
+              currentZikr: prevZikr,
+              customTarget: undefined,
+              counter: initialCounterForMode(state.mode, target),
+              isStarted: false,
+            };
+            persistState({
+              ...state,
+              ...newState,
+            });
+            return newState;
+          }),
+        decrement: () =>
+          set((state) => {
           const zikr = resolveZikr(zikrId, state.customZikrs);
           const target = zikr?.defaultTarget ?? 0;
           const newState = {

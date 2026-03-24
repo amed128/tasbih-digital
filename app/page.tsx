@@ -1910,7 +1910,8 @@ export default function Home() {
           <div className="grid gap-2 sm:grid-cols-3">
             <button
               onClick={handleResetConfirm}
-              className="rounded-xl bg-[#EF4444] px-4 py-2 text-sm font-semibold text-white"
+              disabled={canResetSelection && counter === initialCounter}
+              className={`rounded-xl bg-[#EF4444] px-4 py-2 text-sm font-semibold text-white transition ${canResetSelection && counter === initialCounter ? "cursor-not-allowed opacity-30 blur-[1.5px]" : ""}`}
             >
               {t("counter.resetModal.resetZikr")}
             </button>

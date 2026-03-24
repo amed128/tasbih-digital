@@ -1,0 +1,27 @@
+
+> tasbih-digital@0.2.1 build
+> npm run build:next && npm run pwa:sync
+
+
+> tasbih-digital@0.2.1 build:next
+> next build --webpack
+
+(node:95058) [DEP_WEBPACK_SINGLE_ENTRY_PLUGIN] DeprecationWarning: SingleEntryPlugin was renamed to EntryPlugin
+(Use `node --trace-deprecation ...` to show where the warning was created)
+▲ Next.js 16.1.6 (webpack)
+
+  Creating an optimized production build ...
+> [PWA] Compile server
+> [PWA] Compile server
+> [PWA] Compile client (static)
+> [PWA] Auto register service worker with: /workspaces/tasbih-digital/node_modules/next-pwa/register.js
+> [PWA] Service worker: /workspaces/tasbih-digital/.next/sw.js
+> [PWA]   url: /sw.js
+> [PWA]   scope: /
+@rollup/plugin-replace: 'preventAssignment' currently defaults to false. It is recommended to set this option to `true`, as the next major version will default this option to `true`.
+(node:95058) [DEP_WEBPACK_COMPILATION_ASSETS] DeprecationWarning: Compilation.assets will be frozen in future, all modifications are deprecated.
+BREAKING CHANGE: No more changes should happen to Compilation.assets after sealing the Compilation.
+	Do changes to assets earlier, e. g. in Compilation.hooks.processAssets.
+	Make sure to select an appropriate stage from Compilation.PROCESS_ASSETS_STAGE_*.
+✓ Compiled successfully in 24.6s
+  Running TypeScript ...

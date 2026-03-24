@@ -594,6 +594,10 @@ const createStore = () =>
           const next = isDownMode(state.mode) ? state.counter - 1 : state.counter + 1;
           const bounded = Math.max(0, Math.min(target, next));
 
+          if (bounded === state.counter) {
+            return state;
+          }
+
           const goalReached = isDownMode(state.mode) ? bounded === 0 : bounded === target;
           const isStarted = bounded !== initial && !goalReached;
 
@@ -623,6 +627,10 @@ const createStore = () =>
           const initial = initialCounterForMode(state.mode, target);
           const next = isDownMode(state.mode) ? state.counter + 1 : state.counter - 1;
           const bounded = Math.max(0, Math.min(target, next));
+
+          if (bounded === state.counter) {
+            return state;
+          }
 
           const goalReached = isDownMode(state.mode) ? bounded === 0 : bounded === target;
           const isStarted = bounded !== initial && !goalReached;
@@ -695,6 +703,11 @@ const createStore = () =>
           const direction = isDownMode(state.mode) ? 1 : -1;
           const next = state.counter + direction;
           const bounded = Math.max(0, Math.min(target, next));
+
+          if (bounded === state.counter) {
+            return state;
+          }
+
           const initial = initialCounterForMode(state.mode, target);
           const newTotal = Math.max(0, state.stats.totalZikr - 1);
           const newState = {

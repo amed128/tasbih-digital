@@ -1,3 +1,24 @@
+      previousZikrInList: () =>
+        set((state) => {
+          if (state.activeIndex <= 0) return state;
+          const prevIndex = state.activeIndex - 1;
+          const prevZikrId = state.activeList[prevIndex] ?? state.currentZikrId;
+          const prevZikr = resolveZikr(prevZikrId, state.customZikrs);
+          const target = prevZikr?.defaultTarget ?? 0;
+          const newState = {
+            activeIndex: prevIndex,
+            currentZikrId: prevZikrId,
+            currentZikr: prevZikr,
+            customTarget: undefined,
+            counter: initialCounterForMode(state.mode, target),
+            isStarted: false,
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { DEFAULT_LIST_ID, zikrs, predefinedLists } from "../data/zikrs";

@@ -194,6 +194,7 @@ export default function Home() {
   const increment = useTasbihStore((s) => s.increment);
   const reset = useTasbihStore((s) => s.reset);
   const undoLast = useTasbihStore((s) => s.undoLast);
+  const previousZikrInList = useTasbihStore((s) => s.previousZikrInList);
   const setCustomTarget = useTasbihStore((s) => s.setCustomTarget);
   const toggleMode = useTasbihStore((s) => s.toggleMode);
   const selectZikrAsList = useTasbihStore((s) => s.selectZikrAsList);
@@ -982,6 +983,17 @@ export default function Home() {
   const listPosition = `${activeIndex + 1} / ${activeList.length}`;
   const isListComplete =
     isListMode && isCompleted && activeIndex === activeList.length - 1;
+  const [showListCompletePopup, setShowListCompletePopup] = useState(false);
+
+  useEffect(() => {
+    if (isListComplete) {
+      setShowListCompletePopup(true);
+      const timer = setTimeout(() => setShowListCompletePopup(false), 2000);
+      return () => clearTimeout(timer);
+    } else {
+      setShowListCompletePopup(false);
+    }
+  }, [isListComplete]);
   const canResetSelection = isListMode && activeList.length > 1 && activeIndex > 0;
   const executionModeLabel = isAutoMode
     ? t("counter.modeAuto")
@@ -1871,15 +1883,27 @@ export default function Home() {
 
           <div className="flex items-center justify-between gap-4">
             {!isAutoMode && (
-              <button
-                onClick={undoLast}
-                aria-label={t("counter.ariaUndo")}
-                className={`flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
-                  shouldBlurActionControls ? "opacity-85 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
-                }`}
-              >
-                {t("counter.undo")}
-              </button>
+              (isListMode && activeIndex > 0 && counter === initialCounter && !isStarted) ? (
+                <button
+                  onClick={previousZikrInList}
+                  aria-label={t("counter.ariaPreviousZikr")}
+                  className={`flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
+                    shouldBlurActionControls ? "opacity-85 pointer-events-none select-none" : ""
+                  }`}
+                >
+                  {t("counter.previousZikr")}
+                </button>
+              ) : (
+                <button
+                  onClick={undoLast}
+                  aria-label={t("counter.ariaUndo")}
+                  className={`flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
+                    shouldBlurActionControls ? "opacity-85 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
+                  }`}
+                >
+                  {t("counter.undo")}
+                </button>
+              )
             )}
             <button
               onClick={handleResetRequest}
@@ -1894,11 +1918,19 @@ export default function Home() {
 
         </motion.div>
 
-        {isListComplete && (
-          <div className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-full bg-[#22C55E] px-4 py-2 text-sm font-semibold text-white shadow-lg">
-            {t("counter.listComplete")}
-          </div>
-        )}
+        <AnimatePresence>
+          {showListCompletePopup && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.25 }}
+              className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-full bg-[#22C55E] px-4 py-2 text-sm font-semibold text-white shadow-lg"
+            >
+              {t("counter.listComplete")}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     );
   };

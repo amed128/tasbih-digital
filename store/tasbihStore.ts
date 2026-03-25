@@ -183,6 +183,7 @@ export type TasbihStoreState = {
   setBlurActionControlsWhileAuto: (enabled: boolean) => void;
   setAutoCounterConfirmOnStop: (enabled: boolean) => void;
   setAutoCounterSoundOnTick: (enabled: boolean) => void;
+  setAutoCounterWakeLock: (enabled: boolean) => void;
   resetPreferences: () => void;
   // Phase 2: Advanced timing controls
   setAdvancedTiming: (config: AdvancedTimingConfig) => void;

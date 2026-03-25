@@ -1,5 +1,3 @@
-
-
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { DEFAULT_LIST_ID, zikrs, predefinedLists } from "../data/zikrs";
@@ -35,15 +33,17 @@ export type Stats = {
 };
 
 export type Preferences = {
-    // --- Auto-counter settings ---
-    autoCounterDefaultEnabled: boolean;
-    autoCounterDefaultSpeed: number;
-    autoCounterResumeAfterReset: boolean;
-    autoCounterStopAtGoal: boolean;
-    autoCounterEntryAutoStart: boolean;
-    blurActionControlsWhileAuto: boolean;
-    autoCounterConfirmOnStop: boolean;
-    autoCounterSoundOnTick: boolean;
+  // --- Auto-counter settings ---
+  autoCounterDefaultEnabled: boolean;
+  autoCounterDefaultSpeed: number;
+  autoCounterResumeAfterReset: boolean;
+    autoCounterResumeOnNext: boolean;
+  autoCounterStopAtGoal: boolean;
+  autoCounterEntryAutoStart: boolean;
+  blurActionControlsWhileAuto: boolean;
+  autoCounterConfirmOnStop: boolean;
+  autoCounterSoundOnTick: boolean;
+  autoCounterVibrateOnTick: boolean;
   theme: Theme;
   vibration: boolean;
   wakeLockEnabled: boolean;
@@ -72,6 +72,7 @@ export type Preferences = {
   activeCustomProfileId?: string;
   // Icon theme (auto = follows app theme)
   iconTheme?: IconTheme;
+  autoCounterWakeLock: boolean;
 };
 
 export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
@@ -182,6 +183,18 @@ export type TasbihStoreState = {
   setBlurActionControlsWhileAuto: (enabled: boolean) => void;
   setAutoCounterConfirmOnStop: (enabled: boolean) => void;
   setAutoCounterSoundOnTick: (enabled: boolean) => void;
+  setAutoCounterVibrateOnTick: (enabled: boolean) => void;
+        setAutoCounterVibrateOnTick: (enabled: boolean) =>
+          set((state) => {
+            const newState = {
+              preferences: {
+                ...state.preferences,
+                autoCounterVibrateOnTick: enabled,
+              },
+            };
+            persistState({ ...state, ...newState });
+            return newState;
+          }),
   resetPreferences: () => void;
   // Phase 2: Advanced timing controls
   setAdvancedTiming: (config: AdvancedTimingConfig) => void;
@@ -355,15 +368,27 @@ function getInitialState(): Partial<TasbihStoreState> {
       expandedLists: {},
     },
     preferences: {
-        // --- Auto-counter settings ---
-        autoCounterDefaultEnabled: false,
-        autoCounterDefaultSpeed: 1000,
-        autoCounterResumeAfterReset: false,
-        autoCounterStopAtGoal: true,
-        autoCounterEntryAutoStart: false,
-        blurActionControlsWhileAuto: true,
-        autoCounterConfirmOnStop: false,
-        autoCounterSoundOnTick: false,
+      // --- Auto-counter settings ---
+      autoCounterDefaultEnabled: false,
+      autoCounterDefaultSpeed: 1000,
+      autoCounterResumeAfterReset: false,
+        autoCounterResumeOnNext: true,
+        setAutoCounterResumeOnNext: (enabled: boolean) => void;
+            const newState = {
+              preferences: {
+                ...state.preferences,
+                autoCounterResumeOnNext: enabled,
+              },
+            };
+            persistState({ ...state, ...newState });
+            return newState;
+          }),
+      autoCounterStopAtGoal: true,
+      autoCounterEntryAutoStart: false,
+      blurActionControlsWhileAuto: true,
+      autoCounterConfirmOnStop: false,
+      autoCounterSoundOnTick: false,
+      autoCounterVibrateOnTick: false,
       theme: "light",
       vibration: false,
       wakeLockEnabled: false,
@@ -389,6 +414,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       customProfiles: [],
       activeCustomProfileId: undefined,
       iconTheme: "auto" as IconTheme,
+      autoCounterWakeLock: false,
     },
   };
 }
@@ -588,6 +614,7 @@ const initialState: Partial<TasbihStoreState> = {
       storedState?.preferences?.audioDebugTelemetry,
       false
     ),
+    autoCounterWakeLock: false,
   } as Preferences,
 };
 
@@ -1297,7 +1324,6 @@ const createStore = () =>
           return newState;
         }),
 
-
       setAutoAdvanceNextZikr: (enabled: boolean) =>
         set((state) => {
           const newState = {
@@ -1409,95 +1435,15 @@ const createStore = () =>
           return newState;
         }),
 
-      setAudioDebugTelemetry: (enabled: boolean) =>
+      setAutoCounterVibrateOnTick: (enabled: boolean) =>
         set((state) => {
           const newState = {
             preferences: {
               ...state.preferences,
-              audioDebugTelemetry: enabled,
+              autoCounterVibrateOnTick: enabled,
             },
-          };
-          persistState({
-            ...state,
-            ...newState,
-          });
-          return newState;
-        }),
-
-      setLanguage: (lang: "fr" | "en") =>
-        set((state) => {
-          const newState = {
-            preferences: {
-              ...state.preferences,
-              language: lang,
-            },
-          };
-          persistState({
-            ...state,
-            ...newState,
-          });
-          return newState;
-        }),
-
-      setRemindersEnabled: (enabled: boolean) =>
-        set((state) => {
-          const newState = {
-            preferences: {
-              ...state.preferences,
-              remindersEnabled: enabled,
-            },
-          };
-          persistState({
-            ...state,
-            ...newState,
-          });
-          return newState;
-        }),
-
-      setReminderScheduleType: (type: ReminderScheduleType) =>
-        set((state) => {
-          const newState = {
-            preferences: { ...state.preferences, reminderScheduleType: type },
           };
           persistState({ ...state, ...newState });
-          return newState;
-        }),
-
-      setReminderTimes: (times: ReminderTime[]) =>
-        set((state) => {
-          const clamped = times.slice(0, 2).map((t) => ({
-            hour: Math.max(0, Math.min(23, Math.floor(t.hour))),
-            minute: Math.max(0, Math.min(59, Math.floor(t.minute))),
-          }));
-          const newState = {
-            preferences: { ...state.preferences, reminderTimes: clamped },
-          };
-          persistState({ ...state, ...newState });
-          return newState;
-        }),
-
-      setReminderDays: (days: number[]) =>
-        set((state) => {
-          const valid = [...new Set(days.filter((d) => d >= 0 && d <= 6))];
-          const newState = {
-            preferences: { ...state.preferences, reminderDays: valid },
-          };
-          persistState({ ...state, ...newState });
-          return newState;
-        }),
-
-      setOptionalSyncEnabled: (enabled: boolean) =>
-        set((state) => {
-          const newState = {
-            preferences: {
-              ...state.preferences,
-              optionalSyncEnabled: enabled,
-            },
-          };
-          persistState({
-            ...state,
-            ...newState,
-          });
           return newState;
         }),
 

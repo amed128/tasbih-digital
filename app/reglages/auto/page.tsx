@@ -1,3 +1,19 @@
+const setAutoCounterVibrateOnTick = useTasbihStore((s) => s.setAutoCounterVibrateOnTick);
+        <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={preferences.autoCounterResumeOnNext}
+                      onChange={e => setAutoCounterResumeOnNext(e.target.checked)}
+                    />
+                    {t("autoCounterResumeOnNextTitle")}
+                  </label>
+          <input
+            type="checkbox"
+            checked={preferences.autoCounterVibrateOnTick}
+            onChange={e => setAutoCounterVibrateOnTick(e.target.checked)}
+          />
+          {t("autoCounterVibrateOnTickTitle")}
+        </label>
 "use client";
 
 import { useTasbihStore } from "../../../store/tasbihStore";
@@ -17,6 +33,7 @@ export default function AutoCounterSettings() {
   const setBlurActionControlsWhileAuto = useTasbihStore((s) => s.setBlurActionControlsWhileAuto);
   const setAutoCounterConfirmOnStop = useTasbihStore((s) => s.setAutoCounterConfirmOnStop);
   const setAutoCounterSoundOnTick = useTasbihStore((s) => s.setAutoCounterSoundOnTick);
+  const setAutoCounterWakeLock = useTasbihStore((s) => s.setAutoCounterWakeLock);
 
   return (
     <div className="flex flex-col gap-6 p-4">
@@ -88,6 +105,14 @@ export default function AutoCounterSettings() {
             onChange={e => setAutoCounterSoundOnTick(e.target.checked)}
           />
           {t("autoCounterSoundOnTickTitle")}
+        </label>
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={preferences.autoCounterWakeLock}
+            onChange={e => setAutoCounterWakeLock(e.target.checked)}
+          />
+          {t("autoCounterWakeLockTitle")}
         </label>
         <label className="flex items-center gap-2">
           <input

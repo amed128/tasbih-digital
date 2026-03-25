@@ -225,6 +225,7 @@ export default function ReglagesPage() {
           </div>
         </section>
 
+
         <Link
           href="/reglages/audio"
           className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
@@ -235,6 +236,21 @@ export default function ReglagesPage() {
             </div>
             <div className="text-xs text-[var(--secondary)]">
               {t("settings.audioCounterSettingsHint")}
+            </div>
+          </div>
+          <span className="text-base text-[var(--secondary)]">›</span>
+        </Link>
+
+        <Link
+          href="/reglages/auto"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
+        >
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">
+              {t("settings.autoCounterSettingsTitle")}
+            </div>
+            <div className="text-xs text-[var(--secondary)]">
+              {t("settings.autoCounterSettingsHint")}
             </div>
           </div>
           <span className="text-base text-[var(--secondary)]">›</span>

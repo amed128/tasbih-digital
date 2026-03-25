@@ -1,19 +1,4 @@
-const setAutoCounterVibrateOnTick = useTasbihStore((s) => s.setAutoCounterVibrateOnTick);
-        <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={preferences.autoCounterResumeOnNext}
-                      onChange={e => setAutoCounterResumeOnNext(e.target.checked)}
-                    />
-                    {t("autoCounterResumeOnNextTitle")}
-                  </label>
-          <input
-            type="checkbox"
-            checked={preferences.autoCounterVibrateOnTick}
-            onChange={e => setAutoCounterVibrateOnTick(e.target.checked)}
-          />
-          {t("autoCounterVibrateOnTickTitle")}
-        </label>
+
 "use client";
 
 import { useTasbihStore } from "../../../store/tasbihStore";

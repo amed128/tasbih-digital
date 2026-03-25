@@ -183,18 +183,6 @@ export type TasbihStoreState = {
   setBlurActionControlsWhileAuto: (enabled: boolean) => void;
   setAutoCounterConfirmOnStop: (enabled: boolean) => void;
   setAutoCounterSoundOnTick: (enabled: boolean) => void;
-  setAutoCounterVibrateOnTick: (enabled: boolean) => void;
-        setAutoCounterVibrateOnTick: (enabled: boolean) =>
-          set((state) => {
-            const newState = {
-              preferences: {
-                ...state.preferences,
-                autoCounterVibrateOnTick: enabled,
-              },
-            };
-            persistState({ ...state, ...newState });
-            return newState;
-          }),
   resetPreferences: () => void;
   // Phase 2: Advanced timing controls
   setAdvancedTiming: (config: AdvancedTimingConfig) => void;
@@ -373,16 +361,6 @@ function getInitialState(): Partial<TasbihStoreState> {
       autoCounterDefaultSpeed: 1000,
       autoCounterResumeAfterReset: false,
         autoCounterResumeOnNext: true,
-        setAutoCounterResumeOnNext: (enabled: boolean) => void;
-            const newState = {
-              preferences: {
-                ...state.preferences,
-                autoCounterResumeOnNext: enabled,
-              },
-            };
-            persistState({ ...state, ...newState });
-            return newState;
-          }),
       autoCounterStopAtGoal: true,
       autoCounterEntryAutoStart: false,
       blurActionControlsWhileAuto: true,

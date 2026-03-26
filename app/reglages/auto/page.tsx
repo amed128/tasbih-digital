@@ -20,9 +20,9 @@ export default function AutoCounterSettings() {
   // Derive the displayed value for the input
   let customValue: number | "";
   if (![500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed) && preferences.autoCounterDefaultSpeed) {
-    customValue = inputValue !== "" ? inputValue : Math.floor(preferences.autoCounterDefaultSpeed / 1000);
+    customValue = inputValue !== "" ? Number(inputValue) : Math.floor(preferences.autoCounterDefaultSpeed / 1000);
   } else {
-    customValue = inputValue !== "" ? inputValue : lastCustomValue;
+    customValue = inputValue !== "" ? Number(inputValue) : lastCustomValue;
   }
   const setAutoCounterResumeAfterReset = useTasbihStore((s) => s.setAutoCounterResumeAfterReset);
   const setAutoCounterStopAtGoal = useTasbihStore((s) => s.setAutoCounterStopAtGoal);

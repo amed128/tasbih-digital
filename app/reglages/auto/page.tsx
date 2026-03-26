@@ -14,14 +14,19 @@ export default function AutoCounterSettings() {
   const setAutoCounterDefaultSpeed = useTasbihStore((s) => s.setAutoCounterDefaultSpeed);
   // Track last custom value in a ref so it persists even if user switches away from 'Custom'
   const lastCustomValueRef = useRef(5);
-  const [customValue, setCustomValue] = useState(5);
+  const [customValue, setCustomValue] = useState<number | "">(5);
 
   // Keep customValue in sync with preferences when switching to custom
   useEffect(() => {
-    if (![500,1000,2000].includes(preferences.autoCounterDefaultSpeed) && preferences.autoCounterDefaultSpeed) {
-      setCustomValue(Math.floor(preferences.autoCounterDefaultSpeed / 1000));
-    } else if ([500,1000,2000].includes(preferences.autoCounterDefaultSpeed)) {
-      setCustomValue(lastCustomValueRef.current || 5);
+    if (
+      ![500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed) &&
+      preferences.autoCounterDefaultSpeed
+    ) {
+      const newVal = Math.floor(preferences.autoCounterDefaultSpeed / 1000);
+      if (customValue !== newVal) setCustomValue(newVal);
+    } else if ([500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed)) {
+      const newVal = lastCustomValueRef.current || 5;
+      if (customValue !== newVal) setCustomValue(newVal);
     }
   }, [preferences.autoCounterDefaultSpeed]);
   const setAutoCounterResumeAfterReset = useTasbihStore((s) => s.setAutoCounterResumeAfterReset);
@@ -136,7 +141,7 @@ export default function AutoCounterSettings() {
                   }
                 }}
                 onBlur={e => {
-                  if (![500,1000,2000].includes(preferences.autoCounterDefaultSpeed)) {
+                  if (![500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed)) {
                     const val = Number(e.target.value);
                     if (isNaN(val) || !Number.isInteger(val) || val < 1) {
                       lastCustomValueRef.current = 5;
@@ -145,7 +150,7 @@ export default function AutoCounterSettings() {
                     }
                   }
                 }}
-                disabled={[500,1000,2000].includes(preferences.autoCounterDefaultSpeed)}
+                disabled={[500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed)}
                 className={`w-24 rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] ${[500,1000,2000].includes(preferences.autoCounterDefaultSpeed) ? 'opacity-50 cursor-not-allowed' : ''}`}
               />
             </div>

@@ -31,7 +31,8 @@ body[data-theme="light"] {
   --border: #D4DCE6;
 }
 
-@theme inline {
+
+:root {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);

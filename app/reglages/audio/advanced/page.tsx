@@ -3,7 +3,6 @@
 import { useState, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Settings } from "lucide-react";
 import { BottomNav } from "../../../../components/BottomNav";
 import { useTasbihStore } from "../../../../store/tasbihStore";
 import { useT } from "@/hooks/useT";
@@ -45,7 +44,7 @@ export default function AdvancedAudioSettingsPage() {
           </Link>
           <nav aria-label="Breadcrumb" className="mb-1 flex items-center gap-2 text-xs text-[var(--secondary)]">
             <Link href="/reglages" className="hover:text-[var(--foreground)] flex items-center gap-1">
-              <Settings className="inline-block w-4 h-4 mr-1" />
+              <span className="inline-block mr-1">⚙️</span>
               {t("settings.title")}
             </Link>
             <span>/</span>

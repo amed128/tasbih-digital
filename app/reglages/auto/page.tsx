@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, useRef, useState } from "react";
+import { useSyncExternalStore, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { BottomNav } from "../../../components/BottomNav";

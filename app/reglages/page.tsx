@@ -247,10 +247,10 @@ export default function ReglagesPage() {
         >
           <div>
             <div className="text-sm font-semibold text-[var(--foreground)]">
-              {t("settings.autoCounterSettingsTitle")}
+              Auto-counter settings
             </div>
             <div className="text-xs text-[var(--secondary)]">
-              {t("settings.autoCounterSettingsHint")}
+              Configure how the auto-counter behaves, including speed, start/stop conditions, and advanced options.
             </div>
           </div>
           <span className="text-base text-[var(--secondary)]">›</span>

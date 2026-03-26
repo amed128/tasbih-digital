@@ -225,7 +225,13 @@ export default function Home() {
   const [pulseTrigger, setPulseTrigger] = useState(0);
   const [focusMode, setFocusMode] = useState(false);
   const [autoEnabled, setAutoEnabled] = useState(false);
-  const [autoIntervalMs, setAutoIntervalMs] = useState(1000);
+  const preferences = useTasbihStore((s) => s.preferences);
+  const [autoIntervalMs, setAutoIntervalMs] = useState(preferences.autoCounterDefaultSpeed || 1000);
+
+  // Sync with preferences.autoCounterDefaultSpeed
+  useEffect(() => {
+    setAutoIntervalMs(preferences.autoCounterDefaultSpeed || 1000);
+  }, [preferences.autoCounterDefaultSpeed]);
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [audioAccessState, setAudioAccessState] = useState<AudioAccessState>("idle");
   const [audioTranscript, setAudioTranscript] = useState("");
@@ -1273,6 +1279,9 @@ export default function Home() {
           <option value={500}>0.5s</option>
           <option value={1000}>1s</option>
           <option value={2000}>2s</option>
+          {![500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed) && (
+            <option value={preferences.autoCounterDefaultSpeed}>{`Custom: ${(preferences.autoCounterDefaultSpeed / 1000).toLocaleString(undefined, { maximumFractionDigits: 2 })}s`}</option>
+          )}
         </select>
       </div>
     </section>

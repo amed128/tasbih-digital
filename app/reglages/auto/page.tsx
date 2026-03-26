@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, useRef } from "react";
+import { useSyncExternalStore, useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { BottomNav } from "../../../components/BottomNav";
@@ -13,11 +13,20 @@ export default function AutoCounterSettings() {
   const setAutoCounterDefaultEnabled = useTasbihStore((s) => s.setAutoCounterDefaultEnabled);
   const setAutoCounterDefaultSpeed = useTasbihStore((s) => s.setAutoCounterDefaultSpeed);
   // Track last custom value in a ref so it persists even if user switches away from 'Custom'
-  const lastCustomValueRef = useRef(
-    ![500,1000,2000].includes(preferences.autoCounterDefaultSpeed) && preferences.autoCounterDefaultSpeed
-      ? Math.floor(preferences.autoCounterDefaultSpeed / 1000)
-      : 5
-  );
+  const lastCustomValueRef = useRef(5);
+  const [customValue, setCustomValue] = useState(() => {
+    if (![500,1000,2000].includes(preferences.autoCounterDefaultSpeed) && preferences.autoCounterDefaultSpeed) {
+      return Math.floor(preferences.autoCounterDefaultSpeed / 1000);
+    }
+    return lastCustomValueRef.current;
+  });
+
+  // Keep customValue in sync with preferences when switching to custom
+  useEffect(() => {
+    if (![500,1000,2000].includes(preferences.autoCounterDefaultSpeed) && preferences.autoCounterDefaultSpeed) {
+      setCustomValue(Math.floor(preferences.autoCounterDefaultSpeed / 1000));
+    }
+  }, [preferences.autoCounterDefaultSpeed]);
   const setAutoCounterResumeAfterReset = useTasbihStore((s) => s.setAutoCounterResumeAfterReset);
   const setAutoCounterStopAtGoal = useTasbihStore((s) => s.setAutoCounterStopAtGoal);
   const setAutoCounterEntryAutoStart = useTasbihStore((s) => s.setAutoCounterEntryAutoStart);
@@ -91,13 +100,12 @@ export default function AutoCounterSettings() {
               value={[500,1000,2000].includes(preferences.autoCounterDefaultSpeed) ? preferences.autoCounterDefaultSpeed : 'custom'}
               onChange={e => {
                 if (e.target.value === 'custom') {
-                  // Restore last custom value or default to 5
                   setAutoCounterDefaultSpeed((lastCustomValueRef.current || 5) * 1000);
                   return;
                 }
                 // If leaving custom, store the last custom value
                 if (!([500,1000,2000].includes(preferences.autoCounterDefaultSpeed))) {
-                  lastCustomValueRef.current = Math.floor(preferences.autoCounterDefaultSpeed / 1000) || 5;
+                  lastCustomValueRef.current = customValue || 5;
                 }
                 setAutoCounterDefaultSpeed(Number(e.target.value));
               }}
@@ -119,13 +127,10 @@ export default function AutoCounterSettings() {
                 max={120}
                 step={1}
                 pattern="[0-9]*"
-                value={
-                  ![500,1000,2000].includes(preferences.autoCounterDefaultSpeed)
-                    ? Math.floor(preferences.autoCounterDefaultSpeed / 1000)
-                    : lastCustomValueRef.current || 5
-                }
+                value={customValue}
                 onChange={e => {
-                  let val = Number(e.target.value);
+                  const val = Number(e.target.value);
+                  setCustomValue(e.target.value === '' ? '' : val);
                   if (!isNaN(val) && Number.isInteger(val) && val >= 1 && val <= 120) {
                     lastCustomValueRef.current = val;
                     setAutoCounterDefaultSpeed(val * 1000);
@@ -135,9 +140,10 @@ export default function AutoCounterSettings() {
                 }}
                 onBlur={e => {
                   if (![500,1000,2000].includes(preferences.autoCounterDefaultSpeed)) {
-                    let val = Number(e.target.value);
+                    const val = Number(e.target.value);
                     if (isNaN(val) || !Number.isInteger(val) || val < 1) {
                       lastCustomValueRef.current = 5;
+                      setCustomValue(5);
                       setAutoCounterDefaultSpeed(5000); // default to 5 seconds
                     }
                   }

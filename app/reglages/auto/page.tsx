@@ -14,17 +14,14 @@ export default function AutoCounterSettings() {
   const setAutoCounterDefaultSpeed = useTasbihStore((s) => s.setAutoCounterDefaultSpeed);
   // Track last custom value in a ref so it persists even if user switches away from 'Custom'
   const lastCustomValueRef = useRef(5);
-  const [customValue, setCustomValue] = useState(() => {
-    if (![500,1000,2000].includes(preferences.autoCounterDefaultSpeed) && preferences.autoCounterDefaultSpeed) {
-      return Math.floor(preferences.autoCounterDefaultSpeed / 1000);
-    }
-    return lastCustomValueRef.current;
-  });
+  const [customValue, setCustomValue] = useState(5);
 
   // Keep customValue in sync with preferences when switching to custom
   useEffect(() => {
     if (![500,1000,2000].includes(preferences.autoCounterDefaultSpeed) && preferences.autoCounterDefaultSpeed) {
       setCustomValue(Math.floor(preferences.autoCounterDefaultSpeed / 1000));
+    } else if ([500,1000,2000].includes(preferences.autoCounterDefaultSpeed)) {
+      setCustomValue(lastCustomValueRef.current || 5);
     }
   }, [preferences.autoCounterDefaultSpeed]);
   const setAutoCounterResumeAfterReset = useTasbihStore((s) => s.setAutoCounterResumeAfterReset);

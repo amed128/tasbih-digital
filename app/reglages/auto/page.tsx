@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, useRef, useState, useEffect } from "react";
+import { useSyncExternalStore, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { BottomNav } from "../../../components/BottomNav";
@@ -12,23 +12,18 @@ export default function AutoCounterSettings() {
   const preferences = useTasbihStore((s) => s.preferences);
   const setAutoCounterDefaultEnabled = useTasbihStore((s) => s.setAutoCounterDefaultEnabled);
   const setAutoCounterDefaultSpeed = useTasbihStore((s) => s.setAutoCounterDefaultSpeed);
-  // Track last custom value in a ref so it persists even if user switches away from 'Custom'
-  const lastCustomValueRef = useRef(5);
-  const [customValue, setCustomValue] = useState<number | "">(5);
+  // Track last custom value in state only
+  const [lastCustomValue, setLastCustomValue] = useState(5);
+  // For temporary input editing only
+  const [inputValue, setInputValue] = useState<string>("");
 
-  // Keep customValue in sync with preferences when switching to custom
-  useEffect(() => {
-    if (
-      ![500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed) &&
-      preferences.autoCounterDefaultSpeed
-    ) {
-      const newVal = Math.floor(preferences.autoCounterDefaultSpeed / 1000);
-      if (customValue !== newVal) setCustomValue(newVal);
-    } else if ([500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed)) {
-      const newVal = lastCustomValueRef.current || 5;
-      if (customValue !== newVal) setCustomValue(newVal);
-    }
-  }, [preferences.autoCounterDefaultSpeed]);
+  // Derive the displayed value for the input
+  let customValue: number | "";
+  if (![500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed) && preferences.autoCounterDefaultSpeed) {
+    customValue = inputValue !== "" ? inputValue : Math.floor(preferences.autoCounterDefaultSpeed / 1000);
+  } else {
+    customValue = inputValue !== "" ? inputValue : lastCustomValue;
+  }
   const setAutoCounterResumeAfterReset = useTasbihStore((s) => s.setAutoCounterResumeAfterReset);
   const setAutoCounterStopAtGoal = useTasbihStore((s) => s.setAutoCounterStopAtGoal);
   const setAutoCounterEntryAutoStart = useTasbihStore((s) => s.setAutoCounterEntryAutoStart);
@@ -102,12 +97,12 @@ export default function AutoCounterSettings() {
               value={[500,1000,2000].includes(preferences.autoCounterDefaultSpeed) ? preferences.autoCounterDefaultSpeed : 'custom'}
               onChange={e => {
                 if (e.target.value === 'custom') {
-                  setAutoCounterDefaultSpeed((lastCustomValueRef.current || 5) * 1000);
+                  setAutoCounterDefaultSpeed((lastCustomValue || 5) * 1000);
                   return;
                 }
                 // If leaving custom, store the last custom value
                 if (!([500,1000,2000].includes(preferences.autoCounterDefaultSpeed))) {
-                  lastCustomValueRef.current = customValue || 5;
+                  setLastCustomValue(Number(customValue) || 5);
                 }
                 setAutoCounterDefaultSpeed(Number(e.target.value));
               }}
@@ -131,23 +126,23 @@ export default function AutoCounterSettings() {
                 pattern="[0-9]*"
                 value={customValue}
                 onChange={e => {
+                  setInputValue(e.target.value);
                   const val = Number(e.target.value);
-                  setCustomValue(e.target.value === '' ? '' : val);
                   if (!isNaN(val) && Number.isInteger(val) && val >= 1 && val <= 120) {
-                    lastCustomValueRef.current = val;
+                    setLastCustomValue(val);
                     setAutoCounterDefaultSpeed(val * 1000);
-                  } else if (e.target.value === '') {
+                  } else if (e.target.value === "") {
                     setAutoCounterDefaultSpeed(0); // temp empty
                   }
                 }}
                 onBlur={e => {
-                  if (![500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed)) {
-                    const val = Number(e.target.value);
-                    if (isNaN(val) || !Number.isInteger(val) || val < 1) {
-                      lastCustomValueRef.current = 5;
-                      setCustomValue(5);
-                      setAutoCounterDefaultSpeed(5000); // default to 5 seconds
-                    }
+                  const val = Number(e.target.value);
+                  if (isNaN(val) || !Number.isInteger(val) || val < 1) {
+                    setLastCustomValue(5);
+                    setInputValue("5");
+                    setAutoCounterDefaultSpeed(5000); // default to 5 seconds
+                  } else {
+                    setInputValue(""); // clear temp input after valid entry
                   }
                 }}
                 disabled={[500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed)}

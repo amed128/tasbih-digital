@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { Settings } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { BottomNav } from "../../components/BottomNav";
@@ -31,12 +32,14 @@ export default function AboutPage() {
         transition={{ duration: 0.2 }}
       >
         <header className="flex flex-col gap-1">
-          <Link
-            href="/reglages"
-            className="mb-1 text-sm text-[var(--primary)] font-medium"
-          >
-            {t("about.back")}
-          </Link>
+          <nav aria-label="Breadcrumb" className="mb-1 flex items-center gap-2 text-xs text-[var(--secondary)]">
+            <Link href="/reglages" className="hover:text-[var(--foreground)] flex items-center gap-1">
+              <Settings className="inline-block w-4 h-4 mr-1" />
+              {t("settings.title")}
+            </Link>
+            <span>/</span>
+            <span className="text-[var(--foreground)]">{t("about.title")}</span>
+          </nav>
           <h1 className="text-xl font-semibold text-[var(--foreground)]">
             {t("about.title")}
           </h1>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore, useState } from "react";
+import { Settings } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { BottomNav } from "../../../components/BottomNav";
@@ -52,8 +53,9 @@ export default function AutoCounterSettings() {
             {t("about.back")}
           </Link>
           <nav aria-label="Breadcrumb" className="mb-1 flex items-center gap-2 text-xs text-[var(--secondary)]">
-            <Link href="/reglages" className="hover:text-[var(--foreground)]">
-              Settings
+            <Link href="/reglages" className="hover:text-[var(--foreground)] flex items-center gap-1">
+              <Settings className="inline-block w-4 h-4 mr-1" />
+              {t("settings.title")}
             </Link>
             <span>/</span>
             <span className="text-[var(--foreground)]">Auto-counter settings</span>

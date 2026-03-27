@@ -43,8 +43,7 @@ export default function AdvancedAudioSettingsPage() {
             {t("about.back")}
           </Link>
           <nav aria-label="Breadcrumb" className="mb-1 flex items-center gap-2 text-xs text-[var(--secondary)]">
-            <Link href="/reglages" className="hover:text-[var(--foreground)] flex items-center gap-1">
-              <span className="inline-block mr-1">⚙️</span>
+            <Link href="/reglages" className="hover:text-[var(--foreground)]">
               {t("settings.title")}
             </Link>
             <span>/</span>

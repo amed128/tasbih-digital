@@ -17,7 +17,8 @@
     "release:patch": "npm version patch -m \"chore(release): %s\"",
     "release:minor": "npm version minor -m \"chore(release): %s\"",
     "release:major": "npm version major -m \"chore(release): %s\"",
-    "release:push": "git push && git push --tags"
+    "release:push": "git push && git push --tags",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@types/canvas-confetti": "^1.9.0",
@@ -42,6 +43,7 @@
     "@types/web-push": "^3.6.4",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "husky": "^8.0.0",
     "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "terser": "^5.46.1",

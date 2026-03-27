@@ -49,8 +49,8 @@ export default function GeneralSettings() {
         </div>
         <input
           type="checkbox"
-          checked={preferences.wakeLock}
-          onChange={() => setWakeLockEnabled(!preferences.wakeLock)}
+          checked={preferences.wakeLockEnabled}
+          onChange={() => setWakeLockEnabled(!preferences.wakeLockEnabled)}
           className="form-checkbox h-5 w-5 text-[var(--primary)]"
           aria-label={t("settings.ariaKeepScreenAwake")}
         />

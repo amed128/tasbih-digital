@@ -21,12 +21,9 @@ export default function GeneralSettingsPage() {
           <span>/</span>
           <span className="text-[var(--foreground)] font-semibold">General</span>
         </div>
-        <h1 className="text-xl font-semibold mb-0.5">{t("settings.generalTitle", "General Settings")}</h1>
+        <h1 className="text-xl font-semibold mb-0.5">{t("settings.generalTitle")}</h1>
         <p className="text-sm text-[var(--secondary)] mb-2">
-          {t(
-            "settings.generalHint",
-            "Manage sound, vibration, language, and screen settings."
-          )}
+          {t("settings.generalHint")}
         </p>
         <GeneralSettings />
       </main>

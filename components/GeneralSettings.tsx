@@ -1,4 +1,4 @@
-import { useTasbihStore } from "../../store/tasbihStore";
+import { useTasbihStore } from "@/store/tasbihStore";
 import { useT } from "@/hooks/useT";
 
 export default function GeneralSettings() {

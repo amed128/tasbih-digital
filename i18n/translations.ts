@@ -178,6 +178,8 @@ export const translations = {
     },
     settings: {
       title: "⚙️ Réglages",
+      generalTitle: "Réglages généraux",
+      generalHint: "Gérer le son, la vibration, la langue et l'écran.",
       subtitle: "Personnalisez votre expérience",
       themeTitle: "Thème",
       themeHint: "Choix global de palette",
@@ -575,6 +577,8 @@ export const translations = {
     },
     settings: {
       title: "⚙️ Settings",
+      generalTitle: "General Settings",
+      generalHint: "Manage sound, vibration, language, and screen settings.",
       subtitle: "Customize your experience",
       themeTitle: "Theme",
       themeHint: "Global palette choice",

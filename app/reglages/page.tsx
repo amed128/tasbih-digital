@@ -11,6 +11,7 @@ import {
   parseBackupPayload,
 } from "../../store/tasbihStore";
 import { BottomNav } from "../../components/BottomNav";
+import GeneralSettings from "../../components/GeneralSettings";
 import { useT } from "@/hooks/useT";
 import { useFeatureAvailability } from "@/hooks/useFeatureAvailability";
 import Link from "next/link";
@@ -187,6 +188,22 @@ export default function ReglagesPage() {
           <p className="text-sm text-[var(--secondary)]">{t("settings.subtitle")}</p>
         </header>
 
+        {/* General Settings Entry */}
+        <Link
+          href="/reglages/general"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
+        >
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">
+              {t("settings.generalTitle", "General Settings")}
+            </div>
+            <div className="text-xs text-[var(--secondary)]">
+              {t("settings.generalHint", "Manage sound, vibration, language, and screen settings.")}
+            </div>
+          </div>
+          <span className="text-base text-[var(--secondary)]">›</span>
+        </Link>
+
         <Link
           href="/reglages/apparence"
           className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
@@ -202,28 +219,6 @@ export default function ReglagesPage() {
           <span className="text-base text-[var(--secondary)]">›</span>
         </Link>
 
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.soundTitle")}</div>
-              <div className="text-xs text-[var(--secondary)]">
-                {t("settings.soundHint")}
-              </div>
-            </div>
-            <select
-              value={preferences.tapSound}
-              onChange={(e) => setTapSound(e.target.value as TapSound)}
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
-              aria-label={t("settings.ariaSound")}
-            >
-              {soundOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </section>
 
 
         <Link
@@ -256,49 +251,7 @@ export default function ReglagesPage() {
           <span className="text-base text-[var(--secondary)]">›</span>
         </Link>
 
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.vibrationTitle")}</div>
-              <div className="text-xs text-[var(--secondary)]">
-                {isIOS ? t("settings.vibrationIOS") : t("settings.vibrationHint")}
-              </div>
-            </div>
-            <button
-              onClick={toggleVibration}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                preferences.vibration
-                  ? "bg-[var(--primary)] text-black"
-                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-              }`}
-            >
-              {preferences.vibration ? t("settings.on") : t("settings.off")}
-            </button>
-          </div>
-        </section>
 
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.wakeLockTitle")}</div>
-              <div className="text-xs text-[var(--secondary)]">
-                {wakeLockToggleDisabled ? t("settings.wakeLockLimitedHint") : t("settings.wakeLockHint")}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setWakeLockEnabled(!preferences.wakeLockEnabled)}
-              disabled={wakeLockToggleDisabled}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                preferences.wakeLockEnabled
-                  ? "bg-[var(--primary)] text-black"
-                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-              } ${wakeLockToggleDisabled ? "cursor-not-allowed opacity-50" : ""}`}
-            >
-              {preferences.wakeLockEnabled ? t("settings.on") : t("settings.off")}
-            </button>
-          </div>
-        </section>
 
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="flex items-center justify-between gap-4">
@@ -470,20 +423,6 @@ export default function ReglagesPage() {
           ) : null}
         </section>
 
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.langTitle")}</div>
-            <select
-              value={preferences.language}
-              onChange={(e) => setLanguage(e.target.value as "fr" | "en")}
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
-              aria-label={t("settings.ariaLanguage")}
-            >
-              <option value="en">{t("settings.languageEnglish")}</option>
-              <option value="fr">{t("settings.languageFrench")}</option>
-            </select>
-          </div>
-        </section>
 
         <div className="flex justify-center">
           <button

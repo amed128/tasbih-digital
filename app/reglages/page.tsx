@@ -188,7 +188,8 @@ export default function ReglagesPage() {
           <p className="text-sm text-[var(--secondary)]">{t("settings.subtitle")}</p>
         </header>
 
-        {/* General Settings Entry */}
+
+        {/* 1. General Settings */}
         <Link
           href="/reglages/general"
           className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
@@ -204,6 +205,7 @@ export default function ReglagesPage() {
           <span className="text-base text-[var(--secondary)]">›</span>
         </Link>
 
+        {/* 2. Appearance */}
         <Link
           href="/reglages/apparence"
           className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
@@ -219,40 +221,7 @@ export default function ReglagesPage() {
           <span className="text-base text-[var(--secondary)]">›</span>
         </Link>
 
-
-
-        <Link
-          href="/reglages/audio"
-          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
-        >
-          <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">
-              {t("settings.audioCounterSettingsTitle")}
-            </div>
-            <div className="text-xs text-[var(--secondary)]">
-              {t("settings.audioCounterSettingsHint")}
-            </div>
-          </div>
-          <span className="text-base text-[var(--secondary)]">›</span>
-        </Link>
-
-        <Link
-          href="/reglages/auto"
-          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
-        >
-          <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">
-              Auto-counter settings
-            </div>
-            <div className="text-xs text-[var(--secondary)]">
-              Configure how the auto-counter behaves, including speed, start/stop conditions, and advanced options.
-            </div>
-          </div>
-          <span className="text-base text-[var(--secondary)]">›</span>
-        </Link>
-
-
-
+        {/* 5. Auto-advance to next zikr */}
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -272,6 +241,38 @@ export default function ReglagesPage() {
             </button>
           </div>
         </section>
+
+        {/* 4. Auto-counter Settings */}
+        <Link
+          href="/reglages/auto"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
+        >
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">
+              Auto-counter settings
+            </div>
+            <div className="text-xs text-[var(--secondary)]">
+              Configure how the auto-counter behaves, including speed, start/stop conditions, and advanced options.
+            </div>
+          </div>
+          <span className="text-base text-[var(--secondary)]">›</span>
+        </Link>
+
+        {/* 3. Audio Counter Settings */}
+        <Link
+          href="/reglages/audio"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
+        >
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">
+              {t("settings.audioCounterSettingsTitle")}
+            </div>
+            <div className="text-xs text-[var(--secondary)]">
+              {t("settings.audioCounterSettingsHint")}
+            </div>
+          </div>
+          <span className="text-base text-[var(--secondary)]">›</span>
+        </Link>
 
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.remindersTitle")}</div>

@@ -223,32 +223,16 @@ export default function ReglagesPage() {
 
 
         {/* 3. Selection Mode */}
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.selectionModeTitle")}</div>
-              <div className="text-xs text-[var(--secondary)]">{t("settings.selectionModeHint")}</div>
-            </div>
+        <Link
+          href="/reglages/selection-mode"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
+        >
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.selectionModeTitle")}</div>
+            <div className="text-xs text-[var(--secondary)]">{t("settings.selectionModeHint")}</div>
           </div>
-          {/* Auto-advance to next zikr toggle */}
-          <div className="flex items-center justify-between gap-4 mt-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.autoAdvanceTitle")}</div>
-              <div className="text-xs text-[var(--secondary)]">{t("settings.autoAdvanceHint")}</div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setAutoAdvanceNextZikr(!(preferences.autoAdvanceNextZikr ?? false))}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                (preferences.autoAdvanceNextZikr ?? false)
-                  ? "bg-[var(--primary)] text-black"
-                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-              }`}
-            >
-              {(preferences.autoAdvanceNextZikr ?? false) ? t("settings.on") : t("settings.off")}
-            </button>
-          </div>
-        </section>
+            <span className="text-base text-[var(--secondary)]">›</span>
+        </Link>
 
         {/* 4. Auto-counter Settings */}
         <Link

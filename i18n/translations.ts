@@ -177,6 +177,8 @@ export const translations = {
       toastReset: "Réinitialisation effectuée",
     },
     settings: {
+      // ...existing code...
+        languageHint: "Select the language for the app interface.",
       title: "⚙️ Réglages",
       generalTitle: "Réglages généraux",
       generalHint: "Gérer le son, la vibration, la langue et l'écran.",

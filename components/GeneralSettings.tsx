@@ -74,8 +74,8 @@ export default function GeneralSettings() {
       <section className="rounded-2xl bg-[var(--card)] p-4 flex flex-col gap-1 mb-2">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.langTitle", "Language")}</div>
-            <div className="text-xs text-[var(--secondary)]">{t("settings.languageHint", "Choose the app language")}</div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.langTitle")}</div>
+            <div className="text-xs text-[var(--secondary)]">{t("settings.languageHint")}</div>
           </div>
           <select
             value={preferences.language}

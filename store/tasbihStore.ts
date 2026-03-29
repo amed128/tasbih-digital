@@ -625,6 +625,20 @@ const createStore = () =>
     devtools((set) => ({
       ...initialState,
       currentZikr: resolveZikr(initialState.currentZikrId ?? "", initialState.customZikrs ?? {}),
+      setLanguage: (lang: "fr" | "en") =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              language: lang,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
         increment: () => 
           set((state) => {
             const target = state.customTarget ?? state.currentZikr?.defaultTarget ?? 0;

@@ -55,8 +55,8 @@ export default function GeneralSettings() {
 
       <section className="rounded-2xl bg-[var(--card)] p-4 flex items-center justify-between mb-2">
         <div>
-          <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.wakeLockTitle", "Keep screen awake")}</div>
-          <div className="text-xs text-[var(--secondary)]">{t("settings.wakeLockHint", "Prevents sleep while an active counter is running")}</div>
+          <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.wakeLockTitle")}</div>
+          <div className="text-xs text-[var(--secondary)]">{t("settings.wakeLockHint")}</div>
         </div>
         <button
           onClick={() => setWakeLockEnabled(!preferences.wakeLockEnabled)}

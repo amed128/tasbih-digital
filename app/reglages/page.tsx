@@ -195,10 +195,10 @@ export default function ReglagesPage() {
         >
           <div>
             <div className="text-sm font-semibold text-[var(--foreground)]">
-              {t("settings.generalTitle", "General Settings")}
+              {t("settings.generalTitle")}
             </div>
             <div className="text-xs text-[var(--secondary)]">
-              {t("settings.generalHint", "Manage sound, vibration, language, and screen settings.")}
+              {t("settings.generalHint")}
             </div>
           </div>
           <span className="text-base text-[var(--secondary)]">›</span>

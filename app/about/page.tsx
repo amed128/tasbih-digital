@@ -31,6 +31,9 @@ export default function AboutPage() {
         transition={{ duration: 0.2 }}
       >
         <header className="flex flex-col gap-1">
+          <div className="mb-1 flex items-center gap-2 text-xs text-[var(--secondary)]">
+            <a href="/reglages" className="hover:underline text-[var(--primary)] font-medium">← Back</a>
+          </div>
           <nav aria-label="Breadcrumb" className="mb-1 flex items-center gap-2 text-xs text-[var(--secondary)]">
             <Link href="/reglages" className="hover:text-[var(--foreground)] flex items-center gap-1">
               {t("settings.title")}

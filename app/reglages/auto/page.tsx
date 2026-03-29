@@ -56,20 +56,20 @@ export default function AutoCounterSettings() {
               {t("settings.title")}
             </Link>
             <span>/</span>
-            <span className="text-[var(--foreground)]">Auto-counter settings</span>
+            <span className="text-[var(--foreground)]">{t("settings.autoCounterSettingsTitle")}</span>
           </nav>
           <h1 className="text-xl font-semibold text-[var(--foreground)]">
-            Auto-counter settings
+            {t("settings.autoCounterSettingsTitle")}
           </h1>
           <p className="text-sm text-[var(--secondary)]">
-            Configure how the auto-counter behaves, including speed, start/stop conditions, and advanced options.
+            {t("settings.autoCounterSettingsHint")}
           </p>
         </header>
         {/* Enable auto-counter by default */}
         <section className="rounded-2xl bg-[var(--card)] p-4 mb-3 flex items-center justify-between">
           <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">Enable auto-counter by default</div>
-            <div className="text-xs text-[var(--secondary)]">Automatically enable auto-counter mode when starting a new session.</div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.autoCounterDefaultEnabledTitle")}</div>
+            <div className="text-xs text-[var(--secondary)]">{t("settings.autoCounterDefaultEnabledHint")}</div>
           </div>
           <button
             onClick={() => setAutoCounterDefaultEnabled(!preferences.autoCounterDefaultEnabled)}
@@ -89,8 +89,8 @@ export default function AutoCounterSettings() {
         <section className="rounded-2xl bg-[var(--card)] p-4 mb-3 flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">Default auto-counter speed</div>
-              <div className="text-xs text-[var(--secondary)]">Set how fast the auto-counter increments (interval between counts).</div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.autoCounterDefaultSpeedTitle")}</div>
+              <div className="text-xs text-[var(--secondary)]">{t("settings.autoCounterDefaultSpeedHint")}</div>
             </div>
             <select
               id="auto-speed"
@@ -116,7 +116,7 @@ export default function AutoCounterSettings() {
           </div>
           <div className="flex flex-col gap-1 mt-2">
             <div className="flex items-center gap-2">
-              <label htmlFor="custom-auto-speed" className="text-xs text-[var(--secondary)]">Custom speed (seconds):</label>
+              <label htmlFor="custom-auto-speed" className="text-xs text-[var(--secondary)]">{t("settings.autoCounterCustomSpeedLabel")}</label>
               <input
                 id="custom-auto-speed"
                 type="number"
@@ -149,15 +149,15 @@ export default function AutoCounterSettings() {
                 className={`w-24 rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] ${[500,1000,2000].includes(preferences.autoCounterDefaultSpeed) ? 'opacity-50 cursor-not-allowed' : ''}`}
               />
             </div>
-            <div className="text-xs text-[var(--secondary)]">Maximum: 120 seconds</div>
+            <div className="text-xs text-[var(--secondary)]">{t("settings.autoCounterMaxSpeedHint")}</div>
           </div>
         </section>
 
         {/* Resume auto-counter after reset/quit if goal was reached */}
         <section className="rounded-2xl bg-[var(--card)] p-4 mb-3 flex items-center justify-between">
           <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">Resume after reset/quit if goal was reached</div>
-            <div className="text-xs text-[var(--secondary)]">If enabled, auto-counter resumes automatically after reset or quit, but only if the previous goal was reached.</div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.autoCounterResumeAfterResetTitle")}</div>
+            <div className="text-xs text-[var(--secondary)]">{t("settings.autoCounterResumeAfterResetHint")}</div>
           </div>
           <button
             onClick={() => setAutoCounterResumeAfterReset(!preferences.autoCounterResumeAfterReset)}
@@ -176,8 +176,8 @@ export default function AutoCounterSettings() {
         {/* Stop auto-counter when goal is reached */}
         <section className="rounded-2xl bg-[var(--card)] p-4 mb-3 flex items-center justify-between">
           <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">Stop auto-counter when goal is reached</div>
-            <div className="text-xs text-[var(--secondary)]">Automatically stop counting when the set goal is reached.</div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.autoCounterStopAtGoalTitle")}</div>
+            <div className="text-xs text-[var(--secondary)]">{t("settings.autoCounterStopAtGoalHint")}</div>
           </div>
           <button
             onClick={() => setAutoCounterStopAtGoal(!preferences.autoCounterStopAtGoal)}
@@ -196,8 +196,8 @@ export default function AutoCounterSettings() {
         {/* Start auto-counter immediately on entry */}
         <section className="rounded-2xl bg-[var(--card)] p-4 mb-3 flex items-center justify-between">
           <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">Start auto-counter immediately on entry</div>
-            <div className="text-xs text-[var(--secondary)]">Begin counting as soon as you enter auto-counter mode, without manual start.</div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.autoCounterEntryAutoStartTitle")}</div>
+            <div className="text-xs text-[var(--secondary)]">{t("settings.autoCounterEntryAutoStartHint")}</div>
           </div>
           <button
             onClick={() => setAutoCounterEntryAutoStart(!preferences.autoCounterEntryAutoStart)}
@@ -216,8 +216,8 @@ export default function AutoCounterSettings() {
         {/* Blur/disable actions while auto-counter is running */}
         <section className="rounded-2xl bg-[var(--card)] p-4 mb-3 flex items-center justify-between">
           <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">Blur/disable actions while auto-counter is running</div>
-            <div className="text-xs text-[var(--secondary)]">Prevent accidental actions by blurring or disabling controls during auto-counting.</div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.blurActionControlsWhileAutoTitle")}</div>
+            <div className="text-xs text-[var(--secondary)]">{t("settings.blurActionControlsWhileAutoHint")}</div>
           </div>
           <button
             onClick={() => setBlurActionControlsWhileAuto(!preferences.blurActionControlsWhileAuto)}
@@ -236,8 +236,8 @@ export default function AutoCounterSettings() {
         {/* Show confirmation before stopping auto-counter on reset/quit */}
         <section className="rounded-2xl bg-[var(--card)] p-4 mb-3 flex items-center justify-between">
           <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">Show confirmation before stopping on reset/quit</div>
-            <div className="text-xs text-[var(--secondary)]">Ask for confirmation before stopping the auto-counter when you reset or quit.</div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.autoCounterConfirmOnStopTitle")}</div>
+            <div className="text-xs text-[var(--secondary)]">{t("settings.autoCounterConfirmOnStopHint")}</div>
           </div>
           <button
             onClick={() => setAutoCounterConfirmOnStop(!preferences.autoCounterConfirmOnStop)}
@@ -256,8 +256,8 @@ export default function AutoCounterSettings() {
         {/* Play sound/vibrate on each auto-increment */}
         <section className="rounded-2xl bg-[var(--card)] p-4 mb-3 flex items-center justify-between">
           <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">Play sound/vibrate on each auto-increment</div>
-            <div className="text-xs text-[var(--secondary)]">Enable feedback (sound or vibration) for every auto-increment.</div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.autoCounterSoundOnTickTitle")}</div>
+            <div className="text-xs text-[var(--secondary)]">{t("settings.autoCounterSoundOnTickHint")}</div>
           </div>
           <button
             onClick={() => setAutoCounterSoundOnTick(!preferences.autoCounterSoundOnTick)}
@@ -276,8 +276,8 @@ export default function AutoCounterSettings() {
         {/* Wake lock toggle */}
         <section className="rounded-2xl bg-[var(--card)] p-4 mb-3 flex items-center justify-between">
           <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">Keep screen awake during auto-counter</div>
-            <div className="text-xs text-[var(--secondary)]">Prevent your device from sleeping while auto-counter is active.</div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.autoCounterWakeLockTitle")}</div>
+            <div className="text-xs text-[var(--secondary)]">{t("settings.autoCounterWakeLockHint")}</div>
           </div>
           <button
             onClick={() => setAutoCounterWakeLock(!preferences.autoCounterWakeLock)}

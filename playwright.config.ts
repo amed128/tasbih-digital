@@ -20,7 +20,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run start -- --hostname 127.0.0.1 --port 3100",
+    command: "npx serve out --listen tcp://127.0.0.1:3100",
     url: "http://127.0.0.1:3100",
     timeout: 120000,
     reuseExistingServer: !process.env.CI,

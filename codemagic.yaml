@@ -1,27 +1,29 @@
 workflows:
-  ios-dev:
-    name: iOS - TestFlight
+  ios-testflight:
+    name: iOS → TestFlight
     max_build_duration: 60
     instance_type: mac_mini_m2
 
     environment:
-      node: 20.x
+      node: 22.x
       xcode: latest
       cocoapods: default
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.amedn128.tasbihdigital
-      vars:
-        APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID
-        APP_STORE_CONNECT_KEY_IDENTIFIER: $APP_STORE_CONNECT_KEY_IDENTIFIER
-        APP_STORE_CONNECT_PRIVATE_KEY: $APP_STORE_CONNECT_PRIVATE_KEY
-        CERTIFICATE_PRIVATE_KEY: $CERTIFICATE_PRIVATE_KEY
+
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: "v*"
+          include: true
 
     scripts:
       - name: Install dependencies
         script: npm ci
 
-      - name: Build Next.js (static export)
+      - name: Build Next.js + sync PWA assets
         script: npm run build
 
       - name: Capacitor sync
@@ -32,20 +34,14 @@ workflows:
           cd ios/App
           pod install
 
-      - name: Build & archive iOS
+      - name: Set version from package.json
         script: |
-          xcode-project use-profiles
+          VERSION=$(node -p "require('./package.json').version")
           cd ios/App
-          xcodebuild \
-            -workspace App.xcworkspace \
-            -scheme App \
-            -configuration Release \
-            -archivePath $CM_BUILD_DIR/App.xcarchive \
-            archive \
-            CODE_SIGN_STYLE=Manual \
-            | xcpretty
+          xcrun agvtool new-marketing-version "$VERSION"
+          xcrun agvtool new-version -all "$BUILD_NUMBER"
 
-      - name: Export IPA
+      - name: Build IPA
         script: |
           xcode-project build-ipa \
             --workspace ios/App/App.xcworkspace \

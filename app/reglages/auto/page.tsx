@@ -81,7 +81,7 @@ export default function AutoCounterSettings() {
             aria-pressed={preferences.autoCounterDefaultEnabled}
             aria-label={t("autoCounterDefaultEnabledTitle")}
           >
-            {preferences.autoCounterDefaultEnabled ? "On" : "Off"}
+            {preferences.autoCounterDefaultEnabled ? t("settings.on") : t("settings.off")}
           </button>
         </section>
 
@@ -111,7 +111,7 @@ export default function AutoCounterSettings() {
               <option value={500}>0.5s</option>
               <option value={1000}>1s</option>
               <option value={2000}>2s</option>
-              <option value="custom">Custom</option>
+              <option value="custom">{t("settings.custom")}</option>
             </select>
           </div>
           <div className="flex flex-col gap-1 mt-2">
@@ -169,7 +169,7 @@ export default function AutoCounterSettings() {
             aria-pressed={preferences.autoCounterResumeAfterReset}
             aria-label={t("autoCounterResumeAfterResetTitle")}
           >
-            {preferences.autoCounterResumeAfterReset ? "On" : "Off"}
+            {preferences.autoCounterResumeAfterReset ? t("settings.on") : t("settings.off")}
           </button>
         </section>
 
@@ -189,7 +189,7 @@ export default function AutoCounterSettings() {
             aria-pressed={preferences.autoCounterStopAtGoal}
             aria-label={t("autoCounterStopAtGoalTitle")}
           >
-            {preferences.autoCounterStopAtGoal ? "On" : "Off"}
+            {preferences.autoCounterStopAtGoal ? t("settings.on") : t("settings.off")}
           </button>
         </section>
 
@@ -209,7 +209,7 @@ export default function AutoCounterSettings() {
             aria-pressed={preferences.autoCounterEntryAutoStart}
             aria-label={t("autoCounterEntryAutoStartTitle")}
           >
-            {preferences.autoCounterEntryAutoStart ? "On" : "Off"}
+            {preferences.autoCounterEntryAutoStart ? t("settings.on") : t("settings.off")}
           </button>
         </section>
 
@@ -229,7 +229,7 @@ export default function AutoCounterSettings() {
             aria-pressed={preferences.blurActionControlsWhileAuto}
             aria-label={t("blurActionControlsWhileAutoTitle")}
           >
-            {preferences.blurActionControlsWhileAuto ? "On" : "Off"}
+            {preferences.blurActionControlsWhileAuto ? t("settings.on") : t("settings.off")}
           </button>
         </section>
 
@@ -249,7 +249,7 @@ export default function AutoCounterSettings() {
             aria-pressed={preferences.autoCounterConfirmOnStop}
             aria-label={t("autoCounterConfirmOnStopTitle")}
           >
-            {preferences.autoCounterConfirmOnStop ? "On" : "Off"}
+            {preferences.autoCounterConfirmOnStop ? t("settings.on") : t("settings.off")}
           </button>
         </section>
 
@@ -269,7 +269,7 @@ export default function AutoCounterSettings() {
             aria-pressed={preferences.autoCounterSoundOnTick}
             aria-label={t("autoCounterSoundOnTickTitle")}
           >
-            {preferences.autoCounterSoundOnTick ? "On" : "Off"}
+            {preferences.autoCounterSoundOnTick ? t("settings.on") : t("settings.off")}
           </button>
         </section>
 
@@ -289,7 +289,7 @@ export default function AutoCounterSettings() {
             aria-pressed={preferences.autoCounterWakeLock}
             aria-label={t("autoCounterWakeLockTitle")}
           >
-            {preferences.autoCounterWakeLock ? "On" : "Off"}
+            {preferences.autoCounterWakeLock ? t("settings.on") : t("settings.off")}
           </button>
         </section>
         <BottomNav />

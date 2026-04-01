@@ -778,6 +778,7 @@ export const translations = {
       restoreDefaultsConfirmConfirm: "Restore",
       languageEnglish: "English",
       languageFrench: "French",
+      languageHint: "Choose the language of the app interface.",
       syncTitle: "Optional sync",
       syncHint: "Manual transfer between devices using a code",
       syncEnable: "Enable manual sync",

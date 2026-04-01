@@ -21,6 +21,7 @@ import {
 } from "../../store/tasbihStore";
 import { zikrs } from "../../data/zikrs";
 import { BottomNav } from "../../components/BottomNav";
+import { ConfirmDialog } from "../../components/ConfirmDialog";
 import { useT } from "@/hooks/useT";
 
 type HistoryRangeMode = "day" | "week" | "month";
@@ -578,30 +579,16 @@ export default function StatsPage() {
         </div>
       ) : null}
 
-      {showResetConfirm ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
-          <div className="w-full max-w-sm rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4">
-            <h2 className="text-base font-semibold text-[var(--foreground)]">{t("stats.resetConfirmTitle")}</h2>
-            <p className="mt-2 text-sm text-[var(--secondary)]">{t("stats.resetConfirmBody")}</p>
-            <div className="mt-4 flex gap-2">
-              <button
-                type="button"
-                onClick={() => setShowResetConfirm(false)}
-                className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)]"
-              >
-                {t("stats.resetConfirmCancel")}
-              </button>
-              <button
-                type="button"
-                onClick={handleResetStatsConfirm}
-                className="flex-1 rounded-xl border border-[var(--danger-border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--danger)]"
-              >
-                {t("stats.resetConfirmConfirm")}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <ConfirmDialog
+        isOpen={showResetConfirm}
+        title={t("stats.resetConfirmTitle")}
+        body={t("stats.resetConfirmBody")}
+        cancelLabel={t("stats.resetConfirmCancel")}
+        confirmLabel={t("stats.resetConfirmConfirm")}
+        confirmClassName="flex-1 rounded-xl border border-[var(--danger-border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--danger)]"
+        onCancel={() => setShowResetConfirm(false)}
+        onConfirm={handleResetStatsConfirm}
+      />
       <BottomNav />
     </div>
   );

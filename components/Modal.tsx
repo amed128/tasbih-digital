@@ -125,7 +125,7 @@ export function Modal({
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.18 }}
+            transition={{ duration: 0.2 }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4">

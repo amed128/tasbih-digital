@@ -44,7 +44,7 @@ export function CircleProgress({
       numberControls.start({
         scale: [1, 1.3, 1],
         color: ["var(--foreground)", "var(--primary)", "var(--foreground)"],
-        transition: { duration: 0.15 },
+        transition: { duration: 0.2 },
       });
       prevValueRef.current = value;
     }

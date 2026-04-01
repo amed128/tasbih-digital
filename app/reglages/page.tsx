@@ -10,6 +10,7 @@ import {
   parseBackupPayload,
 } from "../../store/tasbihStore";
 import { BottomNav } from "../../components/BottomNav";
+import { ConfirmDialog } from "../../components/ConfirmDialog";
 import { useT } from "@/hooks/useT";
 import Link from "next/link";
 
@@ -179,7 +180,7 @@ export default function ReglagesPage() {
         {/* 1. General Settings */}
         <Link
           href="/reglages/general"
-          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3 transition hover:brightness-95 active:brightness-90"
         >
           <div>
             <div className="text-sm font-semibold text-[var(--foreground)]">
@@ -195,7 +196,7 @@ export default function ReglagesPage() {
         {/* 2. Appearance */}
         <Link
           href="/reglages/apparence"
-          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3 transition hover:brightness-95 active:brightness-90"
         >
           <div>
             <div className="text-sm font-semibold text-[var(--foreground)]">
@@ -212,7 +213,7 @@ export default function ReglagesPage() {
         {/* 3. Selection Mode */}
         <Link
           href="/reglages/selection-mode"
-          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3 transition hover:brightness-95 active:brightness-90"
         >
           <div>
             <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.selectionModeTitle")}</div>
@@ -224,7 +225,7 @@ export default function ReglagesPage() {
         {/* 4. Auto-counter Settings */}
         <Link
           href="/reglages/auto"
-          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3 transition hover:brightness-95 active:brightness-90"
         >
           <div>
             <div className="text-sm font-semibold text-[var(--foreground)]">
@@ -240,7 +241,7 @@ export default function ReglagesPage() {
         {/* 3. Audio Counter Settings */}
         <Link
           href="/reglages/audio"
-          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3 transition hover:brightness-95 active:brightness-90"
         >
           <div>
             <div className="text-sm font-semibold text-[var(--foreground)]">
@@ -421,7 +422,7 @@ export default function ReglagesPage() {
 
         <Link
           href="/about"
-          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3 transition hover:brightness-95 active:brightness-90"
         >
           <div>
             <div className="text-sm font-semibold text-[var(--foreground)]">
@@ -439,34 +440,16 @@ export default function ReglagesPage() {
         </div>
       </motion.main>
 
-      {showRestoreConfirm ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
-          <div className="w-full max-w-sm rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4">
-            <h2 className="text-base font-semibold text-[var(--foreground)]">
-              {t("settings.restoreDefaultsConfirmTitle")}
-            </h2>
-            <p className="mt-2 text-sm text-[var(--secondary)]">
-              {t("settings.restoreDefaultsConfirmBody")}
-            </p>
-            <div className="mt-4 flex gap-2">
-              <button
-                type="button"
-                onClick={() => setShowRestoreConfirm(false)}
-                className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)]"
-              >
-                {t("settings.restoreDefaultsConfirmCancel")}
-              </button>
-              <button
-                type="button"
-                onClick={handleRestoreDefaultSettings}
-                className="flex-1 rounded-xl border border-[var(--restore-border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--restore)]"
-              >
-                {t("settings.restoreDefaultsConfirmConfirm")}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <ConfirmDialog
+        isOpen={showRestoreConfirm}
+        title={t("settings.restoreDefaultsConfirmTitle")}
+        body={t("settings.restoreDefaultsConfirmBody")}
+        cancelLabel={t("settings.restoreDefaultsConfirmCancel")}
+        confirmLabel={t("settings.restoreDefaultsConfirmConfirm")}
+        confirmClassName="flex-1 rounded-xl border border-[var(--restore-border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--restore)]"
+        onCancel={() => setShowRestoreConfirm(false)}
+        onConfirm={handleRestoreDefaultSettings}
+      />
 
       <BottomNav />
     </div>

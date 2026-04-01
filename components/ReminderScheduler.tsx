@@ -1,9 +1,15 @@
+
 "use client";
+
+// Use environment variable for API base URL
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "";
 
 import { useEffect } from "react";
 import { useTasbihStore } from "../store/tasbihStore";
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  // Use environment variable for API base URL
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "";
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
   const rawData = window.atob(base64);
@@ -26,7 +32,7 @@ export function ReminderScheduler() {
 
       if (Notification.permission !== "granted") {
         if (subscription) {
-          await fetch("/api/push/unsubscribe", {
+          await fetch(`${API_BASE}/api/push/unsubscribe`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ subscription: subscription.toJSON() }),
@@ -50,7 +56,7 @@ export function ReminderScheduler() {
 
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
       const dailyTime = reminderTimes[0] ?? { hour: 8, minute: 0 };
-      await fetch("/api/push/subscribe", {
+      await fetch(`${API_BASE}/api/push/subscribe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

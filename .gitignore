@@ -25,6 +25,9 @@
 # production
 /build
 
+# Capacitor - build artifacts copied into iOS project
+ios/App/App/public/
+
 # misc
 .DS_Store
 *.pem

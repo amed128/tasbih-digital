@@ -177,7 +177,10 @@ export const translations = {
       toastReset: "Réinitialisation effectuée",
     },
     settings: {
-        // --- Auto-counter settings (added for full translation support) ---
+          speed0_5s: "0,5s",
+          speed1s: "1s",
+          speed2s: "2s",
+        // --- Auto-counter settings (French only) ---
         autoCounterSettingsTitle: "Réglages auto-compteur",
         autoCounterSettingsHint: "Configurez le comportement de l'auto-compteur, y compris la vitesse, les conditions de démarrage/arrêt et les options avancées.",
         autoCounterDefaultEnabledTitle: "Activer l'auto-compteur par défaut",
@@ -200,6 +203,7 @@ export const translations = {
         autoCounterSoundOnTickHint: "Active un retour (son ou vibration) à chaque incrément automatique.",
         autoCounterWakeLockTitle: "Garder l'écran actif pendant l'auto-compteur",
         autoCounterWakeLockHint: "Empêche l'appareil de se mettre en veille pendant que l'auto-compteur est actif.",
+        // --- End auto-counter settings (French only) ---
       // ...existing code...
         languageHint: "Choisissez la langue de l'interface de l'application.",
       title: "Réglages",
@@ -292,6 +296,7 @@ export const translations = {
         selectionModeHint: "Configurer le comportement du mode de sélection.",
       on: "Activé",
       off: "Désactivé",
+      custom: "Personnalisé",
       confettiTitle: "Confettis",
       confettiHint: "Animation lors de l'objectif atteint",
       langTitle: "Langue",
@@ -417,15 +422,30 @@ export const translations = {
   },
 
   en: {
-      autoCounterSettingsTitle: "Auto-counter settings",
-      autoCounterDefaultEnabledTitle: "Enable auto-counter by default",
-      autoCounterDefaultSpeedTitle: "Default auto-counter speed",
-      autoCounterResumeAfterResetTitle: "Resume auto-counter after reset/quit if goal was reached",
-      autoCounterStopAtGoalTitle: "Stop auto-counter when goal is reached",
-      autoCounterEntryAutoStartTitle: "Start auto-counter immediately on entry",
-      blurActionControlsWhileAutoTitle: "Blur/disable actions while auto-counter is running",
-      autoCounterConfirmOnStopTitle: "Show confirmation before stopping auto-counter on reset/quit",
-      autoCounterSoundOnTickTitle: "Play sound/vibrate on each auto-increment",
+        // --- Auto-counter settings (English only) ---
+        autoCounterSettingsTitle: "Auto-counter settings",
+        autoCounterSettingsHint: "Configure how the auto-counter behaves, including speed, start/stop conditions, and advanced options.",
+        autoCounterDefaultEnabledTitle: "Enable auto-counter by default",
+        autoCounterDefaultEnabledHint: "Automatically enable auto-counter mode when starting a new session.",
+        autoCounterDefaultSpeedTitle: "Default auto-counter speed",
+        autoCounterDefaultSpeedHint: "Set how fast the auto-counter increments (interval between counts).",
+        autoCounterCustomSpeedLabel: "Custom speed (seconds):",
+        autoCounterMaxSpeedHint: "Maximum: 120 seconds",
+        autoCounterResumeAfterResetTitle: "Resume after reset/quit if goal was reached",
+        autoCounterResumeAfterResetHint: "If enabled, auto-counter resumes automatically after reset or quit, but only if the previous goal was reached.",
+        autoCounterStopAtGoalTitle: "Stop auto-counter when goal is reached",
+        autoCounterStopAtGoalHint: "Automatically stop counting when the set goal is reached.",
+        autoCounterEntryAutoStartTitle: "Start auto-counter immediately on entry",
+        autoCounterEntryAutoStartHint: "Begin counting as soon as you enter auto-counter mode, without manual start.",
+        blurActionControlsWhileAutoTitle: "Blur/disable actions while auto-counter is running",
+        blurActionControlsWhileAutoHint: "Prevent accidental actions by blurring or disabling controls during auto-counting.",
+        autoCounterConfirmOnStopTitle: "Show confirmation before stopping on reset/quit",
+        autoCounterConfirmOnStopHint: "Ask for confirmation before stopping the auto-counter when you reset or quit.",
+        autoCounterSoundOnTickTitle: "Play sound/vibrate on each auto-increment",
+        autoCounterSoundOnTickHint: "Enable feedback (sound or vibration) for every auto-increment.",
+        autoCounterWakeLockTitle: "Keep screen awake during auto-counter",
+        autoCounterWakeLockHint: "Prevent your device from sleeping while auto-counter is active.",
+        // --- End auto-counter settings (English only) ---
     nav: {
       counter: "Counter",
       lists: "Lists",
@@ -693,6 +713,7 @@ export const translations = {
         selectionModeHint: "Configure how selection mode behaves.",
       on: "On",
       off: "Off",
+      custom: "Custom",
       confettiTitle: "Confetti",
       confettiHint: "Animation when goal is reached",
       langTitle: "Language",

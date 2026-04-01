@@ -15,7 +15,7 @@ type CircleProgressProps = {
 };
 
 const GOLD = "var(--primary)";
-const GREEN = "#22C55E";
+const GREEN = "var(--success)";
 const BACKGROUND = "var(--card)";
 
 export function CircleProgress({

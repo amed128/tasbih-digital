@@ -37,6 +37,13 @@ body[data-theme="light"] {
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Semantic colors */
+  --success: #22C55E;
+  --success-muted: rgba(34, 197, 94, 0.15);
+  --danger: #C62828;
+  --danger-border: #E7B4B4;
+  --restore: #2E7D32;
+  --restore-border: #A5D6A7;
 }
 
 html,

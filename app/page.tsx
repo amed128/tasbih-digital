@@ -1753,7 +1753,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.18 }}
-              className="w-full rounded-xl bg-[#22C55E] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
+              className="w-full rounded-xl bg-[var(--success)] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
             >
               {t("counter.nextZikr")}
             </motion.button>
@@ -1795,7 +1795,7 @@ export default function Home() {
       const isDone = index < activeIndex || (isCurrent && isCompleted);
 
       const bgClass = isDone
-        ? "bg-[#22C55E]"
+        ? "bg-[var(--success)]"
         : isCurrent
         ? "bg-[var(--primary)]"
         : "bg-[var(--border)]";
@@ -1907,7 +1907,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.18 }}
-                className="w-full rounded-xl bg-[#22C55E] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
+                className="w-full rounded-xl bg-[var(--success)] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
               >
                 {t("counter.nextZikr")}
               </motion.button>
@@ -1959,7 +1959,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               transition={{ duration: 0.25 }}
-              className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-full bg-[#22C55E] px-4 py-2 text-sm font-semibold text-white shadow-lg"
+              className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-full bg-[var(--success)] px-4 py-2 text-sm font-semibold text-white shadow-lg"
             >
               {t("counter.listComplete")}
             </motion.div>

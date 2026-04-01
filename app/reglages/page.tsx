@@ -413,7 +413,7 @@ export default function ReglagesPage() {
           <button
             type="button"
             onClick={() => setShowRestoreConfirm(true)}
-            className="rounded-xl border border-[#A5D6A7] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[#2E7D32] transition hover:border-[#2E7D32]"
+            className="rounded-xl border border-[var(--restore-border)] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--restore)] transition hover:border-[var(--restore)]"
           >
             {t("settings.restoreDefaults")}
           </button>
@@ -459,7 +459,7 @@ export default function ReglagesPage() {
               <button
                 type="button"
                 onClick={handleRestoreDefaultSettings}
-                className="flex-1 rounded-xl border border-[#A5D6A7] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[#2E7D32]"
+                className="flex-1 rounded-xl border border-[var(--restore-border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--restore)]"
               >
                 {t("settings.restoreDefaultsConfirmConfirm")}
               </button>

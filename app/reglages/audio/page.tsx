@@ -109,7 +109,7 @@ export default function AudioSettingsPage() {
             <select
               value={preferences.speechTolerance}
               onChange={(e) => setSpeechTolerance(e.target.value as SpeechTolerance)}
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+              className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
               aria-label={t("settings.ariaSpeechTolerance")}
             >
               {speechToleranceOptions.map((option) => (
@@ -137,7 +137,7 @@ export default function AudioSettingsPage() {
               onChange={(e) =>
                 setSpeechRecognitionLanguage(e.target.value as SpeechRecognitionLanguage)
               }
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+              className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
               aria-label={t("settings.ariaSpeechRecognitionLanguage")}
             >
               {speechRecognitionLanguageOptions.map((option) => (
@@ -160,7 +160,7 @@ export default function AudioSettingsPage() {
             <select
               value={preferences.audioSilenceTimeoutSec}
               onChange={(e) => setAudioSilenceTimeoutSec(Number(e.target.value) || 15)}
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+              className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
               aria-label={t("settings.ariaAudioSilenceTimeout")}
             >
               {audioSilenceTimeoutOptions.map((seconds) => (
@@ -233,7 +233,7 @@ export default function AudioSettingsPage() {
             <select
               value={preferences.audioTranscriptClearDelaySec}
               onChange={(e) => setAudioTranscriptClearDelaySec(Number(e.target.value) || 0)}
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+              className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
               aria-label={t("settings.ariaAudioTranscriptClearDelay")}
             >
               {audioTranscriptClearDelayOptions.map((seconds) => (

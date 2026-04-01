@@ -22,7 +22,7 @@ export default function GeneralSettings() {
           <select
             value={preferences.tapSound}
             onChange={(e) => setTapSound(e.target.value as typeof preferences.tapSound)}
-            className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
+            className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
             aria-label={t("settings.ariaSound")}
           >
             <option value="off">{t("settings.soundOff")}</option>
@@ -80,7 +80,7 @@ export default function GeneralSettings() {
           <select
             value={preferences.language}
             onChange={(e) => setLanguage(e.target.value as typeof preferences.language)}
-            className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
+            className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
             aria-label={t("settings.ariaLanguage")}
           >
             <option value="fr">Français</option>

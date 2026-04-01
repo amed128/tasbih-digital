@@ -564,7 +564,7 @@ export default function StatsPage() {
           <button
             type="button"
             onClick={() => setShowResetConfirm(true)}
-            className="rounded-xl border border-[#E7B4B4] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[#C62828] transition hover:border-[#C62828]"
+            className="rounded-xl border border-[var(--danger-border)] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--danger)] transition hover:border-[var(--danger)]"
           >
             {t("stats.resetStats")}
           </button>
@@ -594,7 +594,7 @@ export default function StatsPage() {
               <button
                 type="button"
                 onClick={handleResetStatsConfirm}
-                className="flex-1 rounded-xl border border-[#E7B4B4] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[#C62828]"
+                className="flex-1 rounded-xl border border-[var(--danger-border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--danger)]"
               >
                 {t("stats.resetConfirmConfirm")}
               </button>

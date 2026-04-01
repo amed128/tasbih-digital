@@ -1,5 +1,8 @@
 export const translations = {
   fr: {
+    modal: {
+      close: "Fermer",
+    },
     nav: {
       counter: "Compteur",
       lists: "Listes",
@@ -422,6 +425,9 @@ export const translations = {
   },
 
   en: {
+    modal: {
+      close: "Close",
+    },
         // --- Auto-counter settings (English only) ---
         autoCounterSettingsTitle: "Auto-counter settings",
         autoCounterSettingsHint: "Configure how the auto-counter behaves, including speed, start/stop conditions, and advanced options.",

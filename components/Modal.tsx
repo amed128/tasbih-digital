@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import React, { ReactNode, useEffect, useId, useRef } from "react";
+import { useT } from "@/hooks/useT";
 
 type ModalProps = {
   isOpen: boolean;
@@ -35,6 +36,7 @@ export function Modal({
   footer,
   closeOnOverlayClick = true,
 }: ModalProps) {
+  const t = useT();
   const titleId = useId();
   const modalRef = useRef<HTMLDivElement | null>(null);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
@@ -137,7 +139,7 @@ export function Modal({
               <button
                 onClick={onClose}
                 className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-white/10 text-sm text-white transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
-                aria-label="Fermer"
+                aria-label={t("modal.close")}
               >
                 ✕
               </button>

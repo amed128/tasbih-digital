@@ -1820,7 +1820,7 @@ export default function Home() {
     };
 
     return (
-      <div className="flex flex-col gap-6 px-5 pt-6">
+      <div className="flex flex-col gap-6 px-5 pt-6 pb-6">
         <header className="flex items-center justify-between">
           <div className="text-sm font-semibold uppercase tracking-wide text-[var(--secondary)]">
             {activeListId}

@@ -49,7 +49,7 @@ export function BottomNav() {
               key={tab.href}
               href={tab.href}
               aria-current={isActive ? "page" : undefined}
-              className="flex flex-1 flex-col items-center gap-1 rounded-xl px-2 py-2 text-xs font-semibold transition"
+              className="flex flex-1 flex-col items-center gap-1 rounded-xl px-2 py-3 text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
             >
               <Icon size={22} style={{ color }} />
               <span style={{ color }}>{tab.label}</span>

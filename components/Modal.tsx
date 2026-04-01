@@ -136,7 +136,7 @@ export function Modal({
               </div>
               <button
                 onClick={onClose}
-                className="rounded-full bg-white/10 p-2 text-sm text-white transition hover:bg-white/20"
+                className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-white/10 text-sm text-white transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
                 aria-label="Fermer"
               >
                 ✕

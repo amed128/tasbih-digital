@@ -302,7 +302,19 @@ export default function StatsPage() {
       .sort((a, b) => (a.startAt < b.startAt ? 1 : -1));
   }, [stats.history, historyRangeMode, historyDate, last30StartKey, todayKey]);
 
-  if (!mounted) return null;
+  if (!mounted) return (
+    <div className="min-h-screen bg-[var(--background)]">
+      <div className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6 animate-pulse">
+        <div className="h-6 w-32 rounded-lg bg-[var(--card)]" />
+        <div className="h-32 rounded-2xl bg-[var(--card)]" />
+        <div className="grid grid-cols-2 gap-3">
+          {[...Array(4)].map((_, i) => <div key={i} className="h-20 rounded-2xl bg-[var(--card)]" />)}
+        </div>
+        <div className="h-40 rounded-2xl bg-[var(--card)]" />
+      </div>
+      <BottomNav />
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">

@@ -37,6 +37,7 @@ export default function ReglagesPage() {
   const [syncCode, setSyncCode] = useState("");
   const [syncMessage, setSyncMessage] = useState("");
   const [showRestoreConfirm, setShowRestoreConfirm] = useState(false);
+  const [permissionDeniedMessage, setPermissionDeniedMessage] = useState("");
   const [permissionResetPending, setPermissionResetPending] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState<
     NotificationPermission | "unsupported"
@@ -67,7 +68,7 @@ export default function ReglagesPage() {
     setPermissionResetPending(false);
     if (Notification.permission === "denied") {
       setNotificationPermission("denied");
-      window.alert(t("settings.remindersPermissionDeniedHelp"));
+      setPermissionDeniedMessage(t("settings.remindersPermissionDeniedHelp"));
       return;
     }
     const permission = await Notification.requestPermission();
@@ -151,7 +152,15 @@ export default function ReglagesPage() {
       ? "default"
       : notificationPermission;
 
-  if (!mounted) return null;
+  if (!mounted) return (
+    <div className="min-h-screen bg-[var(--background)]">
+      <div className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6 animate-pulse">
+        <div className="h-6 w-24 rounded-lg bg-[var(--card)]" />
+        {[...Array(5)].map((_, i) => <div key={i} className="h-14 rounded-2xl bg-[var(--card)]" />)}
+      </div>
+      <BottomNav />
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
@@ -268,6 +277,11 @@ export default function ReglagesPage() {
                 ? t("settings.remindersPermissionGrantedStatus")
                 : t("settings.remindersPermissionNotGrantedStatus")}
             </span>
+            {permissionDeniedMessage ? (
+              <div className="mt-2 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-xs text-[var(--foreground)]">
+                {permissionDeniedMessage}
+              </div>
+            ) : null}
           </div>
 
           <div className="mt-3 flex items-center justify-between gap-3">

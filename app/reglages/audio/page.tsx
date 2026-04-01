@@ -8,7 +8,6 @@ import { useTasbihStore } from "../../../store/tasbihStore";
 import type {
   SpeechTolerance,
   SpeechRecognitionLanguage,
-  ChipTextFormat,
 } from "../../../store/tasbihStore";
 import { useT } from "@/hooks/useT";
 
@@ -27,7 +26,6 @@ export default function AudioSettingsPage() {
   const setBlurActionControlsWhileListening = useTasbihStore(
     (s) => s.setBlurActionControlsWhileListening
   );
-  const setChipTextFormat = useTasbihStore((s) => s.setChipTextFormat);
   const setAudioClearTranscriptOnSilence = useTasbihStore(
     (s) => s.setAudioClearTranscriptOnSilence
   );
@@ -55,11 +53,6 @@ export default function AudioSettingsPage() {
 
   const audioSilenceTimeoutOptions = [15, 30, 45, 60, 90, 120];
   const audioTranscriptClearDelayOptions = [0, 2, 3, 5];
-  const chipTextFormatOptions: { value: ChipTextFormat; label: string }[] = [
-    { value: "transliteration", label: t("settings.chipTextFormatTransliteration") },
-    { value: "arabic", label: t("settings.chipTextFormatArabic") },
-    { value: "both", label: t("settings.chipTextFormatBoth") },
-  ];
 
   if (!mounted) return null;
 

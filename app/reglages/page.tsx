@@ -4,16 +4,13 @@ import { useState, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { useTasbihStore } from "../../store/tasbihStore";
 import type { Theme, ReminderTime } from "../../store/tasbihStore";
-import type { TapSound } from "../../store/tasbihStore";
 import {
   TASBIH_STORAGE_KEY,
   createBackupPayload,
   parseBackupPayload,
 } from "../../store/tasbihStore";
 import { BottomNav } from "../../components/BottomNav";
-import GeneralSettings from "../../components/GeneralSettings";
 import { useT } from "@/hooks/useT";
-import { useFeatureAvailability } from "@/hooks/useFeatureAvailability";
 import Link from "next/link";
 
 const timeToString = (rt: ReminderTime) =>
@@ -32,19 +29,9 @@ export default function ReglagesPage() {
   );
 
   const preferences = useTasbihStore((s) => s.preferences);
-  const wakeLockAvail = useFeatureAvailability("wakeLock");
-
-  const isIOS =
-    typeof navigator !== "undefined" &&
-    /iPad|iPhone|iPod/.test(navigator.userAgent);
-  const toggleVibration = useTasbihStore((s) => s.toggleVibration);
-  const setTapSound = useTasbihStore((s) => s.setTapSound);
-  const setLanguage = useTasbihStore((s) => s.setLanguage);
   const setRemindersEnabled = useTasbihStore((s) => s.setRemindersEnabled);
   const setReminderTimes = useTasbihStore((s) => s.setReminderTimes);
   const setOptionalSyncEnabled = useTasbihStore((s) => s.setOptionalSyncEnabled);
-  const setWakeLockEnabled = useTasbihStore((s) => s.setWakeLockEnabled);
-  const setAutoAdvanceNextZikr = useTasbihStore((s) => s.setAutoAdvanceNextZikr);
   const resetPreferences = useTasbihStore((s) => s.resetPreferences);
   const t = useT();
   const [syncCode, setSyncCode] = useState("");
@@ -59,15 +46,6 @@ export default function ReglagesPage() {
     }
     return Notification.permission;
   });
-
-  const soundOptions: { value: TapSound; label: string }[] = [
-    { value: "off", label: t("settings.soundOff") },
-    { value: "tap-soft", label: t("settings.soundSoft") },
-    { value: "button-click", label: t("settings.soundClick") },
-    { value: "haptic-pulse", label: t("settings.soundPulse") },
-  ];
-
-  const wakeLockToggleDisabled = wakeLockAvail.status !== "available";
 
   const applyThemeToDom = (theme: Theme) => {
     if (typeof document === "undefined") return;

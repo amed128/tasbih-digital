@@ -14,6 +14,7 @@ import { useT } from "@/hooks/useT";
 type CreateListItem = {
   source: "library" | "manual";
   zikr: Zikr;
+  customTarget?: number;
 };
 
 type ZikrAutocompleteSuggestion = {
@@ -232,6 +233,8 @@ export default function ListesPage() {
   const [manualReps, setManualReps] = useState("33");
   const [createCategoryExpanded, setCreateCategoryExpanded] = useState<Record<string, boolean>>({});
   const [selectedLibraryZikr, setSelectedLibraryZikr] = useState<Zikr | null>(null);
+  const [editingLibraryTargetId, setEditingLibraryTargetId] = useState<string | null>(null);
+  const [libraryTargetInput, setLibraryTargetInput] = useState("");
 
   const allZikrsById = useMemo(() => {
     const entries = [...zikrs, ...Object.values(customZikrs)].map((zikr) => [zikr.id, zikr] as const);
@@ -481,9 +484,11 @@ export default function ListesPage() {
 
     if (modalType === "create") {
       createList(name);
-      createListItems.forEach(({ source, zikr }) => {
+      createListItems.forEach(({ source, zikr, customTarget }) => {
         if (source === "manual") {
           upsertCustomZikr(zikr);
+        } else if (customTarget !== undefined && customTarget !== zikr.defaultTarget) {
+          upsertCustomZikr({ ...zikr, defaultTarget: customTarget });
         }
         addToList(name, zikr.id);
       });
@@ -496,9 +501,11 @@ export default function ListesPage() {
       const originalListId = modalListId;
       const currentIds = customLists[originalListId] ?? [];
 
-      createListItems.forEach(({ source, zikr }) => {
+      createListItems.forEach(({ source, zikr, customTarget }) => {
         if (source === "manual") {
           upsertCustomZikr(zikr);
+        } else if (customTarget !== undefined && customTarget !== zikr.defaultTarget) {
+          upsertCustomZikr({ ...zikr, defaultTarget: customTarget });
         }
       });
 
@@ -896,8 +903,11 @@ export default function ListesPage() {
                 {createListItems.length === 0 ? (
                   <div className="text-sm text-[var(--secondary)]">{t("lists.addAtLeastOne")}</div>
                 ) : (
-                  createListItems.map(({ source, zikr }, idx) => {
+                  createListItems.map((item, idx) => {
+                    const { source, zikr, customTarget } = item;
                     const isManual = source === "manual";
+                    const isEditingTarget = editingLibraryTargetId === zikr.id;
+                    const displayTarget = customTarget ?? zikr.defaultTarget;
                     return (
                       <div
                         key={zikr.id}
@@ -919,7 +929,7 @@ export default function ListesPage() {
                             : "border-[var(--border)]"
                         }`}
                       >
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-[var(--secondary)]">#{idx + 1}</span>
                             {isManual ? (
@@ -930,23 +940,83 @@ export default function ListesPage() {
                             <div className="text-xs font-semibold text-[var(--foreground)]">{zikr.arabic}</div>
                           </div>
                           <div className="text-xs text-[var(--secondary)]">
-                            {zikr.transliteration} · {zikr.defaultTarget}
+                            {zikr.transliteration} · {displayTarget}
+                            {customTarget !== undefined && customTarget !== zikr.defaultTarget && (
+                              <span className="ml-1 text-[var(--primary)]">✎</span>
+                            )}
                           </div>
                           {isManual ? (
                             <div className="mt-1 text-[0.68rem] font-semibold text-[var(--primary)]">
                               {t("lists.manualEditHint")}
                             </div>
                           ) : null}
+                          {!isManual && isEditingTarget && (
+                            <div className="mt-2 flex items-center gap-2">
+                              <input
+                                type="number"
+                                min="1"
+                                value={libraryTargetInput}
+                                onChange={(e) => setLibraryTargetInput(e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                                className="w-20 rounded-xl border border-[var(--primary)] bg-[var(--background)] px-2 py-1 text-sm text-[var(--foreground)] outline-none"
+                                autoFocus
+                              />
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const parsed = Number.parseInt(libraryTargetInput, 10);
+                                  if (Number.isFinite(parsed) && parsed > 0) {
+                                    setCreateListItems((prev) =>
+                                      prev.map((it) =>
+                                        it.zikr.id === zikr.id ? { ...it, customTarget: parsed } : it
+                                      )
+                                    );
+                                  }
+                                  setEditingLibraryTargetId(null);
+                                }}
+                                className="rounded-xl bg-[var(--primary)] px-3 py-1 text-xs font-semibold text-black"
+                              >
+                                OK
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingLibraryTargetId(null);
+                                }}
+                                className="rounded-xl border border-[var(--border)] px-3 py-1 text-xs font-semibold text-[var(--secondary)]"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          )}
                         </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveZikrFromCreate(zikr.id);
-                          }}
-                          className="ml-2 text-lg text-[var(--secondary)] hover:text-[var(--foreground)]"
-                        >
-                          ✕
-                        </button>
+                        <div className="ml-2 flex items-center gap-1">
+                          {!isManual && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setLibraryTargetInput(String(displayTarget));
+                                setEditingLibraryTargetId(isEditingTarget ? null : zikr.id);
+                              }}
+                              className="p-1 text-sm text-[var(--secondary)] hover:text-[var(--primary)]"
+                              aria-label={t("lists.editTargetAria")}
+                            >
+                              ✎
+                            </button>
+                          )}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveZikrFromCreate(zikr.id);
+                            }}
+                            className="text-lg text-[var(--secondary)] hover:text-[var(--foreground)]"
+                          >
+                            ✕
+                          </button>
+                        </div>
                       </div>
                     );
                   })

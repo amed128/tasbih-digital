@@ -1365,6 +1365,21 @@ const createStore = () =>
           return newState;
         }),
 
+      setAudioDebugTelemetry: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              audioDebugTelemetry: enabled,
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
       setResetOnPrev: (value: boolean) =>
         set((state) => {
           const newState = {

@@ -12,8 +12,18 @@ export default function AutoCounterSettings() {
   const preferences = useTasbihStore((s) => s.preferences);
   const setAutoCounterDefaultEnabled = useTasbihStore((s) => s.setAutoCounterDefaultEnabled);
   const setAutoCounterDefaultSpeed = useTasbihStore((s) => s.setAutoCounterDefaultSpeed);
-  // Track last custom value in state only
-  const [lastCustomValue, setLastCustomValue] = useState(5);
+  // Whether the user has explicitly chosen "Custom" mode
+  const [isCustomMode, setIsCustomMode] = useState<boolean>(() => {
+    return ![500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed);
+  });
+  // Last custom value in seconds (kept in sync so restoring custom keeps the typed value)
+  const [lastCustomValue, setLastCustomValue] = useState<number>(() => {
+    const stored = preferences.autoCounterDefaultSpeed;
+    if (![500, 1000, 2000].includes(stored) && stored > 0) {
+      return Math.floor(stored / 1000) || 1;
+    }
+    return 5;
+  });
   // Raw string shown in the input while the user is typing
   const [rawInput, setRawInput] = useState<string>(() => {
     const stored = preferences.autoCounterDefaultSpeed;
@@ -91,18 +101,19 @@ export default function AutoCounterSettings() {
             </div>
             <select
               id="auto-speed"
-              value={[500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed) ? preferences.autoCounterDefaultSpeed : "custom"}
+              value={isCustomMode ? "custom" : preferences.autoCounterDefaultSpeed}
               onChange={e => {
-                const isCustomNow = !([500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed));
                 if (e.target.value === "custom") {
+                  setIsCustomMode(true);
                   const restored = lastCustomValue >= 1 ? lastCustomValue : 1;
                   setRawInput(String(restored));
                   setAutoCounterDefaultSpeed(restored * 1000);
                 } else {
-                  if (isCustomNow) {
+                  if (isCustomMode) {
                     const parsed = parseInt(rawInput, 10);
                     setLastCustomValue(!isNaN(parsed) && parsed >= 1 ? Math.min(parsed, 120) : 1);
                   }
+                  setIsCustomMode(false);
                   setAutoCounterDefaultSpeed(Number(e.target.value));
                 }
               }}
@@ -114,7 +125,7 @@ export default function AutoCounterSettings() {
               <option value="custom">{t("settings.custom")}</option>
             </select>
           </div>
-          {!([500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed)) && (
+          {isCustomMode && (
             <div className="flex flex-col gap-1 mt-2">
               <div className="flex items-center gap-2">
                 <label htmlFor="custom-auto-speed" className="text-xs text-[var(--secondary)]">{t("settings.autoCounterCustomSpeedLabel")}</label>

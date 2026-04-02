@@ -195,6 +195,7 @@ export default function Home() {
   const reset = useTasbihStore((s) => s.reset);
   const undoLast = useTasbihStore((s) => s.undoLast);
   const previousZikrInList = useTasbihStore((s) => s.previousZikrInList);
+  const clearListProgress = useTasbihStore((s) => s.clearListProgress);
   const setCustomTarget = useTasbihStore((s) => s.setCustomTarget);
   const toggleMode = useTasbihStore((s) => s.toggleMode);
   const selectZikrAsList = useTasbihStore((s) => s.selectZikrAsList);
@@ -393,6 +394,7 @@ export default function Home() {
     if (!isListMode && isCompleted) {
       setAutoEnabled(false);
     }
+    clearListProgress();
     selectList(DEFAULT_LIST_ID);
     reset();
     setShowQuitConfirm(false);

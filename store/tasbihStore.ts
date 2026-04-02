@@ -73,6 +73,8 @@ export type Preferences = {
   // Icon theme (auto = follows app theme)
   iconTheme?: IconTheme;
   autoCounterWakeLock: boolean;
+  // Zikr selection mode: reset counter when going back to a previous zikr
+  resetOnPrev: boolean;
 };
 
 export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
@@ -123,6 +125,8 @@ export type TasbihStoreState = {
   activeListId: string;
   activeList: string[];
   activeIndex: number;
+  // Saved per-index counter progress for Zikr selection mode
+  listProgress: Record<number, number>;
   // Stats & history
   stats: Stats;
   currentSessionCount: number;
@@ -175,6 +179,8 @@ export type TasbihStoreState = {
   setReminderDays: (days: number[]) => void;
   setOptionalSyncEnabled: (enabled: boolean) => void;
   setAutoAdvanceNextZikr: (enabled: boolean) => void;
+  setResetOnPrev: (value: boolean) => void;
+  clearListProgress: () => void;
   setAutoCounterDefaultEnabled: (enabled: boolean) => void;
   setAutoCounterDefaultSpeed: (speed: number) => void;
   setAutoCounterResumeAfterReset: (enabled: boolean) => void;
@@ -341,6 +347,7 @@ function getInitialState(): Partial<TasbihStoreState> {
     activeListId: listId,
     activeList: list,
     activeIndex: 0,
+    listProgress: {},
     stats: {
       totalZikr: 0,
       sessions: 0,
@@ -394,6 +401,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       activeCustomProfileId: undefined,
       iconTheme: "auto" as IconTheme,
       autoCounterWakeLock: false,
+      resetOnPrev: true,
     },
   };
 }
@@ -783,13 +791,24 @@ const createStore = () =>
             const prevZikrId = state.activeList[prevIndex] ?? state.currentZikrId;
             const prevZikr = resolveZikr(prevZikrId, state.customZikrs);
             const target = prevZikr?.defaultTarget ?? 0;
+            const resetOnPrev = state.preferences.resetOnPrev ?? true;
+            // Snapshot current counter before leaving
+            const updatedProgress = {
+              ...state.listProgress,
+              [state.activeIndex]: state.counter,
+            };
+            // Restore saved progress for prev zikr if setting is off, else reset
+            const restoredCounter = !resetOnPrev && updatedProgress[prevIndex] !== undefined
+              ? updatedProgress[prevIndex]
+              : initialCounterForMode(state.mode, target);
             const newState = {
               activeIndex: prevIndex,
               currentZikrId: prevZikrId,
               currentZikr: prevZikr,
               customTarget: undefined,
-              counter: initialCounterForMode(state.mode, target),
+              counter: restoredCounter,
               isStarted: false,
+              listProgress: updatedProgress,
             };
             persistState({
               ...state,
@@ -805,6 +824,11 @@ const createStore = () =>
             const nextZikrId = state.activeList[nextIndex] ?? state.currentZikrId;
             const nextZikr = resolveZikr(nextZikrId, state.customZikrs);
             const target = nextZikr?.defaultTarget ?? 0;
+            // Snapshot current counter before moving forward
+            const updatedProgress = {
+              ...state.listProgress,
+              [state.activeIndex]: state.counter,
+            };
             const newState = {
               activeIndex: nextIndex,
               currentZikrId: nextZikrId,
@@ -812,6 +836,7 @@ const createStore = () =>
               customTarget: undefined,
               counter: initialCounterForMode(state.mode, target),
               isStarted: false,
+              listProgress: updatedProgress,
             };
             persistState({
               ...state,
@@ -1314,6 +1339,22 @@ const createStore = () =>
             ...state,
             ...newState,
           });
+          return newState;
+        }),
+
+      setResetOnPrev: (value: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: { ...state.preferences, resetOnPrev: value },
+          };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
+      clearListProgress: () =>
+        set((state) => {
+          const newState = { listProgress: {} };
+          persistState({ ...state, ...newState });
           return newState;
         }),
 

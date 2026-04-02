@@ -8,6 +8,7 @@ export default function SelectionModeSettings() {
   const t = useT();
   const preferences = useTasbihStore((s) => s.preferences);
   const setAutoAdvanceNextZikr = useTasbihStore((s) => s.setAutoAdvanceNextZikr);
+  const setResetOnPrev = useTasbihStore((s) => s.setResetOnPrev);
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
@@ -47,6 +48,25 @@ export default function SelectionModeSettings() {
             }`}
           >
             {(preferences.autoAdvanceNextZikr ?? false) ? t("settings.on") : t("settings.off")}
+          </button>
+        </section>
+
+        {/* Reset counter on going back toggle */}
+        <section className="rounded-2xl bg-[var(--card)] p-4 flex items-center justify-between mt-2">
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.resetOnPrevTitle")}</div>
+            <div className="text-xs text-[var(--secondary)]">{t("settings.resetOnPrevHint")}</div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setResetOnPrev(!(preferences.resetOnPrev ?? true))}
+            className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+              (preferences.resetOnPrev ?? true)
+                ? "bg-[var(--primary)] text-black"
+                : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+            }`}
+          >
+            {(preferences.resetOnPrev ?? true) ? t("settings.on") : t("settings.off")}
           </button>
         </section>
 

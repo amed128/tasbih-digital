@@ -73,30 +73,6 @@ export default function SelectionModeSettings() {
           </button>
         </section>
 
-        {/* Zikr display format setting */}
-        <section className="rounded-2xl bg-[var(--card)] p-4 flex flex-col gap-3 mt-2">
-          <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.zikrDisplayFormatTitle")}</div>
-            <div className="text-xs text-[var(--secondary)]">{t("settings.zikrDisplayFormatHint")}</div>
-          </div>
-          <div className="flex flex-col gap-2">
-            {(["translit+arabic", "arabic+translit", "translit", "arabic"] as const).map((option) => (
-              <button
-                key={option}
-                type="button"
-                onClick={() => setZikrDisplayFormat(option)}
-                className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-left transition ${
-                  (preferences.zikrDisplayFormat ?? "translit+arabic") === option
-                    ? "bg-[var(--primary)] text-black font-semibold"
-                    : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-                }`}
-              >
-                {t(`settings.zikrDisplayFormat_${option}`)}
-              </button>
-            ))}
-          </div>
-        </section>
-
         {/* Active list zikr text setting */}
         <section className="rounded-2xl bg-[var(--card)] p-4 flex items-center justify-between mt-2">
           <div>
@@ -112,6 +88,26 @@ export default function SelectionModeSettings() {
             {['transliteration','arabic','both'].map((option) => (
               <option key={option} value={option}>
                 {t(`settings.chipTextFormat${option.charAt(0).toUpperCase() + option.slice(1)}`)}
+              </option>
+            ))}
+          </select>
+        </section>
+
+        {/* Zikr display format setting */}
+        <section className="rounded-2xl bg-[var(--card)] p-4 flex items-center justify-between mt-2">
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.zikrDisplayFormatTitle")}</div>
+            <div className="text-xs text-[var(--secondary)]">{t("settings.zikrDisplayFormatHint")}</div>
+          </div>
+          <select
+            value={preferences.zikrDisplayFormat ?? "translit+arabic"}
+            onChange={(e) => setZikrDisplayFormat(e.target.value as import("@/store/tasbihStore").ZikrDisplayFormat)}
+            className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+            aria-label={t("settings.zikrDisplayFormatTitle")}
+          >
+            {(["translit+arabic", "arabic+translit", "translit", "arabic"] as const).map((option) => (
+              <option key={option} value={option}>
+                {t(`settings.zikrDisplayFormat_${option}`)}
               </option>
             ))}
           </select>

@@ -54,6 +54,7 @@ export type Preferences = {
   audioTranscriptClearDelaySec: number;
   blurActionControlsWhileListening: boolean;
   chipTextFormat: ChipTextFormat;
+  zikrDisplayFormat: ZikrDisplayFormat;
   audioClearTranscriptOnSilence: boolean;
   audioStopOnSilence: boolean;
   audioDebugTelemetry: boolean;
@@ -80,6 +81,7 @@ export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
 export type SpeechTolerance = "strict" | "balanced" | "tolerant";
 export type SpeechRecognitionLanguage = "ar-SA" | "ar-EG" | "ar-MA" | "fr-FR" | "en-US";
 export type ChipTextFormat = "transliteration" | "arabic" | "both";
+export type ZikrDisplayFormat = "translit+arabic" | "arabic+translit" | "translit" | "arabic";
 export type Theme = "light" | "dark" | "blue";
 export type IconTheme = "auto" | "dark" | "blue" | "light";
 export type ReminderTime = { hour: number; minute: number };
@@ -168,6 +170,7 @@ export type TasbihStoreState = {
   setAudioTranscriptClearDelaySec: (seconds: number) => void;
   setBlurActionControlsWhileListening: (enabled: boolean) => void;
   setChipTextFormat: (format: ChipTextFormat) => void;
+  setZikrDisplayFormat: (format: ZikrDisplayFormat) => void;
   setAudioClearTranscriptOnSilence: (enabled: boolean) => void;
   setAudioStopOnSilence: (enabled: boolean) => void;
   setAudioDebugTelemetry: (enabled: boolean) => void;
@@ -383,6 +386,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       audioTranscriptClearDelaySec: 3,
       blurActionControlsWhileListening: false,
       chipTextFormat: "transliteration",
+      zikrDisplayFormat: "translit+arabic" as ZikrDisplayFormat,
       audioClearTranscriptOnSilence: true,
       audioStopOnSilence: true,
       audioDebugTelemetry: false,
@@ -524,6 +528,13 @@ const normalizeChipTextFormat = (value: unknown): ChipTextFormat => {
   return "transliteration";
 };
 
+const normalizeZikrDisplayFormat = (value: unknown): ZikrDisplayFormat => {
+  if (value === "arabic+translit") return "arabic+translit";
+  if (value === "translit") return "translit";
+  if (value === "arabic") return "arabic";
+  return "translit+arabic";
+};
+
 const normalizeBooleanWithDefault = (value: unknown, fallback: boolean): boolean => {
   if (typeof value !== "boolean") return fallback;
   return value;
@@ -586,6 +597,7 @@ const initialState: Partial<TasbihStoreState> = {
       storedState?.preferences?.blurActionControlsWhileListening
     ),
     chipTextFormat: normalizeChipTextFormat(storedState?.preferences?.chipTextFormat),
+    zikrDisplayFormat: normalizeZikrDisplayFormat(storedState?.preferences?.zikrDisplayFormat),
     audioClearTranscriptOnSilence: normalizeBooleanWithDefault(
       storedState?.preferences?.audioClearTranscriptOnSilence,
       true
@@ -1308,6 +1320,21 @@ const createStore = () =>
           return newState;
         }),
 
+      setZikrDisplayFormat: (format: ZikrDisplayFormat) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              zikrDisplayFormat: normalizeZikrDisplayFormat(format),
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
       setAudioClearTranscriptOnSilence: (enabled: boolean) =>
         set((state) => {
           const newState = {
@@ -1493,6 +1520,7 @@ const createStore = () =>
               audioTranscriptClearDelaySec: 3,
               blurActionControlsWhileListening: false,
               chipTextFormat: "transliteration" as ChipTextFormat,
+              zikrDisplayFormat: "translit+arabic" as ZikrDisplayFormat,
               audioClearTranscriptOnSilence: true,
               audioStopOnSilence: true,
               audioDebugTelemetry: false,

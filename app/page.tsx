@@ -217,6 +217,7 @@ export default function Home() {
   const autoCounterConfirmOnStop = useTasbihStore((s) => s.preferences.autoCounterConfirmOnStop);
   const autoCounterSoundOnTick = useTasbihStore((s) => s.preferences.autoCounterSoundOnTick);
   const chipTextFormat = useTasbihStore((s) => s.preferences.chipTextFormat);
+  const zikrDisplayFormat = useTasbihStore((s) => s.preferences.zikrDisplayFormat);
   const audioClearTranscriptOnSilence = useTasbihStore(
     (s) => s.preferences.audioClearTranscriptOnSilence
   );
@@ -1889,10 +1890,26 @@ export default function Home() {
         <motion.div layout className="flex flex-col items-center gap-4">
           {currentZikr && (
             <div className="text-center">
-              <div className="text-[2rem] font-bold text-[var(--primary)]">
-                {currentZikr.transliteration}
-              </div>
-              <div className="mt-2 text-sm text-[var(--secondary)]">{currentZikr.arabic}</div>
+              {(zikrDisplayFormat === "translit+arabic" || zikrDisplayFormat === "translit" || !zikrDisplayFormat) && (
+                <>
+                  <div className="text-[2rem] font-bold text-[var(--primary)]">
+                    {currentZikr.transliteration}
+                  </div>
+                  {zikrDisplayFormat !== "translit" && (
+                    <div className="mt-2 text-sm text-[var(--secondary)]">{currentZikr.arabic}</div>
+                  )}
+                </>
+              )}
+              {(zikrDisplayFormat === "arabic+translit" || zikrDisplayFormat === "arabic") && (
+                <>
+                  <div className="text-[2rem] font-bold text-[var(--primary)]">
+                    {currentZikr.arabic}
+                  </div>
+                  {zikrDisplayFormat !== "arabic" && (
+                    <div className="mt-2 text-sm text-[var(--secondary)]">{currentZikr.transliteration}</div>
+                  )}
+                </>
+              )}
             </div>
           )}
 

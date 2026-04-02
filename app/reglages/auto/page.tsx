@@ -292,8 +292,9 @@ export default function AutoCounterSettings() {
             {preferences.autoCounterWakeLock ? t("settings.on") : t("settings.off")}
           </button>
         </section>
-        <BottomNav />
       </motion.main>
+
+      <BottomNav />
     </div>
   );
 }

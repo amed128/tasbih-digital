@@ -3,6 +3,7 @@
 import { useTasbihStore } from "@/store/tasbihStore";
 import { useT } from "@/hooks/useT";
 import Link from "next/link";
+import { BottomNav } from "@/components/BottomNav";
 
 export default function SelectionModeSettings() {
   const t = useT();
@@ -90,6 +91,8 @@ export default function SelectionModeSettings() {
           </select>
         </section>
       </main>
+
+      <BottomNav />
     </div>
   );
 }

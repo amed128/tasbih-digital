@@ -10,6 +10,7 @@ export default function SelectionModeSettings() {
   const preferences = useTasbihStore((s) => s.preferences);
   const setAutoAdvanceNextZikr = useTasbihStore((s) => s.setAutoAdvanceNextZikr);
   const setResetOnPrev = useTasbihStore((s) => s.setResetOnPrev);
+  const setChipTextFormat = useTasbihStore((s) => s.setChipTextFormat);
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
@@ -79,7 +80,7 @@ export default function SelectionModeSettings() {
           </div>
           <select
             value={preferences.chipTextFormat}
-            onChange={(e) => useTasbihStore.getState().setChipTextFormat(e.target.value as import("@/store/tasbihStore").ChipTextFormat)}
+            onChange={(e) => setChipTextFormat(e.target.value as import("@/store/tasbihStore").ChipTextFormat)}
             className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
             aria-label={t("settings.ariaChipTextFormat")}
           >

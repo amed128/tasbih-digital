@@ -85,7 +85,6 @@ export default function GeneralSettings() {
           >
             <option value="fr">Français</option>
             <option value="en">English</option>
-            <option value="ar">العربية</option>
           </select>
         </div>
       </section>

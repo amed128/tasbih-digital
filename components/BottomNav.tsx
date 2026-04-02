@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { Hash, List, BarChart2, Settings } from "lucide-react";
 import { useT } from "@/hooks/useT";
 
@@ -28,16 +28,18 @@ function getIcon(href: string) {
 
 const SETTINGS_ROOT = "/reglages";
 
+// Module-level: survives BottomNav remounts when switching tabs
+let lastSettingsPath = SETTINGS_ROOT;
+
 export function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
   const t = useT();
-  const lastSettingsPath = useRef<string>(SETTINGS_ROOT);
 
   // Track last visited settings path whenever user is inside settings
   useEffect(() => {
     if (pathname.startsWith(SETTINGS_ROOT)) {
-      lastSettingsPath.current = pathname;
+      lastSettingsPath = pathname;
     }
   }, [pathname]);
 
@@ -56,7 +58,7 @@ export function BottomNav() {
       router.push(SETTINGS_ROOT);
     } else {
       // Coming from another tab → restore last settings location
-      router.push(lastSettingsPath.current);
+      router.push(lastSettingsPath);
     }
   };
 

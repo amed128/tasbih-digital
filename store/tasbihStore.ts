@@ -1481,6 +1481,18 @@ const createStore = () =>
           return newState;
         }),
 
+      setAutoCounterWakeLock: (enabled: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              autoCounterWakeLock: enabled,
+            },
+          };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
       resetPreferences: () =>
         set((state) => {
           const newState = {

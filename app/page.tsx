@@ -225,7 +225,7 @@ export default function Home() {
 
   const [pulseTrigger, setPulseTrigger] = useState(0);
   const [focusMode, setFocusMode] = useState(false);
-  const [autoEnabled, setAutoEnabled] = useState(false);
+  const [autoEnabled, setAutoEnabled] = useState(() => preferences.autoCounterDefaultEnabled ?? false);
   const preferences = useTasbihStore((s) => s.preferences);
   const [autoIntervalMs, setAutoIntervalMs] = useState(preferences.autoCounterDefaultSpeed || 1000);
 

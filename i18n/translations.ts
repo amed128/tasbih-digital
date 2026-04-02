@@ -205,8 +205,6 @@ export const translations = {
         autoCounterConfirmOnStopHint: "Demande une confirmation avant d'arrêter l'auto-compteur lors d'une réinitialisation ou d'un arrêt.",
         autoCounterSoundOnTickTitle: "Jouer un son/vibrer à chaque incrément auto",
         autoCounterSoundOnTickHint: "Active un retour (son ou vibration) à chaque incrément automatique.",
-        autoCounterWakeLockTitle: "Garder l'écran actif pendant l'auto-compteur",
-        autoCounterWakeLockHint: "Empêche l'appareil de se mettre en veille pendant que l'auto-compteur est actif.",
         // --- End auto-counter settings (French only) ---
       // ...existing code...
         languageHint: "Choisissez la langue de l'interface de l'application.",
@@ -630,8 +628,6 @@ export const translations = {
       autoCounterConfirmOnStopHint: "Ask for confirmation before stopping the auto-counter when you reset or quit.",
       autoCounterSoundOnTickTitle: "Play sound/vibrate on each auto-increment",
       autoCounterSoundOnTickHint: "Enable feedback (sound or vibration) for every auto-increment.",
-      autoCounterWakeLockTitle: "Keep screen awake during auto-counter",
-      autoCounterWakeLockHint: "Prevent your device from sleeping while auto-counter is active.",
       title: "Settings",
       generalTitle: "General Settings",
       generalHint: "Manage sound, vibration, language, and screen settings.",

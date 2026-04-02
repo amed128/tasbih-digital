@@ -72,7 +72,6 @@ export type Preferences = {
   activeCustomProfileId?: string;
   // Icon theme (auto = follows app theme)
   iconTheme?: IconTheme;
-  autoCounterWakeLock: boolean;
   // Zikr selection mode: reset counter when going back to a previous zikr
   resetOnPrev: boolean;
 };
@@ -189,7 +188,6 @@ export type TasbihStoreState = {
   setBlurActionControlsWhileAuto: (enabled: boolean) => void;
   setAutoCounterConfirmOnStop: (enabled: boolean) => void;
   setAutoCounterSoundOnTick: (enabled: boolean) => void;
-  setAutoCounterWakeLock: (enabled: boolean) => void;
   resetPreferences: () => void;
   // Phase 2: Advanced timing controls
   setAdvancedTiming: (config: AdvancedTimingConfig) => void;
@@ -400,7 +398,6 @@ function getInitialState(): Partial<TasbihStoreState> {
       customProfiles: [],
       activeCustomProfileId: undefined,
       iconTheme: "auto" as IconTheme,
-      autoCounterWakeLock: false,
       resetOnPrev: true,
     },
   };
@@ -601,7 +598,6 @@ const initialState: Partial<TasbihStoreState> = {
       storedState?.preferences?.audioDebugTelemetry,
       false
     ),
-    autoCounterWakeLock: false,
   } as Preferences,
 };
 
@@ -1481,17 +1477,6 @@ const createStore = () =>
           return newState;
         }),
 
-      setAutoCounterWakeLock: (enabled: boolean) =>
-        set((state) => {
-          const newState = {
-            preferences: {
-              ...state.preferences,
-              autoCounterWakeLock: enabled,
-            },
-          };
-          persistState({ ...state, ...newState });
-          return newState;
-        }),
 
       resetPreferences: () =>
         set((state) => {

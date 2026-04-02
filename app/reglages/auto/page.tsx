@@ -30,7 +30,6 @@ export default function AutoCounterSettings() {
   const setBlurActionControlsWhileAuto = useTasbihStore((s) => s.setBlurActionControlsWhileAuto);
   const setAutoCounterConfirmOnStop = useTasbihStore((s) => s.setAutoCounterConfirmOnStop);
   const setAutoCounterSoundOnTick = useTasbihStore((s) => s.setAutoCounterSoundOnTick);
-  const setAutoCounterWakeLock = useTasbihStore((s) => s.setAutoCounterWakeLock);
 
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -273,25 +272,6 @@ export default function AutoCounterSettings() {
           </button>
         </section>
 
-        {/* Wake lock toggle */}
-        <section className="rounded-2xl bg-[var(--card)] p-4 mb-3 flex items-center justify-between">
-          <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.autoCounterWakeLockTitle")}</div>
-            <div className="text-xs text-[var(--secondary)]">{t("settings.autoCounterWakeLockHint")}</div>
-          </div>
-          <button
-            onClick={() => setAutoCounterWakeLock(!preferences.autoCounterWakeLock)}
-            className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-              preferences.autoCounterWakeLock
-                ? "bg-[var(--primary)] text-black"
-                : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-            }`}
-            aria-pressed={preferences.autoCounterWakeLock}
-            aria-label={t("autoCounterWakeLockTitle")}
-          >
-            {preferences.autoCounterWakeLock ? t("settings.on") : t("settings.off")}
-          </button>
-        </section>
       </motion.main>
 
       <BottomNav />

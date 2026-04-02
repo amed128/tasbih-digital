@@ -216,7 +216,6 @@ export default function Home() {
   const autoCounterEntryAutoStart = useTasbihStore((s) => s.preferences.autoCounterEntryAutoStart);
   const autoCounterConfirmOnStop = useTasbihStore((s) => s.preferences.autoCounterConfirmOnStop);
   const autoCounterSoundOnTick = useTasbihStore((s) => s.preferences.autoCounterSoundOnTick);
-  const autoCounterWakeLock = useTasbihStore((s) => s.preferences.autoCounterWakeLock);
   const chipTextFormat = useTasbihStore((s) => s.preferences.chipTextFormat);
   const audioClearTranscriptOnSilence = useTasbihStore(
     (s) => s.preferences.audioClearTranscriptOnSilence
@@ -1152,13 +1151,11 @@ export default function Home() {
   const canAutoRun = autoRunning && isDocumentVisible && isWindowFocused;
   const canAudioRun = audioRunning && isDocumentVisible && isWindowFocused;
   const shouldHoldWakeLock =
+    wakeLockEnabled &&
     !isCompleted &&
     isDocumentVisible &&
     isWindowFocused &&
-    (
-      (wakeLockEnabled && (isStarted || audioRunning)) ||
-      (autoCounterWakeLock && autoRunning)
-    );
+    (isStarted || autoRunning || audioRunning);
 
   useEffect(() => {
     if (!canAutoRun) return;

@@ -12,22 +12,11 @@ export default function AutoCounterSettings() {
   const preferences = useTasbihStore((s) => s.preferences);
   const setAutoCounterDefaultEnabled = useTasbihStore((s) => s.setAutoCounterDefaultEnabled);
   const setAutoCounterDefaultSpeed = useTasbihStore((s) => s.setAutoCounterDefaultSpeed);
-  // Whether the user has explicitly chosen "Custom" mode
-  const [isCustomMode, setIsCustomMode] = useState<boolean>(() => {
-    return ![500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed);
-  });
-  // Last custom value in seconds (kept in sync so restoring custom keeps the typed value)
-  const [lastCustomValue, setLastCustomValue] = useState<number>(() => {
-    const stored = preferences.autoCounterDefaultSpeed;
-    if (![500, 1000, 2000].includes(stored) && stored > 0) {
-      return Math.floor(stored / 1000) || 1;
-    }
-    return 5;
-  });
-  // Raw string shown in the input while the user is typing
+  const setAutoCounterSpeedIsCustom = useTasbihStore((s) => s.setAutoCounterSpeedIsCustom);
+  // Raw string shown in the input while the user is typing (local only — display state)
   const [rawInput, setRawInput] = useState<string>(() => {
     const stored = preferences.autoCounterDefaultSpeed;
-    if (![500, 1000, 2000].includes(stored) && stored > 0) {
+    if (preferences.autoCounterSpeedIsCustom && stored > 0) {
       return String(Math.floor(stored / 1000));
     }
     return "5";
@@ -101,19 +90,16 @@ export default function AutoCounterSettings() {
             </div>
             <select
               id="auto-speed"
-              value={isCustomMode ? "custom" : preferences.autoCounterDefaultSpeed}
+              value={preferences.autoCounterSpeedIsCustom ? "custom" : preferences.autoCounterDefaultSpeed}
               onChange={e => {
                 if (e.target.value === "custom") {
-                  setIsCustomMode(true);
-                  const restored = lastCustomValue >= 1 ? lastCustomValue : 1;
+                  setAutoCounterSpeedIsCustom(true);
+                  const currentSpeed = preferences.autoCounterDefaultSpeed;
+                  const restored = [500, 1000, 2000].includes(currentSpeed) ? 5 : Math.floor(currentSpeed / 1000) || 5;
                   setRawInput(String(restored));
                   setAutoCounterDefaultSpeed(restored * 1000);
                 } else {
-                  if (isCustomMode) {
-                    const parsed = parseInt(rawInput, 10);
-                    setLastCustomValue(!isNaN(parsed) && parsed >= 1 ? Math.min(parsed, 120) : 1);
-                  }
-                  setIsCustomMode(false);
+                  setAutoCounterSpeedIsCustom(false);
                   setAutoCounterDefaultSpeed(Number(e.target.value));
                 }
               }}
@@ -125,7 +111,7 @@ export default function AutoCounterSettings() {
               <option value="custom">{t("settings.custom")}</option>
             </select>
           </div>
-          {isCustomMode && (
+          {preferences.autoCounterSpeedIsCustom && (
             <div className="flex flex-col gap-1 mt-2">
               <div className="flex items-center gap-2">
                 <label htmlFor="custom-auto-speed" className="text-xs text-[var(--secondary)]">{t("settings.autoCounterCustomSpeedLabel")}</label>
@@ -141,7 +127,6 @@ export default function AutoCounterSettings() {
                     setRawInput(e.target.value);
                     const val = parseInt(e.target.value, 10);
                     if (!isNaN(val) && val >= 1 && val <= 120) {
-                      setLastCustomValue(val);
                       setAutoCounterDefaultSpeed(val * 1000);
                     }
                   }}
@@ -149,7 +134,6 @@ export default function AutoCounterSettings() {
                     const val = parseInt(rawInput, 10);
                     const clamped = isNaN(val) || val < 1 ? 1 : Math.min(val, 120);
                     setRawInput(String(clamped));
-                    setLastCustomValue(clamped);
                     setAutoCounterDefaultSpeed(clamped * 1000);
                   }}
                   className="w-24 rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"

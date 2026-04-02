@@ -36,6 +36,7 @@ export type Preferences = {
   // --- Auto-counter settings ---
   autoCounterDefaultEnabled: boolean;
   autoCounterDefaultSpeed: number;
+  autoCounterSpeedIsCustom: boolean;
   autoCounterResumeAfterReset: boolean;
     autoCounterResumeOnNext: boolean;
   autoCounterStopAtGoal: boolean;
@@ -185,6 +186,7 @@ export type TasbihStoreState = {
   clearListProgress: () => void;
   setAutoCounterDefaultEnabled: (enabled: boolean) => void;
   setAutoCounterDefaultSpeed: (speed: number) => void;
+  setAutoCounterSpeedIsCustom: (isCustom: boolean) => void;
   setAutoCounterResumeAfterReset: (enabled: boolean) => void;
   setAutoCounterStopAtGoal: (enabled: boolean) => void;
   setAutoCounterEntryAutoStart: (enabled: boolean) => void;
@@ -368,6 +370,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       // --- Auto-counter settings ---
       autoCounterDefaultEnabled: false,
       autoCounterDefaultSpeed: 1000,
+      autoCounterSpeedIsCustom: false,
       autoCounterResumeAfterReset: false,
         autoCounterResumeOnNext: true,
       autoCounterStopAtGoal: true,
@@ -1435,6 +1438,18 @@ const createStore = () =>
           return newState;
         }),
 
+      setAutoCounterSpeedIsCustom: (isCustom: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              autoCounterSpeedIsCustom: isCustom,
+            },
+          };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
       setAutoCounterResumeAfterReset: (enabled: boolean) =>
         set((state) => {
           const newState = {
@@ -1539,6 +1554,7 @@ const createStore = () =>
               audioClearTranscriptOnSilence: true,
               audioStopOnSilence: true,
               audioDebugTelemetry: false,
+              autoCounterSpeedIsCustom: false,
               language: "en" as const,
               confetti: false,
               remindersEnabled: false,

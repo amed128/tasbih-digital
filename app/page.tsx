@@ -235,11 +235,13 @@ export default function Home() {
   const preferences = useTasbihStore((s) => s.preferences);
   const [autoEnabled, setAutoEnabled] = useState(() => preferences.autoCounterDefaultEnabled ?? false);
   const [autoIntervalMs, setAutoIntervalMs] = useState(preferences.autoCounterDefaultSpeed || 1000);
+  const [isCustomSpeed, setIsCustomSpeed] = useState(() => preferences.autoCounterSpeedIsCustom ?? false);
 
   // Sync with preferences.autoCounterDefaultSpeed
   useEffect(() => {
     setAutoIntervalMs(preferences.autoCounterDefaultSpeed || 1000);
-  }, [preferences.autoCounterDefaultSpeed]);
+    setIsCustomSpeed(preferences.autoCounterSpeedIsCustom ?? false);
+  }, [preferences.autoCounterDefaultSpeed, preferences.autoCounterSpeedIsCustom]);
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [audioAccessState, setAudioAccessState] = useState<AudioAccessState>("idle");
   const [audioTranscript, setAudioTranscript] = useState("");
@@ -1303,15 +1305,20 @@ export default function Home() {
         </label>
         <select
           id="auto-speed"
-          value={autoIntervalMs}
-          onChange={(e) => setAutoIntervalMs(Number(e.target.value) || 1000)}
+          value={isCustomSpeed ? "custom" : autoIntervalMs}
+          onChange={(e) => {
+            if (e.target.value !== "custom") {
+              setIsCustomSpeed(false);
+              setAutoIntervalMs(Number(e.target.value) || 1000);
+            }
+          }}
           className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
         >
           <option value={500}>0.5s</option>
           <option value={1000}>1s</option>
           <option value={2000}>2s</option>
-          {![500, 1000, 2000].includes(preferences.autoCounterDefaultSpeed) && (
-            <option value={preferences.autoCounterDefaultSpeed}>{`Custom: ${(preferences.autoCounterDefaultSpeed / 1000).toLocaleString(undefined, { maximumFractionDigits: 2 })}s`}</option>
+          {isCustomSpeed && (
+            <option value="custom">{`Custom: ${(autoIntervalMs / 1000).toLocaleString(undefined, { maximumFractionDigits: 2 })}s`}</option>
           )}
         </select>
       </div>

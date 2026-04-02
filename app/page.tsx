@@ -1852,7 +1852,7 @@ export default function Home() {
           </button>
         </div>
 
-        <div ref={chipsContainerRef} className="max-h-[104px] overflow-y-auto pr-1">
+        <div ref={chipsContainerRef} className="scrollbar-visible max-h-[104px] overflow-y-auto pr-1">
           <div className="flex flex-col gap-2 pb-2 pt-2">
           {activeList.map((zikrId, index) => renderChip(zikrId, index))}
           </div>

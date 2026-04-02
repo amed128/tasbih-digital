@@ -69,3 +69,19 @@ body {
 .audio-match-glow {
   animation: match-blink 0.4s ease-in-out forwards;
 }
+
+.scrollbar-visible {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) var(--border);
+}
+.scrollbar-visible::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-visible::-webkit-scrollbar-track {
+  background: var(--border);
+  border-radius: 9999px;
+}
+.scrollbar-visible::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 9999px;
+}

@@ -1,9 +1,18 @@
+import { useSyncExternalStore } from "react";
 import { useTasbihStore } from "@/store/tasbihStore";
 import { useT } from "@/hooks/useT";
 
 export default function GeneralSettings() {
   const t = useT();
   const preferences = useTasbihStore((s) => s.preferences);
+
+  const isIosPwa = useSyncExternalStore(
+    () => () => {},
+    () =>
+      window.matchMedia("(display-mode: standalone)").matches &&
+      /iP(hone|ad|od)/.test(navigator.userAgent),
+    () => false
+  );
   const setTapSound = useTasbihStore((s) => s.setTapSound);
   const toggleVibration = useTasbihStore((s) => s.toggleVibration);
   const setWakeLockEnabled = useTasbihStore((s) => s.setWakeLockEnabled);
@@ -38,6 +47,9 @@ export default function GeneralSettings() {
         <div>
           <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.vibrationTitle")}</div>
           <div className="text-xs text-[var(--secondary)]">{t("settings.vibrationHint")}</div>
+          {isIosPwa && (
+            <div className="mt-1 text-xs text-[var(--secondary)] opacity-70">{t("settings.vibrationIOS")}</div>
+          )}
         </div>
         <button
           onClick={toggleVibration}

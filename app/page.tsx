@@ -210,6 +210,13 @@ export default function Home() {
   const blurActionControlsWhileListening = useTasbihStore(
     (s) => s.preferences.blurActionControlsWhileListening
   );
+  const blurActionControlsWhileAuto = useTasbihStore((s) => s.preferences.blurActionControlsWhileAuto);
+  const autoCounterStopAtGoal = useTasbihStore((s) => s.preferences.autoCounterStopAtGoal);
+  const autoCounterResumeAfterReset = useTasbihStore((s) => s.preferences.autoCounterResumeAfterReset);
+  const autoCounterEntryAutoStart = useTasbihStore((s) => s.preferences.autoCounterEntryAutoStart);
+  const autoCounterConfirmOnStop = useTasbihStore((s) => s.preferences.autoCounterConfirmOnStop);
+  const autoCounterSoundOnTick = useTasbihStore((s) => s.preferences.autoCounterSoundOnTick);
+  const autoCounterWakeLock = useTasbihStore((s) => s.preferences.autoCounterWakeLock);
   const chipTextFormat = useTasbihStore((s) => s.preferences.chipTextFormat);
   const audioClearTranscriptOnSilence = useTasbihStore(
     (s) => s.preferences.audioClearTranscriptOnSilence
@@ -381,6 +388,9 @@ export default function Home() {
   const handleAutoIncrement = useEffectEvent(() => {
     increment();
     setPulseTrigger((t) => t + 1);
+    if (autoCounterSoundOnTick) {
+      triggerHaptic(18);
+    }
   });
 
   const handleAudioIncrement = useEffectEvent(() => {
@@ -439,10 +449,22 @@ export default function Home() {
   useEffect(() => {
     if (isCompleted && !prevIsCompleted.current) {
       triggerCompletionFeedback();
+      // Stop auto-counter when goal is reached if setting is on
+      if (autoCounterStopAtGoal && autoEnabled) {
+        setAutoEnabled(false);
+      }
     }
 
     prevIsCompleted.current = isCompleted;
-  }, [isCompleted]);
+  }, [isCompleted, autoCounterStopAtGoal, autoEnabled]);
+
+  const prevIsAutoMode = useRef(false);
+  useEffect(() => {
+    if (isAutoMode && !prevIsAutoMode.current && autoCounterEntryAutoStart && !isCompleted) {
+      setAutoEnabled(true);
+    }
+    prevIsAutoMode.current = isAutoMode;
+  }, [isAutoMode, autoCounterEntryAutoStart, isCompleted]);
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -1027,6 +1049,11 @@ export default function Home() {
   const hasProgressToReset = counter !== initialCounter || (isListMode && activeIndex > 0);
 
   const handleResetRequest = () => {
+    // If auto is running and confirmOnStop is on, always show modal
+    if (autoRunning && autoCounterConfirmOnStop) {
+      setShowResetConfirm(true);
+      return;
+    }
     if (!hasProgressToReset) {
       reset();
       return;
@@ -1035,9 +1062,10 @@ export default function Home() {
   };
 
   const handleResetConfirm = () => {
-    // If in simple mode and just completed, stop auto-counter
-    if (!isListMode && isCompleted) {
-      setAutoEnabled(false);
+    const wasCompleted = isCompleted;
+    // Stop auto-counter on reset unless resume-after-reset is on
+    if (!isListMode && wasCompleted) {
+      if (!autoCounterResumeAfterReset) setAutoEnabled(false);
     }
     reset();
     setShowResetConfirm(false);
@@ -1119,15 +1147,18 @@ export default function Home() {
   const autoRunning = isAutoMode && autoEnabled && !isCompleted;
   const audioRunning = isAudioMode && audioEnabled && !isCompleted;
   const shouldBlurActionControls =
-    (isAudioMode && audioRunning && blurActionControlsWhileListening) || autoRunning;
+    (isAudioMode && audioRunning && blurActionControlsWhileListening) ||
+    (autoRunning && blurActionControlsWhileAuto);
   const canAutoRun = autoRunning && isDocumentVisible && isWindowFocused;
   const canAudioRun = audioRunning && isDocumentVisible && isWindowFocused;
   const shouldHoldWakeLock =
-    wakeLockEnabled &&
     !isCompleted &&
     isDocumentVisible &&
     isWindowFocused &&
-    (isStarted || autoRunning || audioRunning);
+    (
+      (wakeLockEnabled && (isStarted || audioRunning)) ||
+      (autoCounterWakeLock && autoRunning)
+    );
 
   useEffect(() => {
     if (!canAutoRun) return;

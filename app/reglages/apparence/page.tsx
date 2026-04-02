@@ -22,6 +22,12 @@ export default function AppearanceSettingsPage() {
 
   const t = useT();
 
+  const isPwa = useSyncExternalStore(
+    () => () => {},
+    () => window.matchMedia("(display-mode: standalone)").matches,
+    () => false
+  );
+
   const themeOptions: { value: Theme; label: string }[] = [
     { value: "light", label: t("settings.themeLight") },
     { value: "dark", label: t("settings.themeDark") },
@@ -107,6 +113,9 @@ export default function AppearanceSettingsPage() {
             <div>
               <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.iconThemeTitle")}</div>
               <div className="text-xs text-[var(--secondary)]">{t("settings.iconThemeHint")}</div>
+              {isPwa && (
+                <div className="mt-1 text-xs text-[var(--secondary)] opacity-70">{t("settings.iconThemePwaNote")}</div>
+              )}
             </div>
             <select
               value={preferences.iconTheme ?? "auto"}

@@ -1334,7 +1334,7 @@ export default function Home() {
           <option value={500}>0.5s</option>
           <option value={1000}>1s</option>
           <option value={2000}>2s</option>
-          <option value="custom">{isCustomSpeed ? `Custom: ${(autoIntervalMs / 1000).toLocaleString(undefined, { maximumFractionDigits: 2 })}s` : "Custom"}</option>
+          <option value="custom">Custom</option>
         </select>
       </div>
       {isCustomSpeed && (

@@ -233,8 +233,9 @@ export default function ListesPage() {
   const [manualReps, setManualReps] = useState("33");
   const [createCategoryExpanded, setCreateCategoryExpanded] = useState<Record<string, boolean>>({});
   const [selectedLibraryZikr, setSelectedLibraryZikr] = useState<Zikr | null>(null);
-  const [editingLibraryTargetId, setEditingLibraryTargetId] = useState<string | null>(null);
-  const [libraryTargetInput, setLibraryTargetInput] = useState("");
+  const [libEditModalOpen, setLibEditModalOpen] = useState(false);
+  const [libEditingZikrId, setLibEditingZikrId] = useState<string | null>(null);
+  const [libEditRepsInput, setLibEditRepsInput] = useState("33");
 
   const allZikrsById = useMemo(() => {
     const entries = [...zikrs, ...Object.values(customZikrs)].map((zikr) => [zikr.id, zikr] as const);
@@ -384,6 +385,30 @@ export default function ListesPage() {
     setManualArabic("");
     setManualTranslit("");
     setManualReps("33");
+  };
+
+  const startEditingLibraryZikrModal = (zikr: Zikr, currentTarget: number) => {
+    setLibEditingZikrId(zikr.id);
+    setLibEditRepsInput(String(currentTarget));
+    setLibEditModalOpen(true);
+  };
+
+  const closeLibEditModal = () => {
+    setLibEditModalOpen(false);
+    setLibEditingZikrId(null);
+    setLibEditRepsInput("33");
+  };
+
+  const handleSaveLibraryTarget = () => {
+    const parsed = parseInt(libEditRepsInput, 10);
+    if (Number.isFinite(parsed) && parsed > 0 && libEditingZikrId) {
+      setCreateListItems((prev) =>
+        prev.map((it) =>
+          it.zikr.id === libEditingZikrId ? { ...it, customTarget: parsed } : it
+        )
+      );
+    }
+    closeLibEditModal();
   };
 
   const handleManualArabicChange = (value: string) => {
@@ -906,37 +931,31 @@ export default function ListesPage() {
                   createListItems.map((item, idx) => {
                     const { source, zikr, customTarget } = item;
                     const isManual = source === "manual";
-                    const isEditingTarget = editingLibraryTargetId === zikr.id;
                     const displayTarget = customTarget ?? zikr.defaultTarget;
                     return (
                       <div
                         key={zikr.id}
-                        role={isManual ? "button" : undefined}
-                        tabIndex={isManual ? 0 : undefined}
-                        onClick={isManual ? () => startEditingManualZikr(zikr) : undefined}
-                        onKeyDown={
+                        role="button"
+                        tabIndex={0}
+                        onClick={() =>
                           isManual
-                            ? (e) => {
-                                if (e.key !== "Enter" && e.key !== " ") return;
-                                e.preventDefault();
-                                startEditingManualZikr(zikr);
-                              }
-                            : undefined
+                            ? startEditingManualZikr(zikr)
+                            : startEditingLibraryZikrModal(zikr, displayTarget)
                         }
-                        className={`flex items-center justify-between rounded-2xl border bg-[var(--background)] px-3 py-2 ${
-                          isManual
-                            ? "cursor-pointer border-[var(--primary)]/40 hover:border-[var(--primary)]"
-                            : "border-[var(--border)]"
-                        }`}
+                        onKeyDown={(e) => {
+                          if (e.key !== "Enter" && e.key !== " ") return;
+                          e.preventDefault();
+                          if (isManual) startEditingManualZikr(zikr);
+                          else startEditingLibraryZikrModal(zikr, displayTarget);
+                        }}
+                        className="flex items-center justify-between rounded-2xl border bg-[var(--background)] px-3 py-2 cursor-pointer border-[var(--primary)]/40 hover:border-[var(--primary)]"
                       >
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-[var(--secondary)]">#{idx + 1}</span>
-                            {isManual ? (
-                              <span className="rounded-full border border-[var(--primary)]/40 bg-[var(--primary)]/15 px-2 py-0.5 text-[0.68rem] font-semibold text-[var(--primary)]">
-                                {t("lists.manualTag")}
-                              </span>
-                            ) : null}
+                            <span className="rounded-full border border-[var(--primary)]/40 bg-[var(--primary)]/15 px-2 py-0.5 text-[0.68rem] font-semibold text-[var(--primary)]">
+                              {isManual ? t("lists.manualTag") : t("lists.libTag")}
+                            </span>
                             <div className="text-xs font-semibold text-[var(--foreground)]">{zikr.arabic}</div>
                           </div>
                           <div className="text-xs text-[var(--secondary)]">
@@ -945,68 +964,11 @@ export default function ListesPage() {
                               <span className="ml-1 text-[var(--primary)]">✎</span>
                             )}
                           </div>
-                          {isManual ? (
-                            <div className="mt-1 text-[0.68rem] font-semibold text-[var(--primary)]">
-                              {t("lists.manualEditHint")}
-                            </div>
-                          ) : null}
-                          {!isManual && isEditingTarget && (
-                            <div className="mt-2 flex items-center gap-2">
-                              <input
-                                type="number"
-                                min="1"
-                                value={libraryTargetInput}
-                                onChange={(e) => setLibraryTargetInput(e.target.value)}
-                                onClick={(e) => e.stopPropagation()}
-                                className="w-20 rounded-xl border border-[var(--primary)] bg-[var(--background)] px-2 py-1 text-sm text-[var(--foreground)] outline-none"
-                                autoFocus
-                              />
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  const parsed = Number.parseInt(libraryTargetInput, 10);
-                                  if (Number.isFinite(parsed) && parsed > 0) {
-                                    setCreateListItems((prev) =>
-                                      prev.map((it) =>
-                                        it.zikr.id === zikr.id ? { ...it, customTarget: parsed } : it
-                                      )
-                                    );
-                                  }
-                                  setEditingLibraryTargetId(null);
-                                }}
-                                className="rounded-xl bg-[var(--primary)] px-3 py-1 text-xs font-semibold text-black"
-                              >
-                                OK
-                              </button>
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setEditingLibraryTargetId(null);
-                                }}
-                                className="rounded-xl border border-[var(--border)] px-3 py-1 text-xs font-semibold text-[var(--secondary)]"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          )}
+                          <div className="mt-1 text-[0.68rem] font-semibold text-[var(--primary)]">
+                            {isManual ? t("lists.manualEditHint") : t("lists.libEditHint")}
+                          </div>
                         </div>
                         <div className="ml-2 flex items-center gap-1">
-                          {!isManual && (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setLibraryTargetInput(String(displayTarget));
-                                setEditingLibraryTargetId(isEditingTarget ? null : zikr.id);
-                              }}
-                              className="p-1 text-sm text-[var(--secondary)] hover:text-[var(--primary)]"
-                              aria-label={t("lists.editTargetAria")}
-                            >
-                              ✎
-                            </button>
-                          )}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -1022,9 +984,12 @@ export default function ListesPage() {
                   })
                 )}
               </div>
-              {createListItems.some((item) => item.source === "manual") ? (
+              {createListItems.some((item) => item.source === "manual") && (
                 <p className="mt-2 text-xs text-[var(--primary)]">{t("lists.manualEditHint")}</p>
-              ) : null}
+              )}
+              {createListItems.some((item) => item.source === "library") && (
+                <p className="mt-2 text-xs text-[var(--primary)]">{t("lists.libEditHint")}</p>
+              )}
             </div>
 
             <button
@@ -1254,6 +1219,41 @@ export default function ListesPage() {
                 className="w-36 rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-[2rem] font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
               />
             </div>
+          </div>
+        </Modal>
+
+        <Modal
+          isOpen={libEditModalOpen && Boolean(libEditingZikrId)}
+          title={t("lists.libEditTitle")}
+          onClose={closeLibEditModal}
+          closeOnOverlayClick
+          footer={
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={closeLibEditModal}
+                className="rounded-xl bg-[var(--card)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
+              >
+                {t("lists.cancel")}
+              </button>
+              <button
+                onClick={handleSaveLibraryTarget}
+                className="rounded-xl bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-black"
+              >
+                {t("lists.manualSaveBtn")}
+              </button>
+            </div>
+          }
+        >
+          <div className="flex items-center gap-2">
+            <label className="text-[1rem] font-semibold text-[var(--foreground)]">{t("lists.repsLabel")}</label>
+            <input
+              type="number"
+              min="1"
+              value={libEditRepsInput}
+              onChange={(e) => setLibEditRepsInput(e.target.value)}
+              className="w-36 rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-[2rem] font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+              autoFocus
+            />
           </div>
         </Modal>
 

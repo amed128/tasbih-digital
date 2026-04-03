@@ -924,6 +924,12 @@ export default function ListesPage() {
 
             <div>
               <div className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--secondary)]">{t("lists.zikrsLabel")}</div>
+              {createListItems.some((item) => item.source === "manual") && (
+                <p className="mt-1 text-xs text-[var(--primary)]">{t("lists.manualEditHint")}</p>
+              )}
+              {createListItems.some((item) => item.source === "library") && (
+                <p className="mt-1 text-xs text-[var(--primary)]">{t("lists.libEditHint")}</p>
+              )}
               <div className="mt-3 space-y-3 rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-4">
                 {createListItems.length === 0 ? (
                   <div className="text-sm text-[var(--secondary)]">{t("lists.addAtLeastOne")}</div>
@@ -964,9 +970,6 @@ export default function ListesPage() {
                               <span className="ml-1 text-[var(--primary)]">✎</span>
                             )}
                           </div>
-                          <div className="mt-1 text-[0.68rem] font-semibold text-[var(--primary)]">
-                            {isManual ? t("lists.manualEditHint") : t("lists.libEditHint")}
-                          </div>
                         </div>
                         <div className="ml-2 flex items-center gap-1">
                           <button
@@ -984,12 +987,6 @@ export default function ListesPage() {
                   })
                 )}
               </div>
-              {createListItems.some((item) => item.source === "manual") && (
-                <p className="mt-2 text-xs text-[var(--primary)]">{t("lists.manualEditHint")}</p>
-              )}
-              {createListItems.some((item) => item.source === "library") && (
-                <p className="mt-2 text-xs text-[var(--primary)]">{t("lists.libEditHint")}</p>
-              )}
             </div>
 
             <button

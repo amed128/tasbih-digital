@@ -274,6 +274,7 @@ export default function Home() {
   const autoAdvanceNextZikr = useTasbihStore((s) => s.preferences.autoAdvanceNextZikr ?? false);
   const setAutoCounterDefaultSpeed = useTasbihStore((s) => s.setAutoCounterDefaultSpeed);
   const setAutoCounterSpeedIsCustom = useTasbihStore((s) => s.setAutoCounterSpeedIsCustom);
+  const defaultMaxTarget = useTasbihStore((s) => s.preferences.defaultMaxTarget ?? 9999);
 
   const isListMode = activeListId !== DEFAULT_LIST_ID && activeList.length > 0;
   const hasAudioSelection = isListMode;
@@ -1791,13 +1792,13 @@ export default function Home() {
             <input
               type="number"
               min={1}
-              max={999}
+              max={defaultMaxTarget}
               value={effectiveTarget}
               disabled={isTargetLocked}
               readOnly={isTargetLocked}
               onChange={(e) => {
                 if (isTargetLocked) return;
-                setCustomTarget(Math.max(1, Number(e.target.value) || 1));
+                setCustomTarget(Math.max(1, Math.min(defaultMaxTarget, Number(e.target.value) || 1)));
               }}
               className={`mx-auto w-28 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-center text-2xl font-bold text-[var(--foreground)] transition focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${
                 isTargetLocked ? "cursor-not-allowed opacity-55 blur-[0.6px]" : ""

@@ -76,6 +76,8 @@ export type Preferences = {
   iconTheme?: IconTheme;
   // Zikr selection mode: reset counter when going back to a previous zikr
   resetOnPrev: boolean;
+  // Default max target value (user-configurable, hard cap 999999)
+  defaultMaxTarget: number;
 };
 
 export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
@@ -183,6 +185,7 @@ export type TasbihStoreState = {
   setOptionalSyncEnabled: (enabled: boolean) => void;
   setAutoAdvanceNextZikr: (enabled: boolean) => void;
   setResetOnPrev: (value: boolean) => void;
+  setDefaultMaxTarget: (value: number) => void;
   clearListProgress: () => void;
   setAutoCounterDefaultEnabled: (enabled: boolean) => void;
   setAutoCounterDefaultSpeed: (speed: number) => void;
@@ -406,9 +409,12 @@ function getInitialState(): Partial<TasbihStoreState> {
       activeCustomProfileId: undefined,
       iconTheme: "auto" as IconTheme,
       resetOnPrev: true,
+      defaultMaxTarget: 9999,
     },
   };
 }
+
+export const APP_MAX_TARGET = 999999;
 
 function loadStateFromStorage(): Partial<TasbihStoreState> | null {
   if (typeof window === "undefined") return null;
@@ -1097,11 +1103,22 @@ const createStore = () =>
           return newState;
         }),
 
+      setDefaultMaxTarget: (value: number) =>
+        set((state) => {
+          const clamped = Math.max(1, Math.min(APP_MAX_TARGET, Math.floor(value)));
+          const newState = {
+            preferences: { ...state.preferences, defaultMaxTarget: clamped },
+          };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
       setCustomTarget: (target?: number) =>
         set((state) => {
+          const maxTarget = state.preferences.defaultMaxTarget ?? 9999;
           const parsed =
             typeof target === "number" && Number.isFinite(target)
-              ? Math.max(1, Math.floor(target))
+              ? Math.max(1, Math.min(maxTarget, Math.floor(target)))
               : undefined;
           const effectiveTarget = parsed ?? state.currentZikr?.defaultTarget ?? 0;
           const initial = initialCounterForMode(state.mode, effectiveTarget);
@@ -1562,6 +1579,7 @@ const createStore = () =>
               reminderTimes: [] as ReminderTime[],
               reminderDays: [] as number[],
               optionalSyncEnabled: false,
+              defaultMaxTarget: 9999,
             },
           };
           persistState({

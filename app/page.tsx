@@ -266,6 +266,8 @@ export default function Home() {
   const nextZikrInList = useTasbihStore((s) => s.nextZikrInList);
   const selectList = useTasbihStore((s) => s.selectList);
   const autoAdvanceNextZikr = useTasbihStore((s) => s.preferences.autoAdvanceNextZikr ?? false);
+  const setAutoCounterDefaultSpeed = useTasbihStore((s) => s.setAutoCounterDefaultSpeed);
+  const setAutoCounterSpeedIsCustom = useTasbihStore((s) => s.setAutoCounterSpeedIsCustom);
 
   const isListMode = activeListId !== DEFAULT_LIST_ID && activeList.length > 0;
   const hasAudioSelection = isListMode;
@@ -1307,9 +1309,17 @@ export default function Home() {
           id="auto-speed"
           value={isCustomSpeed ? "custom" : autoIntervalMs}
           onChange={(e) => {
-            if (e.target.value !== "custom") {
+            if (e.target.value === "custom") {
+              const defaultCustomMs = [500, 1000, 2000].includes(autoIntervalMs) ? 5000 : autoIntervalMs;
+              setIsCustomSpeed(true);
+              setAutoIntervalMs(defaultCustomMs);
+              setAutoCounterSpeedIsCustom(true);
+              setAutoCounterDefaultSpeed(defaultCustomMs);
+            } else {
               setIsCustomSpeed(false);
               setAutoIntervalMs(Number(e.target.value) || 1000);
+              setAutoCounterSpeedIsCustom(false);
+              setAutoCounterDefaultSpeed(Number(e.target.value) || 1000);
             }
           }}
           className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
@@ -1317,9 +1327,7 @@ export default function Home() {
           <option value={500}>0.5s</option>
           <option value={1000}>1s</option>
           <option value={2000}>2s</option>
-          {isCustomSpeed && (
-            <option value="custom">{`Custom: ${(autoIntervalMs / 1000).toLocaleString(undefined, { maximumFractionDigits: 2 })}s`}</option>
-          )}
+          <option value="custom">{isCustomSpeed ? `Custom: ${(autoIntervalMs / 1000).toLocaleString(undefined, { maximumFractionDigits: 2 })}s` : "Custom"}</option>
         </select>
       </div>
     </section>

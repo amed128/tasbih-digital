@@ -236,11 +236,17 @@ export default function Home() {
   const [autoEnabled, setAutoEnabled] = useState(() => preferences.autoCounterDefaultEnabled ?? false);
   const [autoIntervalMs, setAutoIntervalMs] = useState(preferences.autoCounterDefaultSpeed || 1000);
   const [isCustomSpeed, setIsCustomSpeed] = useState(() => preferences.autoCounterSpeedIsCustom ?? false);
+  const [autoCustomRawInput, setAutoCustomRawInput] = useState(() =>
+    String(Math.round((preferences.autoCounterDefaultSpeed || 1000) / 1000))
+  );
 
   // Sync with preferences.autoCounterDefaultSpeed
   useEffect(() => {
     setAutoIntervalMs(preferences.autoCounterDefaultSpeed || 1000);
     setIsCustomSpeed(preferences.autoCounterSpeedIsCustom ?? false);
+    if (preferences.autoCounterSpeedIsCustom) {
+      setAutoCustomRawInput(String(Math.round(preferences.autoCounterDefaultSpeed / 1000)));
+    }
   }, [preferences.autoCounterDefaultSpeed, preferences.autoCounterSpeedIsCustom]);
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [audioAccessState, setAudioAccessState] = useState<AudioAccessState>("idle");
@@ -1313,6 +1319,7 @@ export default function Home() {
               const defaultCustomMs = [500, 1000, 2000].includes(autoIntervalMs) ? 5000 : autoIntervalMs;
               setIsCustomSpeed(true);
               setAutoIntervalMs(defaultCustomMs);
+              setAutoCustomRawInput(String(Math.round(defaultCustomMs / 1000)));
               setAutoCounterSpeedIsCustom(true);
               setAutoCounterDefaultSpeed(defaultCustomMs);
             } else {
@@ -1330,6 +1337,41 @@ export default function Home() {
           <option value="custom">{isCustomSpeed ? `Custom: ${(autoIntervalMs / 1000).toLocaleString(undefined, { maximumFractionDigits: 2 })}s` : "Custom"}</option>
         </select>
       </div>
+      {isCustomSpeed && (
+        <div className="mt-2 flex items-center justify-between gap-3">
+          <label className="text-xs font-semibold text-[var(--secondary)]" htmlFor="auto-speed-custom">
+            {t("settings.autoCounterCustomSpeedLabel")}
+          </label>
+          <div className="flex items-center gap-1">
+            <input
+              id="auto-speed-custom"
+              type="number"
+              min={1}
+              max={120}
+              step={1}
+              inputMode="numeric"
+              value={autoCustomRawInput}
+              onChange={(e) => {
+                setAutoCustomRawInput(e.target.value);
+                const val = parseInt(e.target.value, 10);
+                if (!isNaN(val) && val >= 1 && val <= 120) {
+                  setAutoIntervalMs(val * 1000);
+                  setAutoCounterDefaultSpeed(val * 1000);
+                }
+              }}
+              onBlur={() => {
+                const val = parseInt(autoCustomRawInput, 10);
+                const clamped = isNaN(val) || val < 1 ? 1 : Math.min(val, 120);
+                setAutoCustomRawInput(String(clamped));
+                setAutoIntervalMs(clamped * 1000);
+                setAutoCounterDefaultSpeed(clamped * 1000);
+              }}
+              className="w-16 rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+            />
+            <span className="text-xs text-[var(--secondary)]">s</span>
+          </div>
+        </div>
+      )}
     </section>
   );
 

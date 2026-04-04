@@ -945,14 +945,31 @@ export default function Home() {
     recognition.lang = speechRecognitionLanguage;
     recognition.continuous = true;
     recognition.interimResults = true;
+    recognition.maxAlternatives = 3;
 
     recognition.onresult = (event: SpeechRecognitionEventLike) => {
       let transcript = "";
       for (let index = event.results.length - 1; index >= event.resultIndex; index -= 1) {
         const result = event.results[index];
         if (!result || result.length === 0) continue;
-        transcript = result[0].transcript.trim();
-        if (transcript) break;
+        // Try each alternative; use the first non-empty one as primary,
+        // but prefer any alternative that already matches a target.
+        const normalizedTargets = normalizedSpeechTargets;
+        let bestAlt = result[0]?.transcript.trim() ?? "";
+        for (let a = 0; a < result.length; a += 1) {
+          const alt = result[a]?.transcript.trim();
+          if (!alt) continue;
+          const normalized = alt.toLowerCase().trim();
+          if (normalizedTargets.some((t) => normalized.includes(t) || t.includes(normalized))) {
+            bestAlt = alt;
+            break;
+          }
+          if (!bestAlt) bestAlt = alt;
+        }
+        if (bestAlt) {
+          transcript = bestAlt;
+          break;
+        }
       }
       processSpeechTranscript(transcript);
     };

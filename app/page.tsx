@@ -912,7 +912,6 @@ export default function Home() {
       speechCanIncrementRef.current &&
       now - speechLastIncrementAtRef.current >= speechToleranceConfig.cooldownMs
     ) {
-      speechCanIncrementRef.current = false;
       speechLastIncrementAtRef.current = now;
       setAudioMatchFlash(true);
       handleAudioIncrement();
@@ -925,11 +924,9 @@ export default function Home() {
       }
       setAudioTranscript("");
       setAudioMatchProgress(0);
-      restartSpeechRecognitionAfterMatch();
 
       window.setTimeout(() => {
         setAudioMatchFlash(false);
-        speechCanIncrementRef.current = true;
       }, 250);
       return;
     }

@@ -750,17 +750,6 @@ export default function Home() {
     setAudioMatchProgress(0);
   });
 
-  const restartSpeechRecognitionAfterMatch = useEffectEvent(() => {
-    stopSpeechRecognition();
-    if (!speechShouldRunRef.current) return;
-
-    recognitionRestartTimerRef.current = window.setTimeout(() => {
-      recognitionRestartTimerRef.current = null;
-      if (!speechShouldRunRef.current) return;
-      startSpeechRecognition();
-    }, 150);
-  });
-
   const resetAudioSilenceTimer = useEffectEvent(() => {
     if (audioSilenceTimerRef.current !== null) {
       window.clearTimeout(audioSilenceTimerRef.current);

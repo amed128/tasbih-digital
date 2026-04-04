@@ -189,7 +189,7 @@ export default function AudioSettingsPage() {
               }
               className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
                 preferences.audioClearTranscriptOnSilence
-                  ? "bg-[var(--primary)] text-black"
+                  ? "bg-[var(--primary)] text-[var(--background)]"
                   : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
               }`}
             >
@@ -211,7 +211,7 @@ export default function AudioSettingsPage() {
               onClick={() => setAudioStopOnSilence(!preferences.audioStopOnSilence)}
               className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
                 preferences.audioStopOnSilence
-                  ? "bg-[var(--primary)] text-black"
+                  ? "bg-[var(--primary)] text-[var(--background)]"
                   : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
               }`}
             >
@@ -264,7 +264,7 @@ export default function AudioSettingsPage() {
               }
               className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
                 preferences.blurActionControlsWhileListening
-                  ? "bg-[var(--primary)] text-black"
+                  ? "bg-[var(--primary)] text-[var(--background)]"
                   : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
               }`}
             >
@@ -287,7 +287,7 @@ export default function AudioSettingsPage() {
               onClick={() => setAudioDebugTelemetry(!preferences.audioDebugTelemetry)}
               className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
                 preferences.audioDebugTelemetry
-                  ? "bg-[var(--primary)] text-black"
+                  ? "bg-[var(--primary)] text-[var(--background)]"
                   : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
               }`}
             >

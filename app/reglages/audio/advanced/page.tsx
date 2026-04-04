@@ -20,10 +20,10 @@ export default function AdvancedAudioSettingsPage() {
   const deleteCustomProfile = useTasbihStore((s) => s.deleteCustomProfile);
   const setActiveCustomProfile = useTasbihStore((s) => s.setActiveCustomProfile);
 
-  const [showAdvancedTiming, setShowAdvancedTiming] = useState(true);
-  const [showCustomProfiles, setShowCustomProfiles] = useState(true);
+  const [showAdvancedTiming, setShowAdvancedTiming] = useState(false);
+  const [showCustomProfiles, setShowCustomProfiles] = useState(false);
   const [customProfileName, setCustomProfileName] = useState("");
-  const [customProfileCooldown, setCustomProfileCooldown] = useState(800);
+  const [customProfileCooldown, setCustomProfileCooldown] = useState(300);
   const [customProfileRearm, setCustomProfileRearm] = useState(0.28);
 
   const t = useT();
@@ -105,7 +105,7 @@ export default function AdvancedAudioSettingsPage() {
                   <div>
                     <label className="text-xs font-semibold text-[var(--secondary)]">
                       {t("settings.advancedTimingCooldownLabel", {
-                        value: preferences.advancedTiming.cooldownMs ?? 800,
+                        value: preferences.advancedTiming.cooldownMs ?? 300,
                       })}
                     </label>
                     <input
@@ -113,7 +113,7 @@ export default function AdvancedAudioSettingsPage() {
                       min={300}
                       max={2000}
                       step={100}
-                      value={preferences.advancedTiming.cooldownMs ?? 800}
+                      value={preferences.advancedTiming.cooldownMs ?? 300}
                       onChange={(e) =>
                         setAdvancedTiming({
                           enabled: true,
@@ -175,26 +175,47 @@ export default function AdvancedAudioSettingsPage() {
           {showCustomProfiles && (
             <div className="mt-4 flex flex-col gap-4 border-t border-[var(--border)] pt-4">
               {preferences.customProfiles && preferences.customProfiles.length > 0 && (
-                <div className="flex flex-col gap-2">
-                  <div className="text-xs font-semibold text-[var(--secondary)]">
-                    {t("settings.customProfilesActiveLabel")}
+                <>
+                  <div className="flex flex-col gap-2">
+                    <div className="text-xs font-semibold text-[var(--secondary)]">
+                      {t("settings.customProfilesActiveLabel")}
+                    </div>
+                    <select
+                      value={preferences.activeCustomProfileId ?? ""}
+                      onChange={(e) => setActiveCustomProfile(e.target.value || undefined)}
+                      className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)]"
+                    >
+                      <option value="">{t("settings.customProfilesUseBuiltIn")}</option>
+                      {preferences.customProfiles.map((profile) => (
+                        <option key={profile.id} value={profile.id}>
+                          {profile.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                  <select
-                    value={preferences.activeCustomProfileId ?? ""}
-                    onChange={(e) => setActiveCustomProfile(e.target.value || undefined)}
-                    className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)]"
-                  >
-                    <option value="">{t("settings.customProfilesUseBuiltIn")}</option>
+
+                  <div className="flex flex-col gap-2 border-t border-[var(--border)] pt-2">
                     {preferences.customProfiles.map((profile) => (
-                      <option key={profile.id} value={profile.id}>
-                        {profile.name}
-                      </option>
+                      <div key={profile.id} className="flex items-center justify-between gap-2 text-sm">
+                        <span className="font-medium text-[var(--foreground)]">{profile.name}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm(t("settings.customProfilesDeleteConfirm", { name: profile.name }))) {
+                              deleteCustomProfile(profile.id);
+                            }
+                          }}
+                          className="rounded bg-red-500 px-2 py-1 text-xs text-white hover:bg-red-600"
+                        >
+                          {t("settings.customProfilesDelete")}
+                        </button>
+                      </div>
                     ))}
-                  </select>
-                </div>
+                  </div>
+                </>
               )}
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 border-t border-[var(--border)] pt-2">
                 <div className="text-xs font-semibold text-[var(--secondary)]">
                   {t("settings.customProfilesNameLabel")}
                 </div>
@@ -223,30 +244,13 @@ export default function AdvancedAudioSettingsPage() {
                     rearmProgress: customProfileRearm,
                   });
                   setCustomProfileName("");
-                  setCustomProfileCooldown(800);
+                  setCustomProfileCooldown(300);
                   setCustomProfileRearm(0.28);
                 }}
-                className="rounded-lg bg-[var(--primary)] px-3 py-2 text-sm font-semibold text-[var(--card)]"
+                className="rounded-lg bg-[var(--primary)] px-3 py-2 text-sm font-semibold text-[var(--background)]"
               >
                 {t("settings.customProfilesCreate")}
               </button>
-
-              {preferences.customProfiles && preferences.customProfiles.length > 0 && (
-                <div className="flex flex-col gap-2 border-t border-[var(--border)] pt-2">
-                  {preferences.customProfiles.map((profile) => (
-                    <div key={profile.id} className="flex items-center justify-between gap-2 text-sm">
-                      <span className="font-medium text-[var(--foreground)]">{profile.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => deleteCustomProfile(profile.id)}
-                        className="rounded bg-red-500 px-2 py-1 text-xs text-white hover:bg-red-600"
-                      >
-                        {t("settings.customProfilesDelete")}
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           )}
         </section>

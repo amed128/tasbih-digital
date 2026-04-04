@@ -404,7 +404,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       reminderDays: [] as number[],
       optionalSyncEnabled: false,
       autoAdvanceNextZikr: false,
-      advancedTiming: { enabled: false },
+      advancedTiming: { enabled: false, cooldownMs: 300 },
       customProfiles: [],
       activeCustomProfileId: undefined,
       iconTheme: "auto" as IconTheme,

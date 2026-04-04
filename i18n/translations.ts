@@ -265,21 +265,16 @@ export const translations = {
       speechRecognitionLanguageArMa: "Arabe marocain (ar-MA)",
       speechRecognitionLanguageFrFr: "Français (fr-FR)",
       speechRecognitionLanguageEnUs: "Anglais (en-US)",
-      audioSilenceTimeoutTitle: "Arrêt auto sans audio",
-      audioSilenceTimeoutHint:
-        "Le mode écoute s'arrête automatiquement après ce délai sans voix détectée",
-      audioSilenceTimeoutOption: "{{seconds}} s",
       audioClearTranscriptOnSilenceTitle: "Effacer le texte entendu sur silence",
       audioClearTranscriptOnSilenceHint:
-        "Vide le texte entendu après le délai configuré de silence",
-      audioStopOnSilenceTitle: "Arrêter l'écoute sur silence prolongé",
-      audioStopOnSilenceHint:
-        "Coupe le mode écoute après le délai d'arrêt auto sans voix détectée",
-      audioTranscriptClearDelayTitle: "Effacer \"texte entendu\" après silence",
-      audioTranscriptClearDelayHint:
         "Vide le texte entendu après un court silence pendant l'écoute",
-      audioTranscriptClearDelayOff: "Jamais",
-      audioTranscriptClearDelayOption: "{{seconds}} s",
+      audioClearTranscriptOnSilenceOff: "Non",
+      audioClearTranscriptOnSilenceOption: "Après {{seconds}} s",
+      audioStopOnSilenceTitle: "Arrêt auto sans audio",
+      audioStopOnSilenceHint:
+        "Coupe le mode écoute automatiquement après ce délai sans voix détectée",
+      audioStopOnSilenceOff: "Non",
+      audioStopOnSilenceOption: "Après {{seconds}} s",
       blurActionControlsWhileListeningTitle: "Flou léger des actions pendant l'écoute",
       blurActionControlsWhileListeningHint:
         "Applique un léger flou sur Mode, Annuler et Réinitialiser pendant l'écoute",
@@ -697,21 +692,16 @@ export const translations = {
       speechRecognitionLanguageArMa: "Moroccan Arabic (ar-MA)",
       speechRecognitionLanguageFrFr: "French (fr-FR)",
       speechRecognitionLanguageEnUs: "English (en-US)",
-      audioSilenceTimeoutTitle: "Auto-stop on silence",
-      audioSilenceTimeoutHint:
-        "Listening stops automatically after this time if no voice is detected",
-      audioSilenceTimeoutOption: "{{seconds}} s",
       audioClearTranscriptOnSilenceTitle: "Clear heard text on silence",
       audioClearTranscriptOnSilenceHint:
-        "Clears heard text after the configured silence delay",
-      audioStopOnSilenceTitle: "Stop listening on extended silence",
-      audioStopOnSilenceHint:
-        "Stops listening after the auto-stop silence timeout with no voice detected",
-      audioTranscriptClearDelayTitle: "Clear \"heard text\" after silence",
-      audioTranscriptClearDelayHint:
         "Clears heard text after a short silence while listening",
-      audioTranscriptClearDelayOff: "Never",
-      audioTranscriptClearDelayOption: "{{seconds}} s",
+      audioClearTranscriptOnSilenceOff: "Off",
+      audioClearTranscriptOnSilenceOption: "After {{seconds}}s",
+      audioStopOnSilenceTitle: "Auto-stop on silence",
+      audioStopOnSilenceHint:
+        "Stops listening automatically after this time if no voice is detected",
+      audioStopOnSilenceOff: "Off",
+      audioStopOnSilenceOption: "After {{seconds}}s",
       blurActionControlsWhileListeningTitle: "Light blur on actions while listening",
       blurActionControlsWhileListeningHint:
         "Applies a subtle blur to Mode, Undo, and Reset while listening",

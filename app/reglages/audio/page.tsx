@@ -51,8 +51,8 @@ export default function AudioSettingsPage() {
     { value: "en-US", label: t("settings.speechRecognitionLanguageEnUs") },
   ];
 
+  const audioTranscriptClearDelayOptions = [2, 3, 5];
   const audioSilenceTimeoutOptions = [15, 30, 45, 60, 90, 120];
-  const audioTranscriptClearDelayOptions = [0, 2, 3, 5];
 
   if (!mounted) return null;
 
@@ -153,48 +153,32 @@ export default function AudioSettingsPage() {
           <div className="flex items-center justify-between gap-4">
             <div>
               <div className="text-sm font-semibold text-[var(--foreground)]">
-                {t("settings.audioSilenceTimeoutTitle")}
-              </div>
-              <div className="text-xs text-[var(--secondary)]">{t("settings.audioSilenceTimeoutHint")}</div>
-            </div>
-            <select
-              value={preferences.audioSilenceTimeoutSec}
-              onChange={(e) => setAudioSilenceTimeoutSec(Number(e.target.value) || 15)}
-              className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
-              aria-label={t("settings.ariaAudioSilenceTimeout")}
-            >
-              {audioSilenceTimeoutOptions.map((seconds) => (
-                <option key={seconds} value={seconds}>
-                  {t("settings.audioSilenceTimeoutOption", { seconds })}
-                </option>
-              ))}
-            </select>
-          </div>
-        </section>
-
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">
                 {t("settings.audioClearTranscriptOnSilenceTitle")}
               </div>
               <div className="text-xs text-[var(--secondary)]">
                 {t("settings.audioClearTranscriptOnSilenceHint")}
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() =>
-                setAudioClearTranscriptOnSilence(!preferences.audioClearTranscriptOnSilence)
-              }
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                preferences.audioClearTranscriptOnSilence
-                  ? "bg-[var(--primary)] text-[var(--background)]"
-                  : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
-              }`}
+            <select
+              value={preferences.audioClearTranscriptOnSilence ? preferences.audioTranscriptClearDelaySec : "off"}
+              onChange={(e) => {
+                if (e.target.value === "off") {
+                  setAudioClearTranscriptOnSilence(false);
+                } else {
+                  setAudioClearTranscriptOnSilence(true);
+                  setAudioTranscriptClearDelaySec(Number(e.target.value));
+                }
+              }}
+              className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
+              aria-label={t("settings.audioClearTranscriptOnSilenceTitle")}
             >
-              {preferences.audioClearTranscriptOnSilence ? t("settings.on") : t("settings.off")}
-            </button>
+              <option value="off">{t("settings.audioClearTranscriptOnSilenceOff")}</option>
+              {audioTranscriptClearDelayOptions.map((seconds) => (
+                <option key={seconds} value={seconds}>
+                  {t("settings.audioClearTranscriptOnSilenceOption", { seconds })}
+                </option>
+              ))}
+            </select>
           </div>
         </section>
 
@@ -206,41 +190,23 @@ export default function AudioSettingsPage() {
               </div>
               <div className="text-xs text-[var(--secondary)]">{t("settings.audioStopOnSilenceHint")}</div>
             </div>
-            <button
-              type="button"
-              onClick={() => setAudioStopOnSilence(!preferences.audioStopOnSilence)}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                preferences.audioStopOnSilence
-                  ? "bg-[var(--primary)] text-[var(--background)]"
-                  : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
-              }`}
-            >
-              {preferences.audioStopOnSilence ? t("settings.on") : t("settings.off")}
-            </button>
-          </div>
-        </section>
-
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">
-                {t("settings.audioTranscriptClearDelayTitle")}
-              </div>
-              <div className="text-xs text-[var(--secondary)]">
-                {t("settings.audioTranscriptClearDelayHint")}
-              </div>
-            </div>
             <select
-              value={preferences.audioTranscriptClearDelaySec}
-              onChange={(e) => setAudioTranscriptClearDelaySec(Number(e.target.value) || 0)}
+              value={preferences.audioStopOnSilence ? preferences.audioSilenceTimeoutSec : "off"}
+              onChange={(e) => {
+                if (e.target.value === "off") {
+                  setAudioStopOnSilence(false);
+                } else {
+                  setAudioStopOnSilence(true);
+                  setAudioSilenceTimeoutSec(Number(e.target.value));
+                }
+              }}
               className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
-              aria-label={t("settings.ariaAudioTranscriptClearDelay")}
+              aria-label={t("settings.audioStopOnSilenceTitle")}
             >
-              {audioTranscriptClearDelayOptions.map((seconds) => (
+              <option value="off">{t("settings.audioStopOnSilenceOff")}</option>
+              {audioSilenceTimeoutOptions.map((seconds) => (
                 <option key={seconds} value={seconds}>
-                  {seconds === 0
-                    ? t("settings.audioTranscriptClearDelayOff")
-                    : t("settings.audioTranscriptClearDelayOption", { seconds })}
+                  {t("settings.audioStopOnSilenceOption", { seconds })}
                 </option>
               ))}
             </select>

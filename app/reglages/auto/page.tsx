@@ -24,8 +24,6 @@ export default function AutoCounterSettings() {
   const setAutoCounterResumeAfterReset = useTasbihStore((s) => s.setAutoCounterResumeAfterReset);
   const setAutoCounterStopAtGoal = useTasbihStore((s) => s.setAutoCounterStopAtGoal);
   const setAutoCounterEntryAutoStart = useTasbihStore((s) => s.setAutoCounterEntryAutoStart);
-  const setBlurActionControlsWhileAuto = useTasbihStore((s) => s.setBlurActionControlsWhileAuto);
-  const setAutoCounterConfirmOnStop = useTasbihStore((s) => s.setAutoCounterConfirmOnStop);
 
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -200,46 +198,6 @@ export default function AutoCounterSettings() {
             aria-label={t("autoCounterEntryAutoStartTitle")}
           >
             {preferences.autoCounterEntryAutoStart ? t("settings.on") : t("settings.off")}
-          </button>
-        </section>
-
-        {/* Blur/disable actions while auto-counter is running */}
-        <section className="rounded-2xl bg-[var(--card)] p-4 mb-3 flex items-center justify-between">
-          <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.blurActionControlsWhileAutoTitle")}</div>
-            <div className="text-xs text-[var(--secondary)]">{t("settings.blurActionControlsWhileAutoHint")}</div>
-          </div>
-          <button
-            onClick={() => setBlurActionControlsWhileAuto(!preferences.blurActionControlsWhileAuto)}
-            className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-              preferences.blurActionControlsWhileAuto
-                ? "bg-[var(--primary)] text-black"
-                : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-            }`}
-            aria-pressed={preferences.blurActionControlsWhileAuto}
-            aria-label={t("blurActionControlsWhileAutoTitle")}
-          >
-            {preferences.blurActionControlsWhileAuto ? t("settings.on") : t("settings.off")}
-          </button>
-        </section>
-
-        {/* Show confirmation before stopping auto-counter on reset/quit */}
-        <section className="rounded-2xl bg-[var(--card)] p-4 mb-3 flex items-center justify-between">
-          <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.autoCounterConfirmOnStopTitle")}</div>
-            <div className="text-xs text-[var(--secondary)]">{t("settings.autoCounterConfirmOnStopHint")}</div>
-          </div>
-          <button
-            onClick={() => setAutoCounterConfirmOnStop(!preferences.autoCounterConfirmOnStop)}
-            className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-              preferences.autoCounterConfirmOnStop
-                ? "bg-[var(--primary)] text-black"
-                : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-            }`}
-            aria-pressed={preferences.autoCounterConfirmOnStop}
-            aria-label={t("autoCounterConfirmOnStopTitle")}
-          >
-            {preferences.autoCounterConfirmOnStop ? t("settings.on") : t("settings.off")}
           </button>
         </section>
 

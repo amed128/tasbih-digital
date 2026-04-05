@@ -10,6 +10,7 @@ export default function SelectionModeSettings() {
   const preferences = useTasbihStore((s) => s.preferences);
   const setAutoAdvanceNextZikr = useTasbihStore((s) => s.setAutoAdvanceNextZikr);
   const setResetOnPrev = useTasbihStore((s) => s.setResetOnPrev);
+  const setAllowTargetEditInListMode = useTasbihStore((s) => s.setAllowTargetEditInListMode);
   const setChipTextFormat = useTasbihStore((s) => s.setChipTextFormat);
   const setZikrDisplayFormat = useTasbihStore((s) => s.setZikrDisplayFormat);
 
@@ -70,6 +71,25 @@ export default function SelectionModeSettings() {
             }`}
           >
             {(preferences.resetOnPrev ?? true) ? t("settings.on") : t("settings.off")}
+          </button>
+        </section>
+
+        {/* Allow target edit in list mode toggle */}
+        <section className="rounded-2xl bg-[var(--card)] p-4 flex items-center justify-between mt-2">
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.allowTargetEditInListModeTitle")}</div>
+            <div className="text-xs text-[var(--secondary)]">{t("settings.allowTargetEditInListModeHint")}</div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setAllowTargetEditInListMode(!(preferences.allowTargetEditInListMode ?? false))}
+            className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+              (preferences.allowTargetEditInListMode ?? false)
+                ? "bg-[var(--primary)] text-[var(--background)]"
+                : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+            }`}
+          >
+            {(preferences.allowTargetEditInListMode ?? false) ? t("settings.on") : t("settings.off")}
           </button>
         </section>
 

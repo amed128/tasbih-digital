@@ -198,6 +198,7 @@ export default function Home() {
   const previousZikrInList = useTasbihStore((s) => s.previousZikrInList);
   const clearListProgress = useTasbihStore((s) => s.clearListProgress);
   const setCustomTarget = useTasbihStore((s) => s.setCustomTarget);
+  const allowTargetEditInListMode = useTasbihStore((s) => s.preferences.allowTargetEditInListMode ?? false);
   const toggleMode = useTasbihStore((s) => s.toggleMode);
   const selectZikrAsList = useTasbihStore((s) => s.selectZikrAsList);
   const customLists = useTasbihStore((s) => s.customLists);
@@ -291,6 +292,7 @@ export default function Home() {
     ? counter <= 0
     : counter >= effectiveTarget && effectiveTarget > 0;
   const isTargetLocked = isStarted && !isCompleted;
+  const isTargetEditable = !isListMode || allowTargetEditInListMode;
 
   const alignCurrentListChip = (behavior: ScrollBehavior = "smooth") => {
     if (!chipsContainerRef.current) return;
@@ -1829,13 +1831,13 @@ export default function Home() {
             <button
               type="button"
               onClick={() => {
-                if (isTargetLocked) return;
+                if (isTargetLocked || !isTargetEditable) return;
                 prevTargetRef.current = effectiveTarget;
                 setEditTargetValue(String(effectiveTarget));
                 setIsEditingTarget(true);
               }}
               className={`rounded border border-[var(--border)] px-2 py-0.5 text-sm font-bold text-[var(--foreground)] ${
-                isTargetLocked ? "cursor-not-allowed opacity-50 blur-[0.5px]" : "hover:border-[var(--primary)]"
+                isTargetLocked ? "cursor-not-allowed opacity-50 blur-[0.5px]" : isTargetEditable ? "hover:border-[var(--primary)]" : "cursor-default"
               }`}
             >
               {effectiveTarget}

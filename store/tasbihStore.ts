@@ -76,6 +76,8 @@ export type Preferences = {
   iconTheme?: IconTheme;
   // Zikr selection mode: reset counter when going back to a previous zikr
   resetOnPrev: boolean;
+  // Zikr selection mode: allow target edition in list mode
+  allowTargetEditInListMode?: boolean;
   // Default max target value (user-configurable, hard cap 999999)
   defaultMaxTarget: number;
 };
@@ -185,6 +187,7 @@ export type TasbihStoreState = {
   setOptionalSyncEnabled: (enabled: boolean) => void;
   setAutoAdvanceNextZikr: (enabled: boolean) => void;
   setResetOnPrev: (value: boolean) => void;
+  setAllowTargetEditInListMode: (value: boolean) => void;
   setDefaultMaxTarget: (value: number) => void;
   clearListProgress: () => void;
   setAutoCounterDefaultEnabled: (enabled: boolean) => void;
@@ -409,6 +412,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       activeCustomProfileId: undefined,
       iconTheme: "auto" as IconTheme,
       resetOnPrev: true,
+      allowTargetEditInListMode: false,
       defaultMaxTarget: 9999,
     },
   };
@@ -1406,6 +1410,15 @@ const createStore = () =>
         set((state) => {
           const newState = {
             preferences: { ...state.preferences, resetOnPrev: value },
+          };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
+      setAllowTargetEditInListMode: (value: boolean) =>
+        set((state) => {
+          const newState = {
+            preferences: { ...state.preferences, allowTargetEditInListMode: value },
           };
           persistState({ ...state, ...newState });
           return newState;

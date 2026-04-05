@@ -161,6 +161,7 @@ export type TasbihStoreState = {
   selectList: (listId: string) => void;
   setCustomTarget: (target?: number) => void;
   toggleMode: () => void;
+  setMode: (mode: Mode) => void;
   setListesUI: (update: Partial<TasbihStoreState["listesUI"]>) => void;
   resetStats: () => void;
   setTheme: (theme: Theme) => void;
@@ -1163,6 +1164,24 @@ const createStore = () =>
             ...state,
             ...newState,
           });
+          return newState;
+        }),
+
+      setMode: (nextMode: Mode) =>
+        set((state) => {
+          if (state.mode === nextMode) return {};
+          const target = state.customTarget ?? state.currentZikr?.defaultTarget ?? 0;
+          const switchesDirection = isDownMode(state.mode) !== isDownMode(nextMode);
+          const nextCounterRaw = switchesDirection ? target - state.counter : state.counter;
+          const nextCounter = Math.max(0, Math.min(target, nextCounterRaw));
+          const initial = initialCounterForMode(nextMode, target);
+          const goalReached = isDownMode(nextMode) ? nextCounter === 0 : nextCounter === target;
+          const newState: Partial<TasbihStoreState> = {
+            mode: nextMode,
+            counter: nextCounter,
+            isStarted: nextCounter !== initial && !goalReached,
+          };
+          persistState({ ...state, ...newState });
           return newState;
         }),
 

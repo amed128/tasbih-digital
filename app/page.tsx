@@ -1450,9 +1450,11 @@ export default function Home() {
             {hasAudioSelection ? (targetDisplayText || "-") : "-"}
           </span>
         </div>
-        <div>
-          {t("counter.audioHeard")}: <span className="text-[var(--foreground)]">{audioTranscript || "-"}</span>
-        </div>
+        {showSpeechDebug && (
+          <div>
+            {t("counter.audioHeard")}: <span className="text-[var(--foreground)]">{audioTranscript || "-"}</span>
+          </div>
+        )}
       </div>
 
       <div className="mt-2 text-xs text-[var(--secondary)]">{t("counter.audioSpeechModeHint")}</div>

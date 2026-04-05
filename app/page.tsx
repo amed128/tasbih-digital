@@ -2015,44 +2015,46 @@ export default function Home() {
             isCompleted={isCompleted}
             pulseTrigger={pulseTrigger}
           />
-          <div className="flex items-center justify-center gap-1 text-sm font-semibold text-[var(--secondary)]">
-            <span>{t("counter.targetPrefix")}</span>
-            {isEditingTarget ? (
-              <>
-                <input
-                  type="number"
-                  min={1}
-                  max={defaultMaxTarget}
-                  value={editTargetValue}
-                  autoFocus
-                  onChange={(e) => setEditTargetValue(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter") confirmTarget(); if (e.key === "Escape") setIsEditingTarget(false); }}
-                  className="w-14 rounded border border-[var(--primary)] bg-[var(--background)] px-1 py-0.5 text-center text-sm font-bold text-[var(--foreground)] focus:outline-none"
-                />
+          {isTargetEditable && (
+            <div className="flex items-center justify-center gap-1 text-sm font-semibold text-[var(--secondary)]">
+              <span>{t("counter.targetPrefix")}</span>
+              {isEditingTarget ? (
+                <>
+                  <input
+                    type="number"
+                    min={1}
+                    max={defaultMaxTarget}
+                    value={editTargetValue}
+                    autoFocus
+                    onChange={(e) => setEditTargetValue(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") confirmTarget(); if (e.key === "Escape") setIsEditingTarget(false); }}
+                    className="w-14 rounded border border-[var(--primary)] bg-[var(--background)] px-1 py-0.5 text-center text-sm font-bold text-[var(--foreground)] focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={confirmTarget}
+                    className="rounded px-1.5 py-0.5 text-xs font-bold text-[var(--primary)] hover:text-[var(--foreground)]"
+                  >✓</button>
+                </>
+              ) : (
                 <button
                   type="button"
-                  onClick={confirmTarget}
-                  className="rounded px-1.5 py-0.5 text-xs font-bold text-[var(--primary)] hover:text-[var(--foreground)]"
-                >✓</button>
-              </>
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  if (isTargetLocked) return;
-                  prevTargetRef.current = effectiveTarget;
-                  setEditTargetValue(String(effectiveTarget));
-                  setIsEditingTarget(true);
-                }}
-                className={`rounded border border-[var(--border)] px-2 py-0.5 text-sm font-bold text-[var(--foreground)] ${
-                  isTargetLocked ? "cursor-not-allowed opacity-50 blur-[0.5px]" : "hover:border-[var(--primary)]"
-                }`}
-              >
-                {effectiveTarget}
-              </button>
-            )}
-            <span>{t("counter.targetSuffix")}</span>
-          </div>
+                  onClick={() => {
+                    if (isTargetLocked) return;
+                    prevTargetRef.current = effectiveTarget;
+                    setEditTargetValue(String(effectiveTarget));
+                    setIsEditingTarget(true);
+                  }}
+                  className={`rounded border border-[var(--border)] px-2 py-0.5 text-sm font-bold text-[var(--foreground)] ${
+                    isTargetLocked ? "cursor-not-allowed opacity-50 blur-[0.5px]" : "hover:border-[var(--primary)]"
+                  }`}
+                >
+                  {effectiveTarget}
+                </button>
+              )}
+              <span>{t("counter.targetSuffix")}</span>
+            </div>
+          )}
         </motion.div>
 
         <motion.div layout className="flex flex-col gap-3">

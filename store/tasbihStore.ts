@@ -1124,7 +1124,9 @@ const createStore = () =>
           const initial = initialCounterForMode(state.mode, effectiveTarget);
           const nextCounter = state.isStarted
             ? Math.max(0, Math.min(state.counter, effectiveTarget))
-            : initial;
+            : (!isDownMode(state.mode) && effectiveTarget >= state.counter)
+              ? state.counter  // extend: keep progress, difference is remaining
+              : initial;       // restart: new target lower than counter, or down mode
 
           const newState = {
             customTarget: parsed,

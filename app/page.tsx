@@ -257,7 +257,7 @@ export default function Home() {
   const [audioMatchProgress, setAudioMatchProgress] = useState(0);
 
   const [audioMatchFlash, setAudioMatchFlash] = useState(false);
-  const [isEditingTarget, setIsEditingTarget] = useState(false);
+  const [showTargetPopup, setShowTargetPopup] = useState(false);
   const [editTargetValue, setEditTargetValue] = useState("");
   const prevTargetRef = useRef<number>(0);
   const [isDocumentVisible, setIsDocumentVisible] = useState(
@@ -424,7 +424,13 @@ export default function Home() {
     } else {
       setCustomTarget(prevTargetRef.current);
     }
-    setIsEditingTarget(false);
+    setShowTargetPopup(false);
+  };
+
+  const openTargetPopup = () => {
+    prevTargetRef.current = effectiveTarget;
+    setEditTargetValue(String(effectiveTarget));
+    setShowTargetPopup(true);
   };
 
   const handleQuitListConfirm = () => {
@@ -1878,40 +1884,16 @@ export default function Home() {
         />
         <div className="flex items-center justify-center gap-1 text-sm font-semibold text-[var(--secondary)]">
           <span>{t("counter.targetPrefix")}</span>
-          {isEditingTarget ? (
-            <>
-              <input
-                type="number"
-                min={1}
-                max={defaultMaxTarget}
-                value={editTargetValue}
-                autoFocus
-                onChange={(e) => setEditTargetValue(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") confirmTarget(); if (e.key === "Escape") setIsEditingTarget(false); }}
-                className="w-14 rounded border border-[var(--primary)] bg-[var(--background)] px-1 py-0.5 text-center text-sm font-bold text-[var(--foreground)] focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={confirmTarget}
-                className="rounded px-1.5 py-0.5 text-xs font-bold text-[var(--primary)] hover:text-[var(--foreground)]"
-              >✓</button>
-            </>
-          ) : (
-            <button
-              type="button"
-              onClick={() => {
-                if (isTargetLocked || !isTargetEditable) return;
-                prevTargetRef.current = effectiveTarget;
-                setEditTargetValue(String(effectiveTarget));
-                setIsEditingTarget(true);
-              }}
-              className={`rounded border border-[var(--border)] px-2 py-0.5 text-sm font-bold text-[var(--foreground)] ${
-                isTargetLocked ? "cursor-not-allowed opacity-50 blur-[0.5px]" : isTargetEditable ? "hover:border-[var(--primary)]" : "cursor-default"
-              }`}
-            >
-              {effectiveTarget}
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => { if (!isTargetLocked && isTargetEditable) openTargetPopup(); }}
+            aria-label={t("counter.editTargetAria")}
+            className={`rounded border border-[var(--border)] px-2 py-0.5 text-sm font-bold text-[var(--foreground)] ${
+              isTargetLocked ? "cursor-not-allowed opacity-50 blur-[0.5px]" : isTargetEditable ? "hover:border-[var(--primary)]" : "cursor-default"
+            }`}
+          >
+            {effectiveTarget}
+          </button>
           <span>{t("counter.targetSuffix")}</span>
         </div>
       </motion.div>
@@ -2087,40 +2069,16 @@ export default function Home() {
           {isTargetEditable && (
             <div className="flex items-center justify-center gap-1 text-sm font-semibold text-[var(--secondary)]">
               <span>{t("counter.targetPrefix")}</span>
-              {isEditingTarget ? (
-                <>
-                  <input
-                    type="number"
-                    min={1}
-                    max={defaultMaxTarget}
-                    value={editTargetValue}
-                    autoFocus
-                    onChange={(e) => setEditTargetValue(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") confirmTarget(); if (e.key === "Escape") setIsEditingTarget(false); }}
-                    className="w-14 rounded border border-[var(--primary)] bg-[var(--background)] px-1 py-0.5 text-center text-sm font-bold text-[var(--foreground)] focus:outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={confirmTarget}
-                    className="rounded px-1.5 py-0.5 text-xs font-bold text-[var(--primary)] hover:text-[var(--foreground)]"
-                  >✓</button>
-                </>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (isTargetLocked) return;
-                    prevTargetRef.current = effectiveTarget;
-                    setEditTargetValue(String(effectiveTarget));
-                    setIsEditingTarget(true);
-                  }}
-                  className={`rounded border border-[var(--border)] px-2 py-0.5 text-sm font-bold text-[var(--foreground)] ${
-                    isTargetLocked ? "cursor-not-allowed opacity-50 blur-[0.5px]" : "hover:border-[var(--primary)]"
-                  }`}
-                >
-                  {effectiveTarget}
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => { if (!isTargetLocked) openTargetPopup(); }}
+                aria-label={t("counter.editTargetAria")}
+                className={`rounded border border-[var(--border)] px-2 py-0.5 text-sm font-bold text-[var(--foreground)] ${
+                  isTargetLocked ? "cursor-not-allowed opacity-50 blur-[0.5px]" : "hover:border-[var(--primary)]"
+                }`}
+              >
+                {effectiveTarget}
+              </button>
               <span>{t("counter.targetSuffix")}</span>
             </div>
           )}
@@ -2294,6 +2252,41 @@ export default function Home() {
           {t("counter.quitModal.body")}
         </div>
       </Modal>
+
+      {showTargetPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
+          <div className="w-full max-w-sm rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4">
+            <h2 className="text-base font-semibold text-[var(--foreground)]">{t("counter.targetModal.title")}</h2>
+            <p className="mt-2 text-sm text-[var(--secondary)]">{t("counter.targetModal.body")}</p>
+            <input
+              type="number"
+              min={1}
+              max={defaultMaxTarget}
+              value={editTargetValue}
+              autoFocus
+              onChange={(e) => setEditTargetValue(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") confirmTarget(); if (e.key === "Escape") setShowTargetPopup(false); }}
+              className="mt-4 w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-center text-lg font-bold text-[var(--foreground)] focus:border-[var(--primary)] focus:outline-none"
+            />
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setShowTargetPopup(false)}
+                className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)]"
+              >
+                {t("counter.targetModal.cancel")}
+              </button>
+              <button
+                type="button"
+                onClick={confirmTarget}
+                className="flex-1 rounded-xl border border-[var(--primary)] bg-[var(--primary)] px-3 py-2 text-sm font-semibold text-black"
+              >
+                {t("counter.targetModal.confirm")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <BottomNav />
     </div>

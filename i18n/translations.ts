@@ -75,6 +75,12 @@ export const translations = {
       quitZikr: "← Quitter le zikr",
       quitZikrSelection: "← Quitter la sélection de zikr",
       listComplete: "✓ Liste complète !",
+      targetModal: {
+        title: "Modifier la cible",
+        body: "Entrez le nombre de répétitions souhaité.",
+        confirm: "Confirmer",
+        cancel: "Annuler",
+      },
       resetModal: {
         title: "Réinitialiser le compteur ?",
         body: "Cette action remettra votre progression actuelle à zéro.",
@@ -512,6 +518,12 @@ export const translations = {
       quitZikr: "← Quit zikr",
       quitZikrSelection: "← Quit zikr selection",
       listComplete: "✓ List complete!",
+      targetModal: {
+        title: "Edit target",
+        body: "Enter the desired number of repetitions.",
+        confirm: "Confirm",
+        cancel: "Cancel",
+      },
       resetModal: {
         title: "Reset counter?",
         body: "This action will reset your current progress to zero.",

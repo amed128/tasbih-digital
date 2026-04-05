@@ -9,6 +9,7 @@ import { useT } from "@/hooks/useT";
 import { CircleProgress } from "../components/CircleProgress";
 import { BottomNav } from "../components/BottomNav";
 import { Modal } from "../components/Modal";
+import { RotateCcw } from "lucide-react";
 
 type WakeLockSentinelLike = {
   released: boolean;
@@ -1946,7 +1947,7 @@ export default function Home() {
                 shouldBlurActionControls ? "opacity-85 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
               }`}
             >
-              {t("counter.undo")}
+              <RotateCcw size={16} className="mx-auto" />
             </button>
           )}
           <button
@@ -2143,7 +2144,7 @@ export default function Home() {
                     shouldBlurActionControls ? "opacity-85 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
                   }`}
                 >
-                  {t("counter.undo")}
+                  <RotateCcw size={16} className="mx-auto" />
                 </button>
               )
             )}

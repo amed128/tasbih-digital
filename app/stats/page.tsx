@@ -418,7 +418,7 @@ export default function StatsPage() {
                 <Tooltip
                   wrapperStyle={{ borderRadius: 12, background: "var(--card)", border: "1px solid var(--border)" }}
                   contentStyle={{ background: "var(--card)", border: "none" }}
-                  cursor={{ fill: "rgba(245, 166, 35, 0.15)" }}
+                  cursor={{ fill: "rgba(var(--primary-rgb), 0.15)" }}
                 />
                 <Bar dataKey="total" fill="var(--primary)" radius={[8, 8, 0, 0]} />
               </BarChart>
@@ -476,7 +476,7 @@ export default function StatsPage() {
                 <div
                   key={entry.hour}
                   className="rounded-lg border border-[var(--border)] p-2 text-center"
-                  style={{ backgroundColor: `rgba(228, 177, 90, ${0.1 + intensity * 0.55})` }}
+                  style={{ backgroundColor: `rgba(var(--primary-rgb), ${0.1 + intensity * 0.55})` }}
                 >
                   <div className="text-[10px] font-semibold text-[var(--foreground)]">{String(entry.hour).padStart(2, "0")}h</div>
                   <div className="text-[10px] text-[var(--secondary)]">{entry.total}</div>

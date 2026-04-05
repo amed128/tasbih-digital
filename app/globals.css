@@ -7,6 +7,7 @@ body[data-theme="blue"] {
   --foreground: #ededed;
   --secondary: #a0a8b8;
   --primary: #E4B15A;
+  --primary-rgb: 228, 177, 90;
   --card: #151E29;
   --border: #2B3747;
 }
@@ -17,6 +18,7 @@ body[data-theme="dark"] {
   --foreground: #ededed;
   --secondary: #9ca3af;
   --primary: #F5A623;
+  --primary-rgb: 245, 166, 35;
   --card: #1A1A1A;
   --border: #2A2A2A;
 }
@@ -27,6 +29,7 @@ body[data-theme="light"] {
   --foreground: #1E2530;
   --secondary: #5a6670;
   --primary: #B8822E;
+  --primary-rgb: 184, 130, 46;
   --card: #FFFFFF;
   --border: #D4DCE6;
 }

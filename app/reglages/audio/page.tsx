@@ -30,7 +30,6 @@ export default function AudioSettingsPage() {
     (s) => s.setAudioClearTranscriptOnSilence
   );
   const setAudioStopOnSilence = useTasbihStore((s) => s.setAudioStopOnSilence);
-  const setAudioDebugTelemetry = useTasbihStore((s) => s.setAudioDebugTelemetry);
 
   const t = useT();
 
@@ -47,8 +46,6 @@ export default function AudioSettingsPage() {
     { value: "ar-SA", label: t("settings.speechRecognitionLanguageArSa") },
     { value: "ar-EG", label: t("settings.speechRecognitionLanguageArEg") },
     { value: "ar-MA", label: t("settings.speechRecognitionLanguageArMa") },
-    { value: "fr-FR", label: t("settings.speechRecognitionLanguageFrFr") },
-    { value: "en-US", label: t("settings.speechRecognitionLanguageEnUs") },
   ];
 
   const audioTranscriptClearDelayOptions = [2, 3, 5];
@@ -83,21 +80,6 @@ export default function AudioSettingsPage() {
           </p>
         </header>
 
-        <Link
-          href="/reglages/audio/advanced"
-          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
-        >
-          <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">
-              {t("settings.audioCounterAdvancedSettingsTitle")}
-            </div>
-            <div className="text-xs text-[var(--secondary)]">
-              {t("settings.audioCounterAdvancedSettingsHint")}
-            </div>
-          </div>
-          <span className="text-base text-[var(--secondary)]">›</span>
-        </Link>
-
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -120,7 +102,6 @@ export default function AudioSettingsPage() {
             </select>
           </div>
         </section>
-
 
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="flex items-center justify-between gap-4">
@@ -146,6 +127,32 @@ export default function AudioSettingsPage() {
                 </option>
               ))}
             </select>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">
+                {t("settings.blurActionControlsWhileListeningTitle")}
+              </div>
+              <div className="text-xs text-[var(--secondary)]">
+                {t("settings.blurActionControlsWhileListeningHint")}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() =>
+                setBlurActionControlsWhileListening(!preferences.blurActionControlsWhileListening)
+              }
+              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                preferences.blurActionControlsWhileListening
+                  ? "bg-[var(--primary)] text-[var(--background)]"
+                  : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
+              }`}
+            >
+              {preferences.blurActionControlsWhileListening ? t("settings.on") : t("settings.off")}
+            </button>
           </div>
         </section>
 
@@ -213,54 +220,20 @@ export default function AudioSettingsPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">
-                {t("settings.blurActionControlsWhileListeningTitle")}
-              </div>
-              <div className="text-xs text-[var(--secondary)]">
-                {t("settings.blurActionControlsWhileListeningHint")}
-              </div>
+        <Link
+          href="/reglages/audio/advanced"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3"
+        >
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">
+              {t("settings.audioCounterAdvancedSettingsTitle")}
             </div>
-            <button
-              type="button"
-              onClick={() =>
-                setBlurActionControlsWhileListening(!preferences.blurActionControlsWhileListening)
-              }
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                preferences.blurActionControlsWhileListening
-                  ? "bg-[var(--primary)] text-[var(--background)]"
-                  : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
-              }`}
-            >
-              {preferences.blurActionControlsWhileListening ? t("settings.on") : t("settings.off")}
-            </button>
-          </div>
-        </section>
-
-
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">
-                {t("settings.audioDebugTelemetryTitle")}
-              </div>
-              <div className="text-xs text-[var(--secondary)]">{t("settings.audioDebugTelemetryHint")}</div>
+            <div className="text-xs text-[var(--secondary)]">
+              {t("settings.audioCounterAdvancedSettingsHint")}
             </div>
-            <button
-              type="button"
-              onClick={() => setAudioDebugTelemetry(!preferences.audioDebugTelemetry)}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                preferences.audioDebugTelemetry
-                  ? "bg-[var(--primary)] text-[var(--background)]"
-                  : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
-              }`}
-            >
-              {preferences.audioDebugTelemetry ? t("settings.on") : t("settings.off")}
-            </button>
           </div>
-        </section>
+          <span className="text-base text-[var(--secondary)]">›</span>
+        </Link>
       </motion.main>
 
       <BottomNav />

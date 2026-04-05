@@ -19,6 +19,7 @@ export default function AdvancedAudioSettingsPage() {
   const createCustomProfile = useTasbihStore((s) => s.createCustomProfile);
   const deleteCustomProfile = useTasbihStore((s) => s.deleteCustomProfile);
   const setActiveCustomProfile = useTasbihStore((s) => s.setActiveCustomProfile);
+  const setAudioDebugTelemetry = useTasbihStore((s) => s.setAudioDebugTelemetry);
 
   const [showAdvancedTiming, setShowAdvancedTiming] = useState(false);
   const [showCustomProfiles, setShowCustomProfiles] = useState(false);
@@ -253,6 +254,28 @@ export default function AdvancedAudioSettingsPage() {
               </button>
             </div>
           )}
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">
+                {t("settings.audioDebugTelemetryTitle")}
+              </div>
+              <div className="text-xs text-[var(--secondary)]">{t("settings.audioDebugTelemetryHint")}</div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setAudioDebugTelemetry(!preferences.audioDebugTelemetry)}
+              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                preferences.audioDebugTelemetry
+                  ? "bg-[var(--primary)] text-[var(--background)]"
+                  : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
+              }`}
+            >
+              {preferences.audioDebugTelemetry ? t("settings.on") : t("settings.off")}
+            </button>
+          </div>
         </section>
       </motion.main>
 

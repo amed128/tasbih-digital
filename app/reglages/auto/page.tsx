@@ -26,7 +26,6 @@ export default function AutoCounterSettings() {
   const setAutoCounterEntryAutoStart = useTasbihStore((s) => s.setAutoCounterEntryAutoStart);
   const setBlurActionControlsWhileAuto = useTasbihStore((s) => s.setBlurActionControlsWhileAuto);
   const setAutoCounterConfirmOnStop = useTasbihStore((s) => s.setAutoCounterConfirmOnStop);
-  const setAutoCounterSoundOnTick = useTasbihStore((s) => s.setAutoCounterSoundOnTick);
 
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -241,26 +240,6 @@ export default function AutoCounterSettings() {
             aria-label={t("autoCounterConfirmOnStopTitle")}
           >
             {preferences.autoCounterConfirmOnStop ? t("settings.on") : t("settings.off")}
-          </button>
-        </section>
-
-        {/* Play sound/vibrate on each auto-increment */}
-        <section className="rounded-2xl bg-[var(--card)] p-4 mb-3 flex items-center justify-between">
-          <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.autoCounterSoundOnTickTitle")}</div>
-            <div className="text-xs text-[var(--secondary)]">{t("settings.autoCounterSoundOnTickHint")}</div>
-          </div>
-          <button
-            onClick={() => setAutoCounterSoundOnTick(!preferences.autoCounterSoundOnTick)}
-            className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-              preferences.autoCounterSoundOnTick
-                ? "bg-[var(--primary)] text-black"
-                : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-            }`}
-            aria-pressed={preferences.autoCounterSoundOnTick}
-            aria-label={t("autoCounterSoundOnTickTitle")}
-          >
-            {preferences.autoCounterSoundOnTick ? t("settings.on") : t("settings.off")}
           </button>
         </section>
 

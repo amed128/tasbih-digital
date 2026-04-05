@@ -28,7 +28,7 @@
   - `#A5D6A7` / `#2E7D32` → `reglages/page.tsx:402` ✅
   - `#E7B4B4` / `#C62828` → `stats/page.tsx:555` ✅
   - `#22C55E` → `CircleProgress.tsx:18` ✅
-  - rgba hardcodés restants → `stats/page.tsx:421,479` ⬅ à faire
+  - rgba hardcodés restants → `stats/page.tsx:421,479` ✅
 
 ### 🟡 Moyen
 
@@ -63,8 +63,8 @@
 - [x] `autoCounterSoundOnTick` — implémenté
 
 ### 🟡 Moyen
-- [ ] `autoCounterVibrateOnTick` — setter existe mais aucun UI setting exposé
-- [ ] `resetPreferences()` ne réinitialise pas les préférences auto-compteur
+- [x] `autoCounterVibrateOnTick` et `autoCounterSoundOnTick` — UI supprimée volontairement
+- [x] `resetPreferences()` ne réinitialise pas les préférences auto-compteur — corrigé
 
 ---
 
@@ -77,20 +77,31 @@
 
 ---
 
+## Déploiement Android (Google Play)
+
+- [ ] Vérifier que la plateforme Capacitor Android est ajoutée : `npx cap add android`
+- [ ] Build : `npm run build && npx cap sync android`
+- [ ] Générer l'APK/AAB signé dans Android Studio
+- [ ] Créer un compte Google Play Console ($25 unique)
+- [ ] Préparer la fiche store (icône, captures, description, politique de confidentialité)
+- [ ] Soumettre pour révision
+
+---
+
 ## Backlog — À discuter / Explorer
 
 - [ ] **Bug reporting** — Ajouter un mécanisme de signalement de bugs dans l'app (formulaire, lien GitHub Issues, ou service tiers type Sentry/LogRocket) ?
 - [ ] **Notifications push / abonnements** — Les notifications sont-elles alignées avec la politique de l'app (PWA, App Store) ? Valeur ajoutée vs friction d'autorisation, RGPD, pertinence pour une app de dhikr ?
 - [ ] **IA audio adaptative** — Intégrer un modèle/algo capable d'apprendre et d'affiner la reconnaissance vocale selon la voix/l'accent de l'utilisateur ? (on-device vs cloud, vie privée, complexité, valeur réelle vs ASR existant)
-- [ ] **Nom de l'application** — "Tasbih Digital" existe déjà en .com. Candidats actuels : "Tasbih Habit" ou "Tasbih Addict" (à trancher). Critères : disponibilité domaine/store, mémorabilité, connotation islamique positive.
+- [ ] **Nom de l'application** — Candidat principal : **Dhakir** (ذاكر, "celui qui se souvient d'Allah"). dhakir.app disponible, aucune app existante sous ce nom. Autres écartés : Tasbih Digital (.com pris), Misbaha (namespace saturé), Zikr (saturé), Tasbih Habit (mot anglais). Logo à refaire en même temps que le renommage.
 - [ ] **Monétisation — Thèmes premium** — L'app sera gratuite ; seuls des thèmes premium payants seront proposés pour soutenir le développement. Concevoir et sélectionner les meilleurs thèmes possibles avant de lancer cette offre.
 
 ## Backlog
 
-- [ ] **Target field — popup d'édition** — Remplacer l'édition inline du champ target par un popup similaire au popup de reset (avec bouton de confirmation).
-- [ ] **Mode button — dropdown** — Transformer le bouton Mode en dropdown tout en conservant sa taille et son design actuels. Ajouter une petite flèche vers le bas indiquant que c'est un dropdown. Le dropdown doit s'ouvrir vers le bas avec un petit espace entre le bouton et le menu (comme le dropdown "All zikrs"), reprendre le style/couleur du bouton, et proposer 4 options : Increment, Decrement, Auto-counter, Audio-counter.
+- [x] **Target field — popup d'édition** — Remplacer l'édition inline du champ target par un popup similaire au popup de reset (avec bouton de confirmation).
+- [x] **Mode button — dropdown** — Transformer le bouton Mode en dropdown tout en conservant sa taille et son design actuels. Ajouter une petite flèche vers le bas indiquant que c'est un dropdown. Le dropdown doit s'ouvrir vers le bas avec un petit espace entre le bouton et le menu (comme le dropdown "All zikrs"), reprendre le style/couleur du bouton, et proposer 4 options : Increment, Decrement, Auto-counter, Audio-counter.
 - [ ] **Logo de l'app** — Améliorer le logo actuel.
-- [ ] **Icône du bouton Undo** — Revoir ou supprimer l'icône du bouton Undo.
+- [x] **Icône du bouton Undo** — Remplacée par RotateCcw (Lucide).
 - [x] Renommer "Mode de sélection" → "Mode sélection de zikr" (FR) et "Selection Mode" → "Zikr selection mode" (EN)
 - [x] Ajouter un setting dans Mode sélection de zikr : réinitialiser ou non le compteur en cours au retour sur un zikr précédent
 - [x] Chips container (mode sélection de zikr) — rendre la scrollbar verticale visible (track + thumb) via CSS vars

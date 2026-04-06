@@ -18,12 +18,15 @@
     "release:minor": "npm version minor -m \"chore(release): %s\"",
     "release:major": "npm version major -m \"chore(release): %s\"",
     "release:push": "git push && git push --tags",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "post-sync": "node scripts/post-sync-hook.js",
+    "android-build": "node scripts/android-build.js"
   },
   "dependencies": {
-    "@capacitor/cli": "^5.7.8",
-    "@capacitor/core": "^5.7.8",
-    "@capacitor/ios": "^5.7.8",
+    "@capacitor/android": "^8.3.0",
+    "@capacitor/cli": "^8.3.0",
+    "@capacitor/core": "^8.3.0",
+    "@capacitor/ios": "^8.3.0",
     "@types/canvas-confetti": "^1.9.0",
     "canvas-confetti": "^1.9.4",
     "framer-motion": "^12.36.0",

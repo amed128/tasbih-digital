@@ -1,11 +1,24 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { Suspense, useSyncExternalStore } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { BottomNav } from "../../components/BottomNav";
 import { useT } from "@/hooks/useT";
+
+function SuccessBanner() {
+  const t = useT();
+  const searchParams = useSearchParams();
+  const success = searchParams.get("success") === "true";
+  if (!success) return null;
+  return (
+    <section className="rounded-2xl border border-[var(--success)] bg-[var(--card)] p-4 flex flex-col gap-1">
+      <div className="text-sm font-semibold text-[var(--success)]">{t("donate.successTitle")}</div>
+      <div className="text-xs text-[var(--secondary)]">{t("donate.success")}</div>
+    </section>
+  );
+}
 
 export default function DonatePage() {
   const mounted = useSyncExternalStore(
@@ -15,8 +28,6 @@ export default function DonatePage() {
   );
 
   const t = useT();
-  const searchParams = useSearchParams();
-  const success = searchParams.get("success") === "true";
 
   if (!mounted) return null;
 
@@ -42,12 +53,9 @@ export default function DonatePage() {
           <p className="text-sm text-[var(--secondary)]">{t("donate.subtitle")}</p>
         </header>
 
-        {success ? (
-          <section className="rounded-2xl border border-[var(--success)] bg-[var(--card)] p-4 flex flex-col gap-1">
-            <div className="text-sm font-semibold text-[var(--success)]">{t("donate.successTitle")}</div>
-            <div className="text-xs text-[var(--secondary)]">{t("donate.success")}</div>
-          </section>
-        ) : null}
+        <Suspense>
+          <SuccessBanner />
+        </Suspense>
 
         <section className="rounded-2xl bg-[var(--card)] p-4 flex flex-col gap-3">
           <p className="text-xs text-[var(--secondary)] leading-relaxed">

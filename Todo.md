@@ -95,7 +95,7 @@
 - [ ] **IA audio adaptative** — Intégrer un modèle/algo capable d'apprendre et d'affiner la reconnaissance vocale selon la voix/l'accent de l'utilisateur ? (on-device vs cloud, vie privée, complexité, valeur réelle vs ASR existant)
 - [ ] **Nom de l'application** — Candidat principal : **Dhakir** (ذاكر, "celui qui se souvient d'Allah"). dhakir.app disponible, aucune app existante sous ce nom. Autres écartés : Tasbih Digital (.com pris), Misbaha (namespace saturé), Zikr (saturé), Tasbih Habit (mot anglais). Logo à refaire en même temps que le renommage.
 - [ ] **Monétisation — Thèmes premium** — L'app sera gratuite ; seuls des thèmes premium payants seront proposés pour soutenir le développement. Concevoir et sélectionner les meilleurs thèmes possibles avant de lancer cette offre.
-- [ ] **Page d'aide / FAQ** — Créer une page `/aide` accessible depuis les réglages ou l'about, expliquant les modes (incrémentation, décrémentation, auto, audio), la sélection de zikr, les listes, la sync, et répondant aux questions fréquentes. FR + EN.
+- [x] **Page d'aide / FAQ** — Page `/aide` avec intro, 4 cartes de modes et accordion FAQ 8 questions. FR + EN.
 
 ## Backlog
 

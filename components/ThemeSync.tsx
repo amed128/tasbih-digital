@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useTasbihStore } from "../store/tasbihStore";
+import { StatusBar, Style } from "@capacitor/status-bar";
 
 const THEME_META_COLOR: Record<"light" | "dark" | "blue", string> = {
   light: "#F3F5F8",
@@ -19,10 +20,17 @@ export function ThemeSync() {
     document.documentElement.setAttribute("data-theme", nextTheme);
     document.body?.setAttribute("data-theme", nextTheme);
 
+    const color = THEME_META_COLOR[nextTheme];
     const themeMeta = document.querySelector('meta[name="theme-color"]');
     if (themeMeta) {
-      themeMeta.setAttribute("content", THEME_META_COLOR[nextTheme]);
+      themeMeta.setAttribute("content", color);
     }
+
+    // Sync native iOS status bar color and style with the current theme
+    StatusBar.setBackgroundColor({ color }).catch(() => {});
+    StatusBar.setStyle({
+      style: nextTheme === "light" ? Style.Light : Style.Dark,
+    }).catch(() => {});
   }, [theme]);
 
   // Dynamically swap favicon and apple-touch-icon based on iconTheme preference

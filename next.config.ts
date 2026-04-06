@@ -10,9 +10,13 @@ type NextConfigWithPWA = NextConfig & {
   };
 };
 
+// Use static export only for Capacitor builds (npx cap sync needs the out/ folder).
+// On Vercel, output is unset so API routes work.
+const isCapacitorBuild = process.env.BUILD_TARGET === "capacitor";
+
 let nextConfig: NextConfigWithPWA = {
   turbopack: {},
-  output: 'export',
+  ...(isCapacitorBuild ? { output: "export" } : {}),
   pwa: {
     dest: "public",
     disable: process.env.NODE_ENV === "development",

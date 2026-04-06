@@ -20,7 +20,7 @@ jobs:
         run: npm ci
 
       - name: Build Next.js (static export)
-        run: npm run build
+        run: npm run build:cap
 
       - name: Install CocoaPods
         run: sudo gem install cocoapods

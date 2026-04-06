@@ -29,7 +29,7 @@ export default function RootLayout({
       <head>
         <meta name="theme-color" content="#F5A623" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="apple-mobile-web-app-title" content="Tasbih" />
         {/* data-app-icon lets ThemeSync swap these dynamically based on the chosen icon theme */}

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useTasbihStore } from "../store/tasbihStore";
 import { StatusBar, Style } from "@capacitor/status-bar";
+import { Capacitor } from "@capacitor/core";
 
 const THEME_META_COLOR: Record<"light" | "dark" | "blue", string> = {
   light: "#F3F5F8",
@@ -49,6 +50,14 @@ export function ThemeSync() {
   useEffect(() => {
     document.documentElement.lang = language ?? "fr";
   }, [language]);
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      document.body.classList.add("is-native-ios");
+    } else {
+      document.body.classList.add("is-pwa");
+    }
+  }, []);
 
   return null;
 }

@@ -89,14 +89,6 @@ export default function PrivacyPage() {
               {t("about.policyContactBody")}
             </p>
           </div>
-          <a
-            href="https://github.com/amed128/tasbih-digital"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-medium text-[var(--primary)]"
-          >
-            GitHub ↗
-          </a>
         </section>
       </motion.main>
 

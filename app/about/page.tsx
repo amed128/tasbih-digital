@@ -140,22 +140,7 @@ export default function AboutPage() {
           <span className="text-[var(--secondary)] text-base">›</span>
         </Link>
 
-        {/* Source */}
-        <section className="rounded-2xl bg-[var(--card)] p-4 flex items-center justify-between">
-          <div className="text-sm font-semibold text-[var(--foreground)]">
-            {t("about.sourceTitle")}
-          </div>
-          <a
-            href="https://github.com/amed128/tasbih-digital"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-medium text-[var(--primary)]"
-          >
-            {t("about.sourceHint")} ↗
-          </a>
-        </section>
-
-        {/* Bug reporting */}
+{/* Bug reporting */}
         <section className="rounded-2xl bg-[var(--card)] p-4 flex items-center justify-between">
           <div className="text-sm font-semibold text-[var(--foreground)]">
             {t("about.bugReportTitle")}

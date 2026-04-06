@@ -64,7 +64,7 @@ export async function sendReminderPush(record: PushSubscriptionRecord, slot: str
   await webpush.sendNotification(
     record.subscription as unknown as webpush.PushSubscription,
     JSON.stringify({
-      title: "Tasbih Digital",
+      title: "At-tasbih",
       body,
       tag: `tasbih-reminder-${slot}`,
       url: "/",

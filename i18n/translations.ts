@@ -321,7 +321,7 @@ export const translations = {
       confettiTitle: "Confettis",
       confettiHint: "Animation lors de l'objectif atteint",
       langTitle: "Langue",
-      version: "Tasbih Digital — v1.0",
+      version: "At-tasbih — v1.0",
       ariaTheme: "Sélection du thème",
       ariaIconTheme: "Sélection de l'icône",
       ariaSound: "Sélection du son",
@@ -399,7 +399,7 @@ export const translations = {
     },
     donate: {
       title: "Soutenir le développement",
-      subtitle: "Tasbih Digital est entièrement gratuite et sans publicité. Si elle vous est utile, un don volontaire aide à couvrir les frais et à continuer le développement.",
+      subtitle: "At-tasbih est entièrement gratuite et sans publicité. Si elle vous est utile, un don volontaire aide à couvrir les frais et à continuer le développement.",
       impact: "100 % des dons couvrent l'hébergement, les frais de store et le temps de développement.",
       successTitle: "Don reçu",
       success: "Jazak Allahu khayran — qu'Allah vous récompense.",
@@ -434,7 +434,7 @@ export const translations = {
       policyTitle: "Politique de confidentialité",
       policyUpdated: "Dernière mise à jour: 20 mars 2026",
       policyIntro:
-        "Tasbih Digital respecte votre vie privée. Cette application fonctionne sans compte, et les rappels push sont optionnels.",
+        "At-tasbih respecte votre vie privée. Cette application fonctionne sans compte, et les rappels push sont optionnels.",
       policyCollectionTitle: "1. Données collectées",
       policyCollectionBody:
         "Aucune donnée personnelle n'est collectée, transmise ou vendue. Si vous activez les rappels push, des données techniques minimales sont traitées pour envoyer les notifications.",
@@ -450,14 +450,14 @@ export const translations = {
       policyContactTitle: "5. Contact",
       policyContactBody:
         "Pour toute question, utilisez le dépôt GitHub du projet.",
-      supporterThankYou: "Merci de soutenir le développement de Tasbih Digital. Qu'Allah vous récompense.",
+      supporterThankYou: "Merci de soutenir le développement de At-tasbih. Qu'Allah vous récompense.",
       bugReportTitle: "Signaler un bug",
       bugReportHint: "Ouvrir une issue GitHub",
     },
     help: {
       title: "Aide & FAQ",
       subtitle: "Comment ça marche",
-      intro: "Tasbih Digital est un compteur de zikr. Un zikr est une formule de dhikr (invocation) que l'on répète un certain nombre de fois. Choisissez un zikr, fixez une cible, et comptez.",
+      intro: "At-tasbih est un compteur de zikr. Un zikr est une formule de dhikr (invocation) que l'on répète un certain nombre de fois. Choisissez un zikr, fixez une cible, et comptez.",
       modesTitle: "Les 4 modes",
       modeIncrement: "Incrémentation",
       modeIncrementDesc: "Compte de 0 vers votre cible. Appuyez pour incrémenter.",
@@ -806,7 +806,7 @@ export const translations = {
       confettiTitle: "Confetti",
       confettiHint: "Animation when goal is reached",
       langTitle: "Language",
-      version: "Tasbih Digital — v1.0",
+      version: "At-tasbih — v1.0",
       ariaTheme: "Theme selection",
       ariaIconTheme: "Icon selection",
       ariaSound: "Sound selection",
@@ -885,7 +885,7 @@ export const translations = {
     },
     donate: {
       title: "Support development",
-      subtitle: "Tasbih Digital is completely free and ad-free. If it's useful to you, a voluntary donation helps cover costs and keep development going.",
+      subtitle: "At-tasbih is completely free and ad-free. If it's useful to you, a voluntary donation helps cover costs and keep development going.",
       impact: "100% of donations go towards hosting, store fees, and development time.",
       successTitle: "Donation received",
       success: "Jazak Allahu khayran — may Allah reward you.",
@@ -920,7 +920,7 @@ export const translations = {
       policyTitle: "Privacy policy",
       policyUpdated: "Last updated: March 20, 2026",
       policyIntro:
-        "Tasbih Digital respects your privacy. This application works without an account, and push reminders are optional.",
+        "At-tasbih respects your privacy. This application works without an account, and push reminders are optional.",
       policyCollectionTitle: "1. Data collection",
       policyCollectionBody:
         "No personal data is collected, transmitted, or sold. If you enable push reminders, minimal technical data is processed to send notifications.",
@@ -936,14 +936,14 @@ export const translations = {
       policyContactTitle: "5. Contact",
       policyContactBody:
         "For any question, please use the project's GitHub repository.",
-      supporterThankYou: "Thank you for supporting Tasbih Digital. May Allah reward you.",
+      supporterThankYou: "Thank you for supporting At-tasbih. May Allah reward you.",
       bugReportTitle: "Report a bug",
       bugReportHint: "Open a GitHub issue",
     },
     help: {
       title: "Help & FAQ",
       subtitle: "How it works",
-      intro: "Tasbih Digital is a zikr counter. A zikr is a dhikr phrase you repeat a set number of times. Pick a zikr, set a target, and count.",
+      intro: "At-tasbih is a zikr counter. A zikr is a dhikr phrase you repeat a set number of times. Pick a zikr, set a target, and count.",
       modesTitle: "The 4 modes",
       modeIncrement: "Increment",
       modeIncrementDesc: "Counts from 0 up to your target. Tap to increment.",

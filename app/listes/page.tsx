@@ -588,7 +588,7 @@ export default function ListesPage() {
       <div className="border-b border-[var(--border)]">
         <div className="mx-auto flex h-18 w-full max-w-md items-center justify-center gap-2 px-4">
           <span className="text-2xl text-[var(--primary)]">☽</span>
-          <h1 className="text-[1.95rem] font-semibold tracking-tight text-[var(--foreground)]">Tasbih Digital</h1>
+          <h1 className="text-[1.95rem] font-semibold tracking-tight text-[var(--foreground)]">At-tasbih</h1>
         </div>
       </div>
 

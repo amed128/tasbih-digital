@@ -22,7 +22,7 @@ export async function POST() {
   await webpush.sendNotification(
     sub.subscription as unknown as webpush.PushSubscription,
     JSON.stringify({
-      title: "Tasbih Digital",
+      title: "At-tasbih",
       body: sub.language === "fr" ? "Notification de test en arriere-plan." : "Background test notification.",
       tag: "tasbih-push-test",
       url: "/reglages",

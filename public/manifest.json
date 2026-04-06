@@ -1,6 +1,6 @@
 {
-  "name": "Tasbih Digital",
-  "short_name": "Tasbih",
+  "name": "At-tasbih",
+  "short_name": "At-tasbih",
   "description": "Compteur de zikr islamique digital",
   "start_url": "/",
   "display": "standalone",

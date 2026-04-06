@@ -1544,7 +1544,7 @@ export default function Home() {
   const renderCompteur = () => (
     <div className="flex flex-col gap-6 px-5 pt-6">
       <header className="flex flex-col items-center gap-2">
-        <h1 className="text-xl font-semibold text-[var(--foreground)]">🌙 Tasbih Digital</h1>
+        <h1 className="text-xl font-semibold text-[var(--foreground)]">At-tasbih</h1>
         {!focusMode && (
           <p className="text-sm text-[var(--secondary)]">{ t("counter.subtitle") }</p>
         )}

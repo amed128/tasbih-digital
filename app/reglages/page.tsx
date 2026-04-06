@@ -421,6 +421,21 @@ export default function ReglagesPage() {
         </div>
 
         <Link
+          href="/donate"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3 transition hover:brightness-95 active:brightness-90"
+        >
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">
+              {t("settings.supportTitle")}
+            </div>
+            <div className="text-xs text-[var(--secondary)]">
+              {t("settings.supportHint")}
+            </div>
+          </div>
+          <span className="text-[var(--secondary)] text-base">›</span>
+        </Link>
+
+        <Link
           href="/about"
           className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3 transition hover:brightness-95 active:brightness-90"
         >

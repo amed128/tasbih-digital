@@ -24,7 +24,7 @@
 
 - [x] Harmoniser espacements — `reglages/general/page.tsx:11` utilise `gap-1/pt-2` au lieu de `gap-5/pt-6`
 - [x] Standardiser border-radius — `rounded-xl` pour boutons, `rounded-2xl` pour cards, appliquer partout
-- [ ] Remplacer couleurs hardcodées par CSS vars :
+- [x] Remplacer couleurs hardcodées par CSS vars :
   - `#A5D6A7` / `#2E7D32` → `reglages/page.tsx:402` ✅
   - `#E7B4B4` / `#C62828` → `stats/page.tsx:555` ✅
   - `#22C55E` → `CircleProgress.tsx:18` ✅
@@ -90,11 +90,12 @@
 
 ## Backlog — À discuter / Explorer
 
-- [ ] **Bug reporting** — Ajouter un mécanisme de signalement de bugs dans l'app (formulaire, lien GitHub Issues, ou service tiers type Sentry/LogRocket) ?
+- [x] **Bug reporting** — Lien GitHub Issues dans la page About
 - [ ] **Notifications push / abonnements** — Les notifications sont-elles alignées avec la politique de l'app (PWA, App Store) ? Valeur ajoutée vs friction d'autorisation, RGPD, pertinence pour une app de dhikr ?
 - [ ] **IA audio adaptative** — Intégrer un modèle/algo capable d'apprendre et d'affiner la reconnaissance vocale selon la voix/l'accent de l'utilisateur ? (on-device vs cloud, vie privée, complexité, valeur réelle vs ASR existant)
 - [ ] **Nom de l'application** — Candidat principal : **Dhakir** (ذاكر, "celui qui se souvient d'Allah"). dhakir.app disponible, aucune app existante sous ce nom. Autres écartés : Tasbih Digital (.com pris), Misbaha (namespace saturé), Zikr (saturé), Tasbih Habit (mot anglais). Logo à refaire en même temps que le renommage.
 - [ ] **Monétisation — Thèmes premium** — L'app sera gratuite ; seuls des thèmes premium payants seront proposés pour soutenir le développement. Concevoir et sélectionner les meilleurs thèmes possibles avant de lancer cette offre.
+- [ ] **Page d'aide / FAQ** — Créer une page `/aide` accessible depuis les réglages ou l'about, expliquant les modes (incrémentation, décrémentation, auto, audio), la sélection de zikr, les listes, la sync, et répondant aux questions fréquentes. FR + EN.
 
 ## Backlog
 
@@ -133,17 +134,22 @@
 - [ ] Créer `components/DonateButton.tsx` avec montants préréglés (5$, 15$, 30$)
 - [ ] Créer `/app/donate/page.tsx` avec gestion du `?success=true`
 
-#### Option B — Lemon Squeezy (fallback)
+#### Option B — PayPal
+
+- [ ] Créer un bouton de don PayPal (Me.pay ou bouton embed officiel)
+- [ ] Ajouter le lien/bouton PayPal dans `/donate` comme alternative à Ko-fi/Stripe
+
+#### Option C — Lemon Squeezy (fallback)
 
 - [ ] Créer un produit sur le dashboard Lemon Squeezy
 - [ ] Remplacer `DonateButton` par un simple lien vers l'URL de checkout
 
 ### Phase 2 — Intégration UI
 
-- [ ] Ajouter une card "Soutenir le développement" dans `app/reglages/page.tsx` → `/donate`
-- [ ] Ajouter une bannière de reconnaissance dans `app/about/page.tsx` (lecture `localStorage`)
-- [ ] Créer la page `/app/donate/page.tsx` (layout cohérent, BottomNav, message d'impact)
-- [ ] Ajouter les clés i18n FR/EN : `donate.title`, `donate.subtitle`, `donate.impact`, `donate.success`, `settings.supportTitle`, `about.supporterThankYou`
+- [x] Ajouter une card "Soutenir le développement" dans `app/reglages/page.tsx` → `/donate`
+- [x] Ajouter une bannière de reconnaissance dans `app/about/page.tsx` (lecture `localStorage`)
+- [x] Créer la page `/app/donate/page.tsx` (layout cohérent, BottomNav, message d'impact)
+- [x] Ajouter les clés i18n FR/EN : `donate.title`, `donate.subtitle`, `donate.impact`, `donate.success`, `settings.supportTitle`, `about.supporterThankYou`
 
 ### Phase 3 — Déploiement app stores
 

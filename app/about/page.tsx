@@ -124,6 +124,22 @@ export default function AboutPage() {
           </div>
         </section>
 
+        {/* Support */}
+        <Link
+          href="/donate"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3 transition hover:brightness-95 active:brightness-90"
+        >
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">
+              {t("settings.supportTitle")}
+            </div>
+            <div className="text-xs text-[var(--secondary)]">
+              {t("about.supporterThankYou")}
+            </div>
+          </div>
+          <span className="text-[var(--secondary)] text-base">›</span>
+        </Link>
+
         {/* Source */}
         <section className="rounded-2xl bg-[var(--card)] p-4 flex items-center justify-between">
           <div className="text-sm font-semibold text-[var(--foreground)]">
@@ -136,6 +152,21 @@ export default function AboutPage() {
             className="text-xs font-medium text-[var(--primary)]"
           >
             {t("about.sourceHint")} ↗
+          </a>
+        </section>
+
+        {/* Bug reporting */}
+        <section className="rounded-2xl bg-[var(--card)] p-4 flex items-center justify-between">
+          <div className="text-sm font-semibold text-[var(--foreground)]">
+            {t("about.bugReportTitle")}
+          </div>
+          <a
+            href="https://github.com/amed128/tasbih-digital/issues"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-medium text-[var(--primary)]"
+          >
+            {t("about.bugReportHint")} ↗
           </a>
         </section>
       </motion.main>

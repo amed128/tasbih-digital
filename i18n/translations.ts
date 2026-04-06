@@ -392,6 +392,15 @@ export const translations = {
       syncCopied: "Code copié",
       syncImported: "Sync importée. Rechargement...",
       syncInvalid: "Code de sync invalide",
+      supportTitle: "Soutenir le développement",
+      supportHint: "Un don volontaire pour garder l'app gratuite",
+    },
+    donate: {
+      title: "Soutenir le développement",
+      subtitle: "Tasbih Digital est entièrement gratuite et sans publicité. Si elle vous est utile, un don volontaire aide à couvrir les frais et à continuer le développement.",
+      impact: "100 % des dons couvrent l'hébergement, les frais de store et le temps de développement.",
+      successTitle: "Don reçu",
+      success: "Jazak Allahu khayran — qu'Allah vous récompense.",
     },
     circle: {
       remaining: "RESTANT",
@@ -439,6 +448,9 @@ export const translations = {
       policyContactTitle: "5. Contact",
       policyContactBody:
         "Pour toute question, utilisez le dépôt GitHub du projet.",
+      supporterThankYou: "Merci de soutenir le développement de Tasbih Digital. Qu'Allah vous récompense.",
+      bugReportTitle: "Signaler un bug",
+      bugReportHint: "Ouvrir une issue GitHub",
     },
   },
 
@@ -829,6 +841,15 @@ export const translations = {
       syncCopied: "Code copied",
       syncImported: "Sync imported. Reloading...",
       syncInvalid: "Invalid sync code",
+      supportTitle: "Support development",
+      supportHint: "A voluntary donation to keep the app free",
+    },
+    donate: {
+      title: "Support development",
+      subtitle: "Tasbih Digital is completely free and ad-free. If it's useful to you, a voluntary donation helps cover costs and keep development going.",
+      impact: "100% of donations go towards hosting, store fees, and development time.",
+      successTitle: "Donation received",
+      success: "Jazak Allahu khayran — may Allah reward you.",
     },
     circle: {
       remaining: "LEFT",
@@ -876,6 +897,9 @@ export const translations = {
       policyContactTitle: "5. Contact",
       policyContactBody:
         "For any question, please use the project's GitHub repository.",
+      supporterThankYou: "Thank you for supporting Tasbih Digital. May Allah reward you.",
+      bugReportTitle: "Report a bug",
+      bugReportHint: "Open a GitHub issue",
     },
   },
 } as const;

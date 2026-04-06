@@ -10,6 +10,7 @@ import { CircleProgress } from "../components/CircleProgress";
 import { BottomNav } from "../components/BottomNav";
 import { Modal } from "../components/Modal";
 import { RotateCcw } from "lucide-react";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
 
 type WakeLockSentinelLike = {
   released: boolean;
@@ -336,9 +337,14 @@ export default function Home() {
     if (!vibrationEnabled && tapSound === "off") return;
     if (typeof window === "undefined") return;
 
-    // Hardware vibration where supported (typically Android/Chrome).
-    if (vibrationEnabled && typeof window.navigator?.vibrate === "function") {
-      window.navigator.vibrate(pattern);
+    // Native haptics on iOS (Capacitor), fallback to navigator.vibrate on Android/Chrome.
+    if (vibrationEnabled) {
+      const isArray = Array.isArray(pattern);
+      Haptics.impact({ style: isArray ? ImpactStyle.Heavy : ImpactStyle.Medium }).catch(() => {
+        if (typeof window.navigator?.vibrate === "function") {
+          window.navigator.vibrate(pattern);
+        }
+      });
     }
 
     if (options?.playSound === false || tapSound === "off") return;

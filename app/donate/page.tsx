@@ -40,13 +40,12 @@ export default function DonatePage() {
         transition={{ duration: 0.2 }}
       >
         <header className="flex flex-col gap-1">
-          <nav aria-label="Breadcrumb" className="mb-1 flex items-center gap-2 text-xs text-[var(--secondary)]">
-            <Link href="/reglages" className="hover:text-[var(--foreground)]">
-              {t("settings.title")}
-            </Link>
-            <span>/</span>
-            <span className="text-[var(--foreground)]">{t("settings.supportTitle")}</span>
-          </nav>
+          <Link
+            href="/about"
+            className="mb-1 text-sm text-[var(--primary)] font-medium"
+          >
+            {t("about.policyBack")}
+          </Link>
           <h1 className="text-xl font-semibold text-[var(--foreground)]">
             {t("donate.title")}
           </h1>

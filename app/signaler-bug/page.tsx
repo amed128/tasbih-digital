@@ -89,14 +89,13 @@ export default function SignalerBugPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
     >
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-[var(--secondary)]">
-        <Link href="/reglages" className="hover:text-[var(--foreground)] transition-colors">
-          {t("settings.title")}
-        </Link>
-        <span>›</span>
-        <span className="text-[var(--foreground)]">{t("about.bugForm.title")}</span>
-      </div>
+      {/* Back link */}
+      <Link
+        href="/about"
+        className="text-sm text-[var(--primary)] font-medium"
+      >
+        {t("about.policyBack")}
+      </Link>
 
       {status === "success" ? (
         <div className="rounded-2xl bg-[var(--card)] p-6 flex flex-col gap-3 items-center text-center">

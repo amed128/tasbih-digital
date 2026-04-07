@@ -40,14 +40,28 @@ export async function POST(req: Request) {
 **Platform:** ${platform ?? "unknown"}
 **Language:** ${language ?? "unknown"}`;
 
+  const ghHeaders = {
+    Authorization: `Bearer ${token}`,
+    Accept: "application/vnd.github+json",
+    "Content-Type": "application/json",
+    "X-GitHub-Api-Version": "2022-11-28",
+  };
+
+  // Ensure the label exists — create it silently if not.
+  await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/labels`, {
+    method: "POST",
+    headers: ghHeaders,
+    body: JSON.stringify({
+      name: GITHUB_LABEL,
+      color: "e11d48",
+      description: "Bug report submitted by a user via the app",
+    }),
+  });
+  // 201 = created, 422 = already exists — both are fine, we ignore the result.
+
   const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/vnd.github+json",
-      "Content-Type": "application/json",
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
+    headers: ghHeaders,
     body: JSON.stringify({
       title: `[User report] ${trimmed.slice(0, 80)}`,
       body: issueBody,

@@ -932,6 +932,7 @@ export default function Home() {
       now - speechLastIncrementAtRef.current >= speechToleranceConfig.cooldownMs
     ) {
       speechLastIncrementAtRef.current = now;
+      speechCanIncrementRef.current = false;
       setAudioMatchFlash(true);
       handleAudioIncrement();
 

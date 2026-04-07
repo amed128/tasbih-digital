@@ -182,3 +182,13 @@
 - [ ] **Devise** : USD uniquement ou multi-devises via Stripe ?
 - [ ] **Dons récurrents** : envisager `mode: 'subscription'` Stripe en option mensuelle
 - [ ] **Webhook** : gestionnaire `checkout.session.completed` pour compter les dons anonymement
+
+---
+
+## Backlog - New Features
+
+- [ ] **Guided Zikr Programs & Sequences:** Create pre-packaged sequences of zikrs. For example, a "Morning Routine" or a "Post-Prayer Sequence" that guides the user through a series of zikrs without them having to manually select each one. This reduces friction and mental overhead, providing structure for both new and experienced users.
+- [ ] **Personal Goals & Gentle Reminders:** Allow users to set personal, private goals (e.g., "Complete 1,000 counts of Tasbih Fatima this week"). Implement opt-in, non-intrusive notifications to let users schedule gentle reminders for specific times they want to practice. This fosters consistency and mindfulness in a way that respects the user's autonomy.
+- [ ] **Advanced Statistics & Personal Insights:** Enhance the stats page to show a calendar heatmap of activity, trends over time, and breakdowns of which zikrs are practiced most often. This allows for personal reflection on one's practice and can be a powerful motivator.
+- [ ] **"Zen Mode" / Focus Mode:** A toggle that strips away all non-essential UI elements (navigation, settings buttons), leaving only the Zikr text, translation, and counter. This minimizes distractions and allows the user to be fully immersed in their practice.
+- [ ] **Enhanced Accessibility:** Add an "Accessibility" section in the settings to allow users to increase font size, choose higher-contrast themes, and potentially enable system fonts. This makes the app more inclusive and ensures that users with visual impairments can still benefit from it.

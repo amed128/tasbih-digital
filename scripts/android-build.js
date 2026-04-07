@@ -12,5 +12,5 @@ execSync('npx cap sync android', { stdio: 'inherit' });
 // Step 2: Overwrite the gradle file
 fs.copyFileSync(sourceFile, destFile);
 
-// Step 3: Run the app
-execSync('npx cap run android', { stdio: 'inherit' });
+// Step 3: Run the app without a sync
+execSync('npx cap run android --no-sync', { stdio: 'inherit' });

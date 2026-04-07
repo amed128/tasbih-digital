@@ -5,7 +5,7 @@
   # Hardware and Software Packages
   packages = [
     pkgs.nodejs_22
-    pkgs.jdk17
+    pkgs.jdk21
     pkgs.nodePackages.firebase-tools
     pkgs.nodePackages.typescript-language-server
   ];
@@ -13,7 +13,7 @@
   # Environment Variables
   env = {
     # Ensures Capacitor can find the Java installation
-    JAVA_HOME = "${pkgs.jdk17}";
+    JAVA_HOME = "${pkgs.jdk21}";
   };
 
   idx = {

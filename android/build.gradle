@@ -24,6 +24,14 @@ allprojects {
     }
 }
 
+// Set Java version for all sub-projects
+subprojects {
+    project.tasks.withType(JavaCompile).configureEach {
+        it.sourceCompatibility = '17'
+        it.targetCompatibility = '17'
+    }
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

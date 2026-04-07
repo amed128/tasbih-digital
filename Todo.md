@@ -93,7 +93,7 @@
 - [x] **Bug reporting** — Lien GitHub Issues dans la page About
 - [ ] **Notifications push / abonnements** — Les notifications sont-elles alignées avec la politique de l'app (PWA, App Store) ? Valeur ajoutée vs friction d'autorisation, RGPD, pertinence pour une app de dhikr ?
 - [ ] **IA audio adaptative** — Intégrer un modèle/algo capable d'apprendre et d'affiner la reconnaissance vocale selon la voix/l'accent de l'utilisateur ? (on-device vs cloud, vie privée, complexité, valeur réelle vs ASR existant)
-- [ ] **Nom de l'application** — Candidat principal : **Dhakir** (ذاكر, "celui qui se souvient d'Allah"). dhakir.app disponible, aucune app existante sous ce nom. Autres écartés : Tasbih Digital (.com pris), Misbaha (namespace saturé), Zikr (saturé), Tasbih Habit (mot anglais). Logo à refaire en même temps que le renommage.
+- [x] **Nom de l'application** — Renommage effectué → **Dhakir** (ذاكر, "celui qui se souvient d'Allah").
 - [ ] **Monétisation — Thèmes premium** — L'app sera gratuite ; seuls des thèmes premium payants seront proposés pour soutenir le développement. Concevoir et sélectionner les meilleurs thèmes possibles avant de lancer cette offre.
 - [x] **Page d'aide / FAQ** — Page `/aide` avec intro, 4 cartes de modes et accordion FAQ 8 questions. FR + EN.
 

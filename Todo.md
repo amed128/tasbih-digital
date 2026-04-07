@@ -94,6 +94,8 @@
 - [ ] **Notifications push / abonnements** — Les notifications sont-elles alignées avec la politique de l'app (PWA, App Store) ? Valeur ajoutée vs friction d'autorisation, RGPD, pertinence pour une app de dhikr ?
 - [ ] **IA audio adaptative** — Intégrer un modèle/algo capable d'apprendre et d'affiner la reconnaissance vocale selon la voix/l'accent de l'utilisateur ? (on-device vs cloud, vie privée, complexité, valeur réelle vs ASR existant)
 - [x] **Nom de l'application** — Renommage effectué → **Dhakir** (ذاكر, "celui qui se souvient d'Allah").
+- [ ] **SEO / Visibilité PWA et app stores** — Optimisation SEO (meta tags, Open Graph, sitemap, structured data), fiche Google Play et App Store (mots-clés, captures, description optimisée ASO).
+- [ ] **Marketing et réseaux sociaux** — Stratégie de publicité et de présence sur les réseaux (à discuter : plateformes cibles, contenu, budget, timing par rapport au lancement).
 - [ ] **Monétisation — Thèmes premium** — L'app sera gratuite ; seuls des thèmes premium payants seront proposés pour soutenir le développement. Concevoir et sélectionner les meilleurs thèmes possibles avant de lancer cette offre.
 - [x] **Page d'aide / FAQ** — Page `/aide` avec intro, 4 cartes de modes et accordion FAQ 8 questions. FR + EN.
 

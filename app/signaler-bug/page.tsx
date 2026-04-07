@@ -102,16 +102,6 @@ export default function SignalerBugPage() {
           <div className="text-3xl">✅</div>
           <p className="text-sm font-semibold text-[var(--foreground)]">{t("about.bugForm.successTitle")}</p>
           <p className="text-xs text-[var(--secondary)]">{t("about.bugForm.successBody")}</p>
-          {issueUrl && (
-            <a
-              href={issueUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs font-medium text-[var(--primary)]"
-            >
-              {t("about.bugForm.viewIssue")}
-            </a>
-          )}
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">

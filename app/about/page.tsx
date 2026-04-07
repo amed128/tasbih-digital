@@ -140,35 +140,16 @@ export default function AboutPage() {
           <span className="text-[var(--secondary)] text-base">›</span>
         </Link>
 
-        {/* Source */}
-        <section className="rounded-2xl bg-[var(--card)] p-4 flex items-center justify-between">
-          <div className="text-sm font-semibold text-[var(--foreground)]">
-            {t("about.sourceTitle")}
-          </div>
-          <a
-            href="https://github.com/amed128/tasbih-digital"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-medium text-[var(--primary)]"
-          >
-            {t("about.sourceHint")} ↗
-          </a>
-        </section>
-
-        {/* Bug reporting */}
-        <section className="rounded-2xl bg-[var(--card)] p-4 flex items-center justify-between">
+{/* Bug reporting */}
+        <Link
+          href="/signaler-bug"
+          className="rounded-2xl bg-[var(--card)] p-4 flex items-center justify-between"
+        >
           <div className="text-sm font-semibold text-[var(--foreground)]">
             {t("about.bugReportTitle")}
           </div>
-          <a
-            href="https://github.com/amed128/tasbih-digital/issues"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-medium text-[var(--primary)]"
-          >
-            {t("about.bugReportHint")} ↗
-          </a>
-        </section>
+          <span className="text-[var(--secondary)] text-base">›</span>
+        </Link>
       </motion.main>
 
       <BottomNav />

@@ -85,9 +85,9 @@ export default function ReglagesPage() {
     try {
       if (navigator.serviceWorker?.controller) {
         const reg = await navigator.serviceWorker.ready;
-        await reg.showNotification("Tasbih Digital", { body, tag: "tasbih-test-reminder" });
+        await reg.showNotification("At-tasbih", { body, tag: "tasbih-test-reminder" });
       } else {
-        new Notification("Tasbih Digital", { body, tag: "tasbih-test-reminder" });
+        new Notification("At-tasbih", { body, tag: "tasbih-test-reminder" });
       }
     } catch {
       // ignore

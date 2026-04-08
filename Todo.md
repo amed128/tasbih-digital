@@ -130,21 +130,33 @@
 
 #### Option A — Stripe Checkout
 
-- [ ] Installer Stripe SDK : `npm install @stripe/stripe-js stripe`
+- [x] Installer Stripe SDK : `npm install @stripe/stripe-js stripe`
 - [ ] Ajouter les vars d'env : `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
-- [ ] Créer la route API `app/api/create-checkout-session/route.ts`
-- [ ] Créer `components/DonateButton.tsx` avec montants préréglés (5$, 15$, 30$)
-- [ ] Créer `/app/donate/page.tsx` avec gestion du `?success=true`
+- [x] Créer la route API `app/api/create-checkout-session/route.ts`
+- [x] Créer le sélecteur de montants (5$, 15$, 30$) dans `/donate`
+- [x] Créer `/app/donate/page.tsx` avec gestion du `?success=true`
 
 #### Option B — PayPal
 
-- [ ] Créer un bouton de don PayPal (Me.pay ou bouton embed officiel)
-- [ ] Ajouter le lien/bouton PayPal dans `/donate` comme alternative à Ko-fi/Stripe
+- [x] Ajouter le bouton PayPal dans `/donate`
+- [ ] Remplacer l'URL placeholder par le vrai lien `paypal.me/...`
 
-#### Option C — Lemon Squeezy (fallback)
+#### Option C — Lemon Squeezy
 
-- [ ] Créer un produit sur le dashboard Lemon Squeezy
-- [ ] Remplacer `DonateButton` par un simple lien vers l'URL de checkout
+- [x] Ajouter le bouton Lemon Squeezy dans `/donate`
+- [ ] Créer un produit sur le dashboard Lemon Squeezy et remplacer l'URL placeholder
+
+#### Ko-fi
+
+- [x] Ajouter le bouton Ko-fi dans `/donate`
+- [ ] Remplacer l'URL placeholder par le vrai lien `ko-fi.com/...`
+
+#### Wiring des comptes (à faire)
+
+- [ ] Remplacer `KOFI_URL` dans `app/donate/page.tsx` par votre vrai lien Ko-fi
+- [ ] Remplacer `PAYPAL_URL` dans `app/donate/page.tsx` par votre vrai lien PayPal.me
+- [ ] Remplacer `LEMONSQUEEZY_URL` dans `app/donate/page.tsx` par votre URL de checkout Lemon Squeezy
+- [ ] Ajouter `STRIPE_SECRET_KEY` et `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` dans les variables d'environnement
 
 ### Phase 2 — Intégration UI
 

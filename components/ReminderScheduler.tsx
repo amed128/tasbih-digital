@@ -1,17 +1,43 @@
-
 "use client";
-
-// Use environment variable for API base URL
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "";
 
 import { useEffect } from "react";
 import { useTasbihStore } from "../store/tasbihStore";
 
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const rawData = window.atob(base64);
-  return Uint8Array.from(rawData, (char) => char.charCodeAt(0));
+const LAST_FIRED_KEY = "tasbih-reminder-last-fired";
+
+function currentSlot(): string {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, "0");
+  const mm = String(now.getMinutes()).padStart(2, "0");
+  const yyyy = now.getFullYear();
+  const mo = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  return `${yyyy}-${mo}-${dd} ${hh}:${mm}`;
+}
+
+async function showReminderNotification(language: "fr" | "en", slot: string) {
+  const title = "At-tasbih";
+  const body =
+    language === "fr"
+      ? "Petit rappel : prenez un moment pour votre zikr."
+      : "Gentle reminder: take a moment for your zikr.";
+  const tag = `tasbih-reminder-${slot}`;
+
+  try {
+    if ("serviceWorker" in navigator) {
+      const reg = await navigator.serviceWorker.ready;
+      await reg.showNotification(title, { body, tag });
+    } else {
+      new Notification(title, { body, tag });
+    }
+  } catch {
+    // Fallback if SW showNotification fails
+    try {
+      new Notification(title, { body, tag });
+    } catch {
+      // Notifications not available
+    }
+  }
 }
 
 export function ReminderScheduler() {
@@ -22,56 +48,31 @@ export function ReminderScheduler() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (typeof Notification === "undefined") return;
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
+    if (!remindersEnabled || reminderTimes.length === 0) return;
 
-    const syncPushSubscription = async () => {
-      const sw = await navigator.serviceWorker.ready;
-      let subscription = await sw.pushManager.getSubscription();
+    const check = () => {
+      if (Notification.permission !== "granted") return;
 
-      if (Notification.permission !== "granted") {
-        if (subscription) {
-          await fetch(`${API_BASE}/api/push/unsubscribe`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ subscription: subscription.toJSON() }),
-          });
-          await subscription.unsubscribe();
-        }
-        return;
-      }
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
 
-      const publicVapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-      if (!publicVapidKey) {
-        return;
-      }
+      const isDue = reminderTimes.some(
+        (rt) => rt.hour === currentHour && rt.minute === currentMinute
+      );
+      if (!isDue) return;
 
-      if (!subscription) {
-        subscription = await sw.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(publicVapidKey) as unknown as BufferSource,
-        });
-      }
+      const slot = currentSlot();
+      const lastFired = localStorage.getItem(LAST_FIRED_KEY);
+      if (lastFired === slot) return;
 
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-      const dailyTime = reminderTimes[0] ?? { hour: 8, minute: 0 };
-      await fetch(`${API_BASE}/api/push/subscribe`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          subscription: subscription.toJSON(),
-          remindersEnabled,
-          reminderScheduleType: "daily",
-          reminderTimes: [dailyTime],
-          reminderDays: [],
-          language,
-          timezone,
-        }),
-      });
+      localStorage.setItem(LAST_FIRED_KEY, slot);
+      void showReminderNotification(language, slot);
     };
 
-    void syncPushSubscription();
-
-    return undefined;
+    check();
+    const interval = setInterval(check, 30_000);
+    return () => clearInterval(interval);
   }, [remindersEnabled, reminderTimes, language]);
 
   return null;

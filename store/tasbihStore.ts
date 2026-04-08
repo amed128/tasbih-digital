@@ -1585,6 +1585,40 @@ const createStore = () =>
           return newState;
         }),
 
+      setRemindersEnabled: (enabled: boolean) =>
+        set((state) => {
+          const newState = { preferences: { ...state.preferences, remindersEnabled: enabled } };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
+      setReminderScheduleType: (type: ReminderScheduleType) =>
+        set((state) => {
+          const newState = { preferences: { ...state.preferences, reminderScheduleType: type } };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
+      setReminderTimes: (times: ReminderTime[]) =>
+        set((state) => {
+          const newState = { preferences: { ...state.preferences, reminderTimes: times } };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
+      setReminderDays: (days: number[]) =>
+        set((state) => {
+          const newState = { preferences: { ...state.preferences, reminderDays: days } };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
+      setOptionalSyncEnabled: (enabled: boolean) =>
+        set((state) => {
+          const newState = { preferences: { ...state.preferences, optionalSyncEnabled: enabled } };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
 
       resetPreferences: () =>
         set((state) => {

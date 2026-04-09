@@ -445,12 +445,12 @@ export const translations = {
       sourceHint: "Voir le dépôt",
       back: "← Retour",
       settingsLink: "À propos",
-      settingsHint: "Version, confidentialité",
+      settingsHint: "Version, Politique, Support appareils, Dons, Signaler un bug",
       policyBack: "← Retour à À propos",
       policyTitle: "Politique de confidentialité",
       policyUpdated: "Dernière mise à jour: 20 mars 2026",
       policyIntro:
-        "At-tasbih respecte votre vie privée. Cette application fonctionne sans compte, et les rappels push sont optionnels.",
+        "At-tasbih respecte votre vie privée. Cette application fonctionne sans compte et ne collecte aucune donnée personnelle. Vos listes, compteurs et préférences restent sur votre appareil (stockage local). Si vous activez les rappels push, les données techniques nécessaires (abonnement push, langue, fuseau horaire et heure du rappel) sont envoyées uniquement pour délivrer les notifications.",
       policyCollectionTitle: "1. Données collectées",
       policyCollectionBody:
         "Aucune donnée personnelle n'est collectée, transmise ou vendue. Si vous activez les rappels push, des données techniques minimales sont traitées pour envoyer les notifications.",
@@ -960,12 +960,12 @@ export const translations = {
       sourceHint: "View repository",
       back: "← Back",
       settingsLink: "About",
-      settingsHint: "Version, privacy",
+      settingsHint: "Version, Policy, Device support, Donate, Bug report",
       policyBack: "← Back to About",
       policyTitle: "Privacy policy",
       policyUpdated: "Last updated: March 20, 2026",
       policyIntro:
-        "At-tasbih respects your privacy. This application works without an account, and push reminders are optional.",
+        "At-tasbih respects your privacy. This application works without an account and does not collect personal data. Your lists, counters, and preferences stay on your device (browser local storage). If you enable push reminders, only technical data needed to deliver notifications (push subscription, language, timezone, reminder time) is sent.",
       policyCollectionTitle: "1. Data collection",
       policyCollectionBody:
         "No personal data is collected, transmitted, or sold. If you enable push reminders, minimal technical data is processed to send notifications.",

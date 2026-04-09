@@ -27,7 +27,6 @@ export default function SignalerBugPage() {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
-  const [issueUrl, setIssueUrl] = useState("");
 
   if (!mounted) return null;
 
@@ -74,8 +73,7 @@ export default function SignalerBugPage() {
       }
 
       localStorage.setItem(RATE_LIMIT_KEY, String(Date.now()));
-      setIssueUrl(data.url ?? "");
-      setStatus("success");
+setStatus("success");
     } catch {
       setStatus("error");
       setErrorMsg(t("about.bugForm.errorGeneric"));

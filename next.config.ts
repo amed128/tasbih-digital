@@ -16,6 +16,7 @@ const isCapacitorBuild = process.env.BUILD_TARGET === "capacitor";
 
 let nextConfig: NextConfigWithPWA = {
   turbopack: {},
+  devIndicators: false,
   ...(isCapacitorBuild ? { output: "export" } : {}),
   pwa: {
     dest: "public",

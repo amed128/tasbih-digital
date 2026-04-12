@@ -1930,7 +1930,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.18 }}
-              className={`w-full rounded-xl bg-[var(--success)] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95 ${focusMode ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""}`}
+              className="w-full rounded-xl bg-[var(--success)] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
             >
               {t("counter.nextZikr")}
             </motion.button>
@@ -2010,7 +2010,7 @@ export default function Home() {
             type="button"
             onClick={handleQuitListRequest}
             disabled={shouldBlurActionControls}
-            className={`min-w-0 text-sm font-medium text-[var(--primary)] mr-auto ${shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : ""}`}
+            className={`min-w-0 text-sm font-medium text-[var(--primary)] mr-auto ${focusMode || shouldBlurActionControls ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""}`}
             style={{ alignSelf: 'flex-start' }}
           >
             {t("counter.quitZikrSelection")}
@@ -2020,10 +2020,24 @@ export default function Home() {
             onClick={toggleMode}
             disabled={shouldBlurActionControls}
             className={`rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-center text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)] ${
-              shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : ""}`}
+              focusMode || shouldBlurActionControls ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""}`}
             aria-label={t("counter.ariaChangeMode")}
           >
             Mode: {executionModeLabel}
+          </button>
+          <button
+            type="button"
+            onClick={() => setFocusMode((v) => !v)}
+            disabled={shouldBlurActionControls}
+            className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
+              shouldBlurActionControls ? "blur-[1px] opacity-50 pointer-events-none select-none" :
+              (focusMode
+                ? "border-[var(--primary)] bg-[var(--primary)] text-black"
+                : "border-[var(--border)] bg-[var(--card)] text-[var(--primary)] hover:border-[var(--primary)]")
+            }`}
+            aria-label={focusMode ? t("counter.focusExitAriaLabel") : t("counter.focusEnterAriaLabel")}
+          >
+            {focusMode ? "✕ Focus" : "⊙ Focus"}
           </button>
         </div>
 
@@ -2074,6 +2088,7 @@ export default function Home() {
                 onClick={() => { if (!isTargetLocked) openTargetPopup(); }}
                 aria-label={t("counter.editTargetAria")}
                 className={`rounded border border-[var(--border)] px-2 py-0.5 text-sm font-bold text-[var(--foreground)] ${
+                  focusMode ? "blur-[1px] opacity-50 pointer-events-none select-none" :
                   isTargetLocked ? "cursor-not-allowed opacity-50 blur-[0.5px]" : "hover:border-[var(--primary)]"
                 }`}
               >
@@ -2130,7 +2145,7 @@ export default function Home() {
                   onClick={previousZikrInList}
                   aria-label={t("counter.ariaPreviousZikr")}
                   className={`flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
-                    shouldBlurActionControls ? "opacity-85 pointer-events-none select-none" : ""
+                    focusMode || shouldBlurActionControls ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""
                   }`}
                 >
                   {t("counter.previousZikr")}
@@ -2140,7 +2155,7 @@ export default function Home() {
                   onClick={undoLast}
                   aria-label={t("counter.ariaUndo")}
                   className={`flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
-                    shouldBlurActionControls ? "opacity-85 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
+                    focusMode || shouldBlurActionControls ? "blur-[1px] opacity-50 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
                   }`}
                 >
                   <RotateCcw size={16} className="mx-auto" />
@@ -2151,7 +2166,7 @@ export default function Home() {
               onClick={handleResetRequest}
               disabled={shouldBlurActionControls}
               className={`${!isAutoMode ? "flex-1" : "w-full"} rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
-                shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
+                focusMode || shouldBlurActionControls ? "blur-[1px] opacity-50 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
               }`}
             >
               {t("counter.reset")}

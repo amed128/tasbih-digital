@@ -1546,9 +1546,7 @@ export default function Home() {
     <div className="flex flex-col gap-6 px-5 pt-6">
       <header className="flex flex-col items-center gap-2">
         <h1 className="text-xl font-semibold text-[var(--foreground)]">At-tasbih</h1>
-        {!focusMode && (
-          <p className="text-sm text-[var(--secondary)]">{ t("counter.subtitle") }</p>
-        )}
+        <p className="text-sm text-[var(--secondary)]">{ t("counter.subtitle") }</p>
         <div className="flex gap-2 items-center justify-center flex-wrap">
           <div ref={modeDropdownRef} className="relative">
             <button
@@ -1559,7 +1557,7 @@ export default function Home() {
               aria-expanded={modeDropdownOpen}
               aria-label={t("counter.ariaChangeMode")}
               className={`flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)] ${
-                shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : ""
+                shouldBlurActionControls || focusMode ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""
               }`}
             >
               Mode: {executionModeLabel}
@@ -1624,7 +1622,7 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="flex flex-col gap-4" style={{ display: focusMode ? "none" : "flex" }}>
+      <div className={`flex flex-col gap-4 ${focusMode ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""}`}>
         <div className="flex flex-col gap-2" ref={dropdownRef}>
           <button
             type="button"
@@ -1890,6 +1888,7 @@ export default function Home() {
             onClick={() => { if (!isTargetLocked && isTargetEditable) openTargetPopup(); }}
             aria-label={t("counter.editTargetAria")}
             className={`rounded border border-[var(--border)] px-2 py-0.5 text-sm font-bold text-[var(--foreground)] ${
+              focusMode ? "blur-[1px] opacity-50 pointer-events-none select-none" :
               isTargetLocked ? "cursor-not-allowed opacity-50 blur-[0.5px]" : isTargetEditable ? "hover:border-[var(--primary)]" : "cursor-default"
             }`}
           >
@@ -1931,7 +1930,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.18 }}
-              className="w-full rounded-xl bg-[var(--success)] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
+              className={`w-full rounded-xl bg-[var(--success)] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95 ${focusMode ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""}`}
             >
               {t("counter.nextZikr")}
             </motion.button>
@@ -1939,12 +1938,12 @@ export default function Home() {
         </AnimatePresence>
 
         <div className="flex items-center justify-between gap-4">
-          {!focusMode && !isAutoMode && (
+          {!isAutoMode && (
             <button
               onClick={undoLast}
               aria-label={t("counter.ariaUndo")}
               className={`flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
-                shouldBlurActionControls ? "opacity-85 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
+                focusMode || shouldBlurActionControls ? "blur-[1px] opacity-50 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
               }`}
             >
               <RotateCcw size={16} className="mx-auto" />
@@ -1952,9 +1951,9 @@ export default function Home() {
           )}
           <button
             onClick={handleResetRequest}
-            disabled={shouldBlurActionControls}
-            className={`${!focusMode && !isAutoMode ? "flex-1" : "w-full"} rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
-              shouldBlurActionControls ? "blur-[0.6px] opacity-85 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
+            disabled={shouldBlurActionControls || focusMode}
+            className={`flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
+              focusMode || shouldBlurActionControls ? "blur-[1px] opacity-50 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
             }`}
           >
             {t("counter.reset")}

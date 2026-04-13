@@ -193,6 +193,7 @@ export default function Home() {
   const wakeLockEnabled = useTasbihStore((s) => s.preferences.wakeLockEnabled);
   const confettiEnabled = useTasbihStore((s) => s.preferences.confetti);
   const tapSound = useTasbihStore((s) => s.preferences.tapSound);
+  const tapButtonSize = useTasbihStore((s) => s.preferences.tapButtonSize ?? "normal");
   const customTarget = useTasbihStore((s) => s.customTarget);
   const increment = useTasbihStore((s) => s.increment);
   const reset = useTasbihStore((s) => s.reset);
@@ -1914,9 +1915,8 @@ export default function Home() {
               opacity: isCompleted ? 0.55 : 1,
             }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className={`w-full rounded-xl px-6 py-5 text-lg font-bold shadow-sm transition hover:brightness-110 active:brightness-95 ${
-              isCompleted ? "pointer-events-none cursor-not-allowed" : ""
-            }`}
+            style={{ paddingTop: tapButtonSize === "triple" ? "3.75rem" : tapButtonSize === "double" ? "2.5rem" : "1.25rem", paddingBottom: tapButtonSize === "triple" ? "3.75rem" : tapButtonSize === "double" ? "2.5rem" : "1.25rem" }}
+            className={`w-full rounded-xl px-6 text-lg font-bold shadow-sm transition hover:brightness-110 active:brightness-95 ${isCompleted ? "pointer-events-none cursor-not-allowed" : ""}`}
           >
             {t("counter.tap")}
           </motion.button>
@@ -2115,9 +2115,8 @@ export default function Home() {
                 opacity: isCompleted ? 0.55 : 1,
               }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className={`w-full rounded-xl px-6 py-5 text-lg font-bold shadow-sm transition hover:brightness-110 active:brightness-95 ${
-                isCompleted ? "pointer-events-none cursor-not-allowed" : ""
-              }`}
+              style={{ paddingTop: tapButtonSize === "triple" ? "3.75rem" : tapButtonSize === "double" ? "2.5rem" : "1.25rem", paddingBottom: tapButtonSize === "triple" ? "3.75rem" : tapButtonSize === "double" ? "2.5rem" : "1.25rem" }}
+              className={`w-full rounded-xl px-6 text-lg font-bold shadow-sm transition hover:brightness-110 active:brightness-95 ${isCompleted ? "pointer-events-none cursor-not-allowed" : ""}`}
             >
               {t("counter.tap")}
             </motion.button>

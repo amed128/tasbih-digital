@@ -49,6 +49,7 @@ export type Preferences = {
   vibration: boolean;
   wakeLockEnabled: boolean;
   tapSound: TapSound;
+  tapButtonSize: TapButtonSize;
   speechTolerance: SpeechTolerance;
   speechRecognitionLanguage: SpeechRecognitionLanguage;
   audioSilenceTimeoutSec: number;
@@ -83,6 +84,7 @@ export type Preferences = {
 };
 
 export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
+export type TapButtonSize = "normal" | "double" | "triple";
 export type SpeechTolerance = "strict" | "balanced" | "tolerant";
 export type SpeechRecognitionLanguage = "ar-SA" | "ar-EG" | "ar-MA" | "fr-FR" | "en-US";
 export type ChipTextFormat = "transliteration" | "arabic" | "both";
@@ -170,6 +172,7 @@ export type TasbihStoreState = {
   setWakeLockEnabled: (enabled: boolean) => void;
   toggleConfetti: () => void;
   setTapSound: (sound: TapSound) => void;
+  setTapButtonSize: (size: TapButtonSize) => void;
   setSpeechTolerance: (tolerance: SpeechTolerance) => void;
   setSpeechRecognitionLanguage: (language: SpeechRecognitionLanguage) => void;
   setAudioSilenceTimeoutSec: (seconds: number) => void;
@@ -390,6 +393,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       vibration: false,
       wakeLockEnabled: false,
       tapSound: "off",
+      tapButtonSize: "normal",
       speechTolerance: "balanced",
       speechRecognitionLanguage: "ar-SA",
       audioSilenceTimeoutSec: 15,
@@ -497,6 +501,13 @@ export function parseBackupPayload(
   }
 }
 
+const normalizeTapButtonSize = (value: unknown): TapButtonSize => {
+  if (value === "normal") return "normal";
+  if (value === "double") return "double";
+  if (value === "triple") return "triple";
+  return "normal";
+};
+
 const normalizeTapSound = (value: unknown): TapSound => {
   if (value === "off") return "off";
   if (value === "tap-soft") return "tap-soft";
@@ -597,6 +608,7 @@ const initialState: Partial<TasbihStoreState> = {
     theme: resolveStoredTheme(storedState?.preferences),
     wakeLockEnabled: resolveStoredWakeLockEnabled(storedState?.preferences),
     tapSound: normalizeTapSound(storedState?.preferences?.tapSound),
+    tapButtonSize: normalizeTapButtonSize(storedState?.preferences?.tapButtonSize),
     speechTolerance: normalizeSpeechTolerance(storedState?.preferences?.speechTolerance),
     speechRecognitionLanguage: normalizeSpeechRecognitionLanguage(
       storedState?.preferences?.speechRecognitionLanguage
@@ -1266,6 +1278,21 @@ const createStore = () =>
             preferences: {
               ...state.preferences,
               tapSound: normalizeTapSound(sound),
+            },
+          };
+          persistState({
+            ...state,
+            ...newState,
+          });
+          return newState;
+        }),
+
+      setTapButtonSize: (size: TapButtonSize) =>
+        set((state) => {
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              tapButtonSize: normalizeTapButtonSize(size),
             },
           };
           persistState({

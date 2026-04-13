@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { BottomNav } from "../../../components/BottomNav";
 import { useTasbihStore } from "../../../store/tasbihStore";
-import type { Theme, IconTheme } from "../../../store/tasbihStore";
+import type { Theme, IconTheme, TapButtonSize } from "../../../store/tasbihStore";
 import { useT } from "@/hooks/useT";
 
 export default function AppearanceSettingsPage() {
@@ -19,6 +19,7 @@ export default function AppearanceSettingsPage() {
   const setTheme = useTasbihStore((s) => s.setTheme);
   const setIconTheme = useTasbihStore((s) => s.setIconTheme);
   const toggleConfetti = useTasbihStore((s) => s.toggleConfetti);
+  const setTapButtonSize = useTasbihStore((s) => s.setTapButtonSize);
 
   const t = useT();
 
@@ -128,6 +129,24 @@ export default function AppearanceSettingsPage() {
                   {option.label}
                 </option>
               ))}
+            </select>
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-[var(--card)] p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.tapButtonSizeTitle")}</div>
+              <div className="text-xs text-[var(--secondary)]">{t("settings.tapButtonSizeHint")}</div>
+            </div>
+            <select
+              value={preferences.tapButtonSize ?? "normal"}
+              onChange={(e) => setTapButtonSize(e.target.value as TapButtonSize)}
+              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+            >
+              <option value="normal">{t("settings.tapButtonSizeNormal")}</option>
+              <option value="double">{t("settings.tapButtonSizeDouble")}</option>
+              <option value="triple">{t("settings.tapButtonSizeTriple")}</option>
             </select>
           </div>
         </section>

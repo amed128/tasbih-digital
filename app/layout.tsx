@@ -20,22 +20,22 @@ export const metadata: Metadata = {
     template: "%s — At-tasbih",
   },
   description:
-    "Compteur de zikr islamique. Suivez votre pratique du dhikr, gérez vos listes et consultez vos statistiques. Gratuit, hors ligne, sans compte.",
-  keywords: ["tasbih", "zikr", "dhikr", "compteur islamique", "muslim", "prayer counter", "تسبيح", "ذكر"],
+    "Islamic zikr counter. Track your daily dhikr practice, manage your lists, and view your statistics. Free, offline, no account needed.",
+  keywords: ["tasbih", "zikr", "dhikr", "islamic counter", "muslim", "prayer counter", "تسبيح", "ذكر"],
   openGraph: {
-    title: "At-tasbih — Compteur de zikr islamique",
+    title: "At-tasbih — Islamic Zikr Counter",
     description:
-      "Suivez votre pratique du dhikr. Listes personnalisées, statistiques, mode audio. Gratuit et hors ligne.",
+      "Track your dhikr practice. Custom lists, statistics, audio mode. Free and offline.",
     type: "website",
-    locale: "fr_FR",
+    locale: "en_US",
     siteName: "At-tasbih",
     images: [{ url: "/icon-512.png", width: 512, height: 512, alt: "At-tasbih" }],
   },
   twitter: {
     card: "summary",
-    title: "At-tasbih — Compteur de zikr islamique",
+    title: "At-tasbih — Islamic Zikr Counter",
     description:
-      "Suivez votre pratique du dhikr. Listes personnalisées, statistiques, mode audio. Gratuit et hors ligne.",
+      "Track your dhikr practice. Custom lists, statistics, audio mode. Free and offline.",
     images: ["/icon-512.png"],
   },
 };
@@ -46,7 +46,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
+    <html lang="en">
       <head>
         <meta name="theme-color" content="#F5A623" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

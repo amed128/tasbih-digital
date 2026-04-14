@@ -204,3 +204,14 @@
 - [ ] **Advanced Statistics & Personal Insights:** Enhance the stats page to show a calendar heatmap of activity, trends over time, and breakdowns of which zikrs are practiced most often. This allows for personal reflection on one's practice and can be a powerful motivator.
 - [x] **"Zen Mode" / Focus Mode:** Focus button blurs and disables all non-essential controls (mode, zikr picker, undo, reset), leaving Tap, Next Zikr, BottomNav, and the Focus button itself fully active. Available in both counter and selection mode.
 - [ ] **Enhanced Accessibility:** Add an "Accessibility" section in the settings to allow users to increase font size, choose higher-contrast themes, and potentially enable system fonts. This makes the app more inclusive and ensures that users with visual impairments can still benefit from it.
+
+---
+
+## SEO — À faire plus tard
+
+- [ ] **OG image dédiée** — Créer une image 1200×630px (bannière) pour les previews de partage sur WhatsApp, Facebook, iMessage, Twitter. Actuellement pointe sur l'icône app (512×512), ce qui fonctionne mais n'est pas optimal.
+- [ ] **sitemap.xml** — Générer et exposer un sitemap pour que Google indexe toutes les pages (`/`, `/listes`, `/stats`, `/reglages`, `/about`, `/privacy`). Utiliser `next-sitemap` ou générer statiquement.
+- [ ] **robots.txt** — Ajouter un fichier `robots.txt` explicite pour guider les crawlers (autoriser tout, pointer vers le sitemap).
+- [ ] **Métadonnées par page** — Ajouter des titres et descriptions spécifiques sur les pages importantes : Stats, Listes, À propos. Utiliser le système `title.template` déjà en place.
+- [ ] **Données structurées (JSON-LD)** — Ajouter un bloc `WebApplication` ou `SoftwareApplication` sur la page d'accueil pour que Google reconnaisse l'app et l'affiche comme application dans les résultats.
+- [ ] **Canonical URL** — Ajouter la meta `canonical` dans `layout.tsx` une fois le domaine de production connu, pour éviter le contenu dupliqué.

@@ -1,7 +1,7 @@
 {
   "name": "At-tasbih",
   "short_name": "At-tasbih",
-  "description": "Compteur de zikr islamique digital",
+  "description": "Compteur de zikr islamique. Suivez votre pratique du dhikr, gérez vos listes et consultez vos statistiques.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0A0A0A",

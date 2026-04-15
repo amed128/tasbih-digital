@@ -8,7 +8,7 @@ import { BottomNav } from "../../components/BottomNav";
 import { useT } from "@/hooks/useT";
 import { useTasbihStore } from "../../store/tasbihStore";
 
-const KOFI_URL = "https://ko-fi.com/YOUR_KOFI_USERNAME";
+const KOFI_URL = "https://ko-fi.com/attasbihapp";
 const PAYPAL_URL = "https://paypal.me/YOUR_PAYPAL_USERNAME";
 const LEMONSQUEEZY_URL = "https://YOUR_STORE.lemonsqueezy.com/checkout/buy/YOUR_PRODUCT_ID";
 

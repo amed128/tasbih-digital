@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://at-tasbih.app"),
   title: {
     default: "At-tasbih",
     template: "%s — At-tasbih",
@@ -29,14 +30,12 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "At-tasbih",
-    images: [{ url: "/icon-512.png", width: 512, height: 512, alt: "At-tasbih" }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "At-tasbih — Islamic Zikr Counter",
     description:
       "Track your dhikr practice. Custom lists, statistics, audio mode. Free and offline.",
-    images: ["/icon-512.png"],
   },
 };
 
@@ -58,6 +57,22 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="apple-touch-icon" href="/icon-192-blue.png" data-app-icon="true" />
         <link rel="manifest" href="/manifest.json" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              name: "At-tasbih",
+              applicationCategory: "LifestyleApplication",
+              operatingSystem: "Any",
+              offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+              description:
+                "Islamic zikr counter. Track your daily dhikr practice, manage your lists, and view your statistics. Free, offline, no account needed.",
+              url: process.env.NEXT_PUBLIC_APP_URL ?? "https://at-tasbih.app",
+            }),
+          }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

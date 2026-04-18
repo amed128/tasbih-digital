@@ -25,7 +25,7 @@ function interpolate(template: string, vars?: Vars): string {
 
 export function useT() {
   const language = useTasbihStore((s) => s.preferences.language);
-  const dict = translations[language] ?? translations.fr;
+  const dict = translations[language] ?? translations.en;
 
   return (key: string, vars?: Vars): string =>
     interpolate(getByPath(dict as unknown as Record<string, unknown>, key), vars);

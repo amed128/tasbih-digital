@@ -139,11 +139,19 @@
 
 ---
 
-## SEO — À faire plus tard
+## SEO — Done ✅
 
-- [ ] **OG image dédiée** — Créer une image 1200×630px (bannière) pour les previews de partage sur WhatsApp, Facebook, iMessage, Twitter. Actuellement pointe sur l'icône app (512×512), ce qui fonctionne mais n'est pas optimal.
-- [ ] **sitemap.xml** — Générer et exposer un sitemap pour que Google indexe toutes les pages (`/`, `/listes`, `/stats`, `/reglages`, `/about`, `/privacy`). Utiliser `next-sitemap` ou générer statiquement.
-- [ ] **robots.txt** — Ajouter un fichier `robots.txt` explicite pour guider les crawlers (autoriser tout, pointer vers le sitemap).
-- [ ] **Métadonnées par page** — Ajouter des titres et descriptions spécifiques sur les pages importantes : Stats, Listes, À propos. Utiliser le système `title.template` déjà en place.
-- [ ] **Données structurées (JSON-LD)** — Ajouter un bloc `WebApplication` ou `SoftwareApplication` sur la page d'accueil pour que Google reconnaisse l'app et l'affiche comme application dans les résultats.
-- [ ] **Canonical URL** — Ajouter la meta `canonical` dans `layout.tsx` une fois le domaine de production connu, pour éviter le contenu dupliqué.
+- [x] **OG image 1200×630** — `app/opengraph-image.tsx` (dynamic via Next.js ImageResponse)
+- [x] **sitemap.xml** — `app/sitemap.ts`
+- [x] **robots.txt** — `app/robots.ts`
+- [x] **Métadonnées par page** — layouts pour stats, listes, about, aide
+- [x] **Données structurées (JSON-LD)** — bloc `SoftwareApplication` dans `layout.tsx`
+- [x] **metadataBase** — via `NEXT_PUBLIC_APP_URL` env var
+
+## SEO upgrades after real domain name
+
+- [ ] **Canonical URL** — Ajouter `alternates: { canonical: '/' }` dans `layout.tsx` une fois le domaine de production connu.
+- [ ] **hreflang tags** — Ajouter `<link rel="alternate" hreflang="fr">` et `hreflang="en"` pour le ciblage linguistique international (FR + EN).
+- [ ] **FAQ JSON-LD sur `/aide`** — Ajouter un schema `FAQPage` pour que Google affiche les Q&A directement dans les résultats de recherche.
+- [ ] **Google Search Console** — Soumettre le sitemap sur `search.google.com/search-console` pour surveiller l'indexation et les performances.
+- [ ] **Smart App Banner iOS** — Ajouter `<meta name="apple-itunes-app">` dans `layout.tsx` une fois l'app publiée sur l'App Store.

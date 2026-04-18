@@ -93,8 +93,8 @@
 - [x] **Bug reporting** — Lien GitHub Issues dans la page About
 - [ ] **Notifications push / abonnements** — Les notifications sont-elles alignées avec la politique de l'app (PWA, App Store) ? Valeur ajoutée vs friction d'autorisation, RGPD, pertinence pour une app de dhikr ?
 - [ ] **IA audio adaptative** — Intégrer un modèle/algo capable d'apprendre et d'affiner la reconnaissance vocale selon la voix/l'accent de l'utilisateur ? (on-device vs cloud, vie privée, complexité, valeur réelle vs ASR existant)
-- [x] **Nom de l'application** — Renommage effectué → **Dhakir** (ذاكر, "celui qui se souvient d'Allah").
-- [ ] **SEO / Visibilité PWA et app stores** — Optimisation SEO (meta tags, Open Graph, sitemap, structured data), fiche Google Play et App Store (mots-clés, captures, description optimisée ASO).
+- [x] **Nom de l'application** — Décision finale : on garde **At-tasbih**.
+- [x] **SEO de base** — Metadata, Open Graph, Twitter card, `lang="en"`, descriptions marketing. Reste : sitemap, JSON-LD, OG image dédiée (voir section SEO en bas).
 - [ ] **Marketing et réseaux sociaux** — Stratégie de publicité et de présence sur les réseaux (à discuter : plateformes cibles, contenu, budget, timing par rapport au lancement).
 - [ ] **Monétisation — Thèmes premium** — L'app sera gratuite ; seuls des thèmes premium payants seront proposés pour soutenir le développement. Concevoir et sélectionner les meilleurs thèmes possibles avant de lancer cette offre.
 - [x] **Page d'aide / FAQ** — Page `/aide` avec intro, 4 cartes de modes et accordion FAQ 8 questions. FR + EN.
@@ -114,86 +114,18 @@
 
 ---
 
-## Système de dons — Roadmap
+## Système de dons
 
-### Phase 1 — Intégration paiement
+### État actuel ✅
+- [x] Page `/donate` créée avec Ko-fi uniquement (`ko-fi.com/attasbihapp`)
+- [x] Card "Soutenir le développement" dans Settings → `/donate`
+- [x] Bannière de reconnaissance dans About (lecture `localStorage`)
+- [x] Clés i18n FR/EN complètes
+- [x] PayPal, Stripe, Lemon Squeezy abandonnés — Ko-fi couvre les deux (PayPal + carte)
 
-**Choix de plateforme :**
-
-| Option | Frais | Backend | TVA | Notes |
-|---|---|---|---|---|
-| **Stripe Checkout** | 2.9% + $0.30 | Oui (API route) | Manuel | Plus de contrôle, frais réduits |
-| **Lemon Squeezy** | 8% + $0.30 | Non (lien embed) | Auto | Le plus simple |
-| **Ko-fi** (tester d'abord) | 0% (tier gratuit) | Non | Non | Bon pour valider la demande |
-
-**Chemin recommandé :** Ko-fi pour valider → Stripe à l'échelle.
-
-#### Option A — Stripe Checkout
-
-- [x] Installer Stripe SDK : `npm install @stripe/stripe-js stripe`
-- [ ] Ajouter les vars d'env : `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
-- [x] Créer la route API `app/api/create-checkout-session/route.ts`
-- [x] Créer le sélecteur de montants (5$, 15$, 30$) dans `/donate`
-- [x] Créer `/app/donate/page.tsx` avec gestion du `?success=true`
-
-#### Option B — PayPal
-
-- [x] Ajouter le bouton PayPal dans `/donate`
-- [ ] Remplacer l'URL placeholder par le vrai lien `paypal.me/...`
-
-#### Option C — Lemon Squeezy
-
-- [x] Ajouter le bouton Lemon Squeezy dans `/donate`
-- [ ] Créer un produit sur le dashboard Lemon Squeezy et remplacer l'URL placeholder
-
-#### Ko-fi
-
-- [x] Ajouter le bouton Ko-fi dans `/donate`
-- [ ] Remplacer l'URL placeholder par le vrai lien `ko-fi.com/...`
-
-#### Wiring des comptes (à faire)
-
-- [ ] Remplacer `KOFI_URL` dans `app/donate/page.tsx` par votre vrai lien Ko-fi
-- [ ] Remplacer `PAYPAL_URL` dans `app/donate/page.tsx` par votre vrai lien PayPal.me
-- [ ] Remplacer `LEMONSQUEEZY_URL` dans `app/donate/page.tsx` par votre URL de checkout Lemon Squeezy
-- [ ] Ajouter `STRIPE_SECRET_KEY` et `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` dans les variables d'environnement
-
-### Phase 2 — Intégration UI
-
-- [x] Ajouter une card "Soutenir le développement" dans `app/reglages/page.tsx` → `/donate`
-- [x] Ajouter une bannière de reconnaissance dans `app/about/page.tsx` (lecture `localStorage`)
-- [x] Créer la page `/app/donate/page.tsx` (layout cohérent, BottomNav, message d'impact)
-- [x] Ajouter les clés i18n FR/EN : `donate.title`, `donate.subtitle`, `donate.impact`, `donate.success`, `settings.supportTitle`, `about.supporterThankYou`
-
-### Phase 3 — Déploiement app stores
-
-#### Android (Google Play)
-- [ ] Vérifier que la plateforme Capacitor Android est ajoutée : `npx cap add android`
-- [ ] Build : `npm run build && npx cap sync android`
-- [ ] Générer l'APK/AAB signé dans Android Studio
-- [ ] Créer un compte Google Play Console ($25 unique)
-- [ ] Préparer la fiche store (icône, captures, description, politique de confidentialité)
-- [ ] Soumettre pour révision
-
-#### iOS (App Store)
-- [ ] Finaliser la configuration Capacitor iOS (en cours via Xcode)
-- [ ] Publier sur TestFlight pour les tests bêta
-- [ ] Créer la fiche App Store Connect (captures iPhone 6.7" et 6.5")
-- [ ] Soumettre pour révision ($99/an Apple Developer Program)
-
-### Phase 4 — Reconnaissance des donateurs
-
-- [ ] Schéma `localStorage` : `{ date, amount, anonymous }` sous la clé `tasbih_supporter`
-- [ ] Sur le redirect Stripe (`?success=true`), proposer : "Apparaître comme supporter ?"
-- [ ] Afficher uniquement dans la page About si `!anonymous`
-- [ ] Aucun tracking serveur — 100% client local
-
-### Décisions en attente
-
-- [ ] **Plateforme** : Ko-fi d'abord, migrer vers Stripe à ~$50/mois
-- [ ] **Devise** : USD uniquement ou multi-devises via Stripe ?
-- [ ] **Dons récurrents** : envisager `mode: 'subscription'` Stripe en option mensuelle
-- [ ] **Webhook** : gestionnaire `checkout.session.completed` pour compter les dons anonymement
+### À faire plus tard
+- [ ] **Reconnaissance des donateurs** — Stocker `{ date, amount }` dans `localStorage` après un don Ko-fi (via webhook Ko-fi ou redirect `?success=true`), afficher un message de remerciement dans About
+- [ ] **Migrer vers Stripe** si les dons dépassent ~$50/mois (Ko-fi prend 0% sur le tier gratuit)
 
 ---
 

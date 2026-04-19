@@ -5,10 +5,11 @@ import { useTasbihStore } from "../store/tasbihStore";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { Capacitor } from "@capacitor/core";
 
-const THEME_META_COLOR: Record<"light" | "dark" | "blue", string> = {
+const THEME_META_COLOR: Record<"light" | "dark" | "blue" | "emerald", string> = {
   light: "#F3F5F8",
   dark: "#0A0A0A",
   blue: "#0B1118",
+  emerald: "#04291E",
 };
 
 export function ThemeSync() {

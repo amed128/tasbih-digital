@@ -14,9 +14,10 @@ const AppIconPlugin = registerPlugin<AppIconPlugin>("AppIcon", {
 // Map from IconTheme + app Theme to the native icon name (null = default/light)
 export function resolveIconName(
   iconTheme: "auto" | "dark" | "blue" | "light",
-  appTheme: "dark" | "blue" | "light"
+  appTheme: string
 ): string | null {
-  const effective = iconTheme === "auto" ? appTheme : iconTheme;
+  const base = appTheme === "dark" || appTheme === "blue" || appTheme === "light" ? appTheme : "light";
+  const effective = iconTheme === "auto" ? base : iconTheme;
   if (effective === "dark") return "AppIconDark";
   if (effective === "blue") return "AppIconBlue";
   return null; // light = default icon

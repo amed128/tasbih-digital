@@ -34,6 +34,17 @@ body[data-theme="light"] {
   --border: #D4DCE6;
 }
 
+html[data-theme="emerald"],
+body[data-theme="emerald"] {
+  --background: #04291E;
+  --foreground: #F5F0E8;
+  --secondary: #8FB8A0;
+  --primary: #FDE68A;
+  --primary-rgb: 253, 230, 138;
+  --card: #0A3D2B;
+  --border: #1A5C40;
+}
+
 
 :root {
   --color-background: var(--background);

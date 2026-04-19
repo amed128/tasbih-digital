@@ -32,6 +32,8 @@ export type Stats = {
   history: SessionRecord[];
 };
 
+export type PremiumTheme = "emerald";
+
 export type Preferences = {
   // --- Auto-counter settings ---
   autoCounterDefaultEnabled: boolean;
@@ -81,6 +83,8 @@ export type Preferences = {
   allowTargetEditInListMode?: boolean;
   // Default max target value (user-configurable, hard cap 999999)
   defaultMaxTarget: number;
+  // Premium themes unlocked by the user
+  unlockedThemes: PremiumTheme[];
 };
 
 export type TapSound = "off" | "tap-soft" | "button-click" | "haptic-pulse";
@@ -89,7 +93,7 @@ export type SpeechTolerance = "strict" | "balanced" | "tolerant";
 export type SpeechRecognitionLanguage = "ar-SA" | "ar-EG" | "ar-MA" | "fr-FR" | "en-US";
 export type ChipTextFormat = "transliteration" | "arabic" | "both";
 export type ZikrDisplayFormat = "translit+arabic" | "arabic+translit" | "translit" | "arabic";
-export type Theme = "light" | "dark" | "blue";
+export type Theme = "light" | "dark" | "blue" | "emerald";
 export type IconTheme = "auto" | "dark" | "blue" | "light";
 export type ReminderTime = { hour: number; minute: number };
 export type ReminderScheduleType = "daily" | "weekly";
@@ -168,6 +172,7 @@ export type TasbihStoreState = {
   resetStats: () => void;
   setTheme: (theme: Theme) => void;
   setIconTheme: (iconTheme: IconTheme) => void;
+  unlockTheme: (theme: PremiumTheme) => void;
   toggleVibration: () => void;
   setWakeLockEnabled: (enabled: boolean) => void;
   toggleConfetti: () => void;
@@ -419,6 +424,7 @@ function getInitialState(): Partial<TasbihStoreState> {
       resetOnPrev: true,
       allowTargetEditInListMode: false,
       defaultMaxTarget: 9999,
+      unlockedThemes: [] as PremiumTheme[],
     },
   };
 }
@@ -569,7 +575,8 @@ const normalizeTheme = (value: unknown): Theme => {
   if (value === "light") return "light";
   if (value === "dark") return "dark";
   if (value === "blue") return "blue";
-  return "blue";
+  if (value === "emerald") return "emerald";
+  return "light";
 };
 
 const resolveStoredTheme = (preferences: unknown): Theme => {
@@ -1227,6 +1234,20 @@ const createStore = () =>
           return newState;
         }),
 
+      unlockTheme: (theme: PremiumTheme) =>
+        set((state) => {
+          const already = state.preferences.unlockedThemes ?? [];
+          if (already.includes(theme)) return state;
+          const newState = {
+            preferences: {
+              ...state.preferences,
+              unlockedThemes: [...already, theme],
+            },
+          };
+          persistState({ ...state, ...newState });
+          return newState;
+        }),
+
       toggleVibration: () =>
         set((state) => {
           const newState = {
@@ -1685,6 +1706,7 @@ const createStore = () =>
               reminderDays: [] as number[],
               optionalSyncEnabled: false,
               defaultMaxTarget: 9999,
+              unlockedThemes: [] as PremiumTheme[],
             },
           };
           persistState({

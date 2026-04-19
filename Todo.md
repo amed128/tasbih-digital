@@ -96,7 +96,8 @@
 - [x] **Nom de l'application** — Décision finale : on garde **At-tasbih**.
 - [x] **SEO de base** — Metadata, Open Graph, Twitter card, `lang="en"`, descriptions marketing. Reste : sitemap, JSON-LD, OG image dédiée (voir section SEO en bas).
 - [ ] **Marketing et réseaux sociaux** — Stratégie de publicité et de présence sur les réseaux (à discuter : plateformes cibles, contenu, budget, timing par rapport au lancement).
-- [ ] **Monétisation — Thèmes premium** — L'app sera gratuite ; seuls des thèmes premium payants seront proposés pour soutenir le développement. Concevoir et sélectionner les meilleurs thèmes possibles avant de lancer cette offre.
+- [x] **Monétisation — Thèmes premium** — Thème Émeraude implémenté (vert émeraude + or luxe). UI avec grille de cartes visuelles + modal achat dans Settings → Apparence. Disponible sur PWA pour l'instant avec endpoint d'achat factice.
+  - [ ] **Avant production** — Restreindre les thèmes premium aux apps natives uniquement + connecter StoreKit (iOS) / Play Billing (Android). Supprimer l'accès PWA et l'endpoint factice.
 - [x] **Page d'aide / FAQ** — Page `/aide` avec intro, 4 cartes de modes et accordion FAQ 9 questions (dont "À quoi sert la Sync optionnelle ?"). FR + EN.
 
 ## Backlog

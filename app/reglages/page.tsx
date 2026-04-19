@@ -166,7 +166,23 @@ export default function ReglagesPage() {
           <span className="text-base text-[var(--secondary)]">›</span>
         </Link>
 
-        {/* 2. Appearance */}
+        {/* 2. Themes */}
+        <Link
+          href="/reglages/themes"
+          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3 transition hover:brightness-95 active:brightness-90"
+        >
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">
+              {t("settings.themesTitle")}
+            </div>
+            <div className="text-xs text-[var(--secondary)]">
+              {t("settings.themesHint")}
+            </div>
+          </div>
+          <span className="text-base text-[var(--secondary)]">›</span>
+        </Link>
+
+        {/* 3. Appearance */}
         <Link
           href="/reglages/apparence"
           className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3 transition hover:brightness-95 active:brightness-90"

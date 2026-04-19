@@ -2,8 +2,10 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
+import { LocalNotifications } from "@capacitor/local-notifications";
 import { useTasbihStore } from "../../store/tasbihStore";
 import type { Theme, ReminderTime } from "../../store/tasbihStore";
+import { isNativeApp } from "../../lib/platform";
 import {
   TASBIH_STORAGE_KEY,
   createBackupPayload,
@@ -38,16 +40,9 @@ export default function ReglagesPage() {
   const [syncCode, setSyncCode] = useState("");
   const [syncMessage, setSyncMessage] = useState("");
   const [showRestoreConfirm, setShowRestoreConfirm] = useState(false);
-  const [permissionDeniedMessage, setPermissionDeniedMessage] = useState("");
-  const [permissionResetPending, setPermissionResetPending] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState<
-    NotificationPermission | "unsupported"
-  >(() => {
-    if (typeof window === "undefined" || typeof Notification === "undefined") {
-      return "unsupported";
-    }
-    return Notification.permission;
-  });
+    "granted" | "denied" | "prompt" | "unsupported"
+  >("prompt");
 
   const applyThemeToDom = (theme: Theme) => {
     if (typeof document === "undefined") return;
@@ -62,36 +57,19 @@ export default function ReglagesPage() {
   };
 
   const requestNotificationPermission = async () => {
-    if (typeof Notification === "undefined") {
-      setNotificationPermission("unsupported");
-      return;
-    }
-    setPermissionResetPending(false);
-    if (Notification.permission === "denied") {
-      setNotificationPermission("denied");
-      setPermissionDeniedMessage(t("settings.remindersPermissionDeniedHelp"));
-      return;
-    }
-    const permission = await Notification.requestPermission();
-    setNotificationPermission(permission);
+    const result = await LocalNotifications.requestPermissions();
+    setNotificationPermission(result.display === "granted" ? "granted" : "denied");
   };
 
   const sendTestNotification = async () => {
-    if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
+    if (notificationPermission !== "granted") return;
     const body =
       preferences.language === "fr"
         ? "Rappel de zikr: qu'Allah accepte vos invocations."
         : "Zikr reminder: may Allah accept your invocations.";
-    try {
-      if (navigator.serviceWorker?.controller) {
-        const reg = await navigator.serviceWorker.ready;
-        await reg.showNotification("At-tasbih", { body, tag: "tasbih-test-reminder" });
-      } else {
-        new Notification("At-tasbih", { body, tag: "tasbih-test-reminder" });
-      }
-    } catch {
-      // ignore
-    }
+    await LocalNotifications.schedule({
+      notifications: [{ id: 9999, title: "At-tasbih", body }],
+    });
   };
 
   const encodeSyncCode = (value: string) => {
@@ -141,17 +119,10 @@ export default function ReglagesPage() {
   const handleRestoreDefaultSettings = () => {
     resetPreferences();
     applyThemeToDom("light");
-    setNotificationPermission("default");
-    setPermissionResetPending(true);
     setSyncCode("");
     setSyncMessage("");
     setShowRestoreConfirm(false);
   };
-
-  const effectiveNotificationPermission: NotificationPermission | "unsupported" =
-    permissionResetPending && notificationPermission !== "unsupported"
-      ? "default"
-      : notificationPermission;
 
   if (!mounted) return (
     <div className="min-h-screen bg-[var(--background)]">
@@ -254,65 +225,63 @@ export default function ReglagesPage() {
           <span className="text-base text-[var(--secondary)]">›</span>
         </Link>
 
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.remindersTitle")}</div>
-          <div className="mt-1 text-xs text-[var(--secondary)]">{t("settings.remindersHint")}</div>
+        {isNativeApp() && (
+          <section className="rounded-2xl bg-[var(--card)] p-4">
+            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.remindersTitle")}</div>
+            <div className="mt-1 text-xs text-[var(--secondary)]">{t("settings.remindersHint")}</div>
 
-          <div className="mt-3 flex flex-col gap-1">
-            <button
-              type="button"
-              onClick={() => {
-                void requestNotificationPermission();
-              }}
-              disabled={effectiveNotificationPermission === "granted"}
-              className={`self-start rounded-xl border border-[var(--border)] px-4 py-2 text-sm font-semibold transition ${
-                effectiveNotificationPermission === "granted"
-                  ? "cursor-not-allowed bg-[var(--background)] text-[var(--secondary)] opacity-50"
-                  : "bg-[var(--background)] text-[var(--foreground)]"
-              }`}
-            >
-              {t("settings.remindersAskPermission")}
-            </button>
-            <span className="text-xs text-[var(--secondary)]">
-              {effectiveNotificationPermission === "granted"
-                ? t("settings.remindersPermissionGrantedStatus")
-                : t("settings.remindersPermissionNotGrantedStatus")}
-            </span>
-            {permissionDeniedMessage ? (
-              <div className="mt-2 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-xs text-[var(--foreground)]">
-                {permissionDeniedMessage}
-              </div>
-            ) : null}
-          </div>
+            <div className="mt-3 flex flex-col gap-1">
+              <button
+                type="button"
+                onClick={() => { void requestNotificationPermission(); }}
+                disabled={notificationPermission === "granted"}
+                className={`self-start rounded-xl border border-[var(--border)] px-4 py-2 text-sm font-semibold transition ${
+                  notificationPermission === "granted"
+                    ? "cursor-not-allowed bg-[var(--background)] text-[var(--secondary)] opacity-50"
+                    : "bg-[var(--background)] text-[var(--foreground)]"
+                }`}
+              >
+                {t("settings.remindersAskPermission")}
+              </button>
+              <span className="text-xs text-[var(--secondary)]">
+                {notificationPermission === "granted"
+                  ? t("settings.remindersPermissionGrantedStatus")
+                  : t("settings.remindersPermissionNotGrantedStatus")}
+              </span>
+              {notificationPermission === "denied" ? (
+                <div className="mt-2 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-xs text-[var(--foreground)]">
+                  {t("settings.remindersPermissionDeniedHelp")}
+                </div>
+              ) : null}
+            </div>
 
-          <div className="mt-3 flex items-center justify-between gap-3">
-            <span className="text-sm text-[var(--foreground)]">{t("settings.remindersEnabled")}</span>
-            <button
-              type="button"
-              onClick={() => {
-                if (effectiveNotificationPermission !== "granted") {
-                  setRemindersEnabled(false);
-                  return;
-                }
-                const nextEnabled = !preferences.remindersEnabled;
-                setRemindersEnabled(nextEnabled);
-                if (nextEnabled && preferences.reminderTimes.length === 0) {
-                  setReminderTimes([{ hour: 8, minute: 0 }]);
-                }
-              }}
-              disabled={effectiveNotificationPermission !== "granted"}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                preferences.remindersEnabled
-                  ? "bg-[var(--primary)] text-black"
-                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
-              } ${effectiveNotificationPermission !== "granted" ? "cursor-not-allowed opacity-50" : ""}`}
-            >
-              {preferences.remindersEnabled ? t("settings.on") : t("settings.off")}
-            </button>
-          </div>
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <span className="text-sm text-[var(--foreground)]">{t("settings.remindersEnabled")}</span>
+              <button
+                type="button"
+                onClick={() => {
+                  if (notificationPermission !== "granted") {
+                    setRemindersEnabled(false);
+                    return;
+                  }
+                  const nextEnabled = !preferences.remindersEnabled;
+                  setRemindersEnabled(nextEnabled);
+                  if (nextEnabled && preferences.reminderTimes.length === 0) {
+                    setReminderTimes([{ hour: 8, minute: 0 }]);
+                  }
+                }}
+                disabled={notificationPermission !== "granted"}
+                className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                  preferences.remindersEnabled
+                    ? "bg-[var(--primary)] text-black"
+                    : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+                } ${notificationPermission !== "granted" ? "cursor-not-allowed opacity-50" : ""}`}
+              >
+                {preferences.remindersEnabled ? t("settings.on") : t("settings.off")}
+              </button>
+            </div>
 
-          {preferences.remindersEnabled ? (
-            <>
+            {preferences.remindersEnabled ? (
               <div className="mt-3 flex items-center justify-between gap-2">
                 <span className="text-sm text-[var(--foreground)]">{t("settings.remindersScheduleDaily")}</span>
                 <input
@@ -325,24 +294,24 @@ export default function ReglagesPage() {
                   className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
                 />
               </div>
-            </>
-          ) : null}
+            ) : null}
 
-          <div className="mt-3">
-            <button
-              type="button"
-              onClick={sendTestNotification}
-              disabled={notificationPermission !== "granted"}
-              className={`w-full rounded-xl px-4 py-2 text-sm font-semibold ${
-                notificationPermission === "granted"
-                  ? "bg-[var(--primary)] text-black"
-                  : "cursor-not-allowed border border-[var(--border)] bg-[var(--background)] text-[var(--secondary)] opacity-50"
-              }`}
-            >
-              {t("settings.remindersTest")}
-            </button>
-          </div>
-        </section>
+            <div className="mt-3">
+              <button
+                type="button"
+                onClick={() => { void sendTestNotification(); }}
+                disabled={notificationPermission !== "granted"}
+                className={`w-full rounded-xl px-4 py-2 text-sm font-semibold ${
+                  notificationPermission === "granted"
+                    ? "bg-[var(--primary)] text-black"
+                    : "cursor-not-allowed border border-[var(--border)] bg-[var(--background)] text-[var(--secondary)] opacity-50"
+                }`}
+              >
+                {t("settings.remindersTest")}
+              </button>
+            </div>
+          </section>
+        )}
 
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.syncTitle")}</div>

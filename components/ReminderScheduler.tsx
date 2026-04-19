@@ -1,44 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
+import { LocalNotifications } from "@capacitor/local-notifications";
 import { useTasbihStore } from "../store/tasbihStore";
+import { isNativeApp } from "../lib/platform";
 
-const LAST_FIRED_KEY = "tasbih-reminder-last-fired";
-
-function currentSlot(): string {
-  const now = new Date();
-  const hh = String(now.getHours()).padStart(2, "0");
-  const mm = String(now.getMinutes()).padStart(2, "0");
-  const yyyy = now.getFullYear();
-  const mo = String(now.getMonth() + 1).padStart(2, "0");
-  const dd = String(now.getDate()).padStart(2, "0");
-  return `${yyyy}-${mo}-${dd} ${hh}:${mm}`;
-}
-
-async function showReminderNotification(language: "fr" | "en", slot: string) {
-  const title = "At-tasbih";
-  const body =
-    language === "fr"
-      ? "Petit rappel : prenez un moment pour votre zikr."
-      : "Gentle reminder: take a moment for your zikr.";
-  const tag = `tasbih-reminder-${slot}`;
-
-  try {
-    if ("serviceWorker" in navigator) {
-      const reg = await navigator.serviceWorker.ready;
-      await reg.showNotification(title, { body, tag });
-    } else {
-      new Notification(title, { body, tag });
-    }
-  } catch {
-    // Fallback if SW showNotification fails
-    try {
-      new Notification(title, { body, tag });
-    } catch {
-      // Notifications not available
-    }
-  }
-}
+// Stable notification ID for the daily reminder (overwritten on reschedule).
+const REMINDER_NOTIFICATION_ID = 1001;
 
 export function ReminderScheduler() {
   const remindersEnabled = useTasbihStore((s) => s.preferences.remindersEnabled);
@@ -46,33 +14,55 @@ export function ReminderScheduler() {
   const language = useTasbihStore((s) => s.preferences.language);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (typeof Notification === "undefined") return;
-    if (!remindersEnabled || reminderTimes.length === 0) return;
+    if (!isNativeApp()) return;
 
-    const check = () => {
-      if (Notification.permission !== "granted") return;
+    const sync = async () => {
+      // Cancel existing reminder first so we always start clean.
+      await LocalNotifications.cancel({ notifications: [{ id: REMINDER_NOTIFICATION_ID }] });
+
+      if (!remindersEnabled || reminderTimes.length === 0) return;
+
+      const rt = reminderTimes[0];
+      if (!rt) return;
+
+      const body =
+        language === "fr"
+          ? "Petit rappel : prenez un moment pour votre zikr."
+          : "Gentle reminder: take a moment for your zikr.";
 
       const now = new Date();
-      const currentHour = now.getHours();
-      const currentMinute = now.getMinutes();
-
-      const isDue = reminderTimes.some(
-        (rt) => rt.hour === currentHour && rt.minute === currentMinute
+      const scheduled = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        rt.hour,
+        rt.minute,
+        0
       );
-      if (!isDue) return;
+      // If the time already passed today, schedule for tomorrow.
+      if (scheduled <= now) {
+        scheduled.setDate(scheduled.getDate() + 1);
+      }
 
-      const slot = currentSlot();
-      const lastFired = localStorage.getItem(LAST_FIRED_KEY);
-      if (lastFired === slot) return;
-
-      localStorage.setItem(LAST_FIRED_KEY, slot);
-      void showReminderNotification(language, slot);
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            id: REMINDER_NOTIFICATION_ID,
+            title: "At-tasbih",
+            body,
+            schedule: {
+              at: scheduled,
+              repeats: true,
+              every: "day",
+            },
+            sound: undefined,
+            smallIcon: "ic_stat_icon",
+          },
+        ],
+      });
     };
 
-    check();
-    const interval = setInterval(check, 30_000);
-    return () => clearInterval(interval);
+    void sync();
   }, [remindersEnabled, reminderTimes, language]);
 
   return null;

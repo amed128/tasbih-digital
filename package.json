@@ -27,6 +27,7 @@
     "@capacitor/core": "^5.7.8",
     "@capacitor/haptics": "^5.0.8",
     "@capacitor/ios": "^5.7.8",
+    "@capacitor/local-notifications": "^5.0.8",
     "@capacitor/status-bar": "^5.0.8",
     "@stripe/stripe-js": "^9.1.0",
     "@types/canvas-confetti": "^1.9.0",
@@ -40,7 +41,6 @@
     "react-dom": "19.2.3",
     "recharts": "^3.8.0",
     "stripe": "^22.0.0",
-    "web-push": "^3.6.7",
     "zustand": "^5.0.11"
   },
   "devDependencies": {

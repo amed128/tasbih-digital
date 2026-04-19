@@ -25,3 +25,10 @@ export function getRuntimeMode(): RuntimeMode {
     nav.standalone === true;
   return isStandalone ? "standalone" : "browser";
 }
+
+// True only inside the Capacitor native wrapper (iOS/Android app).
+// Use this to gate features that require native APIs.
+export function isNativeApp(): boolean {
+  if (typeof window === "undefined") return false;
+  return !!(window as Window & { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor?.isNativePlatform?.();
+}

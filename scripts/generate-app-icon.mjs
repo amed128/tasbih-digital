@@ -14,7 +14,6 @@ const OUT_PATH = path.resolve(
 );
 
 const SIZE = 1024;
-const RADIUS_PERCENT = 0; // iOS masks corners itself — keep square
 
 const html = `<!doctype html>
 <html>

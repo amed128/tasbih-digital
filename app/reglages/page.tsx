@@ -182,23 +182,6 @@ export default function ReglagesPage() {
           <span className="text-base text-[var(--secondary)]">›</span>
         </Link>
 
-        {/* 3. Appearance */}
-        <Link
-          href="/reglages/apparence"
-          className="flex items-center justify-between rounded-2xl bg-[var(--card)] px-4 py-3 transition hover:brightness-95 active:brightness-90"
-        >
-          <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">
-              {t("settings.appearanceTitle")}
-            </div>
-            <div className="text-xs text-[var(--secondary)]">
-              {t("settings.appearanceHint")}
-            </div>
-          </div>
-          <span className="text-base text-[var(--secondary)]">›</span>
-        </Link>
-
-
         {/* 3. Selection Mode */}
         <Link
           href="/reglages/selection-mode"

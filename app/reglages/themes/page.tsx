@@ -196,18 +196,16 @@ export default function ThemesPage() {
         </div>
 
         {/* Restore purchases */}
-        <button
-          onClick={handleRestore}
-          disabled={restoring}
-          className="mt-2 flex w-full flex-col items-center gap-0.5 rounded-2xl bg-[var(--card)] px-4 py-4 text-center transition hover:brightness-95 active:brightness-90 disabled:opacity-60"
-        >
-          <span className="text-sm font-semibold text-[var(--foreground)]">
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={handleRestore}
+            disabled={restoring}
+            className="rounded-xl border border-[var(--restore-border)] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--restore)] transition hover:border-[var(--restore)] disabled:opacity-60"
+          >
             {restoring ? "…" : t("settings.themeRestorePurchases")}
-          </span>
-          <span className="text-xs text-[var(--secondary)]">
-            {t("settings.themeRestoreHint")}
-          </span>
-        </button>
+          </button>
+        </div>
       </motion.main>
 
       <BottomNav />

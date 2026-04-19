@@ -1,6 +1,8 @@
 import { useSyncExternalStore, useState } from "react";
 import { useTasbihStore, APP_MAX_TARGET } from "@/store/tasbihStore";
+import type { IconTheme, TapButtonSize } from "@/store/tasbihStore";
 import { useT } from "@/hooks/useT";
+import { isNativeApp } from "@/lib/platform";
 
 export default function GeneralSettings() {
   const t = useT();
@@ -18,6 +20,16 @@ export default function GeneralSettings() {
   const setWakeLockEnabled = useTasbihStore((s) => s.setWakeLockEnabled);
   const setLanguage = useTasbihStore((s) => s.setLanguage);
   const setDefaultMaxTarget = useTasbihStore((s) => s.setDefaultMaxTarget);
+  const setIconTheme = useTasbihStore((s) => s.setIconTheme);
+  const toggleConfetti = useTasbihStore((s) => s.toggleConfetti);
+  const setTapButtonSize = useTasbihStore((s) => s.setTapButtonSize);
+
+  const iconThemeOptions: { value: IconTheme; label: string }[] = [
+    { value: "auto", label: t("settings.iconThemeAuto") },
+    { value: "dark", label: t("settings.iconThemeDark") },
+    { value: "blue", label: t("settings.iconThemeBlue") },
+    { value: "light", label: t("settings.iconThemeLight") },
+  ];
   const [maxTargetRaw, setMaxTargetRaw] = useState(() =>
     String(preferences.defaultMaxTarget ?? 9999)
   );
@@ -137,6 +149,65 @@ export default function GeneralSettings() {
             <option value="en">English</option>
           </select>
         </div>
+      </section>
+
+      {/* App icon (native only) */}
+      {isNativeApp() && (
+        <section className="rounded-2xl bg-[var(--card)] p-4 flex flex-col gap-1 mb-2">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.iconThemeTitle")}</div>
+              <div className="text-xs text-[var(--secondary)]">{t("settings.iconThemeHint")}</div>
+            </div>
+            <select
+              value={preferences.iconTheme ?? "auto"}
+              onChange={(e) => setIconTheme(e.target.value as IconTheme)}
+              className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
+              aria-label={t("settings.ariaIconTheme")}
+            >
+              {iconThemeOptions.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+        </section>
+      )}
+
+      {/* Tap button size */}
+      <section className="rounded-2xl bg-[var(--card)] p-4 flex flex-col gap-1 mb-2">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.tapButtonSizeTitle")}</div>
+            <div className="text-xs text-[var(--secondary)]">{t("settings.tapButtonSizeHint")}</div>
+          </div>
+          <select
+            value={preferences.tapButtonSize ?? "normal"}
+            onChange={(e) => setTapButtonSize(e.target.value as TapButtonSize)}
+            className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
+          >
+            <option value="normal">{t("settings.tapButtonSizeNormal")}</option>
+            <option value="double">{t("settings.tapButtonSizeDouble")}</option>
+            <option value="triple">{t("settings.tapButtonSizeTriple")}</option>
+          </select>
+        </div>
+      </section>
+
+      {/* Confetti */}
+      <section className="rounded-2xl bg-[var(--card)] p-4 flex items-center justify-between mb-2">
+        <div>
+          <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.confettiTitle")}</div>
+          <div className="text-xs text-[var(--secondary)]">{t("settings.confettiHint")}</div>
+        </div>
+        <button
+          onClick={toggleConfetti}
+          className={`rounded-xl px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1 ${
+            preferences.confetti
+              ? "bg-[var(--primary)] text-black"
+              : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+          }`}
+        >
+          {preferences.confetti ? t("settings.on") : t("settings.off")}
+        </button>
       </section>
     </div>
   );

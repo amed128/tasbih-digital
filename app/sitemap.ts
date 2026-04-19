@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 
+export const dynamic = "force-static";
+
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://at-tasbih.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {

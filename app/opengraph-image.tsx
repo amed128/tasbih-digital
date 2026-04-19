@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
+export const dynamic = "force-static";
 export const alt = "At-tasbih — Islamic Zikr Counter";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -21,7 +21,6 @@ export default function Image() {
           gap: 24,
         }}
       >
-        <div style={{ fontSize: 72, color: "#F5A623" }}>سُبْحَانَ ٱللَّٰهِ</div>
         <div style={{ fontSize: 60, fontWeight: 700, color: "#FFFFFF" }}>At-tasbih</div>
         <div
           style={{

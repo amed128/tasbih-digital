@@ -14,6 +14,7 @@ import {
 import { BottomNav } from "../../components/BottomNav";
 import { ConfirmDialog } from "../../components/ConfirmDialog";
 import { useT } from "@/hooks/useT";
+import { Toast } from "../../components/Toast";
 import Link from "next/link";
 
 const timeToString = (rt: ReminderTime) =>
@@ -39,6 +40,7 @@ export default function ReglagesPage() {
   const t = useT();
   const [syncCode, setSyncCode] = useState("");
   const [syncMessage, setSyncMessage] = useState("");
+  const [copyToastTrigger, setCopyToastTrigger] = useState(0);
   const [showRestoreConfirm, setShowRestoreConfirm] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState<
     "granted" | "denied" | "prompt" | "unsupported"
@@ -97,7 +99,7 @@ export default function ReglagesPage() {
   const handleCopySyncCode = async () => {
     if (!syncCode) return;
     await navigator.clipboard.writeText(syncCode);
-    setSyncMessage(t("settings.syncCopied"));
+    setCopyToastTrigger((n) => n + 1);
   };
 
   const handleImportSyncCode = () => {
@@ -435,6 +437,7 @@ export default function ReglagesPage() {
         onConfirm={handleRestoreDefaultSettings}
       />
 
+      <Toast message={t("settings.syncCopied")} trigger={copyToastTrigger} />
       <BottomNav />
     </div>
   );

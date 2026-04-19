@@ -522,6 +522,8 @@ export const translations = {
       faq7A: "Allez dans Réglages → section Sync optionnelle → Générer un code, puis Copier. Vous pouvez coller ce code sur un autre appareil pour restaurer vos données.",
       faq8Q: "Comment réinitialiser mes statistiques ?",
       faq8A: "Allez dans l'onglet Stats → faites défiler jusqu'en bas → appuyez sur Réinitialiser les statistiques.",
+      faq9Q: "À quoi sert la Sync optionnelle ?",
+      faq9A: "C'est un outil de sauvegarde locale, sans serveur ni compte. Appuyez sur Générer pour créer un code contenant toutes vos listes, zikrs et préférences, puis Copier pour le placer dans le presse-papiers. Sur un autre appareil, collez ce code dans le même champ et appuyez sur Importer pour restaurer vos données.",
     },
   },
 
@@ -1042,6 +1044,8 @@ export const translations = {
       faq7A: "Go to Settings → Optional sync section → Generate a code, then Copy. You can paste this code on another device to restore your data.",
       faq8Q: "How do I reset my statistics?",
       faq8A: "Go to the Stats tab → scroll to the bottom → tap Reset statistics.",
+      faq9Q: "What is Optional Sync?",
+      faq9A: "It's a local backup tool — no server, no account. Tap Generate to create a code containing all your lists, zikrs, and preferences, then Copy to put it in your clipboard. On another device, paste that code into the same field and tap Import to restore your data.",
     },
   },
 } as const;

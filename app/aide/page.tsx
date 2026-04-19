@@ -75,6 +75,7 @@ export default function AidePage() {
     { q: t("help.faq6Q"), a: t("help.faq6A") },
     { q: t("help.faq7Q"), a: t("help.faq7A") },
     { q: t("help.faq8Q"), a: t("help.faq8A") },
+    { q: t("help.faq9Q"), a: t("help.faq9A") },
   ];
 
   return (

@@ -4,7 +4,6 @@ import "./globals.css";
 import { ThemeSync } from "../components/ThemeSync";
 import { ReminderScheduler } from "../components/ReminderScheduler";
 import { AppIconSync } from "../components/AppIconSync";
-import { EmeraldDecoration } from "../components/EmeraldDecoration";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -82,8 +81,7 @@ export default function RootLayout({
         <ThemeSync />
         <ReminderScheduler />
         <AppIconSync />
-        <EmeraldDecoration />
-        {children}
+{children}
       </body>
     </html>
   );

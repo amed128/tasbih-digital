@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg" cx="42%" cy="38%" r="72%">
+      <stop offset="0%"   stop-color="#1A1F35"/>
+      <stop offset="100%" stop-color="#080A12"/>
+    </radialGradient>
+    <radialGradient id="bd" cx="32%" cy="28%" r="62%">
+      <stop offset="0%"   stop-color="#FFF4B0"/>
+      <stop offset="22%"  stop-color="#F5C840"/>
+      <stop offset="62%"  stop-color="#D4890A"/>
+      <stop offset="100%" stop-color="#7A4E06"/>
+    </radialGradient>
+    <radialGradient id="eb" cx="30%" cy="25%" r="65%">
+      <stop offset="0%"   stop-color="#FFF4B0"/>
+      <stop offset="18%"  stop-color="#F5C840"/>
+      <stop offset="55%"  stop-color="#C47D0A"/>
+      <stop offset="100%" stop-color="#6A4006"/>
+    </radialGradient>
+    <linearGradient id="cord" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#7A4E06"/>
+      <stop offset="50%"  stop-color="#C47D0A"/>
+      <stop offset="100%" stop-color="#7A4E06"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="110" fill="url(#bg)"/>
+
+  <!-- String thread -->
+  <polyline fill="none" stroke="#9A6510" stroke-width="2" stroke-linejoin="round" opacity="0.55"
+    points="236,247 247,225 272,223 288,242 287,267 269,285 243,288 221,276 209,253 211,227 225,206 248,194 274,195 297,207 313,227 318,253 313,278 297,299 275,313 250,317 225,312 203,297 188,276 181,252 182,226 192,202 210,183 232,170 258,165 284,168 307,179 326,197 339,219 346,244 344,270 335,295 320,316 300,332 276,342 250,345 224,341 201,331 180,314 165,293 155,269 152,244 155,218 165,194 180,172 200,155 223,144 248,138 274,138 299,144 323,156 342,173 358,194 368,217 373,243 373,269 366,294 355,317 338,337 318,354 295,365 269,372 243,373 218,368 193,359 172,344 153,326 139,304 129,280 125,254 125,229 130,203 141,179 156,158 174,140 196,125 220,115 245,110 272,110 297,114 322,123 344,137 363,154 379,175 391,198 399,222 402,248 400,274 394,299 384,323 369,345 351,364 330,379 307,391 282,398 256,401"/>
+
+  <!-- 100 beads (r=13), tightly packed via equal arc-length spacing -->
+  <circle cx="236" cy="247" r="13" fill="url(#bd)"/>
+  <circle cx="247" cy="225" r="13" fill="url(#bd)"/>
+  <circle cx="272" cy="223" r="13" fill="url(#bd)"/>
+  <circle cx="288" cy="242" r="13" fill="url(#bd)"/>
+  <circle cx="287" cy="267" r="13" fill="url(#bd)"/>
+  <circle cx="269" cy="285" r="13" fill="url(#bd)"/>
+  <circle cx="243" cy="288" r="13" fill="url(#bd)"/>
+  <circle cx="221" cy="276" r="13" fill="url(#bd)"/>
+  <circle cx="209" cy="253" r="13" fill="url(#bd)"/>
+  <circle cx="211" cy="227" r="13" fill="url(#bd)"/>
+  <circle cx="225" cy="206" r="13" fill="url(#bd)"/>
+  <circle cx="248" cy="194" r="13" fill="url(#bd)"/>
+  <circle cx="274" cy="195" r="13" fill="url(#bd)"/>
+  <circle cx="297" cy="207" r="13" fill="url(#bd)"/>
+  <circle cx="313" cy="227" r="13" fill="url(#bd)"/>
+  <circle cx="318" cy="253" r="13" fill="url(#bd)"/>
+  <circle cx="313" cy="278" r="13" fill="url(#bd)"/>
+  <circle cx="297" cy="299" r="13" fill="url(#bd)"/>
+  <circle cx="275" cy="313" r="13" fill="url(#bd)"/>
+  <circle cx="250" cy="317" r="13" fill="url(#bd)"/>
+  <circle cx="225" cy="312" r="13" fill="url(#bd)"/>
+  <circle cx="203" cy="297" r="13" fill="url(#bd)"/>
+  <circle cx="188" cy="276" r="13" fill="url(#bd)"/>
+  <circle cx="181" cy="252" r="13" fill="url(#bd)"/>
+  <circle cx="182" cy="226" r="13" fill="url(#bd)"/>
+  <circle cx="192" cy="202" r="13" fill="url(#bd)"/>
+  <circle cx="210" cy="183" r="13" fill="url(#bd)"/>
+  <circle cx="232" cy="170" r="13" fill="url(#bd)"/>
+  <circle cx="258" cy="165" r="13" fill="url(#bd)"/>
+  <circle cx="284" cy="168" r="13" fill="url(#bd)"/>
+  <circle cx="307" cy="179" r="13" fill="url(#bd)"/>
+  <circle cx="326" cy="197" r="13" fill="url(#bd)"/>
+  <circle cx="339" cy="219" r="13" fill="url(#bd)"/>
+  <circle cx="346" cy="244" r="13" fill="url(#bd)"/>
+  <circle cx="344" cy="270" r="13" fill="url(#bd)"/>
+  <circle cx="335" cy="295" r="13" fill="url(#bd)"/>
+  <circle cx="320" cy="316" r="13" fill="url(#bd)"/>
+  <circle cx="300" cy="332" r="13" fill="url(#bd)"/>
+  <circle cx="276" cy="342" r="13" fill="url(#bd)"/>
+  <circle cx="250" cy="345" r="13" fill="url(#bd)"/>
+  <circle cx="224" cy="341" r="13" fill="url(#bd)"/>
+  <circle cx="201" cy="331" r="13" fill="url(#bd)"/>
+  <circle cx="180" cy="314" r="13" fill="url(#bd)"/>
+  <circle cx="165" cy="293" r="13" fill="url(#bd)"/>
+  <circle cx="155" cy="269" r="13" fill="url(#bd)"/>
+  <circle cx="152" cy="244" r="13" fill="url(#bd)"/>
+  <circle cx="155" cy="218" r="13" fill="url(#bd)"/>
+  <circle cx="165" cy="194" r="13" fill="url(#bd)"/>
+  <circle cx="180" cy="172" r="13" fill="url(#bd)"/>
+  <circle cx="200" cy="155" r="13" fill="url(#bd)"/>
+  <circle cx="223" cy="144" r="13" fill="url(#bd)"/>
+  <circle cx="248" cy="138" r="13" fill="url(#bd)"/>
+  <circle cx="274" cy="138" r="13" fill="url(#bd)"/>
+  <circle cx="299" cy="144" r="13" fill="url(#bd)"/>
+  <circle cx="323" cy="156" r="13" fill="url(#bd)"/>
+  <circle cx="342" cy="173" r="13" fill="url(#bd)"/>
+  <circle cx="358" cy="194" r="13" fill="url(#bd)"/>
+  <circle cx="368" cy="217" r="13" fill="url(#bd)"/>
+  <circle cx="373" cy="243" r="13" fill="url(#bd)"/>
+  <circle cx="373" cy="269" r="13" fill="url(#bd)"/>
+  <circle cx="366" cy="294" r="13" fill="url(#bd)"/>
+  <circle cx="355" cy="317" r="13" fill="url(#bd)"/>
+  <circle cx="338" cy="337" r="13" fill="url(#bd)"/>
+  <circle cx="318" cy="354" r="13" fill="url(#bd)"/>
+  <circle cx="295" cy="365" r="13" fill="url(#bd)"/>
+  <circle cx="269" cy="372" r="13" fill="url(#bd)"/>
+  <circle cx="243" cy="373" r="13" fill="url(#bd)"/>
+  <circle cx="218" cy="368" r="13" fill="url(#bd)"/>
+  <circle cx="193" cy="359" r="13" fill="url(#bd)"/>
+  <circle cx="172" cy="344" r="13" fill="url(#bd)"/>
+  <circle cx="153" cy="326" r="13" fill="url(#bd)"/>
+  <circle cx="139" cy="304" r="13" fill="url(#bd)"/>
+  <circle cx="129" cy="280" r="13" fill="url(#bd)"/>
+  <circle cx="125" cy="254" r="13" fill="url(#bd)"/>
+  <circle cx="125" cy="229" r="13" fill="url(#bd)"/>
+  <circle cx="130" cy="203" r="13" fill="url(#bd)"/>
+  <circle cx="141" cy="179" r="13" fill="url(#bd)"/>
+  <circle cx="156" cy="158" r="13" fill="url(#bd)"/>
+  <circle cx="174" cy="140" r="13" fill="url(#bd)"/>
+  <circle cx="196" cy="125" r="13" fill="url(#bd)"/>
+  <circle cx="220" cy="115" r="13" fill="url(#bd)"/>
+  <circle cx="245" cy="110" r="13" fill="url(#bd)"/>
+  <circle cx="272" cy="110" r="13" fill="url(#bd)"/>
+  <circle cx="297" cy="114" r="13" fill="url(#bd)"/>
+  <circle cx="322" cy="123" r="13" fill="url(#bd)"/>
+  <circle cx="344" cy="137" r="13" fill="url(#bd)"/>
+  <circle cx="363" cy="154" r="13" fill="url(#bd)"/>
+  <circle cx="379" cy="175" r="13" fill="url(#bd)"/>
+  <circle cx="391" cy="198" r="13" fill="url(#bd)"/>
+  <circle cx="399" cy="222" r="13" fill="url(#bd)"/>
+  <circle cx="402" cy="248" r="13" fill="url(#bd)"/>
+  <circle cx="400" cy="274" r="13" fill="url(#bd)"/>
+  <circle cx="394" cy="299" r="13" fill="url(#bd)"/>
+  <circle cx="384" cy="323" r="13" fill="url(#bd)"/>
+  <circle cx="369" cy="345" r="13" fill="url(#bd)"/>
+  <circle cx="351" cy="364" r="13" fill="url(#bd)"/>
+  <circle cx="330" cy="379" r="13" fill="url(#bd)"/>
+  <circle cx="307" cy="391" r="13" fill="url(#bd)"/>
+  <circle cx="282" cy="398" r="13" fill="url(#bd)"/>
+
+  <!-- End/connector bead — bottom center -->
+  <circle cx="256" cy="401" r="16" fill="url(#eb)"/>
+
+  <!-- Tassel -->
+  <rect x="251" y="416" width="10" height="12" rx="3" fill="url(#cord)"/>
+  <ellipse cx="256" cy="430" rx="9" ry="5" fill="#C47D10"/>
+  <line x1="244" y1="433" x2="234" y2="465" stroke="#7A4E06" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="248" y1="434" x2="242" y2="468" stroke="#9A6510" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="252" y1="435" x2="250" y2="470" stroke="#C47D10" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="256" y1="435" x2="256" y2="471" stroke="#D4921A" stroke-width="3"   stroke-linecap="round"/>
+  <line x1="260" y1="435" x2="262" y2="470" stroke="#C47D10" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="264" y1="434" x2="270" y2="468" stroke="#9A6510" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="268" y1="433" x2="278" y2="465" stroke="#7A4E06" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

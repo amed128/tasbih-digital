@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeSync } from "../components/ThemeSync";
 import { ReminderScheduler } from "../components/ReminderScheduler";
+import { AppIconSync } from "../components/AppIconSync";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -79,6 +80,7 @@ export default function RootLayout({
       >
         <ThemeSync />
         <ReminderScheduler />
+        <AppIconSync />
         {children}
       </body>
     </html>

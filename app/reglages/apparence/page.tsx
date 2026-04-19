@@ -7,6 +7,7 @@ import { BottomNav } from "../../../components/BottomNav";
 import { useTasbihStore } from "../../../store/tasbihStore";
 import type { Theme, IconTheme, TapButtonSize } from "../../../store/tasbihStore";
 import { useT } from "@/hooks/useT";
+import { isNativeApp } from "../../../lib/platform";
 
 export default function AppearanceSettingsPage() {
   const mounted = useSyncExternalStore(
@@ -22,12 +23,6 @@ export default function AppearanceSettingsPage() {
   const setTapButtonSize = useTasbihStore((s) => s.setTapButtonSize);
 
   const t = useT();
-
-  const isPwa = useSyncExternalStore(
-    () => () => {},
-    () => window.matchMedia("(display-mode: standalone)").matches,
-    () => false
-  );
 
   const themeOptions: { value: Theme; label: string }[] = [
     { value: "light", label: t("settings.themeLight") },
@@ -109,29 +104,28 @@ export default function AppearanceSettingsPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl bg-[var(--card)] p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.iconThemeTitle")}</div>
-              <div className="text-xs text-[var(--secondary)]">{t("settings.iconThemeHint")}</div>
-              {isPwa && (
-                <div className="mt-1 text-xs text-[var(--secondary)] opacity-70">{t("settings.iconThemePwaNote")}</div>
-              )}
+        {isNativeApp() && (
+          <section className="rounded-2xl bg-[var(--card)] p-4">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <div className="text-sm font-semibold text-[var(--foreground)]">{t("settings.iconThemeTitle")}</div>
+                <div className="text-xs text-[var(--secondary)]">{t("settings.iconThemeHint")}</div>
+              </div>
+              <select
+                value={preferences.iconTheme ?? "auto"}
+                onChange={(e) => setIconTheme(e.target.value as IconTheme)}
+                className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+                aria-label={t("settings.ariaIconTheme")}
+              >
+                {iconThemeOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
             </div>
-            <select
-              value={preferences.iconTheme ?? "auto"}
-              onChange={(e) => setIconTheme(e.target.value as IconTheme)}
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
-              aria-label={t("settings.ariaIconTheme")}
-            >
-              {iconThemeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </section>
+          </section>
+        )}
 
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="flex items-center justify-between gap-4">

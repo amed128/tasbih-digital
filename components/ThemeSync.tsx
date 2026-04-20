@@ -37,10 +37,22 @@ export function ThemeSync() {
       themeMeta.setAttribute("content", color);
     }
 
-    StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
-    StatusBar.setStyle({
-      style: nextTheme === "light" ? Style.Light : Style.Dark,
-    }).catch(() => {});
+    // Double-RAF: effects fire before the browser paints; two frames push the
+    // Capacitor calls to after the new CSS (and the safe-area strip) have been
+    // composited so any iOS snapshot reads the correct pixels.
+    let id2: ReturnType<typeof requestAnimationFrame>;
+    const id1 = requestAnimationFrame(() => {
+      id2 = requestAnimationFrame(() => {
+        StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
+        StatusBar.setStyle({
+          style: nextTheme === "light" ? Style.Light : Style.Dark,
+        }).catch(() => {});
+      });
+    });
+    return () => {
+      cancelAnimationFrame(id1);
+      cancelAnimationFrame(id2);
+    };
   }, [theme]);
 
   // Dynamically swap favicon and apple-touch-icon based on iconTheme preference
@@ -68,17 +80,5 @@ export function ThemeSync() {
     }
   }, []);
 
-  // Solid strip that sits above the decoration layer and covers exactly the
-  // native status-bar zone. In overlay mode iOS reads whatever pixels are at
-  // the top of the web view; without this the GPU-blurred decoration glow bleeds
-  // into the bar and can stay stuck when switching between premium themes.
-  // height: env(safe-area-inset-top) is 0 on web/PWA (no overlay bar) and the
-  // correct notch height on Capacitor iOS — so this is a no-op outside native.
-  return (
-    <div
-      aria-hidden="true"
-      className="pointer-events-none fixed inset-x-0 top-0 bg-[var(--background)]"
-      style={{ height: "env(safe-area-inset-top)", zIndex: 50 }}
-    />
-  );
+  return null;
 }

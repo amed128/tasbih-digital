@@ -88,6 +88,15 @@
 
 ---
 
+## Bug — Statut barre iOS (native Capacitor)
+
+- [ ] **Vérifier que `env(safe-area-inset-top)` se résout correctement** dans le build Capacitor.
+  Symptôme : la couleur de la barre de statut reste celle du thème précédent lors d'un switch entre thèmes premium (obsidian ↔ emerald).
+  Approches déjà tentées : double-RAF sur `setOverlaysWebView`, `key={theme}` sur le container de décoration, strip React div.
+  Fix actuel (à valider sur device) : `body.is-native-ios::before` dans `globals.css` avec `height: max(env(safe-area-inset-top), 44px)` + double-RAF dans `ThemeSync`. Si le bug persiste, investiguer si iOS lit les pixels du web view ou un snapshot natif, et si `StatusBar.setBackgroundColor` + `setOverlaysWebView` serait une meilleure combinaison.
+
+---
+
 ## Backlog — À discuter / Explorer
 
 - [x] **Bug reporting** — Lien GitHub Issues dans la page About

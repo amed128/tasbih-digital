@@ -37,6 +37,9 @@ export function ThemeSync() {
       themeMeta.setAttribute("content", color);
     }
 
+    // Re-assert overlay mode on every theme change so the native bar re-reads
+    // the web content after the CSS variables update.
+    StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
     StatusBar.setStyle({
       style: nextTheme === "light" ? Style.Light : Style.Dark,
     }).catch(() => {});

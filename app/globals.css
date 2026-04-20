@@ -43,6 +43,21 @@ body[data-theme="light"] {
   --deco-accent-rgb: 184, 130, 46;
 }
 
+html[data-theme="obsidian"],
+body[data-theme="obsidian"] {
+  --background: #0D0D10;
+  --foreground: #E6E8F0;
+  --secondary: #70758A;
+  --primary: #C0C8D8;
+  --primary-rgb: 192, 200, 216;
+  --card: #17171D;
+  --border: #242430;
+  --deco-opacity: 0.12;
+  --deco-accent-opacity: 0.07;
+  --deco-primary-rgb: 138, 92, 246;
+  --deco-accent-rgb: 79, 70, 229;
+}
+
 html[data-theme="emerald"],
 body[data-theme="emerald"] {
   --background: #04291E;

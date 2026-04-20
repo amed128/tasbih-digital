@@ -19,6 +19,43 @@ type ThemeCard = {
   premium?: PremiumTheme;
 };
 
+type PremiumModalConfig = {
+  bg: string;
+  border: string;
+  previewBg: string;
+  previewBorder: string;
+  primary: string;
+  secondary: string;
+  previewColors: string[];
+  titleKey: string;
+  descKey: string;
+};
+
+const PREMIUM_MODAL_CONFIG: Record<PremiumTheme, PremiumModalConfig> = {
+  emerald: {
+    bg: "#0A3D2B",
+    border: "#1A5C40",
+    previewBg: "#04291E",
+    previewBorder: "#1A5C40",
+    primary: "#FDE68A",
+    secondary: "#8FB8A0",
+    previewColors: ["#FDE68A", "#8FB8A0", "#F5F0E8"],
+    titleKey: "settings.premiumThemeModalTitle",
+    descKey: "settings.premiumThemeModalDesc",
+  },
+  obsidian: {
+    bg: "#17171D",
+    border: "#242430",
+    previewBg: "#0D0D10",
+    previewBorder: "#242430",
+    primary: "#C0C8D8",
+    secondary: "#70758A",
+    previewColors: ["#C0C8D8", "#70758A", "#E6E8F0"],
+    titleKey: "settings.premiumThemeObsidianModalTitle",
+    descKey: "settings.premiumThemeObsidianModalDesc",
+  },
+};
+
 const THEME_CARDS: ThemeCard[] = [
   {
     value: "light",
@@ -53,6 +90,15 @@ const THEME_CARDS: ThemeCard[] = [
     border: "#1A5C40",
     premium: "emerald",
   },
+  {
+    value: "obsidian",
+    labelKey: "settings.themeObsidian",
+    bg: "#0D0D10",
+    card: "#17171D",
+    primary: "#C0C8D8",
+    border: "#242430",
+    premium: "obsidian",
+  },
 ];
 
 export default function ThemesPage() {
@@ -81,6 +127,7 @@ export default function ThemesPage() {
         dark: "#0A0A0A",
         blue: "#0B1118",
         emerald: "#04291E",
+        obsidian: "#0D0D10",
       };
       themeMeta.setAttribute("content", colors[theme]);
     }
@@ -212,68 +259,71 @@ export default function ThemesPage() {
 
       {/* Premium purchase modal */}
       <AnimatePresence>
-        {premiumModal && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 px-4 pb-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setPremiumModal(null)}
-          >
+        {premiumModal && (() => {
+          const cfg = PREMIUM_MODAL_CONFIG[premiumModal];
+          return (
             <motion.div
-              className="w-full max-w-md rounded-2xl p-6"
-              style={{ background: "#0A3D2B", border: "1px solid #1A5C40" }}
-              initial={{ y: 40, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 40, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onClick={(e) => e.stopPropagation()}
+              className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 px-4 pb-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setPremiumModal(null)}
             >
-              <div
-                className="mb-4 flex h-20 w-full items-center justify-center rounded-xl"
-                style={{ background: "#04291E", border: "1px solid #1A5C40" }}
+              <motion.div
+                className="w-full max-w-md rounded-2xl p-6"
+                style={{ background: cfg.bg, border: `1px solid ${cfg.border}` }}
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 40, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={(e) => e.stopPropagation()}
               >
-                <div className="flex gap-3">
-                  {["#FDE68A", "#8FB8A0", "#F5F0E8"].map((c) => (
-                    <div key={c} className="h-6 w-6 rounded-full" style={{ background: c }} />
-                  ))}
+                <div
+                  className="mb-4 flex h-20 w-full items-center justify-center rounded-xl"
+                  style={{ background: cfg.previewBg, border: `1px solid ${cfg.previewBorder}` }}
+                >
+                  <div className="flex gap-3">
+                    {cfg.previewColors.map((c) => (
+                      <div key={c} className="h-6 w-6 rounded-full" style={{ background: c }} />
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div className="mb-1 flex items-center gap-2">
-                <span className="text-base font-bold" style={{ color: "#FDE68A" }}>
-                  {t("settings.premiumThemeModalTitle")}
-                </span>
-                <span
-                  className="rounded-md px-1.5 py-0.5 text-[10px] font-bold"
-                  style={{ background: "#FDE68A", color: "#04291E" }}
-                >
-                  {t("settings.premiumBadge")}
-                </span>
-              </div>
-              <p className="mb-5 text-sm" style={{ color: "#8FB8A0" }}>
-                {t("settings.premiumThemeModalDesc")}
-              </p>
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={() => handlePurchase(premiumModal)}
-                  className="w-full rounded-xl py-3 text-sm font-bold transition hover:opacity-90"
-                  style={{ background: "#FDE68A", color: "#04291E" }}
-                >
-                  {preferences.unlockedThemes?.includes(premiumModal)
-                    ? t("settings.premiumThemeUnlocked")
-                    : t("settings.premiumThemeUnlock")}
-                </button>
-                <button
-                  onClick={() => setPremiumModal(null)}
-                  className="w-full rounded-xl border py-3 text-sm font-semibold transition hover:opacity-80"
-                  style={{ borderColor: "#1A5C40", color: "#8FB8A0" }}
-                >
-                  {t("settings.premiumThemeCancel")}
-                </button>
-              </div>
+                <div className="mb-1 flex items-center gap-2">
+                  <span className="text-base font-bold" style={{ color: cfg.primary }}>
+                    {t(cfg.titleKey as Parameters<typeof t>[0])}
+                  </span>
+                  <span
+                    className="rounded-md px-1.5 py-0.5 text-[10px] font-bold"
+                    style={{ background: cfg.primary, color: cfg.previewBg }}
+                  >
+                    {t("settings.premiumBadge")}
+                  </span>
+                </div>
+                <p className="mb-5 text-sm" style={{ color: cfg.secondary }}>
+                  {t(cfg.descKey as Parameters<typeof t>[0])}
+                </p>
+                <div className="flex flex-col gap-2">
+                  <button
+                    onClick={() => handlePurchase(premiumModal)}
+                    className="w-full rounded-xl py-3 text-sm font-bold transition hover:opacity-90"
+                    style={{ background: cfg.primary, color: cfg.previewBg }}
+                  >
+                    {preferences.unlockedThemes?.includes(premiumModal)
+                      ? t("settings.premiumThemeUnlocked")
+                      : t("settings.premiumThemeUnlock")}
+                  </button>
+                  <button
+                    onClick={() => setPremiumModal(null)}
+                    className="w-full rounded-xl border py-3 text-sm font-semibold transition hover:opacity-80"
+                    style={{ borderColor: cfg.border, color: cfg.secondary }}
+                  >
+                    {t("settings.premiumThemeCancel")}
+                  </button>
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
+          );
+        })()}
       </AnimatePresence>
     </div>
   );

@@ -10,6 +10,9 @@ body[data-theme="blue"] {
   --primary-rgb: 228, 177, 90;
   --card: #151E29;
   --border: #2B3747;
+  --deco-opacity: 0;
+  --deco-primary-rgb: 228, 177, 90;
+  --deco-accent-rgb: 228, 177, 90;
 }
 
 html[data-theme="dark"],
@@ -21,6 +24,9 @@ body[data-theme="dark"] {
   --primary-rgb: 245, 166, 35;
   --card: #1A1A1A;
   --border: #2A2A2A;
+  --deco-opacity: 0;
+  --deco-primary-rgb: 245, 166, 35;
+  --deco-accent-rgb: 245, 166, 35;
 }
 
 html[data-theme="light"],
@@ -32,6 +38,9 @@ body[data-theme="light"] {
   --primary-rgb: 184, 130, 46;
   --card: #FFFFFF;
   --border: #D4DCE6;
+  --deco-opacity: 0;
+  --deco-primary-rgb: 184, 130, 46;
+  --deco-accent-rgb: 184, 130, 46;
 }
 
 html[data-theme="emerald"],
@@ -43,6 +52,10 @@ body[data-theme="emerald"] {
   --primary-rgb: 253, 230, 138;
   --card: #0A3D2B;
   --border: #1A5C40;
+  --deco-opacity: 0.10;
+  --deco-accent-opacity: 0.07;
+  --deco-primary-rgb: 253, 230, 138;
+  --deco-accent-rgb: 143, 184, 160;
 }
 
 

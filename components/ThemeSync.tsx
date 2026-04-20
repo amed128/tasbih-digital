@@ -37,24 +37,10 @@ export function ThemeSync() {
       themeMeta.setAttribute("content", color);
     }
 
-    // Double-RAF: useEffect fires before the browser composites its next frame.
-    // Two animation frames guarantee the new CSS (including deco-opacity → 0) has
-    // been painted before we tell the native bar to re-read the web-view pixels.
-    // Without this the bar can latch a stale GPU-blurred texture from a previous
-    // premium-theme decoration and keep showing the old color.
-    let id2: ReturnType<typeof requestAnimationFrame>;
-    const id1 = requestAnimationFrame(() => {
-      id2 = requestAnimationFrame(() => {
-        StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
-        StatusBar.setStyle({
-          style: nextTheme === "light" ? Style.Light : Style.Dark,
-        }).catch(() => {});
-      });
-    });
-    return () => {
-      cancelAnimationFrame(id1);
-      cancelAnimationFrame(id2);
-    };
+    StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
+    StatusBar.setStyle({
+      style: nextTheme === "light" ? Style.Light : Style.Dark,
+    }).catch(() => {});
   }, [theme]);
 
   // Dynamically swap favicon and apple-touch-icon based on iconTheme preference
@@ -82,5 +68,17 @@ export function ThemeSync() {
     }
   }, []);
 
-  return null;
+  // Solid strip that sits above the decoration layer and covers exactly the
+  // native status-bar zone. In overlay mode iOS reads whatever pixels are at
+  // the top of the web view; without this the GPU-blurred decoration glow bleeds
+  // into the bar and can stay stuck when switching between premium themes.
+  // height: env(safe-area-inset-top) is 0 on web/PWA (no overlay bar) and the
+  // correct notch height on Capacitor iOS — so this is a no-op outside native.
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-x-0 top-0 bg-[var(--background)]"
+      style={{ height: "env(safe-area-inset-top)", zIndex: 50 }}
+    />
+  );
 }

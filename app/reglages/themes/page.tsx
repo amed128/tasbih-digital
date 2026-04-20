@@ -4,6 +4,7 @@ import { useSyncExternalStore, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Check, Lock } from "lucide-react";
+import { StatusBar, Style } from "@capacitor/status-bar";
 import { BottomNav } from "../../../components/BottomNav";
 import { useTasbihStore } from "../../../store/tasbihStore";
 import type { Theme, PremiumTheme } from "../../../store/tasbihStore";
@@ -120,17 +121,19 @@ export default function ThemesPage() {
     if (typeof document === "undefined") return;
     document.documentElement.setAttribute("data-theme", theme);
     document.body?.setAttribute("data-theme", theme);
+    const colors: Record<Theme, string> = {
+      light: "#F3F5F8",
+      dark: "#0A0A0A",
+      blue: "#0B1118",
+      emerald: "#04291E",
+      obsidian: "#0D0D10",
+    };
+    const color = colors[theme];
     const themeMeta = document.querySelector('meta[name="theme-color"]');
-    if (themeMeta) {
-      const colors: Record<Theme, string> = {
-        light: "#F3F5F8",
-        dark: "#0A0A0A",
-        blue: "#0B1118",
-        emerald: "#04291E",
-        obsidian: "#0D0D10",
-      };
-      themeMeta.setAttribute("content", colors[theme]);
-    }
+    if (themeMeta) themeMeta.setAttribute("content", color);
+    // Update native status bar immediately on tap — don't wait for ThemeSync's async effect
+    StatusBar.setBackgroundColor({ color }).catch(() => {});
+    StatusBar.setStyle({ style: theme === "light" ? Style.Light : Style.Dark }).catch(() => {});
   };
 
   const handleThemeSelect = (card: ThemeCard) => {

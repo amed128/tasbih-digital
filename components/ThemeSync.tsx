@@ -37,12 +37,24 @@ export function ThemeSync() {
       themeMeta.setAttribute("content", color);
     }
 
-    // Re-assert overlay mode on every theme change so the native bar re-reads
-    // the web content after the CSS variables update.
-    StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
-    StatusBar.setStyle({
-      style: nextTheme === "light" ? Style.Light : Style.Dark,
-    }).catch(() => {});
+    // Double-RAF: useEffect fires before the browser composites its next frame.
+    // Two animation frames guarantee the new CSS (including deco-opacity → 0) has
+    // been painted before we tell the native bar to re-read the web-view pixels.
+    // Without this the bar can latch a stale GPU-blurred texture from a previous
+    // premium-theme decoration and keep showing the old color.
+    let id2: ReturnType<typeof requestAnimationFrame>;
+    const id1 = requestAnimationFrame(() => {
+      id2 = requestAnimationFrame(() => {
+        StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
+        StatusBar.setStyle({
+          style: nextTheme === "light" ? Style.Light : Style.Dark,
+        }).catch(() => {});
+      });
+    });
+    return () => {
+      cancelAnimationFrame(id1);
+      cancelAnimationFrame(id2);
+    };
   }, [theme]);
 
   // Dynamically swap favicon and apple-touch-icon based on iconTheme preference

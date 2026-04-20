@@ -1,8 +1,23 @@
-// Ambient background decoration layer for premium themes.
-// Uses CSS variables (--deco-opacity, --deco-primary-rgb, --deco-accent-rgb) so free
-// themes (opacity: 0) are completely unaffected. mix-blend-mode: screen keeps the
-// blobs additive on dark surfaces — they never occlude content.
+"use client";
+
+// Ambient background decoration layer for premium themes only.
+// Conditionally rendered so non-premium themes never put GPU-blurred textures
+// in the status-bar compositing zone, preventing stale-color bleed on theme switch.
+import { useSyncExternalStore } from "react";
+import { useTasbihStore } from "../store/tasbihStore";
+
+const PREMIUM_THEMES = new Set(["emerald", "obsidian"]);
+
 export function ThemeDecorations() {
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+  const theme = useTasbihStore((s) => s.preferences.theme);
+
+  if (!mounted || !PREMIUM_THEMES.has(theme ?? "")) return null;
+
   return (
     <div
       aria-hidden="true"

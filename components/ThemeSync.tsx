@@ -69,32 +69,3 @@ export function ThemeSync() {
 
   return null;
 }
-
-
-  // Dynamically swap favicon and apple-touch-icon based on iconTheme preference
-  useEffect(() => {
-    const appTheme = theme ?? "blue";
-    const effective = (!iconTheme || iconTheme === "auto") ? appTheme : iconTheme;
-    const href = `/icon-192-${effective}.png`;
-
-    const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"][data-app-icon]');
-    if (favicon) favicon.href = href;
-
-    const touchIcon = document.querySelector<HTMLLinkElement>('link[rel="apple-touch-icon"][data-app-icon]');
-    if (touchIcon) touchIcon.href = href;
-  }, [theme, iconTheme]);
-
-  useEffect(() => {
-    document.documentElement.lang = language ?? "fr";
-  }, [language]);
-
-  useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      document.body.classList.add("is-native-ios");
-    } else {
-      document.body.classList.add("is-pwa");
-    }
-  }, []);
-
-  return null;
-}

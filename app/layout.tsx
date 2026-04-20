@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { ThemeSync } from "../components/ThemeSync";
 import { ReminderScheduler } from "../components/ReminderScheduler";
@@ -79,6 +80,16 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/* beforeInteractive runs before React hydrates — suppresses the
+            React/Turbopack bug where HMR desyncs profiler marks and
+            performance.measure receives a negative duration. Dev only. */}
+        {process.env.NODE_ENV === "development" && (
+          <Script
+            id="perf-measure-patch"
+            strategy="beforeInteractive"
+            dangerouslySetInnerHTML={{ __html: "(function(){var o=performance.measure.bind(performance);performance.measure=function(){try{return o.apply(this,arguments)}catch(e){}};})();" }}
+          />
+        )}
         <ThemeDecorations />
         <ThemeSync />
         <ReminderScheduler />

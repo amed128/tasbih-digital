@@ -18,12 +18,15 @@ export function ThemeSync() {
   const iconTheme = useTasbihStore((s) => s.preferences.iconTheme);
   const language = useTasbihStore((s) => s.preferences.language);
 
-  // On mount: ensure the status bar overlays the web view so the body background
-  // is always the source of truth for the visible bar color. setBackgroundColor
-  // on iOS can silently switch the bar to non-overlay (opaque) mode, which then
-  // persists across theme changes — so we never call it.
+  // On mount: prime iOS with the correct background color and assert overlay mode.
+  // setBackgroundColor is called first so iOS has the right fallback color if it
+  // briefly flashes the native bar, then overlay is re-asserted so the web view
+  // pixels (covered by the ::before strip in globals.css) remain authoritative.
   useEffect(() => {
+    const initialTheme = (theme ?? "blue") as keyof typeof THEME_META_COLOR;
+    StatusBar.setBackgroundColor({ color: THEME_META_COLOR[initialTheme] }).catch(() => {});
     StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -43,6 +46,9 @@ export function ThemeSync() {
     let id2: ReturnType<typeof requestAnimationFrame>;
     const id1 = requestAnimationFrame(() => {
       id2 = requestAnimationFrame(() => {
+        // Set explicit background color so iOS has the right color if overlay
+        // mode flashes or resets to opaque, then re-assert overlay mode.
+        StatusBar.setBackgroundColor({ color: THEME_META_COLOR[nextTheme] }).catch(() => {});
         StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
         StatusBar.setStyle({
           style: nextTheme === "light" ? Style.Light : Style.Dark,

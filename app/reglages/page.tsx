@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { useTasbihStore } from "../../store/tasbihStore";
@@ -61,6 +61,21 @@ export default function ReglagesPage() {
       themeMeta.setAttribute("content", metaColor);
     }
   };
+
+  // Sync actual OS permission state on mount so the toggle isn't stuck disabled
+  // when permission was already granted in a previous session.
+  useEffect(() => {
+    if (!isNativeApp()) return;
+    LocalNotifications.checkPermissions()
+      .then((r) => {
+        setNotificationPermission(
+          r.display === "granted" ? "granted"
+          : r.display === "denied" ? "denied"
+          : "prompt"
+        );
+      })
+      .catch(() => {});
+  }, []);
 
   const requestNotificationPermission = async () => {
     const result = await LocalNotifications.requestPermissions();

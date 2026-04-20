@@ -128,11 +128,11 @@ export default function ThemesPage() {
       emerald: "#04291E",
       obsidian: "#0D0D10",
     };
-    const color = colors[theme];
     const themeMeta = document.querySelector('meta[name="theme-color"]');
-    if (themeMeta) themeMeta.setAttribute("content", color);
-    // Update native status bar immediately on tap — don't wait for ThemeSync's async effect
-    StatusBar.setBackgroundColor({ color }).catch(() => {});
+    if (themeMeta) themeMeta.setAttribute("content", colors[theme]);
+    // Only setStyle — the body background shows through the translucent overlay bar.
+    // setBackgroundColor is intentionally omitted: on iOS it silently switches the
+    // bar to opaque/non-overlay mode, causing the color to stick across theme changes.
     StatusBar.setStyle({ style: theme === "light" ? Style.Light : Style.Dark }).catch(() => {});
   };
 

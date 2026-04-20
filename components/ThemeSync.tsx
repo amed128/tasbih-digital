@@ -18,6 +18,14 @@ export function ThemeSync() {
   const iconTheme = useTasbihStore((s) => s.preferences.iconTheme);
   const language = useTasbihStore((s) => s.preferences.language);
 
+  // On mount: ensure the status bar overlays the web view so the body background
+  // is always the source of truth for the visible bar color. setBackgroundColor
+  // on iOS can silently switch the bar to non-overlay (opaque) mode, which then
+  // persists across theme changes — so we never call it.
+  useEffect(() => {
+    StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
+  }, []);
+
   useEffect(() => {
     const nextTheme = theme ?? "blue";
     document.documentElement.setAttribute("data-theme", nextTheme);
@@ -29,12 +37,39 @@ export function ThemeSync() {
       themeMeta.setAttribute("content", color);
     }
 
-    // Sync native iOS status bar color and style with the current theme
-    StatusBar.setBackgroundColor({ color }).catch(() => {});
     StatusBar.setStyle({
       style: nextTheme === "light" ? Style.Light : Style.Dark,
     }).catch(() => {});
   }, [theme]);
+
+  // Dynamically swap favicon and apple-touch-icon based on iconTheme preference
+  useEffect(() => {
+    const appTheme = theme ?? "blue";
+    const effective = (!iconTheme || iconTheme === "auto") ? appTheme : iconTheme;
+    const href = `/icon-192-${effective}.png`;
+
+    const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"][data-app-icon]');
+    if (favicon) favicon.href = href;
+
+    const touchIcon = document.querySelector<HTMLLinkElement>('link[rel="apple-touch-icon"][data-app-icon]');
+    if (touchIcon) touchIcon.href = href;
+  }, [theme, iconTheme]);
+
+  useEffect(() => {
+    document.documentElement.lang = language ?? "fr";
+  }, [language]);
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      document.body.classList.add("is-native-ios");
+    } else {
+      document.body.classList.add("is-pwa");
+    }
+  }, []);
+
+  return null;
+}
+
 
   // Dynamically swap favicon and apple-touch-icon based on iconTheme preference
   useEffect(() => {

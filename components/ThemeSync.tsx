@@ -42,9 +42,8 @@ export function ThemeSync() {
     // been painted before we tell the native bar to re-read the web-view pixels.
     // Without this the bar can latch a stale GPU-blurred texture from a previous
     // premium-theme decoration and keep showing the old color.
-    let id1: ReturnType<typeof requestAnimationFrame>;
     let id2: ReturnType<typeof requestAnimationFrame>;
-    id1 = requestAnimationFrame(() => {
+    const id1 = requestAnimationFrame(() => {
       id2 = requestAnimationFrame(() => {
         StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
         StatusBar.setStyle({

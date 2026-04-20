@@ -53,7 +53,11 @@ export default function ReglagesPage() {
     const themeMeta = document.querySelector('meta[name="theme-color"]');
     if (themeMeta) {
       const metaColor =
-        theme === "light" ? "#F3F5F8" : theme === "dark" ? "#0A0A0A" : "#0B1118";
+        theme === "light" ? "#F3F5F8"
+        : theme === "dark" ? "#0A0A0A"
+        : theme === "emerald" ? "#04291E"
+        : theme === "obsidian" ? "#0D0D10"
+        : "#0B1118";
       themeMeta.setAttribute("content", metaColor);
     }
   };

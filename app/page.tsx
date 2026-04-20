@@ -453,11 +453,12 @@ export default function Home() {
   const triggerCompletionFeedback = useEffectEvent(() => {
     triggerHaptic([35, 40, 35]);
     if (confettiEnabled) {
+      const primary = getComputedStyle(document.documentElement).getPropertyValue("--primary").trim() || "#E4B15A";
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { x: 0.5, y: 0.4 },
-        colors: ["#E4B15A", "#FFFFFF"],
+        colors: [primary, "#FFFFFF"],
       });
     }
   });

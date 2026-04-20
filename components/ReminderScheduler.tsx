@@ -30,32 +30,19 @@ export function ReminderScheduler() {
           ? "Petit rappel : prenez un moment pour votre zikr."
           : "Gentle reminder: take a moment for your zikr.";
 
-      const now = new Date();
-      const scheduled = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate(),
-        rt.hour,
-        rt.minute,
-        0
-      );
-      // If the time already passed today, schedule for tomorrow.
-      if (scheduled <= now) {
-        scheduled.setDate(scheduled.getDate() + 1);
-      }
-
       await LocalNotifications.schedule({
         notifications: [
           {
             id: REMINDER_NOTIFICATION_ID,
             title: "At-tasbih",
             body,
+            // `on` fires whenever the clock matches { hour, minute } — i.e. daily
+            // at that time. Using `at` + `every: "day"` together conflicts on iOS
+            // and causes "trigger failed".
             schedule: {
-              at: scheduled,
-              repeats: true,
-              every: "day",
+              on: { hour: rt.hour, minute: rt.minute },
+              allowWhileIdle: true,
             },
-            sound: undefined,
             smallIcon: "ic_stat_icon",
           },
         ],

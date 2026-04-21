@@ -17,9 +17,24 @@ export type Zikr = {
   transliteration: string;
   translation_fr: string;
   translation_en: string;
+  translation_de?: string;
+  translation_es?: string;
+  translation_pt?: string;
+  translation_hi?: string;
   defaultTarget: number;
   category: ZikrCategory;
 };
+
+export function getTranslation(zikr: Zikr, lang: string): string {
+  switch (lang) {
+    case "fr": return zikr.translation_fr;
+    case "de": return zikr.translation_de ?? zikr.translation_en;
+    case "es": return zikr.translation_es ?? zikr.translation_en;
+    case "pt": return zikr.translation_pt ?? zikr.translation_en;
+    case "hi": return zikr.translation_hi ?? zikr.translation_en;
+    default: return zikr.translation_en;
+  }
+}
 
 export const zikrs: Zikr[] = [
   // Tasbih (7)

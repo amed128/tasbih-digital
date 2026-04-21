@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { BottomNav } from "../../components/BottomNav";
 import { useT } from "@/hooks/useT";
-import { useTasbihStore } from "../../store/tasbihStore";
 
 const KOFI_URL = "https://ko-fi.com/attasbihapp";
 
@@ -31,7 +30,6 @@ export default function DonatePage() {
   );
 
   const t = useT();
-  const language = useTasbihStore((s) => s.preferences.language);
 
   if (!mounted) return null;
 
@@ -80,9 +78,7 @@ export default function DonatePage() {
         </section>
 
         <p className="text-center text-xs text-[var(--secondary)]">
-          {language === "fr"
-            ? "Jazak Allahu khayran pour votre soutien."
-            : "Jazak Allahu khayran for your support."}
+          {t("donate.supportThanks")}
         </p>
       </motion.main>
 

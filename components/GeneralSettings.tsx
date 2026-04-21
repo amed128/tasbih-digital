@@ -145,8 +145,12 @@ export default function GeneralSettings() {
             className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
             aria-label={t("settings.ariaLanguage")}
           >
-            <option value="fr">Français</option>
-            <option value="en">English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="pt">🇧🇷 Português</option>
+            <option value="hi">🇮🇳 हिन्दी</option>
           </select>
         </div>
       </section>

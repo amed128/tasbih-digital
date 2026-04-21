@@ -84,10 +84,14 @@ export default function ReglagesPage() {
 
   const sendTestNotification = async () => {
     if (notificationPermission !== "granted") return;
-    const body =
-      preferences.language === "fr"
-        ? "Rappel de zikr: qu'Allah accepte vos invocations."
-        : "Zikr reminder: may Allah accept your invocations.";
+    const TEST_BODY: Record<string, string> = {
+      fr: "Rappel de zikr: qu'Allah accepte vos invocations.",
+      de: "Zikr-Erinnerung: Möge Allah Ihre Gebete annehmen.",
+      es: "Recordatorio de zikr: que Allah acepte tus invocaciones.",
+      pt: "Lembrete de zikr: que Allah aceite suas invocações.",
+      hi: "ज़िक्र अनुस्मारक: अल्लाह आपकी दुआएं कबूल करे।",
+    };
+    const body = TEST_BODY[preferences.language ?? "en"] ?? "Zikr reminder: may Allah accept your invocations.";
     await LocalNotifications.schedule({
       notifications: [{ id: 9999, title: "At-tasbih", body }],
     });

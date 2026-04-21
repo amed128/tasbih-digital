@@ -442,6 +442,7 @@ export const translations = {
       lemonsqueezyHint: "Autre option de paiement sécurisé, TVA incluse automatiquement.",
       lemonsqueezyCta: "Donner via Lemon Squeezy ↗",
       configPending: "Bientôt disponible.",
+      supportThanks: "Jazak Allahu khayran pour votre soutien.",
     },
     circle: {
       remaining: "RESTANT",
@@ -982,6 +983,7 @@ export const translations = {
       lemonsqueezyHint: "Another secure payment option — VAT handled automatically.",
       lemonsqueezyCta: "Donate via Lemon Squeezy ↗",
       configPending: "Coming soon.",
+      supportThanks: "Jazak Allahu khayran for your support.",
     },
     circle: {
       remaining: "LEFT",

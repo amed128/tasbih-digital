@@ -163,7 +163,8 @@ export default function StatsPage() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [historyRangeMode, setHistoryRangeMode] = useState<HistoryRangeMode>("month");
   const [historyDate, setHistoryDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const locale = language === "fr" ? "fr-FR" : "en-US";
+  const LOCALE_MAP: Record<string, string> = { fr: "fr-FR", de: "de-DE", es: "es-ES", pt: "pt-BR", hi: "hi-IN" };
+  const locale = LOCALE_MAP[language ?? "en"] ?? "en-US";
 
   const showToast = (message: string) => {
     setToastMessage(message);

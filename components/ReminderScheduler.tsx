@@ -25,10 +25,14 @@ export function ReminderScheduler() {
       const rt = reminderTimes[0];
       if (!rt) return;
 
-      const body =
-        language === "fr"
-          ? "Petit rappel : prenez un moment pour votre zikr."
-          : "Gentle reminder: take a moment for your zikr.";
+      const REMINDER_BODY: Record<string, string> = {
+        fr: "Petit rappel : prenez un moment pour votre zikr.",
+        de: "Erinnerung: Nehmen Sie sich einen Moment für Ihren Zikr.",
+        es: "Recordatorio: tómate un momento para tu zikr.",
+        pt: "Lembrete: reserve um momento para o seu zikr.",
+        hi: "याद दिलाना: अपने ज़िक्र के लिए एक पल निकालें।",
+      };
+      const body = REMINDER_BODY[language ?? "en"] ?? "Gentle reminder: take a moment for your zikr.";
 
       await LocalNotifications.schedule({
         notifications: [

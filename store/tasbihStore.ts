@@ -32,7 +32,7 @@ export type Stats = {
   history: SessionRecord[];
 };
 
-export type PremiumTheme = "emerald" | "obsidian";
+export type PremiumTheme = "emerald" | "obsidian" | "midnight";
 
 export type Preferences = {
   // --- Auto-counter settings ---
@@ -93,7 +93,7 @@ export type SpeechTolerance = "strict" | "balanced" | "tolerant";
 export type SpeechRecognitionLanguage = "ar-SA" | "ar-EG" | "ar-MA" | "fr-FR" | "en-US";
 export type ChipTextFormat = "transliteration" | "arabic" | "both";
 export type ZikrDisplayFormat = "translit+arabic" | "arabic+translit" | "translit" | "arabic";
-export type Theme = "light" | "dark" | "blue" | "emerald" | "obsidian";
+export type Theme = "light" | "dark" | "blue" | "emerald" | "obsidian" | "midnight";
 export type IconTheme = "auto" | "dark" | "blue" | "light";
 export type ReminderTime = { hour: number; minute: number };
 export type ReminderScheduleType = "daily" | "weekly";
@@ -577,6 +577,7 @@ const normalizeTheme = (value: unknown): Theme => {
   if (value === "blue") return "blue";
   if (value === "emerald") return "emerald";
   if (value === "obsidian") return "obsidian";
+  if (value === "midnight") return "midnight";
   return "light";
 };
 

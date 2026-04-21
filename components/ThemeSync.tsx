@@ -5,12 +5,13 @@ import { useTasbihStore } from "../store/tasbihStore";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { Capacitor } from "@capacitor/core";
 
-const THEME_META_COLOR: Record<"light" | "dark" | "blue" | "emerald" | "obsidian", string> = {
+const THEME_META_COLOR: Record<"light" | "dark" | "blue" | "emerald" | "obsidian" | "midnight", string> = {
   light: "#F3F5F8",
   dark: "#0A0A0A",
   blue: "#0B1118",
   emerald: "#04291E",
   obsidian: "#0D0D10",
+  midnight: "#060C18",
 };
 
 export function ThemeSync() {

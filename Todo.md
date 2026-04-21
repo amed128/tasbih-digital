@@ -174,7 +174,7 @@
 
 ## Internationalisation (i18n)
 
-### État actuel
+### État actuel → objectif : **14 langues** (toutes phases confondues)
 - 2 langues UI : **Français** (défaut) et **Anglais**
 - Translittération : champ unique `transliteration: string` par zikr — phonétique anglaise/latine, partagé par toutes les langues UI
 - Type store : `language: "fr" | "en"` (`store/tasbihStore.ts`)

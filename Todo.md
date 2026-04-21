@@ -180,57 +180,63 @@
 - Type store : `language: "fr" | "en"` (`store/tasbihStore.ts`)
 - 450+ zikrs dans `data/zikrs.ts` avec `translation_fr` + `translation_en` déjà séparés
 
-### Langues à ajouter — population musulmane × présence app stores
+### Phase 1 — Langues décidées (6 langues au total)
+- [x] Français (`fr`) ✅
+- [x] Anglais (`en`) ✅
+- [ ] **Allemand (`de`)** — diaspora turque/arabe en Allemagne, App Store top 5 Europe, script latin
+- [ ] **Espagnol (`es`)** — large marché Play Store/App Store, communautés musulmanes Espagne + Amérique latine, script latin
+- [ ] **Portugais (`pt`)** — Brésil = top 3 Play Store mondial, Mozambique/Guinée-Bissau, script latin
+- [ ] **Hindi (`hi`)** — ~200M musulmans en Inde, Play Store #1 mondial, script Devanagari
 
-#### 🔴 Tier 1 — Latin, sans RTL, impact maximal
-- [ ] **Indonésien (`id`)** — ~270M musulmans, Indonésie = top 3 Play Store mondial, script latin, zéro complexité layout
-- [ ] **Turc (`tr`)** — ~85M musulmans, Turquie = marché App Store/Play Store solide, script latin
-- [ ] **Malais (`ms`)** — ~20M musulmans (Malaisie + Brunei), quasi-identique à l'indonésien, trivial si `id` est fait
+### Phase 2 — Backlog (Latin, sans RTL)
+- [ ] **Indonésien (`id`)** — ~270M musulmans, Indonésie = top 3 Play Store mondial
+- [ ] **Turc (`tr`)** — ~85M musulmans, marché App Store/Play Store solide
+- [ ] **Malais (`ms`)** — trivial si `id` est fait, même base linguistique
 
-#### 🟠 Tier 2 — Fort potentiel, RTL requis
-- [ ] **Arabe (`ar`)** — 330M locuteurs natifs / langue liturgique de 1,8Md de musulmans, fort sur App Store (pays du Golfe). Nécessite un full RTL layout pass sur toutes les pages. Translittération inutile pour les arabophones (lisent directement le script arabe)
-- [ ] **Ourdou (`ur`)** — ~170M musulmans (Pakistan = top 5 Play Store), script Nastaliq (RTL). Translittération rarement nécessaire (arabophones)
-- [ ] **Persan/Dari (`fa`)** — ~80M musulmans (Iran, Afghanistan), script Perso-arabe (RTL)
+### Phase 3 — Backlog (RTL requis — effort layout séparé)
+- [ ] **Arabe (`ar`)** — 330M locuteurs natifs / langue liturgique de 1,8Md de musulmans. Translittération inutile (lisent le script arabe directement)
+- [ ] **Ourdou (`ur`)** — ~170M musulmans (Pakistan), script Nastaliq
+- [ ] **Persan/Dari (`fa`)** — ~80M musulmans (Iran, Afghanistan)
 
-#### 🟡 Tier 3 — Script propre, effort élevé
-- [ ] **Bengali (`bn`)** — ~170M musulmans (Bangladesh = marché Play Store en forte croissance), script Bengali propre
-- [ ] **Hindi (`hi`)** — ~200M musulmans en Inde (Play Store #1 mondial par téléchargements), script Devanagari
+### Phase 4 — Backlog (script propre, effort élevé)
+- [ ] **Bengali (`bn`)** — ~170M musulmans, Bangladesh = Play Store en forte croissance
+- [ ] **Russe (`ru`)** — ~20M musulmans russophone (Tatarstan, Asie centrale)
 
-#### 🔵 Diaspora / App Store occidentaux
-- [ ] **Allemand (`de`)** — ~5M musulmans en Allemagne (diaspora turque principalement), App Store top 5 Europe
-- [ ] **Russe (`ru`)** — ~20M musulmans (Tatarstan, Tchétchénie, Asie centrale russophone), Play Store top 5
+### Translittération par langue — refactoring requis (bloquant Phase 1)
 
-### Translittération par langue — refactoring requis
-
-Le champ actuel `transliteration: string` est en phonétique anglaise. Chaque langue latine lit les mêmes lettres différemment :
-
-| Langue | Problème | Exemple : سُبْحَانَ اللهِ |
-|---|---|---|
-| Anglais (actuel) | Base de référence | `SubhanaLlah` |
-| Français | `u` = /y/, `h` muet, `ou` = /u/ | `Soubhânallâh` |
-| Indonésien | Convention islamique KBBI établie | `Subhanallah` |
-| Turc | Harmonie vocalique, i/ı | `Sübhânellah` |
-| Arabe | Inutile — lit le script arabe directement | — |
-| Ourdou | Inutile — arabophones | — |
-
-**Refactoring nécessaire sur le type `Zikr` (`data/zikrs.ts`) :**
+**Refactoring du type `Zikr` (`data/zikrs.ts`) :**
 ```ts
 // Avant
-transliteration: string
+transliteration: string   // phonétique anglaise uniquement
 
-// Après
-transliteration_en: string
-transliteration_fr: string
-transliteration_id: string
-transliteration_tr: string
-// ar/ur/fa : pas de champ — script arabe lu directement
+// Après (Phase 1)
+transliteration_en: string   // identique à l'actuel
+transliteration_fr: string   // phonétique française
+transliteration_de: string   // phonétique allemande (proche EN)
+transliteration_es: string   // phonétique espagnole (h muet → convention j)
+transliteration_pt: string   // phonétique portugaise (proche ES)
+transliteration_hi: string   // Devanagari phonétique (script propre)
 ```
-Le hook `useT()` résoudrait la bonne clé selon `preferences.language`, avec fallback sur `transliteration_en`. Les 450+ zikrs nécessiteraient tous de nouveaux champs renseignés.
 
-### Ordre d'implémentation recommandé
-1. Refactoring du type `Zikr` + migration des données (translitération par langue) — prérequis bloquant
-2. Indonésien + Malais (même travail, double impact, zéro RTL)
-3. Turc
-4. Arabe (RTL — effort layout séparé)
-5. Bengali / Hindi / Ourdou (scripts propres ou RTL)
-6. Allemand / Russe (diaspora, moindre priorité)
+Stratégie par langue pour les 450+ zikrs :
+
+| Langue | Effort | Stratégie | Exemple : سُبْحَانَ اللهِ |
+|---|---|---|---|
+| Anglais (`en`) | 0 | Champ actuel renommé | `SubhanaLlah` |
+| Français (`fr`) | Moyen | `u`→`ou`, `h` muet marqué, voyelles longues | `Soubhânallâh` |
+| Allemand (`de`) | Faible | Quasi-identique à EN, `ü` pour voyelles longues | `SubhanaLlah` *(~identique)* |
+| Espagnol (`es`) | Faible | `h` inaudible en ES → convention `j` pour /h/ | `SubhanaLlah` *(h accepté)* |
+| Portugais (`pt`) | Faible | Très proche ES, voyelles nasales | `SubhanaLlah` *(h accepté)* |
+| Hindi (`hi`) | Élevé | Transcription Devanagari — génération assistée | `सुब्हानल्लाह` |
+
+Le hook `useT()` résoudrait la bonne clé selon `preferences.language`, avec fallback sur `transliteration_en`.
+
+### Plan d'implémentation Phase 1
+
+1. **Refactoring type `Zikr`** — renommer `transliteration` → `transliteration_en`, ajouter les 5 nouveaux champs dans `data/zikrs.ts` et mettre à jour tous les composants qui lisent `zikr.transliteration`
+2. **Remplissage données** — populer les 450+ zikrs avec les nouvelles translittérations (DE/ES/PT proches de EN ; HI nécessite génération Devanagari)
+3. **Store** — `language: "fr" | "en" | "de" | "es" | "pt" | "hi"`
+4. **Dictionnaires UI** — ajouter DE, ES, PT, HI dans `i18n/translations.ts` (~550 clés × 4 langues)
+5. **Hook** — `useT()` résout `transliteration_[lang]` avec fallback `transliteration_en`
+6. **Settings** — sélecteur langue passe à 6 options
+7. **SEO** — `hreflang` × 6, sitemap mis à jour

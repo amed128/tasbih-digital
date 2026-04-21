@@ -73,6 +73,27 @@ body[data-theme="emerald"] {
   --deco-accent-rgb: 143, 184, 160;
 }
 
+html[data-theme="midnight"],
+body[data-theme="midnight"] {
+  --background: #060C18;
+  --foreground: #EEF3FF;
+  --secondary: #6A82A8;
+  --primary: #D6E8FF;
+  --primary-rgb: 214, 232, 255;
+  --card: #0D1526;
+  --border: #1A2C4A;
+  --deco-opacity: 0.14;
+  --deco-accent-opacity: 0.09;
+  --deco-primary-rgb: 30, 100, 255;
+  --deco-accent-rgb: 80, 140, 255;
+}
+
+/* Carpet geometric pattern — only rendered on midnight theme */
+html[data-theme="midnight"] body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M40,27 L41.9,35.4 L49.2,30.8 L44.6,38.1 L53,40 L44.6,41.9 L49.2,49.2 L41.9,44.6 L40,53 L38.1,44.6 L30.8,49.2 L35.4,41.9 L27,40 L35.4,38.1 L30.8,30.8 L38.1,35.4 Z' fill='rgba(80,140,255,0.15)'/%3E%3Cpath d='M36,0 L40,4 L44,0 Z' fill='rgba(80,140,255,0.12)'/%3E%3Cpath d='M36,80 L40,76 L44,80 Z' fill='rgba(80,140,255,0.12)'/%3E%3Cpath d='M0,36 L4,40 L0,44 Z' fill='rgba(80,140,255,0.12)'/%3E%3Cpath d='M80,36 L76,40 L80,44 Z' fill='rgba(80,140,255,0.12)'/%3E%3C/svg%3E");
+  background-size: 80px 80px;
+}
+
 
 :root {
   --color-background: var(--background);

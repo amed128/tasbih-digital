@@ -6,7 +6,7 @@
 import { useSyncExternalStore } from "react";
 import { useTasbihStore } from "../store/tasbihStore";
 
-const PREMIUM_THEMES = new Set(["emerald", "obsidian"]);
+const PREMIUM_THEMES = new Set(["emerald", "obsidian", "midnight"]);
 
 export function ThemeDecorations() {
   const mounted = useSyncExternalStore(

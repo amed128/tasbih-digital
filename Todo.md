@@ -169,3 +169,68 @@
 - [ ] **FAQ JSON-LD sur `/aide`** — Ajouter un schema `FAQPage` pour que Google affiche les Q&A directement dans les résultats de recherche.
 - [ ] **Google Search Console** — Soumettre le sitemap sur `search.google.com/search-console` pour surveiller l'indexation et les performances.
 - [ ] **Smart App Banner iOS** — Ajouter `<meta name="apple-itunes-app">` dans `layout.tsx` une fois l'app publiée sur l'App Store.
+
+---
+
+## Internationalisation (i18n)
+
+### État actuel
+- 2 langues UI : **Français** (défaut) et **Anglais**
+- Translittération : champ unique `transliteration: string` par zikr — phonétique anglaise/latine, partagé par toutes les langues UI
+- Type store : `language: "fr" | "en"` (`store/tasbihStore.ts`)
+- 450+ zikrs dans `data/zikrs.ts` avec `translation_fr` + `translation_en` déjà séparés
+
+### Langues à ajouter — population musulmane × présence app stores
+
+#### 🔴 Tier 1 — Latin, sans RTL, impact maximal
+- [ ] **Indonésien (`id`)** — ~270M musulmans, Indonésie = top 3 Play Store mondial, script latin, zéro complexité layout
+- [ ] **Turc (`tr`)** — ~85M musulmans, Turquie = marché App Store/Play Store solide, script latin
+- [ ] **Malais (`ms`)** — ~20M musulmans (Malaisie + Brunei), quasi-identique à l'indonésien, trivial si `id` est fait
+
+#### 🟠 Tier 2 — Fort potentiel, RTL requis
+- [ ] **Arabe (`ar`)** — 330M locuteurs natifs / langue liturgique de 1,8Md de musulmans, fort sur App Store (pays du Golfe). Nécessite un full RTL layout pass sur toutes les pages. Translittération inutile pour les arabophones (lisent directement le script arabe)
+- [ ] **Ourdou (`ur`)** — ~170M musulmans (Pakistan = top 5 Play Store), script Nastaliq (RTL). Translittération rarement nécessaire (arabophones)
+- [ ] **Persan/Dari (`fa`)** — ~80M musulmans (Iran, Afghanistan), script Perso-arabe (RTL)
+
+#### 🟡 Tier 3 — Script propre, effort élevé
+- [ ] **Bengali (`bn`)** — ~170M musulmans (Bangladesh = marché Play Store en forte croissance), script Bengali propre
+- [ ] **Hindi (`hi`)** — ~200M musulmans en Inde (Play Store #1 mondial par téléchargements), script Devanagari
+
+#### 🔵 Diaspora / App Store occidentaux
+- [ ] **Allemand (`de`)** — ~5M musulmans en Allemagne (diaspora turque principalement), App Store top 5 Europe
+- [ ] **Russe (`ru`)** — ~20M musulmans (Tatarstan, Tchétchénie, Asie centrale russophone), Play Store top 5
+
+### Translittération par langue — refactoring requis
+
+Le champ actuel `transliteration: string` est en phonétique anglaise. Chaque langue latine lit les mêmes lettres différemment :
+
+| Langue | Problème | Exemple : سُبْحَانَ اللهِ |
+|---|---|---|
+| Anglais (actuel) | Base de référence | `SubhanaLlah` |
+| Français | `u` = /y/, `h` muet, `ou` = /u/ | `Soubhânallâh` |
+| Indonésien | Convention islamique KBBI établie | `Subhanallah` |
+| Turc | Harmonie vocalique, i/ı | `Sübhânellah` |
+| Arabe | Inutile — lit le script arabe directement | — |
+| Ourdou | Inutile — arabophones | — |
+
+**Refactoring nécessaire sur le type `Zikr` (`data/zikrs.ts`) :**
+```ts
+// Avant
+transliteration: string
+
+// Après
+transliteration_en: string
+transliteration_fr: string
+transliteration_id: string
+transliteration_tr: string
+// ar/ur/fa : pas de champ — script arabe lu directement
+```
+Le hook `useT()` résoudrait la bonne clé selon `preferences.language`, avec fallback sur `transliteration_en`. Les 450+ zikrs nécessiteraient tous de nouveaux champs renseignés.
+
+### Ordre d'implémentation recommandé
+1. Refactoring du type `Zikr` + migration des données (translitération par langue) — prérequis bloquant
+2. Indonésien + Malais (même travail, double impact, zéro RTL)
+3. Turc
+4. Arabe (RTL — effort layout séparé)
+5. Bengali / Hindi / Ourdou (scripts propres ou RTL)
+6. Allemand / Russe (diaspora, moindre priorité)

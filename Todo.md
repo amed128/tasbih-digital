@@ -106,6 +106,11 @@
 - [ ] **Marketing et réseaux sociaux** — Stratégie de publicité et de présence sur les réseaux (à discuter : plateformes cibles, contenu, budget, timing par rapport au lancement).
 - [x] **Monétisation — Thèmes premium** — Thème Émeraude implémenté (vert émeraude + or luxe). UI avec grille de cartes visuelles + modal achat dans Settings → Apparence. Disponible sur PWA pour l'instant avec endpoint d'achat factice.
   - [ ] **Avant production** — Restreindre les thèmes premium aux apps natives uniquement + connecter StoreKit (iOS) / Play Billing (Android). Supprimer l'accès PWA et l'endpoint factice.
+  - [ ] **Idées de thèmes premium concrets**
+    - [x] **Obsidian** — Quasi-noir avec halo ambiant violet subtil, primaire argent/blanc
+    - [ ] **Midnight** — Bleu marine profond, ambiance saphir, accents blanc glacé
+    - [ ] **Rose Gold** — Charbon chaud foncé, primaire or rose, bloom ambiant pêche
+    - [ ] **Sandstone** — Brun foncé chaud, primaire or vieilli, texture grain ambre
 - [x] **Page d'aide / FAQ** — Page `/aide` avec intro, 4 cartes de modes et accordion FAQ 9 questions (dont "À quoi sert la Sync optionnelle ?"). FR + EN.
 
 ## Backlog

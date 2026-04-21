@@ -11,7 +11,7 @@ const THEME_META_COLOR: Record<"light" | "dark" | "blue" | "emerald" | "obsidian
   blue: "#0B1118",
   emerald: "#04291E",
   obsidian: "#0D0D10",
-  midnight: "#060C18",
+  midnight: "#071020",
 };
 
 export function ThemeSync() {

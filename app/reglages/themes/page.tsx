@@ -56,10 +56,10 @@ const PREMIUM_MODAL_CONFIG: Record<PremiumTheme, PremiumModalConfig> = {
     descKey: "settings.premiumThemeObsidianModalDesc",
   },
   midnight: {
-    bg: "#0D1526",
-    border: "#1A2C4A",
-    previewBg: "#060C18",
-    previewBorder: "#1A2C4A",
+    bg: "#0C1A32",
+    border: "#17305A",
+    previewBg: "#071020",
+    previewBorder: "#17305A",
     primary: "#D6E8FF",
     secondary: "#6A82A8",
     previewColors: ["#D6E8FF", "#6A82A8", "#EEF3FF"],
@@ -114,10 +114,10 @@ const THEME_CARDS: ThemeCard[] = [
   {
     value: "midnight",
     labelKey: "settings.themeMidnight",
-    bg: "#060C18",
-    card: "#0D1526",
+    bg: "#071020",
+    card: "#0C1A32",
     primary: "#D6E8FF",
-    border: "#1A2C4A",
+    border: "#17305A",
     premium: "midnight",
   },
 ];
@@ -147,7 +147,7 @@ export default function ThemesPage() {
       blue: "#0B1118",
       emerald: "#04291E",
       obsidian: "#0D0D10",
-      midnight: "#060C18",
+      midnight: "#071020",
     };
     const themeMeta = document.querySelector('meta[name="theme-color"]');
     if (themeMeta) themeMeta.setAttribute("content", colors[theme]);

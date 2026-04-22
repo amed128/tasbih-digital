@@ -22,6 +22,7 @@ export type Zikr = {
   translation_pt?: string;
   translation_hi?: string;
   transliteration_de?: string;
+  transliteration_es?: string;
   defaultTarget: number;
   category: ZikrCategory;
 };
@@ -48,6 +49,15 @@ export function getTransliteration(zikr: Zikr, lang: string): string {
       .replace(/J/g, "Dsch")
       .replace(/y/g, "j")
       .replace(/Y/g, "J");
+  }
+  if (lang === "es") {
+    if (zikr.transliteration_es) return zikr.transliteration_es;
+    // Auto-convert English phonetics to Spanish phonetics
+    return zikr.transliteration
+      .replace(/kh/g, "j")
+      .replace(/Kh/g, "J")
+      .replace(/j/g, "y")
+      .replace(/J/g, "Y");
   }
   return zikr.transliteration;
 }

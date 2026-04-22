@@ -4,7 +4,7 @@ import { useEffect, useEffectEvent, useMemo, useRef, useState, useSyncExternalSt
 import { AnimatePresence, motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import { useTasbihStore } from "../store/tasbihStore";
-import { DEFAULT_LIST_ID, zikrs } from "../data/zikrs";
+import { DEFAULT_LIST_ID, zikrs, getTransliteration } from "../data/zikrs";
 import { useT } from "@/hooks/useT";
 import { CircleProgress } from "../components/CircleProgress";
 import { BottomNav } from "../components/BottomNav";
@@ -550,7 +550,7 @@ export default function Home() {
         (acc, [category, items]) => {
           const matchCategory = matchesSearch(category);
           const matchedItems = items.filter(
-            (d) => matchesSearch(d.arabic) || matchesSearch(d.transliteration)
+            (d) => matchesSearch(d.arabic) || matchesSearch(getTransliteration(d, preferences.language))
           );
           if (matchCategory || matchedItems.length > 0) {
             acc.push([category, matchCategory ? items : matchedItems]);
@@ -569,7 +569,7 @@ export default function Home() {
             .map((id) => zikrs.find((d) => d.id === id))
             .filter(Boolean) as typeof zikrs;
           const matchedItems = items.filter(
-            (d) => matchesSearch(d.arabic) || matchesSearch(d.transliteration)
+            (d) => matchesSearch(d.arabic) || matchesSearch(getTransliteration(d, preferences.language))
           );
           if (matchListId || matchedItems.length > 0) {
             acc[listId] = matchListId ? ids : matchedItems.map((d) => d.id);
@@ -637,14 +637,9 @@ export default function Home() {
     return Array.from(candidates)
       .map((value) => value.trim())
       .filter((value) => value.length > 0);
-  }, [
-    currentZikr?.arabic,
-    currentZikr?.transliteration,
-    currentZikr?.translation_en,
-    currentZikr?.translation_fr,
-  ]);
+  }, [currentZikr]);
 
-  const targetDisplayText = currentZikr?.arabic || currentZikr?.transliteration || "";
+  const targetDisplayText = currentZikr?.arabic || (currentZikr ? getTransliteration(currentZikr, preferences.language) : undefined) || "";
   const showSpeechDebug = audioDebugTelemetry;
   const normalizedAudioTranscript = normalizePronouncedText(audioTranscript);
   const maxSpeechTargetWords = useMemo(
@@ -1760,7 +1755,7 @@ export default function Home() {
                           >
                             <div className="min-w-0 flex-1">
                               <span className="truncate text-base leading-tight">{highlightMatch(d.arabic)}</span>
-                              <span className="mt-0.5 block truncate text-sm text-gray-400">{highlightMatch(d.transliteration)}</span>
+                              <span className="mt-0.5 block truncate text-sm text-gray-400">{highlightMatch(getTransliteration(d, preferences.language))}</span>
                             </div>
                             <span className="ml-3 w-14 flex-shrink-0 self-center text-right text-sm text-gray-500 tabular-nums">×{d.defaultTarget}</span>
                           </button>
@@ -1856,7 +1851,7 @@ export default function Home() {
                             >
                               <div className="min-w-0 flex-1">
                                 <span className="truncate text-base leading-tight">{highlightMatch(d.arabic)}</span>
-                                <span className="truncate text-sm text-[var(--secondary)]">{highlightMatch(d.transliteration)}</span>
+                                <span className="truncate text-sm text-[var(--secondary)]">{highlightMatch(getTransliteration(d, preferences.language))}</span>
                               </div>
                               <span className="ml-3 w-14 flex-shrink-0 self-center text-right text-sm text-[var(--secondary)] tabular-nums">×{d.defaultTarget}</span>
                             </button>
@@ -1982,8 +1977,8 @@ export default function Home() {
         chipTextFormat === "arabic"
           ? zikr.arabic
           : chipTextFormat === "both"
-            ? `${zikr.transliteration} - ${zikr.arabic}`
-            : zikr.transliteration;
+            ? `${getTransliteration(zikr, preferences.language)} - ${zikr.arabic}`
+            : getTransliteration(zikr, preferences.language);
 
       return (
         <div
@@ -2054,7 +2049,7 @@ export default function Home() {
               {(zikrDisplayFormat === "translit+arabic" || zikrDisplayFormat === "translit" || !zikrDisplayFormat) && (
                 <>
                   <div className="text-[2rem] font-bold text-[var(--primary)]">
-                    {currentZikr.transliteration}
+                    {getTransliteration(currentZikr, preferences.language)}
                   </div>
                   {zikrDisplayFormat !== "translit" && (
                     <div className="mt-2 text-sm text-[var(--secondary)]">{currentZikr.arabic}</div>
@@ -2067,7 +2062,7 @@ export default function Home() {
                     {currentZikr.arabic}
                   </div>
                   {zikrDisplayFormat !== "arabic" && (
-                    <div className="mt-2 text-sm text-[var(--secondary)]">{currentZikr.transliteration}</div>
+                    <div className="mt-2 text-sm text-[var(--secondary)]">{getTransliteration(currentZikr, preferences.language)}</div>
                   )}
                 </>
               )}

@@ -637,7 +637,7 @@ export default function Home() {
     return Array.from(candidates)
       .map((value) => value.trim())
       .filter((value) => value.length > 0);
-  }, [currentZikr, preferences.language]);
+  }, [currentZikr]);
 
   const targetDisplayText = currentZikr?.arabic || (currentZikr ? getTransliteration(currentZikr, preferences.language) : undefined) || "";
   const showSpeechDebug = audioDebugTelemetry;

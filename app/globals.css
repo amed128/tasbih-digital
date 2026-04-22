@@ -63,14 +63,25 @@ body[data-theme="emerald"] {
   --background: #04291E;
   --foreground: #F5F0E8;
   --secondary: #8FB8A0;
-  --primary: #FDE68A;
-  --primary-rgb: 253, 230, 138;
-  --card: #0A3D2B;
-  --border: #1A5C40;
+  --primary: #7DF9CB; /* Mint green for progress ring and active states */
+  --primary-rgb: 125, 249, 203;
+  --card: rgba(10, 61, 43, 0.45); /* Glassmorphism card */
+  --border: rgba(26, 92, 64, 0.5);
   --deco-opacity: 0.10;
   --deco-accent-opacity: 0.07;
-  --deco-primary-rgb: 253, 230, 138;
+  --deco-primary-rgb: 125, 249, 203;
   --deco-accent-rgb: 143, 184, 160;
+  /* Specific tokens for the golden tap button */
+  --tap-button-bg: linear-gradient(135deg, #FDE68A 0%, #D97706 100%);
+  --tap-button-color: #451A03;
+}
+
+html[data-theme="emerald"] body {
+  background-image: url("/emerald-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 html[data-theme="midnight"],
@@ -107,6 +118,10 @@ html[data-theme="midnight"] body {
   --danger-border: #E7B4B4;
   --restore: #2E7D32;
   --restore-border: #A5D6A7;
+  
+  /* Tap button defaults */
+  --tap-button-bg: var(--primary);
+  --tap-button-color: #000000;
 }
 
 html,

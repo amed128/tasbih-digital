@@ -1906,12 +1906,15 @@ export default function Home() {
             disabled={isCompleted}
             whileTap={{ scale: 0.95 }}
             animate={{
-              backgroundColor: isCompleted ? "var(--card)" : "var(--primary)",
-              color: isCompleted ? "#9CA3AF" : "#000000",
               opacity: isCompleted ? 0.55 : 1,
             }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            style={{ paddingTop: tapButtonSize === "triple" ? "3.75rem" : tapButtonSize === "double" ? "2.5rem" : "1.25rem", paddingBottom: tapButtonSize === "triple" ? "3.75rem" : tapButtonSize === "double" ? "2.5rem" : "1.25rem" }}
+            style={{ 
+              background: isCompleted ? "var(--card)" : "var(--tap-button-bg)",
+              color: isCompleted ? "var(--secondary)" : "var(--tap-button-color)",
+              paddingTop: tapButtonSize === "triple" ? "3.75rem" : tapButtonSize === "double" ? "2.5rem" : "1.25rem", 
+              paddingBottom: tapButtonSize === "triple" ? "3.75rem" : tapButtonSize === "double" ? "2.5rem" : "1.25rem" 
+            }}
             className={`w-full rounded-xl px-6 text-lg font-bold shadow-sm transition hover:brightness-110 active:brightness-95 ${isCompleted ? "pointer-events-none cursor-not-allowed" : ""}`}
           >
             {t("counter.tap")}
@@ -2106,12 +2109,15 @@ export default function Home() {
               disabled={isCompleted}
               whileTap={{ scale: 0.95 }}
               animate={{
-                backgroundColor: isCompleted ? "var(--card)" : "var(--primary)",
-                color: isCompleted ? "#9CA3AF" : "#000000",
                 opacity: isCompleted ? 0.55 : 1,
               }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              style={{ paddingTop: tapButtonSize === "triple" ? "3.75rem" : tapButtonSize === "double" ? "2.5rem" : "1.25rem", paddingBottom: tapButtonSize === "triple" ? "3.75rem" : tapButtonSize === "double" ? "2.5rem" : "1.25rem" }}
+              style={{ 
+                background: isCompleted ? "var(--card)" : "var(--tap-button-bg)",
+                color: isCompleted ? "var(--secondary)" : "var(--tap-button-color)",
+                paddingTop: tapButtonSize === "triple" ? "3.75rem" : tapButtonSize === "double" ? "2.5rem" : "1.25rem", 
+                paddingBottom: tapButtonSize === "triple" ? "3.75rem" : tapButtonSize === "double" ? "2.5rem" : "1.25rem" 
+              }}
               className={`w-full rounded-xl px-6 text-lg font-bold shadow-sm transition hover:brightness-110 active:brightness-95 ${isCompleted ? "pointer-events-none cursor-not-allowed" : ""}`}
             >
               {t("counter.tap")}

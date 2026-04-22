@@ -185,7 +185,7 @@ export default function ThemesPage() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+    <div className="min-h-screen  text-[var(--foreground)]">
       <motion.main
         className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6"
         initial={{ opacity: 0, y: 10 }}
@@ -272,7 +272,7 @@ export default function ThemesPage() {
             type="button"
             onClick={handleRestore}
             disabled={restoring}
-            className="rounded-xl border border-[var(--restore-border)] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--restore)] transition hover:border-[var(--restore)] disabled:opacity-60"
+            className="rounded-xl border border-[var(--restore-border)]  px-4 py-2 text-sm font-semibold text-[var(--restore)] transition hover:border-[var(--restore)] disabled:opacity-60"
           >
             {restoring ? "…" : t("settings.themeRestorePurchases")}
           </button>

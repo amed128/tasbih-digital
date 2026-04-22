@@ -15,7 +15,7 @@ export default function SelectionModeSettings() {
   const setZikrDisplayFormat = useTasbihStore((s) => s.setZikrDisplayFormat);
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+    <div className="min-h-screen  text-[var(--foreground)]">
       <main className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6">
         <header className="flex flex-col gap-1">
           <Link href="/reglages" className="mb-1 text-sm font-medium text-[var(--primary)]">
@@ -48,7 +48,7 @@ export default function SelectionModeSettings() {
             className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
               (preferences.autoAdvanceNextZikr ?? false)
                 ? "bg-[var(--primary)] text-black"
-                : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+                : " border border-[var(--border)] text-[var(--foreground)]"
             }`}
           >
             {(preferences.autoAdvanceNextZikr ?? false) ? t("settings.on") : t("settings.off")}
@@ -67,7 +67,7 @@ export default function SelectionModeSettings() {
             className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
               (preferences.resetOnPrev ?? true)
                 ? "bg-[var(--primary)] text-black"
-                : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+                : " border border-[var(--border)] text-[var(--foreground)]"
             }`}
           >
             {(preferences.resetOnPrev ?? true) ? t("settings.on") : t("settings.off")}
@@ -86,7 +86,7 @@ export default function SelectionModeSettings() {
             className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
               (preferences.allowTargetEditInListMode ?? false)
                 ? "bg-[var(--primary)] text-[var(--background)]"
-                : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+                : " border border-[var(--border)] text-[var(--foreground)]"
             }`}
           >
             {(preferences.allowTargetEditInListMode ?? false) ? t("settings.on") : t("settings.off")}
@@ -102,7 +102,7 @@ export default function SelectionModeSettings() {
           <select
             value={preferences.chipTextFormat}
             onChange={(e) => setChipTextFormat(e.target.value as import("@/store/tasbihStore").ChipTextFormat)}
-            className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+            className="rounded-lg border border-[var(--border)]  px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
             aria-label={t("settings.ariaChipTextFormat")}
           >
             {['transliteration','arabic','both'].map((option) => (
@@ -122,7 +122,7 @@ export default function SelectionModeSettings() {
           <select
             value={preferences.zikrDisplayFormat ?? "translit+arabic"}
             onChange={(e) => setZikrDisplayFormat(e.target.value as import("@/store/tasbihStore").ZikrDisplayFormat)}
-            className="w-36 shrink-0 truncate rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+            className="w-36 shrink-0 truncate rounded-lg border border-[var(--border)]  px-3 py-2 text-sm font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
             aria-label={t("settings.zikrDisplayFormatTitle")}
           >
             {(["translit+arabic", "arabic+translit", "translit", "arabic"] as const).map((option) => (

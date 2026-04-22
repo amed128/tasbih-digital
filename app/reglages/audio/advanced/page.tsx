@@ -32,7 +32,7 @@ export default function AdvancedAudioSettingsPage() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+    <div className="min-h-screen  text-[var(--foreground)]">
       <motion.main
         className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6"
         initial={{ opacity: 0, y: 10 }}
@@ -184,7 +184,7 @@ export default function AdvancedAudioSettingsPage() {
                     <select
                       value={preferences.activeCustomProfileId ?? ""}
                       onChange={(e) => setActiveCustomProfile(e.target.value || undefined)}
-                      className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)]"
+                      className="rounded-lg border border-[var(--border)]  px-3 py-2 text-sm font-semibold text-[var(--foreground)]"
                     >
                       <option value="">{t("settings.customProfilesUseBuiltIn")}</option>
                       {preferences.customProfiles.map((profile) => (
@@ -225,7 +225,7 @@ export default function AdvancedAudioSettingsPage() {
                   value={customProfileName}
                   onChange={(e) => setCustomProfileName(e.target.value)}
                   placeholder={t("settings.customProfilesNamePlaceholder")}
-                  className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)]"
+                  className="rounded-lg border border-[var(--border)]  px-3 py-2 text-sm text-[var(--foreground)]"
                 />
               </div>
 
@@ -270,7 +270,7 @@ export default function AdvancedAudioSettingsPage() {
               className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
                 preferences.audioDebugTelemetry
                   ? "bg-[var(--primary)] text-[var(--background)]"
-                  : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
+                  : "border border-[var(--border)]  text-[var(--foreground)]"
               }`}
             >
               {preferences.audioDebugTelemetry ? t("settings.on") : t("settings.off")}

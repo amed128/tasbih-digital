@@ -8,7 +8,7 @@ import { SettingsHeader } from "../../../components/SettingsHeader";
 export default function GeneralSettingsPage() {
   const t = useT();
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+    <div className="min-h-screen  text-[var(--foreground)]">
       <main className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6">
         <SettingsHeader
           backLabel={t("about.back")}

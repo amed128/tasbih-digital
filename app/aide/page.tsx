@@ -79,7 +79,7 @@ export default function AidePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+    <div className="min-h-screen  text-[var(--foreground)]">
       <motion.main
         className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6"
         initial={{ opacity: 0, y: 10 }}

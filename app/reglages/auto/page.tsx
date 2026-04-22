@@ -33,7 +33,7 @@ export default function AutoCounterSettings() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+    <div className="min-h-screen  text-[var(--foreground)]">
       <motion.main
         className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6"
         initial={{ opacity: 0, y: 10 }}
@@ -69,7 +69,7 @@ export default function AutoCounterSettings() {
             className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
               preferences.autoCounterDefaultEnabled
                 ? "bg-[var(--primary)] text-black"
-                : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+                : " border border-[var(--border)] text-[var(--foreground)]"
             }`}
             aria-pressed={preferences.autoCounterDefaultEnabled}
             aria-label={t("autoCounterDefaultEnabledTitle")}
@@ -100,7 +100,7 @@ export default function AutoCounterSettings() {
                   setAutoCounterDefaultSpeed(Number(e.target.value));
                 }
               }}
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+              className="rounded-lg border border-[var(--border)]  px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
             >
               <option value={500}>0.5s</option>
               <option value={1000}>1s</option>
@@ -133,7 +133,7 @@ export default function AutoCounterSettings() {
                     setRawInput(String(clamped));
                     setAutoCounterDefaultSpeed(clamped * 1000);
                   }}
-                  className="w-24 rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+                  className="w-24 rounded-lg border border-[var(--border)]  px-2 py-1 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
                 />
               </div>
               <div className="text-xs text-[var(--secondary)]">{t("settings.autoCounterMaxSpeedHint")}</div>
@@ -152,7 +152,7 @@ export default function AutoCounterSettings() {
             className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
               preferences.autoCounterResumeAfterReset
                 ? "bg-[var(--primary)] text-black"
-                : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+                : " border border-[var(--border)] text-[var(--foreground)]"
             }`}
             aria-pressed={preferences.autoCounterResumeAfterReset}
             aria-label={t("autoCounterResumeAfterResetTitle")}
@@ -172,7 +172,7 @@ export default function AutoCounterSettings() {
             className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
               preferences.autoCounterStopAtGoal
                 ? "bg-[var(--primary)] text-black"
-                : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+                : " border border-[var(--border)] text-[var(--foreground)]"
             }`}
             aria-pressed={preferences.autoCounterStopAtGoal}
             aria-label={t("autoCounterStopAtGoalTitle")}
@@ -192,7 +192,7 @@ export default function AutoCounterSettings() {
             className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
               preferences.autoCounterEntryAutoStart
                 ? "bg-[var(--primary)] text-black"
-                : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+                : " border border-[var(--border)] text-[var(--foreground)]"
             }`}
             aria-pressed={preferences.autoCounterEntryAutoStart}
             aria-label={t("autoCounterEntryAutoStartTitle")}

@@ -305,7 +305,7 @@ export default function StatsPage() {
   }, [stats.history, historyRangeMode, historyDate, last30StartKey, todayKey]);
 
   if (!mounted) return (
-    <div className="min-h-screen bg-[var(--background)]">
+    <div className="min-h-screen ">
       <div className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6 animate-pulse">
         <div className="h-6 w-32 rounded-lg bg-[var(--card)]" />
         <div className="h-32 rounded-2xl bg-[var(--card)]" />
@@ -319,7 +319,7 @@ export default function StatsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+    <div className="min-h-screen  text-[var(--foreground)]">
       <motion.main
         className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6"
         initial={{ opacity: 0, y: 10 }}
@@ -497,7 +497,7 @@ export default function StatsPage() {
           <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="text-sm font-semibold text-[var(--secondary)]">{t("stats.historyTitle")}</div>
-              <div className="inline-flex rounded-xl border border-[var(--border)] bg-[var(--background)] p-1">
+              <div className="inline-flex rounded-xl border border-[var(--border)]  p-1">
                 {([
                   { key: "day", label: t("stats.filterDay") },
                   { key: "week", label: t("stats.filterWeek") },
@@ -531,7 +531,7 @@ export default function StatsPage() {
                   min={last30StartKey}
                   max={todayKey}
                   onChange={(e) => setHistoryDate(e.target.value)}
-                  className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-2.5 py-1.5 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+                  className="rounded-lg border border-[var(--border)]  px-2.5 py-1.5 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
                 />
               </div>
             ) : null}
@@ -545,7 +545,7 @@ export default function StatsPage() {
                   return (
                     <div
                       key={entry.id}
-                      className="flex items-center justify-between rounded-xl bg-[var(--background)] px-3 py-2"
+                      className="flex items-center justify-between rounded-xl  px-3 py-2"
                     >
                       <div>
                         <div className="text-sm text-[var(--foreground)]">
@@ -566,7 +566,7 @@ export default function StatsPage() {
           <button
             type="button"
             onClick={() => setShowResetConfirm(true)}
-            className="rounded-xl border border-[var(--danger-border)] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--danger)] transition hover:border-[var(--danger)]"
+            className="rounded-xl border border-[var(--danger-border)]  px-4 py-2 text-sm font-semibold text-[var(--danger)] transition hover:border-[var(--danger)]"
           >
             {t("stats.resetStats")}
           </button>
@@ -586,7 +586,7 @@ export default function StatsPage() {
         body={t("stats.resetConfirmBody")}
         cancelLabel={t("stats.resetConfirmCancel")}
         confirmLabel={t("stats.resetConfirmConfirm")}
-        confirmClassName="flex-1 rounded-xl border border-[var(--danger-border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--danger)]"
+        confirmClassName="flex-1 rounded-xl border border-[var(--danger-border)]  px-3 py-2 text-sm font-semibold text-[var(--danger)]"
         onCancel={() => setShowResetConfirm(false)}
         onConfirm={handleResetStatsConfirm}
       />

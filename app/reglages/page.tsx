@@ -150,7 +150,7 @@ export default function ReglagesPage() {
   };
 
   if (!mounted) return (
-    <div className="min-h-screen bg-[var(--background)]">
+    <div className="min-h-screen ">
       <div className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6 animate-pulse">
         <div className="h-6 w-24 rounded-lg bg-[var(--card)]" />
         {[...Array(5)].map((_, i) => <div key={i} className="h-14 rounded-2xl bg-[var(--card)]" />)}
@@ -160,7 +160,7 @@ export default function ReglagesPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+    <div className="min-h-screen  text-[var(--foreground)]">
       <motion.main
         className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6"
         initial={{ opacity: 0, y: 10 }}
@@ -261,8 +261,8 @@ export default function ReglagesPage() {
                 disabled={notificationPermission === "granted"}
                 className={`self-start rounded-xl border border-[var(--border)] px-4 py-2 text-sm font-semibold transition ${
                   notificationPermission === "granted"
-                    ? "cursor-not-allowed bg-[var(--background)] text-[var(--secondary)] opacity-50"
-                    : "bg-[var(--background)] text-[var(--foreground)]"
+                    ? "cursor-not-allowed  text-[var(--secondary)] opacity-50"
+                    : " text-[var(--foreground)]"
                 }`}
               >
                 {t("settings.remindersAskPermission")}
@@ -298,7 +298,7 @@ export default function ReglagesPage() {
                 className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
                   preferences.remindersEnabled
                     ? "bg-[var(--primary)] text-black"
-                    : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+                    : " border border-[var(--border)] text-[var(--foreground)]"
                 } ${notificationPermission !== "granted" ? "cursor-not-allowed opacity-50" : ""}`}
               >
                 {preferences.remindersEnabled ? t("settings.on") : t("settings.off")}
@@ -315,7 +315,7 @@ export default function ReglagesPage() {
                     const next = stringToTime(e.target.value);
                     setReminderTimes([next]);
                   }}
-                  className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+                  className="rounded-lg border border-[var(--border)]  px-3 py-2 text-sm font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
                 />
               </div>
             ) : null}
@@ -328,7 +328,7 @@ export default function ReglagesPage() {
                 className={`w-full rounded-xl px-4 py-2 text-sm font-semibold ${
                   notificationPermission === "granted"
                     ? "bg-[var(--primary)] text-black"
-                    : "cursor-not-allowed border border-[var(--border)] bg-[var(--background)] text-[var(--secondary)] opacity-50"
+                    : "cursor-not-allowed border border-[var(--border)]  text-[var(--secondary)] opacity-50"
                 }`}
               >
                 {t("settings.remindersTest")}
@@ -349,7 +349,7 @@ export default function ReglagesPage() {
               className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
                 preferences.optionalSyncEnabled
                   ? "bg-[var(--primary)] text-black"
-                  : "bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"
+                  : " border border-[var(--border)] text-[var(--foreground)]"
               }`}
             >
               {preferences.optionalSyncEnabled ? t("settings.on") : t("settings.off")}
@@ -362,7 +362,7 @@ export default function ReglagesPage() {
                 <button
                   type="button"
                   onClick={handleGenerateSyncCode}
-                  className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
+                  className="flex-1 rounded-xl border border-[var(--border)]  px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
                 >
                   {t("settings.syncGenerate")}
                 </button>
@@ -375,7 +375,7 @@ export default function ReglagesPage() {
                   className={`flex-1 rounded-xl px-4 py-2 text-sm font-semibold ${
                     syncCode
                       ? "bg-[var(--primary)] text-black"
-                      : "cursor-not-allowed border border-[var(--border)] bg-[var(--background)] text-[var(--secondary)]"
+                      : "cursor-not-allowed border border-[var(--border)]  text-[var(--secondary)]"
                   }`}
                 >
                   {t("settings.syncCopy")}
@@ -386,13 +386,13 @@ export default function ReglagesPage() {
                 value={syncCode}
                 onChange={(e) => setSyncCode(e.target.value)}
                 placeholder={t("settings.syncPlaceholder")}
-                className="mt-3 min-h-[90px] w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-xs text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+                className="mt-3 min-h-[90px] w-full rounded-xl border border-[var(--border)]  px-3 py-2 text-xs text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
               />
 
               <button
                 type="button"
                 onClick={handleImportSyncCode}
-                className="mt-2 w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
+                className="mt-2 w-full rounded-xl border border-[var(--border)]  px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
               >
                 {t("settings.syncImport")}
               </button>
@@ -407,7 +407,7 @@ export default function ReglagesPage() {
           <button
             type="button"
             onClick={() => setShowRestoreConfirm(true)}
-            className="rounded-xl border border-[var(--restore-border)] bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--restore)] transition hover:border-[var(--restore)]"
+            className="rounded-xl border border-[var(--restore-border)]  px-4 py-2 text-sm font-semibold text-[var(--restore)] transition hover:border-[var(--restore)]"
           >
             {t("settings.restoreDefaults")}
           </button>
@@ -454,7 +454,7 @@ export default function ReglagesPage() {
         body={t("settings.restoreDefaultsConfirmBody")}
         cancelLabel={t("settings.restoreDefaultsConfirmCancel")}
         confirmLabel={t("settings.restoreDefaultsConfirmConfirm")}
-        confirmClassName="flex-1 rounded-xl border border-[var(--restore-border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--restore)]"
+        confirmClassName="flex-1 rounded-xl border border-[var(--restore-border)]  px-3 py-2 text-sm font-semibold text-[var(--restore)]"
         onCancel={() => setShowRestoreConfirm(false)}
         onConfirm={handleRestoreDefaultSettings}
       />

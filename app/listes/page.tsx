@@ -585,7 +585,7 @@ export default function ListesPage() {
   const categoryEntries = Array.from(categories.entries());
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[var(--background)] text-[var(--foreground)]">
+    <div className="min-h-screen overflow-x-hidden  text-[var(--foreground)]">
       <div className="border-b border-[var(--border)]">
         <div className="mx-auto flex h-18 w-full max-w-md items-center justify-center gap-2 px-4">
           <span className="text-2xl text-[var(--primary)]">☽</span>
@@ -635,7 +635,7 @@ export default function ListesPage() {
                     onChange={(e) => setSearch(e.target.value)}
                     onBlur={(e) => setSearch(e.target.value.trim())}
                     placeholder={t("lists.searchPlaceholder")}
-                    className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] py-2.5 pl-11 pr-4 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
+                    className="w-full rounded-2xl border border-[var(--border)]  py-2.5 pl-11 pr-4 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
                   />
                 </div>
               </div>
@@ -673,7 +673,7 @@ export default function ListesPage() {
                                 type="button"
                                 key={d.id}
                                 onClick={() => setSelectedLibraryZikr(d)}
-                                className="group w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 text-left transition hover:border-[#3E3E3E]"
+                                className="group w-full rounded-xl border border-[var(--border)]  px-3 py-2.5 text-left transition hover:border-[#3E3E3E]"
                               >
                                 <div className="text-[0.95rem] font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">{d.arabic}</div>
                                 <div className="mt-0.5 flex items-center justify-between gap-3 text-[var(--secondary)]">
@@ -741,7 +741,7 @@ export default function ListesPage() {
                     </div>
 
                     {expanded && (
-                      <div className="space-y-2 border-t border-[var(--border)] bg-[var(--background)] px-5 py-3">
+                      <div className="space-y-2 border-t border-[var(--border)]  px-5 py-3">
                         {preset.zikrIds.map((zikrId) => {
                           const zikr = allZikrsById.get(zikrId);
                           if (!zikr) return null;
@@ -865,7 +865,7 @@ export default function ListesPage() {
                     </div>
 
                     {expanded && (
-                      <div className="space-y-2 border-t border-[var(--border)] bg-[var(--background)] px-5 py-3">
+                      <div className="space-y-2 border-t border-[var(--border)]  px-5 py-3">
                         {items.length === 0 ? (
                           <div className="text-sm text-[var(--secondary)]">{t("lists.noZikrInList")}</div>
                         ) : (
@@ -955,7 +955,7 @@ export default function ListesPage() {
                           if (isManual) startEditingManualZikr(zikr);
                           else startEditingLibraryZikrModal(zikr, displayTarget);
                         }}
-                        className="flex items-center justify-between rounded-2xl border bg-[var(--background)] px-3 py-2 cursor-pointer border-[var(--primary)]/40 hover:border-[var(--primary)]"
+                        className="flex items-center justify-between rounded-2xl border  px-3 py-2 cursor-pointer border-[var(--primary)]/40 hover:border-[var(--primary)]"
                       >
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
@@ -1007,13 +1007,13 @@ export default function ListesPage() {
                   value={manualArabic}
                   onChange={(e) => handleManualArabicChange(e.target.value)}
                   placeholder={t("lists.arabicPlaceholder")}
-                  className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
+                  className="w-full rounded-2xl border border-[var(--border)]  px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
                 />
                 <input
                   value={manualTranslit}
                   onChange={(e) => handleManualTranslitChange(e.target.value)}
                   placeholder={t("lists.translitPlaceholder")}
-                  className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
+                  className="w-full rounded-2xl border border-[var(--border)]  px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
                 />
                 {manualArabicSuggestion ? (
                   <p className="text-xs text-[var(--primary)]">
@@ -1030,7 +1030,7 @@ export default function ListesPage() {
                     min="1"
                     value={manualReps}
                     onChange={(e) => setManualReps(e.target.value)}
-                    className="w-36 rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-[2rem] font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+                    className="w-36 rounded-2xl border border-[var(--border)]  px-4 py-2 text-[2rem] font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
                   />
                 </div>
                 <p className="text-xs text-[var(--secondary)]">{t("lists.manualHint")}</p>
@@ -1065,9 +1065,9 @@ export default function ListesPage() {
                     onChange={(e) => setCreateSearchQuery(e.target.value)}
                     onBlur={(e) => setCreateSearchQuery(e.target.value.trim())}
                     placeholder={t("lists.searchInLibrary")}
-                    className="w-full rounded-xl bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]"
+                    className="w-full rounded-xl  px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]"
                   />
-                  <div className="max-h-52 space-y-1 overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--background)] p-2">
+                  <div className="max-h-52 space-y-1 overflow-y-auto rounded-xl border border-[var(--border)]  p-2">
                     {Array.from(createCategories.entries()).map(([category, items]) => {
                       const expanded = createCategoryExpanded[category] ?? false;
                       return (
@@ -1191,13 +1191,13 @@ export default function ListesPage() {
               value={manualArabic}
               onChange={(e) => handleManualArabicChange(e.target.value)}
               placeholder={t("lists.arabicPlaceholder")}
-              className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
+              className="w-full rounded-2xl border border-[var(--border)]  px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
             />
             <input
               value={manualTranslit}
               onChange={(e) => handleManualTranslitChange(e.target.value)}
               placeholder={t("lists.translitPlaceholder")}
-              className="w-full rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
+              className="w-full rounded-2xl border border-[var(--border)]  px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
             />
             {manualArabicSuggestion ? (
               <p className="text-xs text-[var(--primary)]">
@@ -1214,7 +1214,7 @@ export default function ListesPage() {
                 min="1"
                 value={manualReps}
                 onChange={(e) => setManualReps(e.target.value)}
-                className="w-36 rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-[2rem] font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+                className="w-36 rounded-2xl border border-[var(--border)]  px-4 py-2 text-[2rem] font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
               />
             </div>
           </div>
@@ -1249,7 +1249,7 @@ export default function ListesPage() {
               min="1"
               value={libEditRepsInput}
               onChange={(e) => setLibEditRepsInput(e.target.value)}
-              className="w-36 rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 py-2 text-[2rem] font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+              className="w-36 rounded-2xl border border-[var(--border)]  px-4 py-2 text-[2rem] font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
               autoFocus
             />
           </div>

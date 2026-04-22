@@ -614,7 +614,7 @@ export default function Home() {
 
   const normalizedSpeechTargets = useMemo(() => {
     const arabic = normalizePronouncedText(currentZikr?.arabic ?? "");
-    const transliteration = normalizePronouncedText((currentZikr ? getTransliteration(currentZikr, preferences.language) : undefined) ?? "");
+    const transliteration = normalizePronouncedText(currentZikr?.transliteration ?? "");
     const englishTranslation = normalizePronouncedText(currentZikr?.translation_en ?? "");
     const frenchTranslation = normalizePronouncedText(currentZikr?.translation_fr ?? "");
 

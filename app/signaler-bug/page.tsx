@@ -119,7 +119,7 @@ setStatus("success");
               }}
               placeholder={t("about.bugForm.placeholder")}
               rows={6}
-              className="w-full resize-none rounded-xl bg-[var(--background)] p-3 text-sm text-[var(--foreground)] placeholder:text-[var(--secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className="w-full resize-none rounded-xl  p-3 text-sm text-[var(--foreground)] placeholder:text-[var(--secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
             />
             {status === "error" && (
               <p className="text-xs text-[var(--danger)]">{errorMsg}</p>

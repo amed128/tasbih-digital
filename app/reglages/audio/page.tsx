@@ -54,7 +54,7 @@ export default function AudioSettingsPage() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+    <div className="min-h-screen  text-[var(--foreground)]">
       <motion.main
         className="mx-auto flex max-w-md flex-col gap-5 px-5 pb-32 pt-6"
         initial={{ opacity: 0, y: 10 }}
@@ -95,7 +95,7 @@ export default function AudioSettingsPage() {
               onChange={(e) =>
                 setSpeechRecognitionLanguage(e.target.value as SpeechRecognitionLanguage)
               }
-              className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
+              className="rounded-xl border border-[var(--border)]  px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
               aria-label={t("settings.ariaSpeechRecognitionLanguage")}
             >
               {speechRecognitionLanguageOptions.map((option) => (
@@ -118,7 +118,7 @@ export default function AudioSettingsPage() {
             <select
               value={preferences.speechTolerance}
               onChange={(e) => setSpeechTolerance(e.target.value as SpeechTolerance)}
-              className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
+              className="rounded-xl border border-[var(--border)]  px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
               aria-label={t("settings.ariaSpeechTolerance")}
             >
               {speechToleranceOptions.map((option) => (
@@ -148,7 +148,7 @@ export default function AudioSettingsPage() {
               className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
                 preferences.blurActionControlsWhileListening
                   ? "bg-[var(--primary)] text-[var(--background)]"
-                  : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
+                  : "border border-[var(--border)]  text-[var(--foreground)]"
               }`}
             >
               {preferences.blurActionControlsWhileListening ? t("settings.on") : t("settings.off")}
@@ -176,7 +176,7 @@ export default function AudioSettingsPage() {
                   setAudioTranscriptClearDelaySec(Number(e.target.value));
                 }
               }}
-              className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
+              className="rounded-xl border border-[var(--border)]  px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
               aria-label={t("settings.audioClearTranscriptOnSilenceTitle")}
             >
               <option value="off">{t("settings.audioClearTranscriptOnSilenceOff")}</option>
@@ -207,7 +207,7 @@ export default function AudioSettingsPage() {
                   setAudioSilenceTimeoutSec(Number(e.target.value));
                 }
               }}
-              className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
+              className="rounded-xl border border-[var(--border)]  px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
               aria-label={t("settings.audioStopOnSilenceTitle")}
             >
               <option value="off">{t("settings.audioStopOnSilenceOff")}</option>

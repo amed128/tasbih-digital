@@ -131,7 +131,7 @@ body {
 }
 
 html {
-  background: var(--background);
+  background-color: var(--background);
 }
 
 /* iOS Capacitor: solid strip at the top so the translucent native status bar
@@ -144,13 +144,13 @@ body.is-native-ios::before {
   position: fixed;
   inset: 0 0 auto;
   height: max(env(safe-area-inset-top), 44px);
-  background: var(--background);
+  background-color: var(--background);
   z-index: 9999;
   pointer-events: none;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
   touch-action: pan-x pan-y pinch-zoom;
 }

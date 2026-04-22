@@ -1347,7 +1347,7 @@ export default function Home() {
           className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
             autoRunning
               ? "bg-[var(--primary)] text-black"
-              : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
+              : "border border-[var(--border)]  text-[var(--foreground)]"
           } ${isCompleted ? "cursor-not-allowed opacity-50" : ""}`}
         >
           {autoRunning ? t("counter.autoStop") : t("counter.autoStart")}
@@ -1376,7 +1376,7 @@ export default function Home() {
               setAutoCounterDefaultSpeed(Number(e.target.value) || 1000);
             }
           }}
-          className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+          className="rounded-lg border border-[var(--border)]  px-2 py-1 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
         >
           <option value={500}>0.5s</option>
           <option value={1000}>1s</option>
@@ -1413,7 +1413,7 @@ export default function Home() {
                 setAutoIntervalMs(clamped * 1000);
                 setAutoCounterDefaultSpeed(clamped * 1000);
               }}
-              className="w-16 rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
+              className="w-16 rounded-lg border border-[var(--border)]  px-2 py-1 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
             />
             <span className="text-xs text-[var(--secondary)]">s</span>
           </div>
@@ -1449,7 +1449,7 @@ export default function Home() {
           className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
             audioRunning
               ? "bg-[var(--primary)] text-black"
-              : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
+              : "border border-[var(--border)]  text-[var(--foreground)]"
           } ${
             !supportsSpeechRecognition
               ? "cursor-not-allowed opacity-50"
@@ -1473,7 +1473,7 @@ export default function Home() {
           <span>{t("counter.audioMatchProgress")}</span>
           <span>{Math.round(audioMatchProgress * 100)}%</span>
         </div>
-        <div className="relative mt-2 h-3 overflow-hidden rounded-full bg-[var(--background)]">
+        <div className="relative mt-2 h-3 overflow-hidden rounded-full ">
           <div
             className="h-full rounded-full bg-[var(--primary)] transition-[width] duration-75"
             style={{ width: `${Math.round(audioMatchProgress * 100)}%` }}
@@ -1503,7 +1503,7 @@ export default function Home() {
       <div className="mt-2 text-xs text-[var(--secondary)]">{t("counter.audioSpeechModeHint")}</div>
 
       {showSpeechDebug && (
-        <div className="mt-2 rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 text-[10px] text-[var(--secondary)]">
+        <div className="mt-2 rounded-lg border border-[var(--border)]  px-2 py-1 text-[10px] text-[var(--secondary)]">
           <div>debug: heard(norm) = {normalizedAudioTranscript || "-"}</div>
           <div>debug: targets = {normalizedSpeechTargets.join(" | ") || "-"}</div>
           <div>debug: tolerance = {speechTolerance}</div>
@@ -1667,7 +1667,7 @@ export default function Home() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onBlur={(e) => setSearchQuery(e.target.value.trim())}
                   placeholder={t("counter.searchPlaceholder")}
-                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base text-[var(--foreground)] placeholder:text-[var(--secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                  className="w-full rounded-xl border border-[var(--border)]  px-3 py-2 text-base text-[var(--foreground)] placeholder:text-[var(--secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                 />
               </div>
 
@@ -2195,7 +2195,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+    <div className="min-h-screen text-[var(--foreground)]">
       <main className="mx-auto flex max-w-md flex-col pb-20">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -2282,13 +2282,13 @@ export default function Home() {
               autoFocus
               onChange={(e) => setEditTargetValue(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") confirmTarget(); if (e.key === "Escape") setShowTargetPopup(false); }}
-              className="mt-4 w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-center text-lg font-bold text-[var(--foreground)] focus:border-[var(--primary)] focus:outline-none"
+              className="mt-4 w-full rounded-xl border border-[var(--border)]  px-3 py-2 text-center text-lg font-bold text-[var(--foreground)] focus:border-[var(--primary)] focus:outline-none"
             />
             <div className="mt-4 flex gap-2">
               <button
                 type="button"
                 onClick={() => setShowTargetPopup(false)}
-                className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)]"
+                className="flex-1 rounded-xl border border-[var(--border)]  px-3 py-2 text-sm font-semibold text-[var(--foreground)]"
               >
                 {t("counter.targetModal.cancel")}
               </button>

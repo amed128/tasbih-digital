@@ -63,7 +63,7 @@ export function BottomNav() {
   };
 
   return (
-    <nav role="navigation" aria-label="Navigation principale" className="fixed bottom-0 left-0 right-0 border-t border-[var(--border)] bg-[var(--background)]">
+    <nav role="navigation" aria-label="Navigation principale" className="fixed bottom-0 left-0 right-0 border-t border-[var(--border)] bg-[var(--card)] backdrop-blur-xl">
       <div className="mx-auto flex max-w-md items-center justify-between px-4 py-3">
         {tabs.map((tab) => {
           const isActive = pathname.startsWith(tab.href === "/" ? tab.href : tab.href) &&

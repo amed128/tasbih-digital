@@ -6,7 +6,7 @@
 - `Language` type = `keyof typeof translations`
 - `useT()` hook resolves by `preferences.language`, falls back to `en`
 
-## Target: 6 languages (Phase 1)
+## Target: 6 languages (Phase 1) - ✅ COMPLETED
 French 🇫🇷 · English 🇬🇧 · German 🇩🇪 · Spanish 🇪🇸 · Portuguese 🇧🇷 · Hindi 🇮🇳
 
 ---
@@ -130,17 +130,17 @@ const body = TEST_BODY[preferences.language ?? "en"] ?? "Zikr reminder: may Alla
 
 ---
 
-## Recommended implementation order
-1. `data/zikrs.ts` — type extension + helper (no risk)
-2. `store/tasbihStore.ts` — type expansion + normalizeLanguage
-3. All hardcoded `language === "fr"` fixes (7, 8 above — small targeted changes)
-4. `components/GeneralSettings.tsx` — flag selector
-5. `i18n/translations.ts` — add `donate.supportThanks` to fr + en
-6. `i18n/translations.ts` — add `de` block
-7. `i18n/translations.ts` — add `es` block
-8. `i18n/translations.ts` — add `pt` block
-9. `i18n/translations.ts` — add `hi` block
-10. Commit + push
+## Recommended implementation order - ✅ Phase 1 Completed
+- [x] 1. `data/zikrs.ts` — type extension + helper (no risk)
+- [x] 2. `store/tasbihStore.ts` — type expansion + normalizeLanguage
+- [x] 3. All hardcoded `language === "fr"` fixes (7, 8 above — small targeted changes)
+- [x] 4. `components/GeneralSettings.tsx` — flag selector
+- [x] 5. `i18n/translations.ts` — add `donate.supportThanks` to fr + en
+- [x] 6. `i18n/translations.ts` — add `de` block
+- [x] 7. `i18n/translations.ts` — add `es` block
+- [x] 8. `i18n/translations.ts` — add `pt` block
+- [x] 9. `i18n/translations.ts` — add `hi` block
+- [x] 10. Commit + push
 
 Steps 1–5 and 6–9 can be done in separate commits so each translation is independently reviewable.
 

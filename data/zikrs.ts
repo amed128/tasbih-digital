@@ -23,6 +23,7 @@ export type Zikr = {
   translation_hi?: string;
   transliteration_de?: string;
   transliteration_es?: string;
+  transliteration_pt?: string;
   defaultTarget: number;
   category: ZikrCategory;
 };
@@ -58,6 +59,15 @@ export function getTransliteration(zikr: Zikr, lang: string): string {
       .replace(/Kh/g, "J")
       .replace(/j/g, "y")
       .replace(/J/g, "Y");
+  }
+  if (lang === "pt") {
+    if (zikr.transliteration_pt) return zikr.transliteration_pt;
+    // Auto-convert English phonetics to Portuguese phonetics
+    return zikr.transliteration
+      .replace(/sh/g, "ch")
+      .replace(/Sh/g, "Ch")
+      .replace(/j/g, "dj")
+      .replace(/J/g, "Dj");
   }
   return zikr.transliteration;
 }

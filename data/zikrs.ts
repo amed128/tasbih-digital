@@ -21,6 +21,7 @@ export type Zikr = {
   translation_es?: string;
   translation_pt?: string;
   translation_hi?: string;
+  transliteration_de?: string;
   defaultTarget: number;
   category: ZikrCategory;
 };
@@ -34,6 +35,21 @@ export function getTranslation(zikr: Zikr, lang: string): string {
     case "hi": return zikr.translation_hi ?? zikr.translation_en;
     default: return zikr.translation_en;
   }
+}
+
+export function getTransliteration(zikr: Zikr, lang: string): string {
+  if (lang === "de") {
+    if (zikr.transliteration_de) return zikr.transliteration_de;
+    // Auto-convert English phonetics to German phonetics
+    return zikr.transliteration
+      .replace(/sh/g, "sch")
+      .replace(/Sh/g, "Sch")
+      .replace(/j/g, "dsch")
+      .replace(/J/g, "Dsch")
+      .replace(/y/g, "j")
+      .replace(/Y/g, "J");
+  }
+  return zikr.transliteration;
 }
 
 export const zikrs: Zikr[] = [

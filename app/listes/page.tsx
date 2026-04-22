@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { BookOpen, ChevronDown, ChevronUp, Grip, Pencil, Search, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTasbihStore } from "../../store/tasbihStore";
-import { zikrs } from "../../data/zikrs";
+import { zikrs, getTransliteration } from "../../data/zikrs";
 import type { Zikr } from "../../data/zikrs";
 import { BottomNav } from "../../components/BottomNav";
 import { Modal } from "../../components/Modal";
@@ -92,7 +92,7 @@ function getExactAutocompleteSuggestion(value: string): ZikrAutocompleteSuggesti
   }
 
   const exactMatch = zikrs.find(
-    (zikr) => normalizeTransliteration(zikr.transliteration) === normalized
+    (zikr) => normalizeTransliteration(getTransliteration(zikr, language)) === normalized
   );
   if (exactMatch) {
     return {
@@ -113,7 +113,7 @@ function getAutocompleteSuggestion(value: string): ZikrAutocompleteSuggestion | 
   if (exactMatch) return exactMatch;
 
   const closeMatch = zikrs.find((zikr) => {
-    const transliteration = normalizeTransliteration(zikr.transliteration);
+    const transliteration = normalizeTransliteration(getTransliteration(zikr, language));
     return transliteration.startsWith(normalized) || normalized.startsWith(transliteration);
   });
 
@@ -187,6 +187,7 @@ export default function ListesPage() {
     () => false
   );
 
+  const language = useTasbihStore((s) => s.preferences.language);
   const customLists = useTasbihStore((s) => s.customLists);
   const customZikrs = useTasbihStore((s) => s.customZikrs);
   const createList = useTasbihStore((s) => s.createList);
@@ -274,12 +275,12 @@ export default function ListesPage() {
     return zikrs.filter((d) => {
       return (
         d.arabic.includes(query) ||
-        d.transliteration.toLowerCase().includes(query) ||
+        getTransliteration(d, language).toLowerCase().includes(query) ||
         d.translation_fr.toLowerCase().includes(query) ||
         d.translation_en.toLowerCase().includes(query)
       );
     });
-  }, [search]);
+  }, [search, language]);
 
   const categories = useMemo(() => groupByCategory(filteredZikrs), [filteredZikrs]);
 
@@ -334,12 +335,12 @@ export default function ListesPage() {
     return zikrs.filter((d) => {
       return (
         d.arabic.includes(query) ||
-        d.transliteration.toLowerCase().includes(query) ||
+        getTransliteration(d, language).toLowerCase().includes(query) ||
         d.translation_fr.toLowerCase().includes(query) ||
         d.translation_en.toLowerCase().includes(query)
       );
     });
-  }, [createSearchQuery]);
+  }, [createSearchQuery, language]);
 
   const createCategories = useMemo(() => groupByCategory(createFilteredZikrs), [createFilteredZikrs]);
 
@@ -368,11 +369,11 @@ export default function ListesPage() {
   };
 
   const startEditingManualZikr = (zikr: Zikr) => {
-    const exactMatch = getExactAutocompleteSuggestion(zikr.transliteration);
+    const exactMatch = getExactAutocompleteSuggestion(getTransliteration(zikr, language));
     setManualEditingZikrId(zikr.id);
     setManualArabicAutofilled(Boolean(exactMatch && exactMatch.arabic === zikr.arabic));
     setManualArabic(zikr.arabic);
-    setManualTranslit(zikr.transliteration);
+    setManualTranslit(getTransliteration(zikr, language));
     setManualReps(String(zikr.defaultTarget));
     setManualZikrShow(false);
     setManualEditModalOpen(true);
@@ -676,7 +677,7 @@ export default function ListesPage() {
                               >
                                 <div className="text-[0.95rem] font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">{d.arabic}</div>
                                 <div className="mt-0.5 flex items-center justify-between gap-3 text-[var(--secondary)]">
-                                  <span className="min-w-0 flex-1 truncate text-[0.86rem] font-semibold">{d.transliteration}</span>
+                                  <span className="min-w-0 flex-1 truncate text-[0.86rem] font-semibold">{getTransliteration(d, language)}</span>
                                   <span className="flex-shrink-0 font-semibold text-[var(--secondary)]">×{d.defaultTarget}</span>
                                 </div>
                               </button>
@@ -757,7 +758,7 @@ export default function ListesPage() {
                                   {zikr.arabic}
                                 </div>
                                 <div className="truncate text-[0.86rem] font-semibold text-[var(--secondary)]">
-                                  {zikr.transliteration}
+                                  {getTransliteration(zikr, language)}
                                 </div>
                               </div>
                               <span className="ml-4 flex-shrink-0 text-[1rem] font-semibold text-[var(--secondary)]">×{zikr.defaultTarget}</span>
@@ -883,7 +884,7 @@ export default function ListesPage() {
                                     {zikr.arabic}
                                   </div>
                                   <div className="truncate text-[0.86rem] font-semibold text-[var(--secondary)]">
-                                    {zikr.transliteration}
+                                    {getTransliteration(zikr, language)}
                                   </div>
                                 </div>
                                 <span className="ml-4 flex-shrink-0 text-[1rem] font-semibold text-[var(--secondary)]">×{zikr.defaultTarget}</span>
@@ -965,7 +966,7 @@ export default function ListesPage() {
                             <div className="text-xs font-semibold text-[var(--foreground)]">{zikr.arabic}</div>
                           </div>
                           <div className="text-xs text-[var(--secondary)]">
-                            {zikr.transliteration} · {displayTarget}
+                            {getTransliteration(zikr, language)} · {displayTarget}
                             {customTarget !== undefined && customTarget !== zikr.defaultTarget && (
                               <span className="ml-1 text-[var(--primary)]">✎</span>
                             )}
@@ -1095,7 +1096,7 @@ export default function ListesPage() {
                                   >
                                     <div className="flex-1 truncate">
                                       <div className="truncate text-[var(--foreground)]">{d.arabic}</div>
-                                      <div className="text-[var(--secondary)]">{d.transliteration}</div>
+                                      <div className="text-[var(--secondary)]">{getTransliteration(d, language)}</div>
                                     </div>
                                     <button
                                       onClick={() => handleAddZikrToCreate(d.id)}
@@ -1266,7 +1267,7 @@ export default function ListesPage() {
                 {selectedLibraryZikr.arabic}
               </div>
               <div className="mt-3 text-[0.95rem] font-semibold text-[var(--secondary)]">
-                {selectedLibraryZikr.transliteration}
+                {getTransliteration(selectedLibraryZikr, language)}
               </div>
               <div className="mt-1 text-sm text-[var(--secondary)]">
                 {t("lists.previewTarget", { count: selectedLibraryZikr.defaultTarget })}

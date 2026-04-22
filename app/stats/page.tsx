@@ -19,7 +19,7 @@ import {
   createBackupPayload,
   parseBackupPayload,
 } from "../../store/tasbihStore";
-import { zikrs } from "../../data/zikrs";
+import { zikrs, getTransliteration } from "../../data/zikrs";
 import { BottomNav } from "../../components/BottomNav";
 import { ConfirmDialog } from "../../components/ConfirmDialog";
 import { useT } from "@/hooks/useT";
@@ -256,10 +256,10 @@ export default function StatsPage() {
     });
     const zikr = bestId ? zikrs.find((d) => d.id === bestId) : undefined;
     return {
-      label: zikr ? `${zikr.arabic} — ${zikr.transliteration}` : t("stats.none"),
+      label: zikr ? `${zikr.arabic} — ${getTransliteration(zikr, language)}` : t("stats.none"),
       count: bestCount,
     };
-  }, [stats.history, t]);
+  }, [stats.history, t, language]);
 
   const weeklyData = useMemo(() => buildLast7DaysZikrData(stats.history, locale), [stats.history, locale]);
   const trend30Data = useMemo(() => buildLast30DaysData(stats.history), [stats.history]);
@@ -551,7 +551,7 @@ export default function StatsPage() {
                         <div className="text-sm text-[var(--foreground)]">
                           {formatDate(entry.startAt, locale)} — {zikr?.arabic ?? "—"}
                         </div>
-                        <div className="text-xs text-[var(--secondary)]">{zikr?.transliteration ?? ""}</div>
+                        <div className="text-xs text-[var(--secondary)]">{(zikr ? getTransliteration(zikr, language) : undefined) ?? ""}</div>
                       </div>
                       <div className="text-sm font-semibold text-[var(--foreground)]">{entry.zikrCount}</div>
                     </div>

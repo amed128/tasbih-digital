@@ -82,7 +82,7 @@ function normalizeTransliteration(value: string) {
     .replace(/[^a-z0-9]/g, "");
 }
 
-function getExactAutocompleteSuggestion(value: string): ZikrAutocompleteSuggestion | null {
+function getExactAutocompleteSuggestion(value: string, language: string): ZikrAutocompleteSuggestion | null {
   const normalized = normalizeTransliteration(value);
 
   if (!normalized) return null;
@@ -104,12 +104,12 @@ function getExactAutocompleteSuggestion(value: string): ZikrAutocompleteSuggesti
   return null;
 }
 
-function getAutocompleteSuggestion(value: string): ZikrAutocompleteSuggestion | null {
+function getAutocompleteSuggestion(value: string, language: string): ZikrAutocompleteSuggestion | null {
   const normalized = normalizeTransliteration(value);
 
   if (!normalized) return null;
 
-  const exactMatch = getExactAutocompleteSuggestion(value);
+  const exactMatch = getExactAutocompleteSuggestion(value, language);
   if (exactMatch) return exactMatch;
 
   const closeMatch = zikrs.find((zikr) => {
@@ -125,15 +125,15 @@ function getAutocompleteSuggestion(value: string): ZikrAutocompleteSuggestion | 
   };
 }
 
-function getAutocompleteMatch(value: string): ZikrAutocompleteMatch {
-  const exact = getExactAutocompleteSuggestion(value);
+function getAutocompleteMatch(value: string, language: string): ZikrAutocompleteMatch {
+  const exact = getExactAutocompleteSuggestion(value, language);
   if (exact) {
     return { exact, suggestion: exact };
   }
 
   return {
     exact: null,
-    suggestion: getAutocompleteSuggestion(value),
+    suggestion: getAutocompleteSuggestion(value, language),
   };
 }
 
@@ -244,8 +244,8 @@ export default function ListesPage() {
   }, [customZikrs]);
 
   const manualAutocomplete = useMemo(
-    () => getAutocompleteMatch(manualTranslit.trim()),
-    [manualTranslit]
+    () => getAutocompleteMatch(manualTranslit.trim(), language),
+    [manualTranslit, language]
   );
 
   const manualArabicSuggestion = useMemo(() => {
@@ -369,7 +369,7 @@ export default function ListesPage() {
   };
 
   const startEditingManualZikr = (zikr: Zikr) => {
-    const exactMatch = getExactAutocompleteSuggestion(getTransliteration(zikr, language));
+    const exactMatch = getExactAutocompleteSuggestion(getTransliteration(zikr, language), language);
     setManualEditingZikrId(zikr.id);
     setManualArabicAutofilled(Boolean(exactMatch && exactMatch.arabic === zikr.arabic));
     setManualArabic(zikr.arabic);
@@ -420,7 +420,7 @@ export default function ListesPage() {
   const handleManualTranslitChange = (value: string) => {
     setManualTranslit(value);
 
-    const exactMatch = getExactAutocompleteSuggestion(value);
+    const exactMatch = getExactAutocompleteSuggestion(value, language);
     if (exactMatch) {
       setManualArabic(exactMatch.arabic);
       setManualArabicAutofilled(true);
@@ -436,7 +436,7 @@ export default function ListesPage() {
   const handleAddManualZikr = () => {
     const editingId = manualEditingZikrId;
     const transliteration = manualTranslit.trim();
-    const exactMatch = getExactAutocompleteSuggestion(transliteration);
+    const exactMatch = getExactAutocompleteSuggestion(transliteration, language);
     const arabic = manualArabic.trim() || exactMatch?.arabic || transliteration;
     const repetitions = Number.parseInt(manualReps.trim(), 10);
 

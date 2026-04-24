@@ -62,7 +62,7 @@ export type Preferences = {
   audioClearTranscriptOnSilence: boolean;
   audioStopOnSilence: boolean;
   audioDebugTelemetry: boolean;
-  language: "fr" | "en" | "de" | "es" | "pt" | "hi";
+  language: "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar";
   confetti: boolean;
   remindersEnabled: boolean;
   reminderScheduleType: ReminderScheduleType;
@@ -188,7 +188,7 @@ export type TasbihStoreState = {
   setAudioClearTranscriptOnSilence: (enabled: boolean) => void;
   setAudioStopOnSilence: (enabled: boolean) => void;
   setAudioDebugTelemetry: (enabled: boolean) => void;
-  setLanguage: (lang: "fr" | "en" | "de" | "es" | "pt" | "hi") => void;
+  setLanguage: (lang: "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar") => void;
   setRemindersEnabled: (enabled: boolean) => void;
   setReminderScheduleType: (type: ReminderScheduleType) => void;
   setReminderTimes: (times: ReminderTime[]) => void;
@@ -571,8 +571,8 @@ const normalizeBooleanWithDefault = (value: unknown, fallback: boolean): boolean
   return value;
 };
 
-const normalizeLanguage = (value: unknown): "fr" | "en" | "de" | "es" | "pt" | "hi" => {
-  if (value === "fr" || value === "en" || value === "de" || value === "es" || value === "pt" || value === "hi") return value;
+const normalizeLanguage = (value: unknown): "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar" => {
+  if (value === "fr" || value === "en" || value === "de" || value === "es" || value === "pt" || value === "hi" || value === "ar") return value;
   return "en";
 };
 
@@ -682,7 +682,7 @@ const createStore = () =>
     devtools((set) => ({
       ...initialState,
       currentZikr: resolveZikr(initialState.currentZikrId ?? "", initialState.customZikrs ?? {}),
-      setLanguage: (lang: "fr" | "en" | "de" | "es" | "pt" | "hi") =>
+      setLanguage: (lang: "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar") =>
         set((state) => {
           const newState = {
             preferences: {

@@ -36,6 +36,7 @@ export function getTranslation(zikr: Zikr, lang: string): string {
     case "es": return zikr.translation_es ?? zikr.translation_en;
     case "pt": return zikr.translation_pt ?? zikr.translation_en;
     case "hi": return zikr.translation_hi ?? zikr.translation_en;
+    case "ar": return zikr.arabic;
     default: return zikr.translation_en;
   }
 }

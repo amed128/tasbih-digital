@@ -1068,7 +1068,7 @@ export default function Home() {
     }
   });
 
-  const listPosition = `${activeIndex + 1} / ${activeList.length}`;
+  const listPosition = `${fmt(activeIndex + 1)} / ${fmt(activeList.length)}`;
   const [showListCompletePopup, setShowListCompletePopup] = useState(false);
 
   useEffect(() => {
@@ -2000,7 +2000,7 @@ export default function Home() {
       <div className="flex flex-col gap-6 px-5 pt-6 pb-6">
         <header className="flex items-center justify-between">
           <div className="text-sm font-semibold uppercase tracking-wide text-[var(--secondary)]">
-            {activeListId}
+            {getCategoryLabel(activeListId ?? "", preferences.language)}
           </div>
           <div className="text-sm font-semibold text-[var(--secondary)]">{listPosition}</div>
         </header>

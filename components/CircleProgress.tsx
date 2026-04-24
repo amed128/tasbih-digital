@@ -3,6 +3,7 @@
 import { motion, useAnimation } from "framer-motion";
 import React, { useEffect, useRef, useSyncExternalStore } from "react";
 import { useT } from "@/hooks/useT";
+import { useTasbihStore } from "@/store/tasbihStore";
 
 type CircleProgressProps = {
   value: number;
@@ -28,6 +29,8 @@ export function CircleProgress({
   strokeWidth = 16,
 }: CircleProgressProps) {
   const t = useT();
+  const language = useTasbihStore((s) => s.preferences.language);
+  const fmt = (n: number) => language === "ar" ? n.toLocaleString("ar-SA") : String(n);
   const mounted = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -137,10 +140,10 @@ export function CircleProgress({
           className="text-6xl font-bold leading-tight"
           style={{ color: isCompleted ? GREEN : "var(--foreground)" }}
         >
-          {value}
+          {fmt(value)}
         </motion.div>
         <div className="mt-1 text-sm font-semibold text-[var(--secondary)]">
-          {!countsDown ? `/ ${target}` : t("circle.remaining")}
+          {!countsDown ? `/ ${fmt(target)}` : t("circle.remaining")}
         </div>
         {isCompleted && (
           <div

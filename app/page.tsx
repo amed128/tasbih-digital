@@ -4,7 +4,7 @@ import { useEffect, useEffectEvent, useMemo, useRef, useState, useSyncExternalSt
 import { AnimatePresence, motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import { useTasbihStore } from "../store/tasbihStore";
-import { DEFAULT_LIST_ID, zikrs, getTransliteration } from "../data/zikrs";
+import { DEFAULT_LIST_ID, zikrs, getTransliteration, getCategoryLabel } from "../data/zikrs";
 import { useT } from "@/hooks/useT";
 import { CircleProgress } from "../components/CircleProgress";
 import { BottomNav } from "../components/BottomNav";
@@ -1700,7 +1700,7 @@ export default function Home() {
                     <div
                       role="button"
                       tabIndex={0}
-                      aria-label={t("counter.ariaSelect", { name: category })}
+                      aria-label={t("counter.ariaSelect", { name: getCategoryLabel(category, preferences.language) })}
                       className="flex cursor-pointer items-center justify-between px-4 py-3 hover:bg-white/[0.03]"
                       onClick={() => {
                         selectList(category);
@@ -1717,7 +1717,7 @@ export default function Home() {
                         <div className="flex items-center gap-2 text-[var(--primary)]">
                           <span className="text-xs">☰</span>
                           <span className="truncate text-base font-semibold">
-                            {highlightMatch(category)}
+                            {highlightMatch(getCategoryLabel(category, preferences.language))}
                           </span>
                         </div>
                         <span className="mt-0.5 block pl-5 text-sm text-[var(--secondary)]">

@@ -41,6 +41,55 @@ export function getTranslation(zikr: Zikr, lang: string): string {
   }
 }
 
+const CATEGORY_LABELS: Record<string, Partial<Record<ZikrCategory, string>>> = {
+  en: {
+    "Zikr général": "General Zikr",
+    "Matin/Soir": "Morning/Evening",
+  },
+  de: {
+    "Zikr général": "Allgemeiner Zikr",
+    "Matin/Soir": "Morgen/Abend",
+  },
+  es: {
+    "Zikr général": "Zikr general",
+    "Matin/Soir": "Mañana/Tarde",
+  },
+  pt: {
+    "Zikr général": "Zikr geral",
+    "Matin/Soir": "Manhã/Tarde",
+  },
+  hi: {
+    "Tasbih": "तसबीह",
+    "Hamd": "हम्द",
+    "Takbir": "तकबीर",
+    "Tahlil": "तहलील",
+    "Hawqala": "हौकला",
+    "Istighfar": "इस्तिग़फ़ार",
+    "Salawat": "सलवात",
+    "Zikr général": "सामान्य ज़िक्र",
+    "Du'a": "दुआ",
+    "Matin/Soir": "सुबह/शाम",
+    "Asma ul-Husna": "अस्माउल हुस्ना",
+  },
+  ar: {
+    "Tasbih": "تسبيح",
+    "Hamd": "حمد",
+    "Takbir": "تكبير",
+    "Tahlil": "تهليل",
+    "Hawqala": "حوقلة",
+    "Istighfar": "استغفار",
+    "Salawat": "صلوات",
+    "Zikr général": "ذكر عام",
+    "Du'a": "دعاء",
+    "Matin/Soir": "صباح/مساء",
+    "Asma ul-Husna": "أسماء الحسنى",
+  },
+};
+
+export function getCategoryLabel(category: ZikrCategory, lang: string): string {
+  return CATEGORY_LABELS[lang]?.[category] ?? category;
+}
+
 export function getTransliteration(zikr: Zikr, lang: string): string {
   if (lang === "de") {
     if (zikr.transliteration_de) return zikr.transliteration_de;

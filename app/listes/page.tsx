@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { BookOpen, ChevronDown, ChevronUp, Grip, Pencil, Search, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTasbihStore } from "../../store/tasbihStore";
-import { zikrs, getTransliteration } from "../../data/zikrs";
+import { zikrs, getTransliteration, getCategoryLabel } from "../../data/zikrs";
 import type { Zikr } from "../../data/zikrs";
 import { BottomNav } from "../../components/BottomNav";
 import { Modal } from "../../components/Modal";
@@ -660,7 +660,7 @@ export default function ListesPage() {
                           className="flex w-full items-center justify-between px-4 py-2.5 text-left"
                         >
                           <span className="flex-1 text-[0.95rem] font-semibold text-[var(--primary)]">
-                            {category}
+                            {getCategoryLabel(category, language)}
                           </span>
                           <span className="text-[0.95rem] font-semibold text-[var(--secondary)]">{items.length}</span>
                           <span className="ml-4 text-[0.95rem] text-[var(--secondary)]">{expanded ? "⌃" : "⌄"}</span>
@@ -1082,7 +1082,7 @@ export default function ListesPage() {
                             }
                             className="flex w-full items-center justify-between rounded px-2 py-1 text-xs font-semibold text-[var(--primary)] hover:bg-[var(--card)]"
                           >
-                            <span>{category}</span>
+                            <span>{getCategoryLabel(category, language)}</span>
                             <span>{expanded ? "⌄" : "›"}</span>
                           </button>
                           {expanded && (

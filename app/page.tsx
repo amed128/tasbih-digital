@@ -220,8 +220,11 @@ export default function Home() {
   const autoCounterResumeAfterReset = useTasbihStore((s) => s.preferences.autoCounterResumeAfterReset);
   const autoCounterEntryAutoStart = useTasbihStore((s) => s.preferences.autoCounterEntryAutoStart);
   const autoCounterSoundOnTick = useTasbihStore((s) => s.preferences.autoCounterSoundOnTick);
-  const chipTextFormat = useTasbihStore((s) => s.preferences.chipTextFormat);
-  const zikrDisplayFormat = useTasbihStore((s) => s.preferences.zikrDisplayFormat);
+  const chipTextFormatStored = useTasbihStore((s) => s.preferences.chipTextFormat);
+  const zikrDisplayFormatStored = useTasbihStore((s) => s.preferences.zikrDisplayFormat);
+  const isArabic = preferences.language === "ar";
+  const chipTextFormat = isArabic ? "arabic" : chipTextFormatStored;
+  const zikrDisplayFormat = isArabic ? "arabic" : zikrDisplayFormatStored;
   const audioClearTranscriptOnSilence = useTasbihStore(
     (s) => s.preferences.audioClearTranscriptOnSilence
   );

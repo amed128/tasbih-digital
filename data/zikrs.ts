@@ -86,8 +86,8 @@ const CATEGORY_LABELS: Record<string, Partial<Record<ZikrCategory, string>>> = {
   },
 };
 
-export function getCategoryLabel(category: ZikrCategory, lang: string): string {
-  return CATEGORY_LABELS[lang]?.[category] ?? category;
+export function getCategoryLabel(category: string, lang: string): string {
+  return CATEGORY_LABELS[lang]?.[category as ZikrCategory] ?? category;
 }
 
 export function getTransliteration(zikr: Zikr, lang: string): string {

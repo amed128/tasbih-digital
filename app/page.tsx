@@ -237,6 +237,7 @@ export default function Home() {
   const [pulseTrigger, setPulseTrigger] = useState(0);
   const [focusMode, setFocusMode] = useState(false);
   const preferences = useTasbihStore((s) => s.preferences);
+  const fmt = (n: number) => preferences.language === "ar" ? n.toLocaleString("ar-SA") : String(n);
   const [autoEnabled, setAutoEnabled] = useState(() => preferences.autoCounterDefaultEnabled ?? false);
   const [autoIntervalMs, setAutoIntervalMs] = useState(preferences.autoCounterDefaultSpeed || 1000);
   const [isCustomSpeed, setIsCustomSpeed] = useState(() => preferences.autoCounterSpeedIsCustom ?? false);
@@ -1557,7 +1558,7 @@ export default function Home() {
                 shouldBlurActionControls || focusMode ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""
               }`}
             >
-              Mode: {executionModeLabel}
+              {t("counter.modePrefix")}: {executionModeLabel}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="10"
@@ -1614,7 +1615,7 @@ export default function Home() {
             }`}
             aria-label={focusMode ? t("counter.focusExitAriaLabel") : t("counter.focusEnterAriaLabel")}
           >
-            {focusMode ? "✕ Focus" : "⊙ Focus"}
+            {focusMode ? `✕ ${t("counter.focusLabel")}` : `⊙ ${t("counter.focusLabel")}`}
           </button>
         </div>
       </header>
@@ -1889,7 +1890,7 @@ export default function Home() {
               isTargetLocked ? "cursor-not-allowed opacity-50 blur-[0.5px]" : isTargetEditable ? "hover:border-[var(--primary)]" : "cursor-default"
             }`}
           >
-            {effectiveTarget}
+            {fmt(effectiveTarget)}
           </button>
           <span>{t("counter.targetSuffix")}</span>
         </div>
@@ -2022,7 +2023,7 @@ export default function Home() {
               focusMode || shouldBlurActionControls ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""}`}
             aria-label={t("counter.ariaChangeMode")}
           >
-            Mode: {executionModeLabel}
+            {t("counter.modePrefix")}: {executionModeLabel}
           </button>
           <button
             type="button"
@@ -2036,7 +2037,7 @@ export default function Home() {
             }`}
             aria-label={focusMode ? t("counter.focusExitAriaLabel") : t("counter.focusEnterAriaLabel")}
           >
-            {focusMode ? "✕ Focus" : "⊙ Focus"}
+            {focusMode ? `✕ ${t("counter.focusLabel")}` : `⊙ ${t("counter.focusLabel")}`}
           </button>
         </div>
 
@@ -2091,7 +2092,7 @@ export default function Home() {
                   isTargetLocked ? "cursor-not-allowed opacity-50 blur-[0.5px]" : "hover:border-[var(--primary)]"
                 }`}
               >
-                {effectiveTarget}
+                {fmt(effectiveTarget)}
               </button>
               <span>{t("counter.targetSuffix")}</span>
             </div>

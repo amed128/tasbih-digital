@@ -193,9 +193,9 @@ export const translations = {
       toastReset: "Réinitialisation effectuée",
     },
     settings: {
-          speed0_5s: "0,5s",
-          speed1s: "1s",
-          speed2s: "2s",
+          speed0_5s: "0,5 seconde",
+          speed1s: "1 seconde",
+          speed2s: "2 secondes",
         // --- Auto-counter settings (French only) ---
         autoCounterSettingsTitle: "Réglages auto-compteur",
         autoCounterSettingsHint: "Configurez le comportement de l'auto-compteur, y compris la vitesse, les conditions de démarrage/arrêt et les options avancées.",
@@ -742,6 +742,9 @@ export const translations = {
       toastReset: "Reset completed",
     },
     settings: {
+      speed0_5s: "0.5 second",
+      speed1s: "1 second",
+      speed2s: "2 seconds",
       autoCounterSettingsTitle: "Auto-counter settings",
       autoCounterSettingsHint: "Configure how the auto-counter behaves, including speed, start/stop conditions, and advanced options.",
       autoCounterDefaultEnabledTitle: "Enable auto-counter by default",
@@ -1281,6 +1284,9 @@ export const translations = {
         "toastReset": "Zurücksetzen abgeschlossen"
     },
     "settings": {
+        "speed0_5s": "0,5 Sekunde",
+        "speed1s": "1 Sekunde",
+        "speed2s": "2 Sekunden",
         "autoCounterSettingsTitle": "Auto-Zähler-Einstellungen",
         "autoCounterSettingsHint": "Konfigurieren Sie das Verhalten des Auto-Zählers.",
         "autoCounterDefaultEnabledTitle": "Auto-Zähler standardmäßig aktivieren",
@@ -1803,6 +1809,9 @@ export const translations = {
           "toastReset": "Restablecido"
       },
       "settings": {
+          "speed0_5s": "0,5 segundo",
+          "speed1s": "1 segundo",
+          "speed2s": "2 segundos",
           "autoCounterSettingsTitle": "Ajustes de auto-contador",
           "autoCounterSettingsHint": "Configura cómo se comporta el auto-contador.",
           "autoCounterDefaultEnabledTitle": "Habilitar por defecto",
@@ -2325,6 +2334,9 @@ export const translations = {
           "toastReset": "Zerad"
       },
       "settings": {
+          "speed0_5s": "0,5 segundo",
+          "speed1s": "1 segundo",
+          "speed2s": "2 segundos",
           "autoCounterSettingsTitle": "Configurações do auto-contador",
           "autoCounterSettingsHint": "Configure o comportamento do auto-contador.",
           "autoCounterDefaultEnabledTitle": "Habilitar por padrão",
@@ -2847,6 +2859,9 @@ export const translations = {
     toastReset: "रीसेट पूरा हुआ",
   },
   settings: {
+    speed0_5s: "0.5 सेकंड",
+    speed1s: "1 सेकंड",
+    speed2s: "2 सेकंड",
     autoCounterSettingsTitle: "ऑटो-काउंटर सेटिंग्स",
     autoCounterSettingsHint: "ऑटो-काउंटर के व्यवहार को कॉन्फ़िगर करें, जिसमें गति, प्रारंभ/रोक शर्तें और उन्नत विकल्प शामिल हैं।",
     autoCounterDefaultEnabledTitle: "डिफ़ॉल्ट रूप से ऑटो-काउंटर सक्षम करें",
@@ -3369,9 +3384,9 @@ export const translations = {
       toastReset: "تمت إعادة التعيين",
     },
     settings: {
-      speed0_5s: "0.5 ث",
-      speed1s: "1 ث",
-      speed2s: "2 ث",
+      speed0_5s: "٠٫٥ ثانية",
+      speed1s: "١ ثانية",
+      speed2s: "ثانيتان",
       autoCounterSettingsTitle: "إعدادات العداد التلقائي",
       autoCounterSettingsHint: "تكوين سلوك العداد التلقائي، بما في ذلك السرعة وشروط البدء/الإيقاف والخيارات المتقدمة.",
       autoCounterDefaultEnabledTitle: "تفعيل العداد التلقائي افتراضياً",

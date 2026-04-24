@@ -1379,10 +1379,10 @@ export default function Home() {
           }}
           className="rounded-lg border border-[var(--border)]  px-2 py-1 text-xs font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
         >
-          <option value={500}>0.5s</option>
-          <option value={1000}>1s</option>
-          <option value={2000}>2s</option>
-          <option value="custom">Custom</option>
+          <option value={500}>{t("settings.speed0_5s")}</option>
+          <option value={1000}>{t("settings.speed1s")}</option>
+          <option value={2000}>{t("settings.speed2s")}</option>
+          <option value="custom">{t("settings.custom")}</option>
         </select>
       </div>
       {isCustomSpeed && (

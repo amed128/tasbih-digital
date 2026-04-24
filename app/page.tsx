@@ -520,7 +520,7 @@ export default function Home() {
     return map;
   }, []);
 
-  const formatZikrCount = (count: number) => `${count} ${count === 1 ? "zikr" : "zikrs"}`;
+  const formatZikrCount = (count: number) => `${fmt(count)} ${count === 1 ? t("counter.zikrSingular") : t("counter.zikrPlural")}`;
 
   const normalizedSearch = searchQuery.trim().toLowerCase();
   const isSearching = normalizedSearch.length > 0;

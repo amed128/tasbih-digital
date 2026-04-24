@@ -147,9 +147,6 @@ function groupByCategory(items: typeof zikrs) {
   return map;
 }
 
-function formatZikrCount(count: number) {
-  return `${count} ${count === 1 ? "zikr" : "zikrs"}`;
-}
 
 type PresetRoutine = {
   id: string;
@@ -188,6 +185,7 @@ export default function ListesPage() {
   );
 
   const language = useTasbihStore((s) => s.preferences.language);
+  const fmt = (n: number) => language === "ar" ? n.toLocaleString("ar-SA") : String(n);
   const customLists = useTasbihStore((s) => s.customLists);
   const customZikrs = useTasbihStore((s) => s.customZikrs);
   const createList = useTasbihStore((s) => s.createList);
@@ -662,7 +660,7 @@ export default function ListesPage() {
                           <span className="flex-1 text-[0.95rem] font-semibold text-[var(--primary)]">
                             {getCategoryLabel(category, language)}
                           </span>
-                          <span className="text-[0.95rem] font-semibold text-[var(--secondary)]">{items.length}</span>
+                          <span className="text-[0.95rem] font-semibold text-[var(--secondary)]">{fmt(items.length)} {items.length === 1 ? t("counter.zikrSingular") : t("counter.zikrPlural")}</span>
                           <span className="ml-4 text-[0.95rem] text-[var(--secondary)]">{expanded ? "⌃" : "⌄"}</span>
                         </button>
 
@@ -823,7 +821,7 @@ export default function ListesPage() {
                         <div className="min-w-0 flex-1 text-left">
                           <div className="truncate text-[0.9rem] font-semibold text-[var(--foreground)]">
                             {listId}
-                            <span className="ml-2 text-[0.86rem] text-[var(--secondary)]">({formatZikrCount(items.length)})</span>
+                            <span className="ml-2 text-[0.86rem] text-[var(--secondary)]">({fmt(items.length)} {items.length === 1 ? t("counter.zikrSingular") : t("counter.zikrPlural")})</span>
                           </div>
                         </div>
                       </div>

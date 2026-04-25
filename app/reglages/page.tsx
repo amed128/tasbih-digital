@@ -91,6 +91,7 @@ export default function ReglagesPage() {
       pt: "Lembrete de zikr: que Allah aceite suas invocações.",
       hi: "ज़िक्र अनुस्मारक: अल्लाह आपकी दुआएं कबूल करे।",
       ar: "تذكير الذكر: تقبّل الله دعاءك.",
+      tr: "Zikir hatırlatması: Allah dualarınızı kabul etsin.",
     };
     const body = TEST_BODY[preferences.language ?? "en"] ?? "Zikr reminder: may Allah accept your invocations.";
     await LocalNotifications.schedule({

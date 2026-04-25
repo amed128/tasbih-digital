@@ -147,7 +147,7 @@ Steps 1–5 and 6–9 can be done in separate commits so each translation is ind
 ---
 
 ## Future phases (roadmap)
-- Phase 2: Arabic 🇸🇦, Turkish 🇹🇷, Urdu 🇵🇰, Bengali 🇧🇩
+- Phase 2: ~~Arabic 🇸🇦~~ ✅, Turkish 🇹🇷, Urdu 🇵🇰, Bengali 🇧🇩
 - Phase 3: Indonesian 🇮🇩, Malay 🇲🇾
 - Phase 4: Hausa 🇳🇬, Swahili 🇰🇪, Persian 🇮🇷, Russian 🇷🇺
 

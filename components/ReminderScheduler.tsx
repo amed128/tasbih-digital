@@ -34,6 +34,7 @@ export function ReminderScheduler() {
         ar: "تذكير: خذ لحظة لأداء ذكرك.",
         tr: "Hatırlatma: Zikriniz için bir an ayırın.",
         ur: "یاد دہانی: اپنے ذکر کے لیے ایک لمحہ نکالیں۔",
+        bn: "স্মরণ করিয়ে দেওয়া: আপনার যিকরের জন্য একটু সময় নিন।",
       };
       const body = REMINDER_BODY[language ?? "en"] ?? "Gentle reminder: take a moment for your zikr.";
 

@@ -154,6 +154,7 @@ export default function GeneralSettings() {
             <option value="ar">🇸🇦 العربية</option>
             <option value="tr">🇹🇷 Türkçe</option>
             <option value="ur">🇵🇰 اردو</option>
+            <option value="bn">🇧🇩 বাংলা</option>
           </select>
         </div>
       </section>

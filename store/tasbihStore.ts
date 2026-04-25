@@ -62,7 +62,7 @@ export type Preferences = {
   audioClearTranscriptOnSilence: boolean;
   audioStopOnSilence: boolean;
   audioDebugTelemetry: boolean;
-  language: "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar" | "tr" | "ur";
+  language: "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar" | "tr" | "ur" | "bn";
   confetti: boolean;
   remindersEnabled: boolean;
   reminderScheduleType: ReminderScheduleType;
@@ -188,7 +188,7 @@ export type TasbihStoreState = {
   setAudioClearTranscriptOnSilence: (enabled: boolean) => void;
   setAudioStopOnSilence: (enabled: boolean) => void;
   setAudioDebugTelemetry: (enabled: boolean) => void;
-  setLanguage: (lang: "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar" | "tr" | "ur") => void;
+  setLanguage: (lang: "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar" | "tr" | "ur" | "bn") => void;
   setRemindersEnabled: (enabled: boolean) => void;
   setReminderScheduleType: (type: ReminderScheduleType) => void;
   setReminderTimes: (times: ReminderTime[]) => void;
@@ -571,8 +571,8 @@ const normalizeBooleanWithDefault = (value: unknown, fallback: boolean): boolean
   return value;
 };
 
-const normalizeLanguage = (value: unknown): "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar" | "tr" | "ur" => {
-  if (value === "fr" || value === "en" || value === "de" || value === "es" || value === "pt" || value === "hi" || value === "ar" || value === "tr" || value === "ur") return value;
+const normalizeLanguage = (value: unknown): "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar" | "tr" | "ur" | "bn" => {
+  if (value === "fr" || value === "en" || value === "de" || value === "es" || value === "pt" || value === "hi" || value === "ar" || value === "tr" || value === "ur" || value === "bn") return value;
   return "en";
 };
 

@@ -8,7 +8,7 @@ import { BottomNav } from "@/components/BottomNav";
 export default function SelectionModeSettings() {
   const t = useT();
   const preferences = useTasbihStore((s) => s.preferences);
-  const isArabic = preferences.language === "ar";
+  const isArabic = preferences.language === "ar" || preferences.language === "ur";
   const setAutoAdvanceNextZikr = useTasbihStore((s) => s.setAutoAdvanceNextZikr);
   const setResetOnPrev = useTasbihStore((s) => s.setResetOnPrev);
   const setAllowTargetEditInListMode = useTasbihStore((s) => s.setAllowTargetEditInListMode);

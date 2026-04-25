@@ -237,10 +237,11 @@ export default function Home() {
   const [pulseTrigger, setPulseTrigger] = useState(0);
   const [focusMode, setFocusMode] = useState(false);
   const preferences = useTasbihStore((s) => s.preferences);
-  const fmt = (n: number) => preferences.language === "ar" ? n.toLocaleString("ar-SA") : String(n);
-  const isArabic = preferences.language === "ar";
-  const chipTextFormat = isArabic ? "arabic" : chipTextFormatStored;
-  const zikrDisplayFormat = isArabic ? "arabic" : zikrDisplayFormatStored;
+  const isRtl = preferences.language === "ar" || preferences.language === "ur";
+  const fmt = (n: number) => preferences.language === "ar" ? n.toLocaleString("ar-SA") : preferences.language === "ur" ? n.toLocaleString("ur-PK") : String(n);
+  const isArabic = isRtl;
+  const chipTextFormat = isRtl ? "arabic" : chipTextFormatStored;
+  const zikrDisplayFormat = isRtl ? "arabic" : zikrDisplayFormatStored;
   const [autoEnabled, setAutoEnabled] = useState(() => preferences.autoCounterDefaultEnabled ?? false);
   const [autoIntervalMs, setAutoIntervalMs] = useState(preferences.autoCounterDefaultSpeed || 1000);
   const [isCustomSpeed, setIsCustomSpeed] = useState(() => preferences.autoCounterSpeedIsCustom ?? false);

@@ -185,7 +185,7 @@ export default function ListesPage() {
   );
 
   const language = useTasbihStore((s) => s.preferences.language);
-  const fmt = (n: number) => language === "ar" ? n.toLocaleString("ar-SA") : String(n);
+  const fmt = (n: number) => language === "ar" ? n.toLocaleString("ar-SA") : language === "ur" ? n.toLocaleString("ur-PK") : String(n);
   const customLists = useTasbihStore((s) => s.customLists);
   const customZikrs = useTasbihStore((s) => s.customZikrs);
   const createList = useTasbihStore((s) => s.createList);

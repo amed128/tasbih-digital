@@ -77,7 +77,7 @@ export function ThemeSync() {
 
   useEffect(() => {
     document.documentElement.lang = language ?? "fr";
-    document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+    document.documentElement.dir = (language === "ar" || language === "ur") ? "rtl" : "ltr";
   }, [language]);
 
   useEffect(() => {

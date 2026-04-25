@@ -92,6 +92,7 @@ export default function ReglagesPage() {
       hi: "ज़िक्र अनुस्मारक: अल्लाह आपकी दुआएं कबूल करे।",
       ar: "تذكير الذكر: تقبّل الله دعاءك.",
       tr: "Zikir hatırlatması: Allah dualarınızı kabul etsin.",
+      ur: "ذکر یاد دہانی: اللہ آپ کی دعائیں قبول فرمائے۔",
     };
     const body = TEST_BODY[preferences.language ?? "en"] ?? "Zikr reminder: may Allah accept your invocations.";
     await LocalNotifications.schedule({

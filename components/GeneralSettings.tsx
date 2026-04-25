@@ -153,6 +153,7 @@ export default function GeneralSettings() {
             <option value="hi">🇮🇳 हिन्दी</option>
             <option value="ar">🇸🇦 العربية</option>
             <option value="tr">🇹🇷 Türkçe</option>
+            <option value="ur">🇵🇰 اردو</option>
           </select>
         </div>
       </section>

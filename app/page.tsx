@@ -239,7 +239,6 @@ export default function Home() {
   const preferences = useTasbihStore((s) => s.preferences);
   const isRtl = preferences.language === "ar" || preferences.language === "ur";
   const fmt = (n: number) => preferences.language === "ar" ? n.toLocaleString("ar-SA") : preferences.language === "ur" ? n.toLocaleString("ur-PK") : String(n);
-  const isArabic = isRtl;
   const chipTextFormat = isRtl ? "arabic" : chipTextFormatStored;
   const zikrDisplayFormat = isRtl ? "arabic" : zikrDisplayFormatStored;
   const [autoEnabled, setAutoEnabled] = useState(() => preferences.autoCounterDefaultEnabled ?? false);

@@ -76,6 +76,39 @@ t("stats.total", { count: 1234 })         // with variable
 
 Variables in strings use `{{ varName }}` syntax. Always add both `fr` and `en` keys when adding new strings.
 
+### Adding a new language — checklist
+
+1. `store/tasbihStore.ts` — add `| "xx"` to the language union type (3 places) and to `normalizeLanguage()`
+2. `components/GeneralSettings.tsx` — add `<option value="xx">🇽🇽 Name</option>`
+3. `app/stats/page.tsx` — add `xx: "xx-XX"` to `LOCALE_MAP`
+4. `components/ReminderScheduler.tsx` — add entry to `REMINDER_BODY`
+5. `app/reglages/page.tsx` — add entry to `TEST_BODY`
+6. `data/zikrs.ts` — add category labels to `CATEGORY_LABELS`
+7. `i18n/translations.ts` — add complete language block (~550 keys)
+
+**RTL languages** (Arabic `ar`, Urdu `ur`, and any future RTL addition) require extra steps:
+- `components/ThemeSync.tsx` — extend the `language === "ar"` RTL guard to include the new code
+- `app/page.tsx` — extend `isRtl` and the `fmt` numeral helper
+- `app/listes/page.tsx`, `components/CircleProgress.tsx`, `app/reglages/selection-mode/page.tsx` — extend the same `fmt`/`isArabic` guards
+- Back/quit button strings: put `→` at the **start** of the string (bidi algorithm places it on the right in RTL)
+
+### Stream idle timeout — translation inserts
+
+Inserting a large `Edit` block (>~100 lines of `new_string`) risks a stream idle timeout. **Always split translation blocks by section**, one `Edit` call per section:
+
+| Section | Approx. lines |
+|---|---|
+| modal + nav + counter | ~90 |
+| lists | ~55 |
+| stats | ~40 |
+| settings part 1 (auto-counter + theme + sound) | ~65 |
+| settings part 2 (audio + display + reminders + sync) | ~80 |
+| donate + circle | ~30 |
+| about | ~45 |
+| help | ~35 |
+
+Write a short text line between each `Edit` call — this resets the idle timer.
+
 ---
 
 ## Theming

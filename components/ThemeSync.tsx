@@ -19,16 +19,13 @@ export function ThemeSync() {
   const iconTheme = useTasbihStore((s) => s.preferences.iconTheme);
   const language = useTasbihStore((s) => s.preferences.language);
 
-  // On mount: prime iOS with the correct background color and assert overlay mode.
-  // setBackgroundColor is called first so iOS has the right fallback color if it
-  // briefly flashes the native bar, then overlay is re-asserted so the web view
-  // pixels (covered by the ::before strip in globals.css) remain authoritative.
-  // Scoped to iOS only — Android handles its own status bar without overlay mode.
+  // On mount: set the native status bar background color to match the theme.
+  // Non-overlay mode (the capacitor.config.json default) lets iOS handle safe
+  // area automatically — the web view starts below the Dynamic Island/notch.
   useEffect(() => {
     if (Capacitor.getPlatform() !== "ios") return;
     const initialTheme = (theme ?? "blue") as keyof typeof THEME_META_COLOR;
     StatusBar.setBackgroundColor({ color: THEME_META_COLOR[initialTheme] }).catch(() => {});
-    StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -51,7 +48,6 @@ export function ThemeSync() {
       id2 = requestAnimationFrame(() => {
         if (Capacitor.getPlatform() === "ios") {
           StatusBar.setBackgroundColor({ color: THEME_META_COLOR[nextTheme] }).catch(() => {});
-          StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
         }
         StatusBar.setStyle({
           style: nextTheme === "light" ? Style.Light : Style.Dark,

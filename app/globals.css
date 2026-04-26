@@ -134,24 +134,6 @@ html {
   background-color: var(--background);
 }
 
-/* iOS Capacitor: push content below the Dynamic Island / notch, and fill the
-   status-bar area with the app background color so the transparent native bar
-   shows the right color. Scoped to .is-native-ios (iOS native only — set by
-   ThemeSync via Capacitor.getPlatform() === "ios"). Never applied on Android
-   or PWA. */
-body.is-native-ios {
-  padding-top: env(safe-area-inset-top);
-}
-
-body.is-native-ios::before {
-  content: "";
-  position: fixed;
-  inset: 0 0 auto;
-  height: env(safe-area-inset-top);
-  background-color: var(--background);
-  z-index: 9999;
-  pointer-events: none;
-}
 
 body {
   background-color: var(--background);

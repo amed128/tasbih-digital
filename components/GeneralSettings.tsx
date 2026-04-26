@@ -155,6 +155,8 @@ export default function GeneralSettings() {
             <option value="tr">🇹🇷 Türkçe</option>
             <option value="ur">🇵🇰 اردو</option>
             <option value="bn">🇧🇩 বাংলা</option>
+            <option value="id">🇮🇩 Bahasa Indonesia</option>
+            <option value="ms">🇲🇾 Bahasa Melayu</option>
           </select>
         </div>
       </section>

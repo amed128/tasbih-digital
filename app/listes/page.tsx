@@ -677,7 +677,7 @@ export default function ListesPage() {
                                 <div className="text-[0.95rem] font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">{d.arabic}</div>
                                 <div className="mt-0.5 flex items-center justify-between gap-3 text-[var(--secondary)]">
                                   {!isRtl && <span className="min-w-0 flex-1 truncate text-[0.86rem] font-semibold">{getTransliteration(d, language)}</span>}
-                                  <span className="flex-shrink-0 font-semibold text-[var(--secondary)]">×{d.defaultTarget}</span>
+                                  <span className="flex-shrink-0 font-semibold text-[var(--secondary)]">×{fmt(d.defaultTarget)}</span>
                                 </div>
                               </button>
                             ))}
@@ -760,7 +760,7 @@ export default function ListesPage() {
                                   {getTransliteration(zikr, language)}
                                 </div>}
                               </div>
-                              <span className="ml-4 flex-shrink-0 text-[1rem] font-semibold text-[var(--secondary)]">×{zikr.defaultTarget}</span>
+                              <span className="ml-4 flex-shrink-0 text-[1rem] font-semibold text-[var(--secondary)]">×{fmt(zikr.defaultTarget)}</span>
                             </button>
                           );
                         })}
@@ -886,7 +886,7 @@ export default function ListesPage() {
                                     {getTransliteration(zikr, language)}
                                   </div>}
                                 </div>
-                                <span className="ml-4 flex-shrink-0 text-[1rem] font-semibold text-[var(--secondary)]">×{zikr.defaultTarget}</span>
+                                <span className="ml-4 flex-shrink-0 text-[1rem] font-semibold text-[var(--secondary)]">×{fmt(zikr.defaultTarget)}</span>
                               </button>
                             );
                           })
@@ -965,7 +965,7 @@ export default function ListesPage() {
                             <div className="text-xs font-semibold text-[var(--foreground)]">{zikr.arabic}</div>
                           </div>
                           <div className="text-xs text-[var(--secondary)]">
-                            {!isRtl && <>{getTransliteration(zikr, language)} · </>}{displayTarget}
+                            {!isRtl && <>{getTransliteration(zikr, language)} · </>}{fmt(displayTarget)}
                             {customTarget !== undefined && customTarget !== zikr.defaultTarget && (
                               <span className="ml-1 text-[var(--primary)]">✎</span>
                             )}
@@ -1269,7 +1269,7 @@ export default function ListesPage() {
                 {getTransliteration(selectedLibraryZikr, language)}
               </div>}
               <div className="mt-1 text-sm text-[var(--secondary)]">
-                {t("lists.previewTarget", { count: selectedLibraryZikr.defaultTarget })}
+                {t("lists.previewTarget", { count: fmt(selectedLibraryZikr.defaultTarget) })}
               </div>
             </div>
           ) : null}

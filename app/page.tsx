@@ -1761,7 +1761,7 @@ export default function Home() {
                               <span className="truncate text-base leading-tight">{highlightMatch(d.arabic)}</span>
                               {!isRtl && <span className="mt-0.5 block truncate text-sm text-gray-400">{highlightMatch(getTransliteration(d, preferences.language))}</span>}
                             </div>
-                            <span className="ml-3 w-14 flex-shrink-0 self-center text-right text-sm text-gray-500 tabular-nums">×{d.defaultTarget}</span>
+                            <span className="ml-3 w-14 flex-shrink-0 self-center text-right text-sm text-gray-500 tabular-nums">×{fmt(d.defaultTarget)}</span>
                           </button>
                         ))}
                       </div>
@@ -1857,7 +1857,7 @@ export default function Home() {
                                 <span className="truncate text-base leading-tight">{highlightMatch(d.arabic)}</span>
                                 {!isRtl && <span className="truncate text-sm text-[var(--secondary)]">{highlightMatch(getTransliteration(d, preferences.language))}</span>}
                               </div>
-                              <span className="ml-3 w-14 flex-shrink-0 self-center text-right text-sm text-[var(--secondary)] tabular-nums">×{d.defaultTarget}</span>
+                              <span className="ml-3 w-14 flex-shrink-0 self-center text-right text-sm text-[var(--secondary)] tabular-nums">×{fmt(d.defaultTarget)}</span>
                             </button>
                           ))}
                         </div>

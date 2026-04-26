@@ -238,7 +238,7 @@ export default function Home() {
   const [focusMode, setFocusMode] = useState(false);
   const preferences = useTasbihStore((s) => s.preferences);
   const isRtl = preferences.language === "ar" || preferences.language === "ur" || preferences.language === "fa";
-  const fmt = (n: number) => preferences.language === "ar" ? n.toLocaleString("ar-SA") : preferences.language === "ur" ? n.toLocaleString("ur-PK") : preferences.language === "fa" ? n.toLocaleString("fa-IR") : String(n);
+  const fmt = (n: number) => preferences.language === "ar" ? n.toLocaleString("ar-SA") : preferences.language === "ur" ? n.toLocaleString("ur-PK-u-nu-arab") : preferences.language === "fa" ? n.toLocaleString("fa-IR") : String(n);
   const chipTextFormat = isRtl ? "arabic" : chipTextFormatStored;
   const zikrDisplayFormat = isRtl ? "arabic" : zikrDisplayFormatStored;
   const [autoEnabled, setAutoEnabled] = useState(() => preferences.autoCounterDefaultEnabled ?? false);
@@ -1751,17 +1751,17 @@ export default function Home() {
                           <button
                             key={d.id}
                             type="button"
-                            className="flex w-full min-w-0 items-start justify-between border-t border-[var(--border)] px-6 py-3 text-left text-[var(--foreground)] hover:bg-white/[0.03]"
+                            className="flex w-full min-w-0 items-start justify-between border-t border-[var(--border)] px-6 py-3 text-start text-[var(--foreground)] hover:bg-white/[0.03]"
                             onClick={() => {
                               selectZikrAsList(d.id);
                               setDropdownOpen(false);
                             }}
                           >
                             <div className="min-w-0 flex-1">
-                              <span className="truncate text-base leading-tight">{highlightMatch(d.arabic)}</span>
+                              <span className="block truncate text-base leading-tight">{highlightMatch(d.arabic)}</span>
                               {!isRtl && <span className="mt-0.5 block truncate text-sm text-gray-400">{highlightMatch(getTransliteration(d, preferences.language))}</span>}
                             </div>
-                            <span className="ml-3 w-14 flex-shrink-0 self-center text-right text-sm text-gray-500 tabular-nums">×{fmt(d.defaultTarget)}</span>
+                            <span className="ms-3 w-14 flex-shrink-0 self-center text-end text-sm text-gray-500 tabular-nums">×{fmt(d.defaultTarget)}</span>
                           </button>
                         ))}
                       </div>
@@ -1847,17 +1847,17 @@ export default function Home() {
                             <button
                               key={d.id}
                               type="button"
-                              className="flex w-full min-w-0 items-start justify-between border-t border-[var(--border)] px-6 py-3 text-left text-[var(--foreground)] hover:bg-white/[0.03]"
+                              className="flex w-full min-w-0 items-start justify-between border-t border-[var(--border)] px-6 py-3 text-start text-[var(--foreground)] hover:bg-white/[0.03]"
                               onClick={() => {
                                 selectZikrAsList(d.id);
                                 setDropdownOpen(false);
                               }}
                             >
                               <div className="min-w-0 flex-1">
-                                <span className="truncate text-base leading-tight">{highlightMatch(d.arabic)}</span>
-                                {!isRtl && <span className="truncate text-sm text-[var(--secondary)]">{highlightMatch(getTransliteration(d, preferences.language))}</span>}
+                                <span className="block truncate text-base leading-tight">{highlightMatch(d.arabic)}</span>
+                                {!isRtl && <span className="block truncate text-sm text-[var(--secondary)]">{highlightMatch(getTransliteration(d, preferences.language))}</span>}
                               </div>
-                              <span className="ml-3 w-14 flex-shrink-0 self-center text-right text-sm text-[var(--secondary)] tabular-nums">×{fmt(d.defaultTarget)}</span>
+                              <span className="ms-3 w-14 flex-shrink-0 self-center text-end text-sm text-[var(--secondary)] tabular-nums">×{fmt(d.defaultTarget)}</span>
                             </button>
                           ))}
                         </div>

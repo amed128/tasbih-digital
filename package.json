@@ -12,6 +12,7 @@
     "validate:vercel": "node scripts/validate-vercel-cron.mjs",
     "start": "next start",
     "lint": "eslint",
+    "translations:check": "node --experimental-strip-types scripts/check-translations.mjs",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test tests/e2e/smoke.spec.ts --project=chromium",

@@ -19,13 +19,34 @@ export function ThemeSync() {
   const iconTheme = useTasbihStore((s) => s.preferences.iconTheme);
   const language = useTasbihStore((s) => s.preferences.language);
 
-  // On mount: set the native status bar background color to match the theme.
-  // Non-overlay mode (the capacitor.config.json default) lets iOS handle safe
-  // area automatically — the web view starts below the Dynamic Island/notch.
+  // On mount: disable overlay, set status bar color, then measure the actual
+  // safe area inset via a test element and apply it as body padding-top.
+  // We use JS measurement because env(safe-area-inset-top) resolves to 0
+  // in this WKWebView configuration (viewport-fit=cover not honoured).
   useEffect(() => {
     if (Capacitor.getPlatform() !== "ios") return;
     const initialTheme = (theme ?? "blue") as keyof typeof THEME_META_COLOR;
+    StatusBar.setOverlaysWebView({ overlay: false }).catch(() => {});
     StatusBar.setBackgroundColor({ color: THEME_META_COLOR[initialTheme] }).catch(() => {});
+
+    // env(safe-area-inset-top) resolves to 0 in this WKWebView configuration
+    // (overlay mode is active, viewport-fit=cover not exposed to CSS).
+    // Map known iPhone logical screen heights to their top safe area in CSS px.
+    const SAFE_TOP: Record<number, number> = {
+      956: 62, // iPhone 16 Pro Max
+      932: 59, // iPhone 14 Pro Max · 15 Plus · 15 Pro Max
+      874: 62, // iPhone 16 Pro
+      852: 59, // iPhone 14 Pro · 15 · 15 Pro
+      926: 47, // iPhone 12 Pro Max · 13 Pro Max
+      844: 47, // iPhone 12 · 12 Pro · 13 · 13 Pro
+      896: 44, // iPhone 11 Pro Max · XS Max
+      812: 44, // iPhone X · XS · 11 Pro
+    };
+    const safeTop = SAFE_TOP[window.screen.height] ?? (window.screen.height >= 812 ? 44 : 0);
+    if (safeTop > 0) {
+      document.documentElement.style.setProperty("--ios-safe-top", `${safeTop}px`);
+      document.body.style.paddingTop = `${safeTop}px`;
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

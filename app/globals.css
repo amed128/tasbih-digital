@@ -134,6 +134,24 @@ html {
   background-color: var(--background);
 }
 
+/* iOS native only: WKWebView is in full-screen overlay mode, status bar is
+   transparent. Push body content below the Dynamic Island/notch using a
+   JS-measured inset (--ios-safe-top), and fill the gap with the theme color
+   via ::before so the transparent status bar shows the right background. */
+body.is-native-ios {
+  padding-top: var(--ios-safe-top, 0px);
+}
+
+body.is-native-ios::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: var(--ios-safe-top, 0px);
+  background-color: var(--background);
+  z-index: 9999;
+  pointer-events: none;
+}
+
 
 body {
   background-color: var(--background);

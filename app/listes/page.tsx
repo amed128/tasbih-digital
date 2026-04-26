@@ -185,6 +185,7 @@ export default function ListesPage() {
   );
 
   const language = useTasbihStore((s) => s.preferences.language);
+  const isRtl = language === "ar" || language === "ur" || language === "fa";
   const fmt = (n: number) => language === "ar" ? n.toLocaleString("ar-SA") : language === "ur" ? n.toLocaleString("ur-PK") : language === "fa" ? n.toLocaleString("fa-IR") : String(n);
   const customLists = useTasbihStore((s) => s.customLists);
   const customZikrs = useTasbihStore((s) => s.customZikrs);
@@ -675,7 +676,7 @@ export default function ListesPage() {
                               >
                                 <div className="text-[0.95rem] font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">{d.arabic}</div>
                                 <div className="mt-0.5 flex items-center justify-between gap-3 text-[var(--secondary)]">
-                                  <span className="min-w-0 flex-1 truncate text-[0.86rem] font-semibold">{getTransliteration(d, language)}</span>
+                                  {!isRtl && <span className="min-w-0 flex-1 truncate text-[0.86rem] font-semibold">{getTransliteration(d, language)}</span>}
                                   <span className="flex-shrink-0 font-semibold text-[var(--secondary)]">×{d.defaultTarget}</span>
                                 </div>
                               </button>
@@ -755,9 +756,9 @@ export default function ListesPage() {
                                 <div className="truncate text-[1.05rem] font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">
                                   {zikr.arabic}
                                 </div>
-                                <div className="truncate text-[0.86rem] font-semibold text-[var(--secondary)]">
+                                {!isRtl && <div className="truncate text-[0.86rem] font-semibold text-[var(--secondary)]">
                                   {getTransliteration(zikr, language)}
-                                </div>
+                                </div>}
                               </div>
                               <span className="ml-4 flex-shrink-0 text-[1rem] font-semibold text-[var(--secondary)]">×{zikr.defaultTarget}</span>
                             </button>

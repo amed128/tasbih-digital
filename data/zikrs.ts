@@ -149,6 +149,19 @@ const CATEGORY_LABELS: Record<string, Partial<Record<ZikrCategory, string>>> = {
     "Matin/Soir": "Pagi/Petang",
     "Asma ul-Husna": "Asmaul Husna",
   },
+  ru: {
+    "Tasbih": "Тасбих",
+    "Hamd": "Хамд",
+    "Takbir": "Такбир",
+    "Tahlil": "Тахлил",
+    "Hawqala": "Хаукала",
+    "Istighfar": "Истигфар",
+    "Salawat": "Салават",
+    "Zikr général": "Общий Зикр",
+    "Du'a": "Дуа",
+    "Matin/Soir": "Утро/Вечер",
+    "Asma ul-Husna": "Асмауль-Хусна",
+  },
 };
 
 export function getCategoryLabel(category: string, lang: string): string {

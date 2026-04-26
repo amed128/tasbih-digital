@@ -184,6 +184,6 @@ Write a short text line between each `Edit` call — this resets the idle timer.
 ## Future phases (roadmap)
 - Phase 2: ~~Arabic 🇸🇦~~ ✅, ~~Turkish 🇹🇷~~ ✅, ~~Urdu 🇵🇰~~ ✅, ~~Bengali 🇧🇩~~ ✅ — COMPLETED
 - Phase 3: ~~Indonesian 🇮🇩~~ ✅, ~~Malay 🇲🇾~~ ✅ — COMPLETED
-- Phase 4: Swahili 🇰🇪, Persian 🇮🇷, Russian 🇷🇺
+- Phase 4: Russian 🇷🇺, Persian 🇮🇷
 
 See `Todo.md` for full roadmap and Muslim population analysis.

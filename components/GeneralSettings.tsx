@@ -157,6 +157,7 @@ export default function GeneralSettings() {
             <option value="bn">🇧🇩 বাংলা</option>
             <option value="id">🇮🇩 Bahasa Indonesia</option>
             <option value="ms">🇲🇾 Bahasa Melayu</option>
+            <option value="ru">🇷🇺 Русский</option>
           </select>
         </div>
       </section>

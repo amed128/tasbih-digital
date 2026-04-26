@@ -96,6 +96,7 @@ export default function ReglagesPage() {
       bn: "যিকর স্মরণিকা: আল্লাহ আপনার দোয়া কবুল করুন।",
       id: "Pengingat zikir: semoga Allah menerima doa-doa Anda.",
       ms: "Peringatan zikir: semoga Allah menerima doa-doa anda.",
+      ru: "Напоминание о зикре: да примет Аллах ваши молитвы.",
     };
     const body = TEST_BODY[preferences.language ?? "en"] ?? "Zikr reminder: may Allah accept your invocations.";
     await LocalNotifications.schedule({

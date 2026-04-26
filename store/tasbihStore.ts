@@ -62,7 +62,7 @@ export type Preferences = {
   audioClearTranscriptOnSilence: boolean;
   audioStopOnSilence: boolean;
   audioDebugTelemetry: boolean;
-  language: "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar" | "tr" | "ur" | "bn" | "id" | "ms";
+  language: "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar" | "tr" | "ur" | "bn" | "id" | "ms" | "ru";
   confetti: boolean;
   remindersEnabled: boolean;
   reminderScheduleType: ReminderScheduleType;
@@ -188,7 +188,7 @@ export type TasbihStoreState = {
   setAudioClearTranscriptOnSilence: (enabled: boolean) => void;
   setAudioStopOnSilence: (enabled: boolean) => void;
   setAudioDebugTelemetry: (enabled: boolean) => void;
-  setLanguage: (lang: "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar" | "tr" | "ur" | "bn" | "id" | "ms") => void;
+  setLanguage: (lang: "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar" | "tr" | "ur" | "bn" | "id" | "ms" | "ru") => void;
   setRemindersEnabled: (enabled: boolean) => void;
   setReminderScheduleType: (type: ReminderScheduleType) => void;
   setReminderTimes: (times: ReminderTime[]) => void;
@@ -571,8 +571,8 @@ const normalizeBooleanWithDefault = (value: unknown, fallback: boolean): boolean
   return value;
 };
 
-const normalizeLanguage = (value: unknown): "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar" | "tr" | "ur" | "bn" | "id" | "ms" => {
-  if (value === "fr" || value === "en" || value === "de" || value === "es" || value === "pt" || value === "hi" || value === "ar" || value === "tr" || value === "ur" || value === "bn" || value === "id" || value === "ms") return value;
+const normalizeLanguage = (value: unknown): "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar" | "tr" | "ur" | "bn" | "id" | "ms" | "ru" => {
+  if (value === "fr" || value === "en" || value === "de" || value === "es" || value === "pt" || value === "hi" || value === "ar" || value === "tr" || value === "ur" || value === "bn" || value === "id" || value === "ms" || value === "ru") return value;
   return "en";
 };
 
@@ -682,7 +682,7 @@ const createStore = () =>
     devtools((set) => ({
       ...initialState,
       currentZikr: resolveZikr(initialState.currentZikrId ?? "", initialState.customZikrs ?? {}),
-      setLanguage: (lang: "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar" | "tr" | "ur" | "bn" | "id" | "ms") =>
+      setLanguage: (lang: "fr" | "en" | "de" | "es" | "pt" | "hi" | "ar" | "tr" | "ur" | "bn" | "id" | "ms" | "ru") =>
         set((state) => {
           const newState = {
             preferences: {

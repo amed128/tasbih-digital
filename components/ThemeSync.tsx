@@ -23,7 +23,9 @@ export function ThemeSync() {
   // setBackgroundColor is called first so iOS has the right fallback color if it
   // briefly flashes the native bar, then overlay is re-asserted so the web view
   // pixels (covered by the ::before strip in globals.css) remain authoritative.
+  // Scoped to iOS only — Android handles its own status bar without overlay mode.
   useEffect(() => {
+    if (Capacitor.getPlatform() !== "ios") return;
     const initialTheme = (theme ?? "blue") as keyof typeof THEME_META_COLOR;
     StatusBar.setBackgroundColor({ color: THEME_META_COLOR[initialTheme] }).catch(() => {});
     StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
@@ -47,10 +49,10 @@ export function ThemeSync() {
     let id2: ReturnType<typeof requestAnimationFrame>;
     const id1 = requestAnimationFrame(() => {
       id2 = requestAnimationFrame(() => {
-        // Set explicit background color so iOS has the right color if overlay
-        // mode flashes or resets to opaque, then re-assert overlay mode.
-        StatusBar.setBackgroundColor({ color: THEME_META_COLOR[nextTheme] }).catch(() => {});
-        StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
+        if (Capacitor.getPlatform() === "ios") {
+          StatusBar.setBackgroundColor({ color: THEME_META_COLOR[nextTheme] }).catch(() => {});
+          StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
+        }
         StatusBar.setStyle({
           style: nextTheme === "light" ? Style.Light : Style.Dark,
         }).catch(() => {});
@@ -81,9 +83,9 @@ export function ThemeSync() {
   }, [language]);
 
   useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
+    if (Capacitor.getPlatform() === "ios") {
       document.body.classList.add("is-native-ios");
-    } else {
+    } else if (!Capacitor.isNativePlatform()) {
       document.body.classList.add("is-pwa");
     }
   }, []);

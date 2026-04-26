@@ -25,6 +25,7 @@ export type Zikr = {
   transliteration_es?: string;
   transliteration_pt?: string;
   transliteration_hi?: string;
+  transliteration_ru?: string;
   defaultTarget: number;
   category: ZikrCategory;
 };
@@ -200,6 +201,63 @@ export function getTransliteration(zikr: Zikr, lang: string): string {
   }
   if (lang === "hi") {
     if (zikr.transliteration_hi) return zikr.transliteration_hi;
+  }
+  if (lang === "ru") {
+    if (zikr.transliteration_ru) return zikr.transliteration_ru;
+    return zikr.transliteration
+      // 1. Whole-word Allah forms
+      .replace(/\bAllahumma\b/g, "Аллахумма")
+      .replace(/\bAllahu\b/g, "Аллаху")
+      .replace(/\bAllah\b/g, "Аллах")
+      // 2. liLlah / liLlahi (capital-L Allah emphasis in hamd phrases)
+      .replace(/liLlahi/g, "лилляхи")
+      .replace(/liLlah/g, "лиллях")
+      // 3. -llah suffix patterns
+      .replace(/lillah/g, "лиллях")
+      .replace(/illah/g, "иллях")
+      .replace(/ullah/g, "уллах")
+      .replace(/Llahu/g, "ллаху")
+      .replace(/Llahi/g, "ллахи")
+      .replace(/Llah/g, "ллах")
+      // 4. la/La softening + al article
+      .replace(/\bLa\b/g, "Ля")
+      .replace(/\bal-/g, "аль-")
+      .replace(/\bal\b/g, "аль")
+      .replace(/la/g, "ля")
+      // 5. Al definite article (uppercase, before single-char conversion)
+      .replace(/\bAl(?=[^l])/g, "Аль")
+      // 6. Digraphs
+      .replace(/Sh/g, "Ш").replace(/sh/g, "ш")
+      .replace(/Kh/g, "Х").replace(/kh/g, "х")
+      .replace(/Gh/g, "Г").replace(/gh/g, "г")
+      .replace(/Dh/g, "З").replace(/dh/g, "з")
+      .replace(/Th/g, "С").replace(/th/g, "с")
+      // 7. j, w, y
+      .replace(/J/g, "Дж").replace(/j/g, "дж")
+      .replace(/W/g, "В").replace(/w/g, "в")
+      .replace(/Y/g, "Й").replace(/y/g, "й")
+      // 8. Consonants
+      .replace(/B/g, "Б").replace(/b/g, "б")
+      .replace(/T/g, "Т").replace(/t/g, "т")
+      .replace(/D/g, "Д").replace(/d/g, "д")
+      .replace(/R/g, "Р").replace(/r/g, "р")
+      .replace(/Z/g, "З").replace(/z/g, "з")
+      .replace(/S/g, "С").replace(/s/g, "с")
+      .replace(/F/g, "Ф").replace(/f/g, "ф")
+      .replace(/Q/g, "К").replace(/q/g, "к")
+      .replace(/K/g, "К").replace(/k/g, "к")
+      .replace(/L/g, "Л").replace(/l/g, "л")
+      .replace(/M/g, "М").replace(/m/g, "м")
+      .replace(/N/g, "Н").replace(/n/g, "н")
+      .replace(/H/g, "Х").replace(/h/g, "х")
+      // 9. Vowels
+      .replace(/A/g, "А").replace(/a/g, "а")
+      .replace(/I/g, "И").replace(/i/g, "и")
+      .replace(/U/g, "У").replace(/u/g, "у")
+      .replace(/E/g, "Е").replace(/e/g, "е")
+      .replace(/O/g, "О").replace(/o/g, "о")
+      // 10. Ayin marker
+      .replace(/['']/g, "ъ");
   }
   return zikr.transliteration;
 }

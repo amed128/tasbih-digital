@@ -1,7 +1,7 @@
 # Language Expansion — Implementation Plan
 
 ## Current state
-- 2 languages: `fr` (French) and `en` (English)
+- 12 languages: `fr` `en` `de` `es` `pt` `hi` `ar` `tr` `ur` `bn` `id` `ms`
 - All strings in `i18n/translations.ts` (~550 keys per language)
 - `Language` type = `keyof typeof translations`
 - `useT()` hook resolves by `preferences.language`, falls back to `en`
@@ -147,8 +147,8 @@ Steps 1–5 and 6–9 can be done in separate commits so each translation is ind
 ---
 
 ## Future phases (roadmap)
-- Phase 2: ~~Arabic 🇸🇦~~ ✅, Turkish 🇹🇷, Urdu 🇵🇰, Bengali 🇧🇩
-- Phase 3: Indonesian 🇮🇩, Malay 🇲🇾
+- Phase 2: ~~Arabic 🇸🇦~~ ✅, ~~Turkish 🇹🇷~~ ✅, ~~Urdu 🇵🇰~~ ✅, ~~Bengali 🇧🇩~~ ✅ — COMPLETED
+- Phase 3: ~~Indonesian 🇮🇩~~ ✅, ~~Malay 🇲🇾~~ ✅ — COMPLETED
 - Phase 4: Hausa 🇳🇬, Swahili 🇰🇪, Persian 🇮🇷, Russian 🇷🇺
 
 See `Todo.md` for full roadmap and Muslim population analysis.

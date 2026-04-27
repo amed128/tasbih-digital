@@ -1,11 +1,11 @@
 {
-  "name": "At-tasbih",
-  "short_name": "At-tasbih",
+  "name": "Attasbih",
+  "short_name": "Attasbih",
   "description": "Islamic zikr counter. Track your daily dhikr practice, manage your lists, and view your statistics.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0A0A0A",
-  "theme_color": "#F5A623",
+  "background_color": "#F3F5F8",
+  "theme_color": "#B8822E",
   "orientation": "portrait",
   "icons": [
     { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },

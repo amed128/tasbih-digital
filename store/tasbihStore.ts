@@ -593,10 +593,10 @@ const resolveStoredTheme = (preferences: unknown): Theme => {
       return normalizeTheme(prefs.theme);
     }
     if (typeof prefs.darkMode === "boolean") {
-      return prefs.darkMode ? "dark" : "blue";
+      return prefs.darkMode ? "dark" : "light";
     }
   }
-  return "blue";
+  return "light";
 };
 
 const resolveStoredWakeLockEnabled = (preferences: unknown): boolean => {

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
+  <!-- Background -->
+  <rect width="1000" height="1000" fill="white"/>
+
+  <!-- Top horizontal line -->
+  <line x1="55" y1="418" x2="800" y2="418" stroke="#000000" stroke-width="4.5"/>
+
+  <!-- Bottom horizontal line -->
+  <line x1="55" y1="582" x2="800" y2="582" stroke="#000000" stroke-width="4.5"/>
+
+  <!-- ATTASBIH text -->
+  <text
+    x="408"
+    y="522"
+    text-anchor="middle"
+    font-family="'Helvetica Neue', 'Arial', Helvetica, sans-serif"
+    font-size="136"
+    font-weight="300"
+    fill="#000000"
+    letter-spacing="6"
+  >ATTASBIH</text>
+
+  <!-- Tasbih arc / string -->
+  <path d="M 795 112 C 1020 280, 1020 720, 795 888" stroke="#000000" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Bead 1 (top, smallest) -->
+  <circle cx="925" cy="340" r="44" fill="#000000"/>
+
+  <!-- Bead 2 -->
+  <circle cx="975" cy="462" r="54" fill="#000000"/>
+
+  <!-- Bead 3 -->
+  <circle cx="975" cy="572" r="57" fill="#000000"/>
+
+  <!-- Bead 4 (bottom, largest) -->
+  <circle cx="928" cy="690" r="62" fill="#000000"/>
+</svg>

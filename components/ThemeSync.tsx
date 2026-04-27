@@ -19,35 +19,51 @@ export function ThemeSync() {
   const iconTheme = useTasbihStore((s) => s.preferences.iconTheme);
   const language = useTasbihStore((s) => s.preferences.language);
 
-  // On mount: disable overlay, set status bar color, then measure the actual
-  // safe area inset via a test element and apply it as body padding-top.
-  // We use JS measurement because env(safe-area-inset-top) resolves to 0
-  // in this WKWebView configuration (viewport-fit=cover not honoured).
+  // On mount: activate the safe-area strip for native iOS and iOS PWA.
+  // Native iOS: env(safe-area-inset-top) is 0 (viewport-fit not honoured by
+  //   WKWebView), so we use a screen-height lookup table.
+  // iOS PWA: env() works in Safari, so we measure it via a probe element.
+  // The strip uses background-color:var(--background) so it tracks theme
+  // changes automatically without needing an explicit JS update.
   useEffect(() => {
-    if (Capacitor.getPlatform() !== "ios") return;
-    const initialTheme = (theme ?? "blue") as keyof typeof THEME_META_COLOR;
-    StatusBar.setOverlaysWebView({ overlay: false }).catch(() => {});
-    StatusBar.setBackgroundColor({ color: THEME_META_COLOR[initialTheme] }).catch(() => {});
+    const platform = Capacitor.getPlatform();
+    const isIosPwa = platform === "web" && (navigator as unknown as { standalone?: boolean }).standalone === true;
 
-    // env(safe-area-inset-top) resolves to 0 in this WKWebView configuration
-    // (overlay mode is active, viewport-fit=cover not exposed to CSS).
-    // Map known iPhone logical screen heights to their top safe area in CSS px.
-    const SAFE_TOP: Record<number, number> = {
-      956: 62, // iPhone 16 Pro Max
-      932: 59, // iPhone 14 Pro Max · 15 Plus · 15 Pro Max
-      874: 62, // iPhone 16 Pro
-      852: 59, // iPhone 14 Pro · 15 · 15 Pro
-      926: 47, // iPhone 12 Pro Max · 13 Pro Max
-      844: 47, // iPhone 12 · 12 Pro · 13 · 13 Pro
-      896: 44, // iPhone 11 Pro Max · XS Max
-      812: 44, // iPhone X · XS · 11 Pro
-    };
-    const safeTop = SAFE_TOP[window.screen.height] ?? (window.screen.height >= 812 ? 44 : 0);
-    if (safeTop > 0) {
-      document.body.style.paddingTop = `${safeTop}px`;
-      const strip = document.getElementById("ios-safe-strip");
-      if (strip) {
-        strip.style.cssText = `position:fixed;top:0;left:0;right:0;height:${safeTop}px;background-color:var(--background);z-index:2147483647;pointer-events:none`;
+    if (platform === "ios") {
+      const initialTheme = (theme ?? "blue") as keyof typeof THEME_META_COLOR;
+      StatusBar.setOverlaysWebView({ overlay: false }).catch(() => {});
+      StatusBar.setBackgroundColor({ color: THEME_META_COLOR[initialTheme] }).catch(() => {});
+
+      const SAFE_TOP: Record<number, number> = {
+        956: 62, // iPhone 16 Pro Max
+        932: 59, // iPhone 14 Pro Max · 15 Plus · 15 Pro Max
+        874: 62, // iPhone 16 Pro
+        852: 59, // iPhone 14 Pro · 15 · 15 Pro
+        926: 47, // iPhone 12 Pro Max · 13 Pro Max
+        844: 47, // iPhone 12 · 12 Pro · 13 · 13 Pro
+        896: 44, // iPhone 11 Pro Max · XS Max
+        812: 44, // iPhone X · XS · 11 Pro
+      };
+      const safeTop = SAFE_TOP[window.screen.height] ?? (window.screen.height >= 812 ? 44 : 0);
+      if (safeTop > 0) {
+        document.body.style.paddingTop = `${safeTop}px`;
+        const strip = document.getElementById("ios-safe-strip");
+        if (strip) {
+          strip.style.cssText = `position:fixed;top:0;left:0;right:0;height:${safeTop}px;background-color:var(--background);z-index:2147483647;pointer-events:none`;
+        }
+      }
+    } else if (isIosPwa) {
+      const probe = document.createElement("div");
+      probe.style.cssText = "position:fixed;top:0;left:0;width:1px;height:env(safe-area-inset-top);visibility:hidden;pointer-events:none";
+      document.body.appendChild(probe);
+      const safeTop = probe.getBoundingClientRect().height;
+      document.body.removeChild(probe);
+      if (safeTop > 0) {
+        document.body.style.paddingTop = `${safeTop}px`;
+        const strip = document.getElementById("ios-safe-strip");
+        if (strip) {
+          strip.style.cssText = `position:fixed;top:0;left:0;right:0;height:${safeTop}px;background-color:var(--background);z-index:2147483647;pointer-events:none`;
+        }
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -63,12 +79,6 @@ export function ThemeSync() {
     if (themeMeta) {
       themeMeta.setAttribute("content", color);
     }
-    // Keep the safe-area strip background in sync with the active theme.
-    const strip = document.getElementById("ios-safe-strip");
-    if (strip && strip.style.position === "fixed") {
-      strip.style.backgroundColor = color;
-    }
-
     // Double-RAF: effects fire before the browser paints; two frames push the
     // Capacitor calls to after the new CSS (and the safe-area strip) have been
     // composited so any iOS snapshot reads the correct pixels.

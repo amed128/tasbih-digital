@@ -44,8 +44,11 @@ export function ThemeSync() {
     };
     const safeTop = SAFE_TOP[window.screen.height] ?? (window.screen.height >= 812 ? 44 : 0);
     if (safeTop > 0) {
-      document.documentElement.style.setProperty("--ios-safe-top", `${safeTop}px`);
       document.body.style.paddingTop = `${safeTop}px`;
+      const strip = document.getElementById("ios-safe-strip");
+      if (strip) {
+        strip.style.cssText = `position:fixed;top:0;left:0;right:0;height:${safeTop}px;background-color:var(--background);z-index:2147483647;pointer-events:none`;
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -59,6 +62,11 @@ export function ThemeSync() {
     const themeMeta = document.querySelector('meta[name="theme-color"]');
     if (themeMeta) {
       themeMeta.setAttribute("content", color);
+    }
+    // Keep the safe-area strip background in sync with the active theme.
+    const strip = document.getElementById("ios-safe-strip");
+    if (strip && strip.style.position === "fixed") {
+      strip.style.backgroundColor = color;
     }
 
     // Double-RAF: effects fire before the browser paints; two frames push the

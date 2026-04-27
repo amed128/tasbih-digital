@@ -90,6 +90,8 @@ export default function RootLayout({
             dangerouslySetInnerHTML={{ __html: "(function(){var o=performance.measure.bind(performance);performance.measure=function(){try{return o.apply(this,arguments)}catch(e){}};})();" }}
           />
         )}
+        {/* iOS safe-area strip — height set by ThemeSync after measuring device inset */}
+        <div id="ios-safe-strip" style={{ display: "none" }} />
         <ThemeDecorations />
         <ThemeSync />
         <ReminderScheduler />

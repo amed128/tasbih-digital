@@ -146,6 +146,8 @@ function computeStreak(history: { startAt: string }[]) {
   return streak;
 }
 
+const LOCALE_MAP: Record<string, string> = { fr: "fr-FR", de: "de-DE", es: "es-ES", pt: "pt-BR", hi: "hi-IN", ar: "ar-SA", tr: "tr-TR", ur: "ur-PK-u-nu-arab", bn: "bn-BD", id: "id-ID", ms: "ms-MY", ru: "ru-RU", fa: "fa-IR" };
+
 export default function StatsPage() {
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -163,8 +165,9 @@ export default function StatsPage() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [historyRangeMode, setHistoryRangeMode] = useState<HistoryRangeMode>("month");
   const [historyDate, setHistoryDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const LOCALE_MAP: Record<string, string> = { fr: "fr-FR", de: "de-DE", es: "es-ES", pt: "pt-BR", hi: "hi-IN", ar: "ar-SA", tr: "tr-TR", ur: "ur-PK", bn: "bn-BD" };
   const locale = LOCALE_MAP[language ?? "en"] ?? "en-US";
+  const fmt = (n: number) => n.toLocaleString(locale);
+  const isRtl = language === "ar" || language === "ur" || language === "fa";
 
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -256,7 +259,7 @@ export default function StatsPage() {
     });
     const zikr = bestId ? zikrs.find((d) => d.id === bestId) : undefined;
     return {
-      label: zikr ? `${zikr.arabic} — ${getTransliteration(zikr, language)}` : t("stats.none"),
+      label: zikr ? ((language === "ar" || language === "ur" || language === "fa") ? zikr.arabic : `${zikr.arabic} — ${getTransliteration(zikr, language)}`) : t("stats.none"),
       count: bestCount,
     };
   }, [stats.history, t, language]);
@@ -378,27 +381,27 @@ export default function StatsPage() {
         <section className="grid grid-cols-2 gap-3">
           <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="text-xs font-semibold text-[var(--secondary)]">{t("stats.totalZikrs")}</div>
-            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{total}</div>
+            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{fmt(total)}</div>
           </div>
           <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="text-xs font-semibold text-[var(--secondary)]">{t("stats.avgDay")}</div>
-            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{Math.round(moyenneJour)}</div>
+            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{fmt(Math.round(moyenneJour))}</div>
           </div>
           <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="text-xs font-semibold text-[var(--secondary)]">{t("stats.avgWeek")}</div>
-            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{Math.round(moyenneSem)}</div>
+            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{fmt(Math.round(moyenneSem))}</div>
           </div>
           <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="text-xs font-semibold text-[var(--secondary)]">{t("stats.sessions")}</div>
-            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{sessions}</div>
+            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{fmt(sessions)}</div>
           </div>
           <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="text-xs font-semibold text-[var(--secondary)]">{t("stats.avgSession")}</div>
-            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{Math.round(moyenneSession)}</div>
+            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{fmt(Math.round(moyenneSession))}</div>
           </div>
           <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="text-xs font-semibold text-[var(--secondary)]">{t("stats.activeDays")}</div>
-            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{activeDays}</div>
+            <div className="mt-2 text-2xl font-bold text-[var(--foreground)]">{fmt(activeDays)}</div>
           </div>
         </section>
 
@@ -408,18 +411,19 @@ export default function StatsPage() {
               <div className="text-sm font-semibold text-[var(--foreground)]">{t("stats.weeklyTitle")}</div>
               <div className="text-xs text-[var(--secondary)]">{t("stats.weeklySubtitle")}</div>
             </div>
-            <div className="text-sm font-semibold text-[var(--primary)]">{t("stats.streak", { streak })}</div>
+            <div className="text-sm font-semibold text-[var(--primary)]">{t("stats.streak", { streak: fmt(streak) })}</div>
           </div>
           <div className="mt-4" style={{ height: 240 }}>
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={weeklyData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
-                <XAxis dataKey="day" tick={{ fill: "var(--secondary)", fontSize: 12 }} />
-                <YAxis tick={{ fill: "var(--secondary)", fontSize: 12 }} />
+                <XAxis dataKey="day" reversed={isRtl} tick={{ fill: "var(--secondary)", fontSize: 12 }} />
+                <YAxis orientation={isRtl ? "right" : "left"} tick={{ fill: "var(--secondary)", fontSize: 12 }} tickFormatter={fmt} />
                 <Tooltip
                   wrapperStyle={{ borderRadius: 12, background: "var(--card)", border: "1px solid var(--border)" }}
                   contentStyle={{ background: "var(--card)", border: "none" }}
                   cursor={{ fill: "rgba(var(--primary-rgb), 0.15)" }}
+                  formatter={(value) => [fmt(Number(value ?? 0))]}
                 />
                 <Bar dataKey="total" fill="var(--primary)" radius={[8, 8, 0, 0]} />
               </BarChart>
@@ -434,11 +438,13 @@ export default function StatsPage() {
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={trend30Data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
-                <XAxis dataKey="label" tick={{ fill: "var(--secondary)", fontSize: 11 }} interval={4} />
-                <YAxis tick={{ fill: "var(--secondary)", fontSize: 12 }} />
+                <XAxis dataKey="date" reversed={isRtl} tickFormatter={(d: string) => formatDate(d, locale)} tick={{ fill: "var(--secondary)", fontSize: 11 }} interval={4} />
+                <YAxis orientation={isRtl ? "right" : "left"} tick={{ fill: "var(--secondary)", fontSize: 12 }} tickFormatter={fmt} />
                 <Tooltip
                   wrapperStyle={{ borderRadius: 12, background: "var(--card)", border: "1px solid var(--border)" }}
                   contentStyle={{ background: "var(--card)", border: "none" }}
+                  labelFormatter={(d) => formatDate(String(d), locale)}
+                  formatter={(value) => [fmt(Number(value ?? 0))]}
                 />
                 <Line type="monotone" dataKey="total" stroke="var(--primary)" strokeWidth={2.5} dot={false} />
               </LineChart>
@@ -453,11 +459,12 @@ export default function StatsPage() {
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={weekdayData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
-                <XAxis dataKey="label" tick={{ fill: "var(--secondary)", fontSize: 12 }} />
-                <YAxis tick={{ fill: "var(--secondary)", fontSize: 12 }} />
+                <XAxis dataKey="label" reversed={isRtl} tick={{ fill: "var(--secondary)", fontSize: 12 }} />
+                <YAxis orientation={isRtl ? "right" : "left"} tick={{ fill: "var(--secondary)", fontSize: 12 }} tickFormatter={fmt} />
                 <Tooltip
                   wrapperStyle={{ borderRadius: 12, background: "var(--card)", border: "1px solid var(--border)" }}
                   contentStyle={{ background: "var(--card)", border: "none" }}
+                  formatter={(value) => [fmt(Number(value ?? 0))]}
                 />
                 <Bar dataKey="total" fill="var(--primary)" radius={[8, 8, 0, 0]} />
               </BarChart>
@@ -468,7 +475,7 @@ export default function StatsPage() {
         <section className="rounded-2xl bg-[var(--card)] p-4">
           <div className="text-sm font-semibold text-[var(--foreground)]">{t("stats.hourlyTitle")}</div>
           <div className="text-xs text-[var(--secondary)]">{t("stats.hourlySubtitle")}</div>
-          <div className="mt-3 text-xs font-semibold text-[var(--primary)]">{t("stats.peakHour", { hour: peakHour })}</div>
+          <div className="mt-3 text-xs font-semibold text-[var(--primary)]">{t("stats.peakHour", { hour: fmt(peakHour) })}</div>
           <div className="mt-3 grid grid-cols-6 gap-2">
             {hourlyHeatmap.map((entry) => {
               const max = Math.max(1, ...hourlyHeatmap.map((h) => h.total));
@@ -479,8 +486,8 @@ export default function StatsPage() {
                   className="rounded-lg border border-[var(--border)] p-2 text-center"
                   style={{ backgroundColor: `rgba(var(--primary-rgb), ${0.1 + intensity * 0.55})` }}
                 >
-                  <div className="text-[10px] font-semibold text-[var(--foreground)]">{String(entry.hour).padStart(2, "0")}h</div>
-                  <div className="text-[10px] text-[var(--secondary)]">{entry.total}</div>
+                  <div className="text-[10px] font-semibold text-[var(--foreground)]">{isRtl ? entry.hour.toLocaleString(locale, { minimumIntegerDigits: 2 }) : `${String(entry.hour).padStart(2, "0")}h`}</div>
+                  <div className="text-[10px] text-[var(--secondary)]">{fmt(entry.total)}</div>
                 </div>
               );
             })}
@@ -491,7 +498,7 @@ export default function StatsPage() {
           <div className="rounded-2xl bg-[var(--card)] p-4">
             <div className="text-sm font-semibold text-[var(--secondary)]">{t("stats.mostPracticed")}</div>
             <div className="mt-2 text-[var(--foreground)]">{mostPracticed.label}</div>
-            <div className="mt-1 text-xs text-[var(--secondary)]">{t("stats.totalCount", { count: mostPracticed.count })}</div>
+            <div className="mt-1 text-xs text-[var(--secondary)]">{t("stats.totalCount", { count: fmt(mostPracticed.count) })}</div>
           </div>
 
           <div className="rounded-2xl bg-[var(--card)] p-4">
@@ -551,9 +558,9 @@ export default function StatsPage() {
                         <div className="text-sm text-[var(--foreground)]">
                           {formatDate(entry.startAt, locale)} — {zikr?.arabic ?? "—"}
                         </div>
-                        <div className="text-xs text-[var(--secondary)]">{(zikr ? getTransliteration(zikr, language) : undefined) ?? ""}</div>
+                        {!isRtl && <div className="text-xs text-[var(--secondary)]">{(zikr ? getTransliteration(zikr, language) : undefined) ?? ""}</div>}
                       </div>
-                      <div className="text-sm font-semibold text-[var(--foreground)]">{entry.zikrCount}</div>
+                      <div className="text-sm font-semibold text-[var(--foreground)]">{fmt(entry.zikrCount)}</div>
                     </div>
                   );
                 })

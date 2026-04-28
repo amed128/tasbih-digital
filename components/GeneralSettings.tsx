@@ -33,6 +33,13 @@ export default function GeneralSettings() {
   const [maxTargetRaw, setMaxTargetRaw] = useState(() =>
     String(preferences.defaultMaxTarget ?? 9999)
   );
+  const [maxTargetFocused, setMaxTargetFocused] = useState(false);
+  const language = preferences.language;
+  const fmtTarget = (n: number) =>
+    language === "ar" ? n.toLocaleString("ar-SA") :
+    language === "ur" ? n.toLocaleString("ur-PK-u-nu-arab") :
+    language === "fa" ? n.toLocaleString("fa-IR") :
+    String(n);
 
   return (
     <div className="flex flex-col gap-4">
@@ -107,12 +114,10 @@ export default function GeneralSettings() {
           </div>
           <div className="flex items-center gap-1">
             <input
-              type="number"
-              min={1}
-              max={APP_MAX_TARGET}
-              step={1}
+              type="text"
               inputMode="numeric"
-              value={maxTargetRaw}
+              value={maxTargetFocused ? maxTargetRaw : fmtTarget(parseInt(maxTargetRaw, 10) || 0)}
+              onFocus={() => setMaxTargetFocused(true)}
               onChange={(e) => {
                 setMaxTargetRaw(e.target.value);
                 const val = parseInt(e.target.value, 10);
@@ -125,6 +130,7 @@ export default function GeneralSettings() {
                 const clamped = isNaN(val) || val < 1 ? 1 : Math.min(val, APP_MAX_TARGET);
                 setMaxTargetRaw(String(clamped));
                 setDefaultMaxTarget(clamped);
+                setMaxTargetFocused(false);
               }}
               className="w-28 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-base font-semibold text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1"
             />
@@ -155,6 +161,10 @@ export default function GeneralSettings() {
             <option value="tr">🇹🇷 Türkçe</option>
             <option value="ur">🇵🇰 اردو</option>
             <option value="bn">🇧🇩 বাংলা</option>
+            <option value="id">🇮🇩 Bahasa Indonesia</option>
+            <option value="ms">🇲🇾 Bahasa Melayu</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="fa">🇮🇷 فارسی</option>
           </select>
         </div>
       </section>

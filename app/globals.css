@@ -134,20 +134,10 @@ html {
   background-color: var(--background);
 }
 
-/* iOS Capacitor: solid strip at the top so the translucent native status bar
-   always reads var(--background), not the decoration glow that sits below.
-   Scoped to .is-native-ios (set by ThemeSync on Capacitor native).
-   max(env(safe-area-inset-top),44px) covers both notch and non-notch iPhones
-   in case env() hasn't been resolved yet on first paint. */
-body.is-native-ios::before {
-  content: "";
-  position: fixed;
-  inset: 0 0 auto;
-  height: max(env(safe-area-inset-top), 44px);
-  background-color: var(--background);
-  z-index: 9999;
-  pointer-events: none;
-}
+/* iOS native only: body padding-top is set by ThemeSync via JS.
+   The #ios-safe-strip div (also wired by ThemeSync) covers the gap
+   at max z-index so scrolling content never bleeds into the Dynamic Island. */
+
 
 body {
   background-color: var(--background);

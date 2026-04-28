@@ -1,7 +1,7 @@
 # Language Expansion — Implementation Plan
 
 ## Current state
-- 2 languages: `fr` (French) and `en` (English)
+- 12 languages: `fr` `en` `de` `es` `pt` `hi` `ar` `tr` `ur` `bn` `id` `ms`
 - All strings in `i18n/translations.ts` (~550 keys per language)
 - `Language` type = `keyof typeof translations`
 - `useT()` hook resolves by `preferences.language`, falls back to `en`
@@ -146,9 +146,44 @@ Steps 1–5 and 6–9 can be done in separate commits so each translation is ind
 
 ---
 
+## Adding a new language — checklist
+
+1. `store/tasbihStore.ts` — add `| "xx"` to the language union type (3 places) and to `normalizeLanguage()`
+2. `components/GeneralSettings.tsx` — add `<option value="xx">🇽🇽 Name</option>`
+3. `app/stats/page.tsx` — add `xx: "xx-XX"` to `LOCALE_MAP`
+4. `components/ReminderScheduler.tsx` — add entry to `REMINDER_BODY`
+5. `app/reglages/page.tsx` — add entry to `TEST_BODY`
+6. `data/zikrs.ts` — add category labels to `CATEGORY_LABELS`
+7. `i18n/translations.ts` — add complete language block (~550 keys)
+
+**RTL languages** (Arabic `ar`, Urdu `ur`, and any future RTL addition) require extra steps:
+- `components/ThemeSync.tsx` — extend the `language === "ar"` RTL guard to include the new code
+- `app/page.tsx` — extend `isRtl` and the `fmt` numeral helper
+- `app/listes/page.tsx`, `components/CircleProgress.tsx`, `app/reglages/selection-mode/page.tsx` — extend the same `fmt`/`isArabic` guards
+- Back/quit button strings: put `→` at the **start** of the string (bidi algorithm places it on the right in RTL)
+
+### Stream idle timeout — translation inserts
+
+Inserting a large `Edit` block (>~100 lines of `new_string`) risks a stream idle timeout. **Always split translation blocks by section**, one `Edit` call per section:
+
+| Section | Approx. lines |
+|---|---|
+| modal + nav + counter | ~90 |
+| lists | ~55 |
+| stats | ~40 |
+| settings part 1 (auto-counter + theme + sound) | ~65 |
+| settings part 2 (audio + display + reminders + sync) | ~80 |
+| donate + circle | ~30 |
+| about | ~45 |
+| help | ~35 |
+
+Write a short text line between each `Edit` call — this resets the idle timer.
+
+---
+
 ## Future phases (roadmap)
-- Phase 2: ~~Arabic 🇸🇦~~ ✅, Turkish 🇹🇷, Urdu 🇵🇰, Bengali 🇧🇩
-- Phase 3: Indonesian 🇮🇩, Malay 🇲🇾
-- Phase 4: Hausa 🇳🇬, Swahili 🇰🇪, Persian 🇮🇷, Russian 🇷🇺
+- Phase 2: ~~Arabic 🇸🇦~~ ✅, ~~Turkish 🇹🇷~~ ✅, ~~Urdu 🇵🇰~~ ✅, ~~Bengali 🇧🇩~~ ✅ — COMPLETED
+- Phase 3: ~~Indonesian 🇮🇩~~ ✅, ~~Malay 🇲🇾~~ ✅ — COMPLETED
+- Phase 4: Russian 🇷🇺, Persian 🇮🇷
 
 See `Todo.md` for full roadmap and Muslim population analysis.

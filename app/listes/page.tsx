@@ -185,7 +185,8 @@ export default function ListesPage() {
   );
 
   const language = useTasbihStore((s) => s.preferences.language);
-  const fmt = (n: number) => language === "ar" ? n.toLocaleString("ar-SA") : language === "ur" ? n.toLocaleString("ur-PK") : String(n);
+  const isRtl = language === "ar" || language === "ur" || language === "fa";
+  const fmt = (n: number) => language === "ar" ? n.toLocaleString("ar-SA") : language === "ur" ? n.toLocaleString("ur-PK-u-nu-arab") : language === "fa" ? n.toLocaleString("fa-IR") : String(n);
   const customLists = useTasbihStore((s) => s.customLists);
   const customZikrs = useTasbihStore((s) => s.customZikrs);
   const createList = useTasbihStore((s) => s.createList);
@@ -612,7 +613,7 @@ export default function ListesPage() {
               <div>
                 <div className="text-[0.875rem] font-semibold text-[var(--foreground)]">
                   {t("lists.libraryTitle")}
-                  <span className="ml-2 text-[var(--secondary)]">({zikrs.length})</span>
+                  <span className="ml-2 text-[var(--secondary)]">({fmt(zikrs.length)})</span>
                 </div>
               </div>
             </div>
@@ -655,13 +656,13 @@ export default function ListesPage() {
                             }))
                           }
                           aria-expanded={expanded}
-                          className="flex w-full items-center justify-between px-4 py-2.5 text-left"
+                          className="flex w-full items-center justify-between px-4 py-2.5 text-start"
                         >
                           <span className="flex-1 text-[0.95rem] font-semibold text-[var(--primary)]">
                             {getCategoryLabel(category, language)}
                           </span>
                           <span className="text-[0.95rem] font-semibold text-[var(--secondary)]">{fmt(items.length)} {items.length === 1 ? t("counter.zikrSingular") : t("counter.zikrPlural")}</span>
-                          <span className="ml-4 text-[0.95rem] text-[var(--secondary)]">{expanded ? "⌃" : "⌄"}</span>
+                          <span className="ms-4 text-[0.95rem] text-[var(--secondary)]">{expanded ? "⌃" : "⌄"}</span>
                         </button>
 
                         {expanded && (
@@ -671,12 +672,12 @@ export default function ListesPage() {
                                 type="button"
                                 key={d.id}
                                 onClick={() => setSelectedLibraryZikr(d)}
-                                className="group w-full rounded-xl border border-[var(--border)]  px-3 py-2.5 text-left transition hover:border-[#3E3E3E]"
+                                className="group w-full rounded-xl border border-[var(--border)]  px-3 py-2.5 text-start transition hover:border-[#3E3E3E]"
                               >
-                                <div className="text-[0.95rem] font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">{d.arabic}</div>
-                                <div className="mt-0.5 flex items-center justify-between gap-3 text-[var(--secondary)]">
-                                  <span className="min-w-0 flex-1 truncate text-[0.86rem] font-semibold">{getTransliteration(d, language)}</span>
-                                  <span className="flex-shrink-0 font-semibold text-[var(--secondary)]">×{d.defaultTarget}</span>
+                                <div className="truncate text-[0.95rem] font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">{d.arabic}</div>
+                                <div className={`mt-0.5 flex items-center ${isRtl ? "justify-end" : "justify-between"} gap-3 text-[var(--secondary)]`}>
+                                  {!isRtl && <span className="min-w-0 flex-1 truncate text-[0.86rem] font-semibold">{getTransliteration(d, language)}</span>}
+                                  <span className="flex-shrink-0 font-semibold text-[var(--secondary)]">×{fmt(d.defaultTarget)}</span>
                                 </div>
                               </button>
                             ))}
@@ -715,7 +716,7 @@ export default function ListesPage() {
                       }}
                       className="flex items-center justify-between gap-3 px-4 py-4"
                     >
-                      <div className="min-w-0 flex-1 text-left">
+                      <div className="min-w-0 flex-1 text-start">
                         <div className="truncate text-sm font-semibold text-[var(--foreground)]">
                           {t(preset.nameKey)}
                         </div>
@@ -749,17 +750,17 @@ export default function ListesPage() {
                               type="button"
                               key={zikrId}
                               onClick={() => setSelectedLibraryZikr(zikr)}
-                              className="group flex w-full items-center justify-between gap-4 rounded-xl px-2 py-1 text-left transition hover:bg-[color:var(--border)]/45"
+                              className="group flex w-full items-center justify-between gap-4 rounded-xl px-2 py-1 text-start transition hover:bg-[color:var(--border)]/45"
                             >
                               <div className="min-w-0 flex-1">
                                 <div className="truncate text-[1.05rem] font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">
                                   {zikr.arabic}
                                 </div>
-                                <div className="truncate text-[0.86rem] font-semibold text-[var(--secondary)]">
+                                {!isRtl && <div className="truncate text-[0.86rem] font-semibold text-[var(--secondary)]">
                                   {getTransliteration(zikr, language)}
-                                </div>
+                                </div>}
                               </div>
-                              <span className="ml-4 flex-shrink-0 text-[1rem] font-semibold text-[var(--secondary)]">×{zikr.defaultTarget}</span>
+                              <span className="ms-4 flex-shrink-0 text-[1rem] font-semibold text-[var(--secondary)]">×{fmt(zikr.defaultTarget)}</span>
                             </button>
                           );
                         })}
@@ -818,10 +819,10 @@ export default function ListesPage() {
                     >
                       <div className="flex min-w-0 flex-1 items-center gap-4">
                         <Grip className="h-4 w-4 cursor-grab text-[var(--secondary)] active:cursor-grabbing" strokeWidth={2} />
-                        <div className="min-w-0 flex-1 text-left">
+                        <div className="min-w-0 flex-1 text-start">
                           <div className="truncate text-[0.9rem] font-semibold text-[var(--foreground)]">
                             {listId}
-                            <span className="ml-2 text-[0.86rem] text-[var(--secondary)]">({fmt(items.length)} {items.length === 1 ? t("counter.zikrSingular") : t("counter.zikrPlural")})</span>
+                            <span className="ms-2 text-[0.86rem] text-[var(--secondary)]">({fmt(items.length)} {items.length === 1 ? t("counter.zikrSingular") : t("counter.zikrPlural")})</span>
                           </div>
                         </div>
                       </div>
@@ -875,17 +876,17 @@ export default function ListesPage() {
                                 type="button"
                                 key={zikrId}
                                 onClick={() => setSelectedLibraryZikr(zikr)}
-                                className="group flex w-full items-center justify-between gap-4 rounded-xl px-2 py-1 text-left transition hover:bg-[color:var(--border)]/45"
+                                className="group flex w-full items-center justify-between gap-4 rounded-xl px-2 py-1 text-start transition hover:bg-[color:var(--border)]/45"
                               >
                                 <div className="min-w-0 flex-1">
                                   <div className="truncate text-[1.05rem] font-semibold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">
                                     {zikr.arabic}
                                   </div>
-                                  <div className="truncate text-[0.86rem] font-semibold text-[var(--secondary)]">
+                                  {!isRtl && <div className="truncate text-[0.86rem] font-semibold text-[var(--secondary)]">
                                     {getTransliteration(zikr, language)}
-                                  </div>
+                                  </div>}
                                 </div>
-                                <span className="ml-4 flex-shrink-0 text-[1rem] font-semibold text-[var(--secondary)]">×{zikr.defaultTarget}</span>
+                                <span className="ms-4 flex-shrink-0 text-[1rem] font-semibold text-[var(--secondary)]">×{fmt(zikr.defaultTarget)}</span>
                               </button>
                             );
                           })
@@ -964,7 +965,7 @@ export default function ListesPage() {
                             <div className="text-xs font-semibold text-[var(--foreground)]">{zikr.arabic}</div>
                           </div>
                           <div className="text-xs text-[var(--secondary)]">
-                            {getTransliteration(zikr, language)} · {displayTarget}
+                            {!isRtl && <>{getTransliteration(zikr, language)} · </>}{fmt(displayTarget)}
                             {customTarget !== undefined && customTarget !== zikr.defaultTarget && (
                               <span className="ml-1 text-[var(--primary)]">✎</span>
                             )}
@@ -1051,7 +1052,7 @@ export default function ListesPage() {
                 <span className="text-[2rem] text-[var(--primary)]">◫</span>
                 <span className="ml-3 flex-1 text-[0.95rem] font-semibold text-[var(--foreground)]">
                   {t("lists.libraryTitle")}
-                  <span className="ml-2 text-[var(--secondary)]">({zikrs.length})</span>
+                  <span className="ml-2 text-[var(--secondary)]">({fmt(zikrs.length)})</span>
                 </span>
                 <span className="text-[var(--secondary)]">{createLibraryExpanded ? "⌃" : "⌄"}</span>
               </button>
@@ -1078,10 +1079,10 @@ export default function ListesPage() {
                                 [category]: !expanded,
                               }))
                             }
-                            className="flex w-full items-center justify-between rounded px-2 py-1 text-xs font-semibold text-[var(--primary)] hover:bg-[var(--card)]"
+                            className="flex w-full items-center justify-between rounded px-2 py-1 text-start text-xs font-semibold text-[var(--primary)] hover:bg-[var(--card)]"
                           >
-                            <span>{getCategoryLabel(category, language)}</span>
-                            <span>{expanded ? "⌄" : "›"}</span>
+                            <span className="flex-1">{getCategoryLabel(category, language)}</span>
+                            <span className="ms-3">{expanded ? "⌄" : "›"}</span>
                           </button>
                           {expanded && (
                             <div className="space-y-1 pl-2">
@@ -1092,14 +1093,14 @@ export default function ListesPage() {
                                     key={d.id}
                                     className="flex items-center justify-between rounded px-2 py-1 text-xs text-[var(--secondary)] hover:bg-[var(--card)]"
                                   >
-                                    <div className="flex-1 truncate">
+                                    <div className="min-w-0 flex-1 truncate text-start">
                                       <div className="truncate text-[var(--foreground)]">{d.arabic}</div>
-                                      <div className="text-[var(--secondary)]">{getTransliteration(d, language)}</div>
+                                      {!isRtl && <div className="text-[var(--secondary)]">{getTransliteration(d, language)}</div>}
                                     </div>
                                     <button
                                       onClick={() => handleAddZikrToCreate(d.id)}
                                       disabled={isAdded}
-                                      className="ml-2 rounded bg-[var(--primary)] px-2 py-0.5 text-xs font-semibold text-black transition disabled:cursor-not-allowed disabled:opacity-40 hover:bg-[color:var(--primary)]/90"
+                                      className="ms-2 rounded bg-[var(--primary)] px-2 py-0.5 text-xs font-semibold text-black transition disabled:cursor-not-allowed disabled:opacity-40 hover:bg-[color:var(--primary)]/90"
                                     >
                                       +
                                     </button>
@@ -1264,11 +1265,11 @@ export default function ListesPage() {
               <div className="text-[1.7rem] font-semibold leading-relaxed text-[var(--foreground)]">
                 {selectedLibraryZikr.arabic}
               </div>
-              <div className="mt-3 text-[0.95rem] font-semibold text-[var(--secondary)]">
+              {!isRtl && <div className="mt-3 text-[0.95rem] font-semibold text-[var(--secondary)]">
                 {getTransliteration(selectedLibraryZikr, language)}
-              </div>
+              </div>}
               <div className="mt-1 text-sm text-[var(--secondary)]">
-                {t("lists.previewTarget", { count: selectedLibraryZikr.defaultTarget })}
+                {t("lists.previewTarget", { count: fmt(selectedLibraryZikr.defaultTarget) })}
               </div>
             </div>
           ) : null}

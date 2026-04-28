@@ -118,6 +118,7 @@
 - [x] **Target field — popup d'édition** — Remplacer l'édition inline du champ target par un popup similaire au popup de reset (avec bouton de confirmation).
 - [x] **Mode button — dropdown** — Transformer le bouton Mode en dropdown tout en conservant sa taille et son design actuels. Ajouter une petite flèche vers le bas indiquant que c'est un dropdown. Le dropdown doit s'ouvrir vers le bas avec un petit espace entre le bouton et le menu (comme le dropdown "All zikrs"), reprendre le style/couleur du bouton, et proposer 4 options : Increment, Decrement, Auto-counter, Audio-counter.
 - [x] **Logo de l'app** — Design choisi : Option 02 Classical Cinzel. Icône app générée (light default + dark + blue alternates). Switching natif iOS/Android via plugin Capacitor. Caché sur PWA.
+- [ ] **Fix new app icon and logo**
 - [x] **Icône du bouton Undo** — Remplacée par RotateCcw (Lucide).
 - [x] Renommer "Mode de sélection" → "Mode sélection de zikr" (FR) et "Selection Mode" → "Zikr selection mode" (EN)
 - [x] Ajouter un setting dans Mode sélection de zikr : réinitialiser ou non le compteur en cours au retour sur un zikr précédent

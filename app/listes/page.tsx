@@ -412,7 +412,9 @@ export default function ListesPage() {
   };
 
   const handleManualArabicChange = (value: string) => {
-    setManualArabic(value);
+    // Strip non-Arabic characters (allow Arabic script blocks + spaces)
+    const arabic = value.replace(/[^\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF\s]/g, "");
+    setManualArabic(arabic);
     setManualArabicAutofilled(false);
   };
 
@@ -989,25 +991,36 @@ export default function ListesPage() {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                if (manualEditModalOpen) closeManualEditModal();
-                setManualZikrShow((prev) => !prev);
-              }}
-              className="rounded-3xl border border-dashed border-[var(--border)] py-4 text-[1.05rem] font-semibold text-[var(--secondary)] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
-            >
-              {t("lists.addManualBtn")}
-            </button>
+            {manualZikrShow ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setManualZikrShow(false);
+                  setManualEditingZikrId(null);
+                  setManualArabic("");
+                  setManualTranslit("");
+                  setManualReps("33");
+                  setManualArabicAutofilled(false);
+                }}
+                className="rounded-3xl border border-[var(--border)] py-4 text-[1.05rem] font-semibold text-[var(--secondary)] transition hover:border-[var(--danger)] hover:text-[var(--danger)]"
+              >
+                {t("lists.cancel")}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  if (manualEditModalOpen) closeManualEditModal();
+                  setManualZikrShow(true);
+                }}
+                className="rounded-3xl border border-dashed border-[var(--border)] py-4 text-[1.05rem] font-semibold text-[var(--secondary)] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
+              >
+                {t("lists.addManualBtn")}
+              </button>
+            )}
 
             {manualZikrShow && (
               <div className="space-y-3 rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-4">
-                <input
-                  value={manualArabic}
-                  onChange={(e) => handleManualArabicChange(e.target.value)}
-                  placeholder={t("lists.arabicPlaceholder")}
-                  className="w-full rounded-2xl border border-[var(--border)]  px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
-                />
                 <input
                   value={manualTranslit}
                   onChange={(e) => handleManualTranslitChange(e.target.value)}
@@ -1022,6 +1035,13 @@ export default function ListesPage() {
                       : ""}
                   </p>
                 ) : null}
+                <input
+                  value={manualArabic}
+                  onChange={(e) => handleManualArabicChange(e.target.value)}
+                  placeholder={t("lists.arabicPlaceholder")}
+                  dir="rtl"
+                  className="w-full rounded-2xl border border-[var(--border)]  px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
+                />
                 <div className="flex items-center gap-2">
                   <label className="text-[1rem] font-semibold text-[var(--foreground)]">{t("lists.repsLabel")}</label>
                   <input
@@ -1187,12 +1207,6 @@ export default function ListesPage() {
         >
           <div className="space-y-3">
             <input
-              value={manualArabic}
-              onChange={(e) => handleManualArabicChange(e.target.value)}
-              placeholder={t("lists.arabicPlaceholder")}
-              className="w-full rounded-2xl border border-[var(--border)]  px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
-            />
-            <input
               value={manualTranslit}
               onChange={(e) => handleManualTranslitChange(e.target.value)}
               placeholder={t("lists.translitPlaceholder")}
@@ -1206,6 +1220,13 @@ export default function ListesPage() {
                   : ""}
               </p>
             ) : null}
+            <input
+              value={manualArabic}
+              onChange={(e) => handleManualArabicChange(e.target.value)}
+              placeholder={t("lists.arabicPlaceholder")}
+              dir="rtl"
+              className="w-full rounded-2xl border border-[var(--border)]  px-4 py-3 text-[0.95rem] text-[var(--foreground)] placeholder:text-[var(--secondary)] outline-none focus:border-[var(--primary)]"
+            />
             <div className="flex items-center gap-2">
               <label className="text-[1rem] font-semibold text-[var(--foreground)]">{t("lists.repsLabel")}</label>
               <input

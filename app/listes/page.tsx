@@ -160,7 +160,7 @@ const PRESET_ROUTINES: PresetRoutine[] = [
     id: "after-prayer",
     nameKey: "lists.presetAfterPrayerName",
     hintKey: "lists.presetAfterPrayerHint",
-    zikrIds: ["tasbih-1", "hamd-1", "takbir-1"],
+    zikrIds: ["tasbih-1", "hamd-1", "takbir-1", "zikr-1"],
   },
   {
     id: "morning-evening",
@@ -589,7 +589,6 @@ export default function ListesPage() {
     <div className="min-h-screen overflow-x-hidden  text-[var(--foreground)]">
       <div className="border-b border-[var(--border)]">
         <div className="mx-auto flex h-18 w-full max-w-md items-center justify-center gap-2 px-4">
-          <span className="text-2xl text-[var(--primary)]">☽</span>
           <h1 className="text-[1.95rem] font-semibold tracking-tight text-[var(--foreground)]">At-tasbih</h1>
         </div>
       </div>

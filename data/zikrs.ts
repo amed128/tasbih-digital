@@ -574,7 +574,7 @@ export const zikrs: Zikr[] = [
     translation_en: "There is no power nor strength except through Allah",
     translation_hi: "अल्लाह के सिवा न कोई शक्ति है न सामर्थ्य",
     transliteration_hi: "ला हवला वला कुव्वता इल्ला बिल्लाह",
-    defaultTarget: 33,
+    defaultTarget: 1,
     category: "Zikr général",
   },
   {

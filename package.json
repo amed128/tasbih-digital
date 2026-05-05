@@ -13,6 +13,7 @@
     "start": "next start",
     "lint": "eslint",
     "translations:check": "node --experimental-strip-types scripts/check-translations.mjs",
+    "theme:generate": "node scripts/generate-theme.mjs",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test tests/e2e/smoke.spec.ts --project=chromium",
@@ -45,6 +46,7 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.93.0",
     "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

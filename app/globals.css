@@ -122,6 +122,11 @@ body[data-theme="al-andalus"] {
   --aa-marble-vein: rgba(160, 145, 120, 0.35);
   --tap-button-bg: linear-gradient(135deg, #C9A84C 0%, #8B6F2A 100%);
   --tap-button-color: #F5F0E8;
+  /* Semantic action colors — harmonised with the warm parchment palette */
+  --danger: #8B3A1A;                        /* sienna / terracotta — destructive actions */
+  --danger-border: rgba(139, 58, 26, 0.40);
+  --restore: #2E5FA3;                       /* lapis blue — secondary / restore actions */
+  --restore-border: rgba(46, 95, 163, 0.40);
 }
 
 /* Marble texture for Al-Andalus — CSS layered gradients simulating veining */

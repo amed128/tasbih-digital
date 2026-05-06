@@ -2,7 +2,6 @@
 
 import { useCallback, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import { useTasbihStore } from "@/store/tasbihStore";
 import { getTransliteration } from "@/data/zikrs";
 import type { Zikr } from "@/data/zikrs";
@@ -24,6 +23,7 @@ export interface AlAndalusCounterProps {
   focusMode: boolean;
   shouldBlurControls: boolean;
   hasProgress: boolean;
+  onTargetTap?: () => void;
 }
 
 // ─── Water-ripple item ────────────────────────────────────────────────────────
@@ -32,64 +32,6 @@ interface Ripple {
   id: number;
   x: number;
   y: number;
-}
-
-// ─── Web-Audio stone-on-stone synthesiser ─────────────────────────────────────
-
-let audioCtx: AudioContext | null = null;
-
-function getAudioContext(): AudioContext | null {
-  if (typeof window === "undefined") return null;
-  if (!audioCtx) {
-    try {
-      audioCtx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
-    } catch {
-      return null;
-    }
-  }
-  return audioCtx;
-}
-
-function playStoneClick(volume = 0.55) {
-  const ctx = getAudioContext();
-  if (!ctx) return;
-  if (ctx.state === "suspended") ctx.resume().catch(() => {});
-
-  const sampleRate = ctx.sampleRate;
-  const duration = 0.09; // 90 ms percussive click
-  const len = Math.floor(sampleRate * duration);
-  const buf = ctx.createBuffer(1, len, sampleRate);
-  const data = buf.getChannelData(0);
-
-  for (let i = 0; i < len; i++) {
-    // White noise with steep exponential decay
-    const env = Math.pow(1 - i / len, 6);
-    data[i] = (Math.random() * 2 - 1) * env;
-  }
-
-  const src = ctx.createBufferSource();
-  src.buffer = buf;
-
-  // High-mid bandpass — gives stone / mineral quality
-  const bp = ctx.createBiquadFilter();
-  bp.type = "bandpass";
-  bp.frequency.value = 1400;
-  bp.Q.value = 0.6;
-
-  // Slight high-shelf boost for brightness
-  const shelf = ctx.createBiquadFilter();
-  shelf.type = "highshelf";
-  shelf.frequency.value = 3000;
-  shelf.gain.value = 6;
-
-  const gain = ctx.createGain();
-  gain.gain.value = volume;
-
-  src.connect(bp);
-  bp.connect(shelf);
-  shelf.connect(gain);
-  gain.connect(ctx.destination);
-  src.start();
 }
 
 // ─── Gold-inlay progress ring (SVG) ──────────────────────────────────────────
@@ -390,11 +332,10 @@ export function AlAndalusCounter({
   focusMode,
   shouldBlurControls,
   hasProgress,
+  onTargetTap,
 }: AlAndalusCounterProps) {
   const t = useT();
   const language = useTasbihStore((s) => s.preferences.language);
-  const vibrationEnabled = useTasbihStore((s) => s.preferences.vibration);
-  const tapSound = useTasbihStore((s) => s.preferences.tapSound);
 
   const fmt = useCallback(
     (n: number) =>
@@ -423,22 +364,9 @@ export function AlAndalusCounter({
 
   const handleTap = useCallback(() => {
     if (isCompleted) return;
-
-    // Stone-on-stone sound
-    if (tapSound !== "off") playStoneClick();
-
-    // Sharp haptic pulse
-    if (vibrationEnabled) {
-      Haptics.impact({ style: ImpactStyle.Heavy }).catch(() => {
-        if (typeof window?.navigator?.vibrate === "function") {
-          window.navigator.vibrate([12]);
-        }
-      });
-    }
-
     spawnRipple();
     onIncrement();
-  }, [isCompleted, tapSound, vibrationEnabled, spawnRipple, onIncrement]);
+  }, [isCompleted, spawnRipple, onIncrement]);
 
   const RING_SIZE = 288;
   const RING_STROKE = 18;
@@ -539,16 +467,30 @@ export function AlAndalusCounter({
       <div className="flex items-center gap-1.5 text-sm font-semibold mb-4"
         style={{ color: "#8B6F4E" }}>
         <span>{t("counter.targetPrefix")}</span>
-        <span
-          className="rounded border px-2 py-0.5 font-bold tabular-nums"
-          style={{
-            borderColor: "rgba(180,145,72,0.4)",
-            color: "#5C3D11",
-            background: "rgba(255,248,230,0.7)",
-          }}
-        >
-          {fmt(target)}
-        </span>
+        {onTargetTap ? (
+          <button
+            onClick={onTargetTap}
+            className="rounded border px-2 py-0.5 font-bold tabular-nums transition hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-[#C9A84C]"
+            style={{
+              borderColor: "rgba(180,145,72,0.5)",
+              color: "#5C3D11",
+              background: "rgba(255,248,230,0.7)",
+            }}
+          >
+            {fmt(target)}
+          </button>
+        ) : (
+          <span
+            className="rounded border px-2 py-0.5 font-bold tabular-nums"
+            style={{
+              borderColor: "rgba(180,145,72,0.4)",
+              color: "#5C3D11",
+              background: "rgba(255,248,230,0.7)",
+            }}
+          >
+            {fmt(target)}
+          </span>
+        )}
         <span>{t("counter.targetSuffix")}</span>
       </div>
 

@@ -12,7 +12,6 @@ import { Modal } from "../components/Modal";
 import { RotateCcw } from "lucide-react";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import { isOverlayTheme, ThemeCounterOverlay } from "@/themes/ThemeEngine";
-import { LapisBead } from "@/themes/al-andalus/AlAndalusCounter";
 
 type WakeLockSentinelLike = {
   released: boolean;
@@ -2073,150 +2072,171 @@ export default function Home() {
           </div>
         </div>
 
-        <motion.div layout className="flex flex-col items-center gap-4">
-          {currentZikr && (
-            <div className="text-center">
-              {(zikrDisplayFormat === "translit+arabic" || zikrDisplayFormat === "translit" || !zikrDisplayFormat) && (
-                <>
-                  <div className="text-[2rem] font-bold text-[var(--primary)]">
-                    {getTransliteration(currentZikr, preferences.language)}
-                  </div>
-                  {zikrDisplayFormat !== "translit" && (
-                    <div className="mt-2 text-sm text-[var(--secondary)]">{currentZikr.arabic}</div>
-                  )}
-                </>
+        {isOverlayTheme(activeTheme) ? (
+          <>
+            <ThemeCounterOverlay
+              theme={activeTheme}
+              counter={counter}
+              target={effectiveTarget}
+              mode={mode}
+              isCompleted={isCompleted}
+              pulseTrigger={pulseTrigger}
+              currentZikr={currentZikr}
+              onIncrement={handleIncrement}
+              onUndo={undoLast}
+              onReset={handleResetRequest}
+              focusMode={focusMode}
+              shouldBlurControls={shouldBlurActionControls}
+              hasProgress={hasProgressToReset}
+              onTargetTap={!isTargetLocked && isTargetEditable ? openTargetPopup : undefined}
+            />
+            <AnimatePresence>
+              {!autoAdvanceNextZikr && isCompleted && !isListComplete && (
+                <motion.button
+                  onClick={nextZikrInList}
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.18 }}
+                  className="w-full rounded-xl bg-[var(--success)] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
+                >
+                  {t("counter.nextZikr")}
+                </motion.button>
               )}
-              {(zikrDisplayFormat === "arabic+translit" || zikrDisplayFormat === "arabic") && (
-                <>
-                  <div className="text-[2rem] font-bold text-[var(--primary)]">
-                    {currentZikr.arabic}
-                  </div>
-                  {zikrDisplayFormat !== "arabic" && (
-                    <div className="mt-2 text-sm text-[var(--secondary)]">{getTransliteration(currentZikr, preferences.language)}</div>
+            </AnimatePresence>
+          </>
+        ) : (
+          <>
+            <motion.div layout className="flex flex-col items-center gap-4">
+              {currentZikr && (
+                <div className="text-center">
+                  {(zikrDisplayFormat === "translit+arabic" || zikrDisplayFormat === "translit" || !zikrDisplayFormat) && (
+                    <>
+                      <div className="text-[2rem] font-bold text-[var(--primary)]">
+                        {getTransliteration(currentZikr, preferences.language)}
+                      </div>
+                      {zikrDisplayFormat !== "translit" && (
+                        <div className="mt-2 text-sm text-[var(--secondary)]">{currentZikr.arabic}</div>
+                      )}
+                    </>
                   )}
-                </>
+                  {(zikrDisplayFormat === "arabic+translit" || zikrDisplayFormat === "arabic") && (
+                    <>
+                      <div className="text-[2rem] font-bold text-[var(--primary)]">
+                        {currentZikr.arabic}
+                      </div>
+                      {zikrDisplayFormat !== "arabic" && (
+                        <div className="mt-2 text-sm text-[var(--secondary)]">{getTransliteration(currentZikr, preferences.language)}</div>
+                      )}
+                    </>
+                  )}
+                </div>
               )}
-            </div>
-          )}
 
-          <CircleProgress
-            value={counter}
-            target={effectiveTarget}
-            mode={mode}
-            isCompleted={isCompleted}
-            pulseTrigger={pulseTrigger}
-          />
-          {isTargetEditable && (
-            <div className="flex items-center justify-center gap-1 text-sm font-semibold text-[var(--secondary)]">
-              <span>{t("counter.targetPrefix")}</span>
-              <button
-                type="button"
-                onClick={() => { if (!isTargetLocked) openTargetPopup(); }}
-                aria-label={t("counter.editTargetAria")}
-                className={`rounded border border-[var(--border)] px-2 py-0.5 text-sm font-bold text-[var(--foreground)] ${
-                  focusMode ? "blur-[1px] opacity-50 pointer-events-none select-none" :
-                  isTargetLocked ? "cursor-not-allowed opacity-50 blur-[0.5px]" : "hover:border-[var(--primary)]"
-                }`}
-              >
-                {fmt(effectiveTarget)}
-              </button>
-              <span>{t("counter.targetSuffix")}</span>
-            </div>
-          )}
-        </motion.div>
-
-        <motion.div layout className="flex flex-col gap-3">
-          {isAutoMode ? (
-            renderAutoControls()
-          ) : isAudioMode ? (
-            renderAudioControls()
-          ) : isOverlayTheme(activeTheme) ? (
-            <div className="flex justify-center py-2">
-              <LapisBead
-                size={180}
-                isCompleted={isCompleted}
-                pulseTrigger={pulseTrigger}
-                counter={counter}
+              <CircleProgress
+                value={counter}
                 target={effectiveTarget}
                 mode={mode}
-                fmt={fmt}
-                onClick={handleIncrement}
-                disabled={isCompleted || shouldBlurActionControls || focusMode}
+                isCompleted={isCompleted}
+                pulseTrigger={pulseTrigger}
               />
-            </div>
-          ) : (
-            <motion.button
-              onClick={handleIncrement}
-              disabled={isCompleted}
-              whileTap={{ scale: 0.95 }}
-              animate={{
-                opacity: isCompleted ? 0.55 : 1,
-              }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-              style={{
-                background: isCompleted ? "var(--card)" : "var(--tap-button-bg)",
-                color: isCompleted ? "var(--secondary)" : "var(--tap-button-color)",
-                paddingTop: tapButtonSize === "triple" ? "3.75rem" : tapButtonSize === "double" ? "2.5rem" : "1.25rem",
-                paddingBottom: tapButtonSize === "triple" ? "3.75rem" : tapButtonSize === "double" ? "2.5rem" : "1.25rem"
-              }}
-              className={`w-full rounded-xl px-6 text-lg font-bold shadow-sm transition hover:brightness-110 active:brightness-95 ${isCompleted ? "pointer-events-none cursor-not-allowed" : ""}`}
-            >
-              {t("counter.tap")}
-            </motion.button>
-          )}
+              {isTargetEditable && (
+                <div className="flex items-center justify-center gap-1 text-sm font-semibold text-[var(--secondary)]">
+                  <span>{t("counter.targetPrefix")}</span>
+                  <button
+                    type="button"
+                    onClick={() => { if (!isTargetLocked) openTargetPopup(); }}
+                    aria-label={t("counter.editTargetAria")}
+                    className={`rounded border border-[var(--border)] px-2 py-0.5 text-sm font-bold text-[var(--foreground)] ${
+                      focusMode ? "blur-[1px] opacity-50 pointer-events-none select-none" :
+                      isTargetLocked ? "cursor-not-allowed opacity-50 blur-[0.5px]" : "hover:border-[var(--primary)]"
+                    }`}
+                  >
+                    {fmt(effectiveTarget)}
+                  </button>
+                  <span>{t("counter.targetSuffix")}</span>
+                </div>
+              )}
+            </motion.div>
 
-          <AnimatePresence>
-            {!autoAdvanceNextZikr && isCompleted && !isListComplete && (
-              <motion.button
-                onClick={nextZikrInList}
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.18 }}
-                className="w-full rounded-xl bg-[var(--success)] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
-              >
-                {t("counter.nextZikr")}
-              </motion.button>
-            )}
-          </AnimatePresence>
-
-          <div className="flex items-center justify-between gap-4">
-            {!isAutoMode && (
-              (isListMode && activeIndex > 0 && counter === initialCounter && !isStarted) ? (
-                <button
-                  onClick={previousZikrInList}
-                  aria-label={t("counter.ariaPreviousZikr")}
-                  className={`flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
-                    focusMode || shouldBlurActionControls ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""
-                  }`}
-                >
-                  {t("counter.previousZikr")}
-                </button>
+            <motion.div layout className="flex flex-col gap-3">
+              {isAutoMode ? (
+                renderAutoControls()
+              ) : isAudioMode ? (
+                renderAudioControls()
               ) : (
+                <motion.button
+                  onClick={handleIncrement}
+                  disabled={isCompleted}
+                  whileTap={{ scale: 0.95 }}
+                  animate={{
+                    opacity: isCompleted ? 0.55 : 1,
+                  }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  style={{
+                    background: isCompleted ? "var(--card)" : "var(--tap-button-bg)",
+                    color: isCompleted ? "var(--secondary)" : "var(--tap-button-color)",
+                    paddingTop: tapButtonSize === "triple" ? "3.75rem" : tapButtonSize === "double" ? "2.5rem" : "1.25rem",
+                    paddingBottom: tapButtonSize === "triple" ? "3.75rem" : tapButtonSize === "double" ? "2.5rem" : "1.25rem"
+                  }}
+                  className={`w-full rounded-xl px-6 text-lg font-bold shadow-sm transition hover:brightness-110 active:brightness-95 ${isCompleted ? "pointer-events-none cursor-not-allowed" : ""}`}
+                >
+                  {t("counter.tap")}
+                </motion.button>
+              )}
+
+              <AnimatePresence>
+                {!autoAdvanceNextZikr && isCompleted && !isListComplete && (
+                  <motion.button
+                    onClick={nextZikrInList}
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.18 }}
+                    className="w-full rounded-xl bg-[var(--success)] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
+                  >
+                    {t("counter.nextZikr")}
+                  </motion.button>
+                )}
+              </AnimatePresence>
+
+              <div className="flex items-center justify-between gap-4">
+                {!isAutoMode && (
+                  (isListMode && activeIndex > 0 && counter === initialCounter && !isStarted) ? (
+                    <button
+                      onClick={previousZikrInList}
+                      aria-label={t("counter.ariaPreviousZikr")}
+                      className={`flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
+                        focusMode || shouldBlurActionControls ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""
+                      }`}
+                    >
+                      {t("counter.previousZikr")}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={undoLast}
+                      aria-label={t("counter.ariaUndo")}
+                      className={`flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
+                        focusMode || shouldBlurActionControls ? "blur-[1px] opacity-50 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
+                      }`}
+                    >
+                      <RotateCcw size={16} className="mx-auto" />
+                    </button>
+                  )
+                )}
                 <button
-                  onClick={undoLast}
-                  aria-label={t("counter.ariaUndo")}
-                  className={`flex-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
+                  onClick={handleResetRequest}
+                  disabled={shouldBlurActionControls}
+                  className={`${!isAutoMode ? "flex-1" : "w-full"} rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
                     focusMode || shouldBlurActionControls ? "blur-[1px] opacity-50 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
                   }`}
                 >
-                  <RotateCcw size={16} className="mx-auto" />
+                  {t("counter.reset")}
                 </button>
-              )
-            )}
-            <button
-              onClick={handleResetRequest}
-              disabled={shouldBlurActionControls}
-              className={`${!isAutoMode ? "flex-1" : "w-full"} rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--primary)] active:brightness-95 ${
-                focusMode || shouldBlurActionControls ? "blur-[1px] opacity-50 pointer-events-none select-none" : !hasProgressToReset ? "opacity-40" : ""
-              }`}
-            >
-              {t("counter.reset")}
-            </button>
-          </div>
-
-
-        </motion.div>
+              </div>
+            </motion.div>
+          </>
+        )}
 
         <AnimatePresence>
           {showListCompletePopup && (

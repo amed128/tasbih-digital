@@ -33,6 +33,17 @@ type PremiumModalConfig = {
 };
 
 const PREMIUM_MODAL_CONFIG: Record<PremiumTheme, PremiumModalConfig> = {
+  "al-andalus": {
+    bg: "#2C1A08",
+    border: "#6B4A18",
+    previewBg: "#1C1008",
+    previewBorder: "#6B4A18",
+    primary: "#C9A84C",
+    secondary: "#8B6F4E",
+    previewColors: ["#C9A84C", "#1B3A6B", "#EDE8E0"],
+    titleKey: "settings.premiumThemeAlAndalusModalTitle",
+    descKey: "settings.premiumThemeAlAndalusModalDesc",
+  },
   emerald: {
     bg: "#0A3D2B",
     border: "#1A5C40",
@@ -69,6 +80,15 @@ const PREMIUM_MODAL_CONFIG: Record<PremiumTheme, PremiumModalConfig> = {
 };
 
 const THEME_CARDS: ThemeCard[] = [
+  {
+    value: "al-andalus",
+    labelKey: "settings.themeAlAndalus",
+    bg: "#EDE8E0",
+    card: "#F5F0E8",
+    primary: "#C9A84C",
+    border: "#D4B87A",
+    premium: "al-andalus",
+  },
   {
     value: "light",
     labelKey: "settings.themeLight",
@@ -148,13 +168,14 @@ export default function ThemesPage() {
       emerald: "#04291E",
       obsidian: "#0D0D10",
       midnight: "#071020",
+      "al-andalus": "#EDE8E0",
     };
     const themeMeta = document.querySelector('meta[name="theme-color"]');
     if (themeMeta) themeMeta.setAttribute("content", colors[theme]);
     // Only setStyle — the body background shows through the translucent overlay bar.
     // setBackgroundColor is intentionally omitted: on iOS it silently switches the
     // bar to opaque/non-overlay mode, causing the color to stick across theme changes.
-    StatusBar.setStyle({ style: theme === "light" ? Style.Light : Style.Dark }).catch(() => {});
+    StatusBar.setStyle({ style: (theme === "light" || theme === "al-andalus") ? Style.Light : Style.Dark }).catch(() => {});
   };
 
   const handleThemeSelect = (card: ThemeCard) => {

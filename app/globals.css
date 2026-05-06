@@ -99,6 +99,64 @@ body[data-theme="midnight"] {
   --deco-accent-rgb: 80, 140, 255;
 }
 
+html[data-theme="al-andalus"],
+body[data-theme="al-andalus"] {
+  --background: #EDE8E0;
+  --foreground: #1C1008;
+  --secondary: #8B6F4E;
+  --primary: #C9A84C;
+  --primary-rgb: 201, 168, 76;
+  --card: rgba(255, 252, 245, 0.90);
+  --border: rgba(180, 145, 72, 0.35);
+  --deco-opacity: 0;
+  --deco-primary-rgb: 201, 168, 76;
+  --deco-accent-rgb: 139, 107, 56;
+  /* Al-Andalus specific tokens */
+  --aa-lapis-deep: #0D1F3C;
+  --aa-lapis-mid: #2E5FA3;
+  --aa-lapis-light: #5B8DD9;
+  --aa-gold: #C9A84C;
+  --aa-gold-bright: #FFD700;
+  --aa-gold-dark: #8B6F2A;
+  --aa-marble-base: #EDE8E0;
+  --aa-marble-vein: rgba(160, 145, 120, 0.35);
+  --tap-button-bg: linear-gradient(135deg, #C9A84C 0%, #8B6F2A 100%);
+  --tap-button-color: #F5F0E8;
+}
+
+/* Marble texture for Al-Andalus — CSS layered gradients simulating veining */
+html[data-theme="al-andalus"] body {
+  background-color: #EDE8E0;
+  background-image:
+    repeating-linear-gradient(
+      112deg,
+      transparent,
+      transparent 60px,
+      rgba(160, 145, 120, 0.12) 61px,
+      rgba(160, 145, 120, 0.12) 62px,
+      transparent 63px,
+      transparent 120px
+    ),
+    repeating-linear-gradient(
+      -28deg,
+      transparent,
+      transparent 80px,
+      rgba(140, 125, 100, 0.10) 81px,
+      rgba(140, 125, 100, 0.10) 82px,
+      transparent 83px,
+      transparent 160px
+    ),
+    repeating-linear-gradient(
+      75deg,
+      transparent,
+      transparent 100px,
+      rgba(180, 160, 130, 0.08) 101px,
+      rgba(180, 160, 130, 0.08) 102px,
+      transparent 103px,
+      transparent 200px
+    );
+}
+
 /* Carpet geometric pattern — only rendered on midnight theme */
 html[data-theme="midnight"] body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M40,27 L41.9,35.4 L49.2,30.8 L44.6,38.1 L53,40 L44.6,41.9 L49.2,49.2 L41.9,44.6 L40,53 L38.1,44.6 L30.8,49.2 L35.4,41.9 L27,40 L35.4,38.1 L30.8,30.8 L38.1,35.4 Z' fill='rgba(80,140,255,0.35)'/%3E%3Cpath d='M36,0 L40,4 L44,0 Z' fill='rgba(80,140,255,0.28)'/%3E%3Cpath d='M36,80 L40,76 L44,80 Z' fill='rgba(80,140,255,0.28)'/%3E%3Cpath d='M0,36 L4,40 L0,44 Z' fill='rgba(80,140,255,0.28)'/%3E%3Cpath d='M80,36 L76,40 L80,44 Z' fill='rgba(80,140,255,0.28)'/%3E%3C/svg%3E");

@@ -11,6 +11,7 @@ import { BottomNav } from "../components/BottomNav";
 import { Modal } from "../components/Modal";
 import { RotateCcw } from "lucide-react";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import { isOverlayTheme, ThemeCounterOverlay } from "@/themes/ThemeEngine";
 
 type WakeLockSentinelLike = {
   released: boolean;
@@ -186,6 +187,7 @@ export default function Home() {
   );
 
   const currentZikr = useTasbihStore((s) => s.currentZikr);
+  const activeTheme = useTasbihStore((s) => s.preferences.theme);
   const counter = useTasbihStore((s) => s.counter);
   const isStarted = useTasbihStore((s) => s.isStarted);
   const mode = useTasbihStore((s) => s.mode);
@@ -2206,7 +2208,27 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
         >
-          {isListMode ? renderListMode() : renderCompteur()}
+          {isListMode
+            ? renderListMode()
+            : isOverlayTheme(activeTheme)
+            ? (
+              <ThemeCounterOverlay
+                theme={activeTheme}
+                counter={counter}
+                target={effectiveTarget}
+                mode={mode}
+                isCompleted={isCompleted}
+                pulseTrigger={pulseTrigger}
+                currentZikr={currentZikr}
+                onIncrement={handleIncrement}
+                onUndo={undoLast}
+                onReset={handleResetRequest}
+                focusMode={focusMode}
+                shouldBlurControls={shouldBlurActionControls}
+                hasProgress={hasProgressToReset}
+              />
+            )
+            : renderCompteur()}
         </motion.div>
       </main>
 

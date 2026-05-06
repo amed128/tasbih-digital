@@ -1891,6 +1891,7 @@ export default function Home() {
           focusMode={focusMode}
           shouldBlurControls={shouldBlurActionControls}
           hasProgress={hasProgressToReset}
+          onTargetTap={!focusMode && !isTargetLocked && isTargetEditable ? openTargetPopup : undefined}
         />
       ) : (
         <>

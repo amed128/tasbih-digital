@@ -368,8 +368,8 @@ export function AlAndalusCounter({
     onIncrement();
   }, [isCompleted, spawnRipple, onIncrement]);
 
-  const RING_SIZE = 288;
-  const RING_STROKE = 18;
+  const RING_SIZE = 264;
+  const RING_STROKE = 16;
   const BEAD_SIZE = RING_SIZE - RING_STROKE * 2 - 16;
 
   const arabic = currentZikr?.arabic ?? "";
@@ -390,7 +390,7 @@ export function AlAndalusCounter({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.25 }}
-          className="mt-4 mb-2"
+          className="mt-3 mb-1"
         >
           <ZikrEngravedText arabic={arabic} translit={translit} />
         </motion.div>
@@ -399,7 +399,7 @@ export function AlAndalusCounter({
       {/* Gold ring + Lapis bead */}
       <div
         ref={beadContainerRef}
-        className="relative flex items-center justify-center my-4"
+        className="relative flex items-center justify-center my-2"
         style={{ width: RING_SIZE, height: RING_SIZE }}
       >
         {/* Marble shadow beneath the bead */}
@@ -464,7 +464,7 @@ export function AlAndalusCounter({
       </div>
 
       {/* Target line */}
-      <div className="flex items-center gap-1.5 text-sm font-semibold mb-4"
+      <div className="flex items-center gap-1.5 text-sm font-semibold mb-2"
         style={{ color: "#8B6F4E" }}>
         <span>{t("counter.targetPrefix")}</span>
         {onTargetTap ? (

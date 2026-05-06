@@ -2074,38 +2074,23 @@ export default function Home() {
         </div>
 
         {isOverlayTheme(activeTheme) ? (
-          <>
-            <ThemeCounterOverlay
-              theme={activeTheme}
-              counter={counter}
-              target={effectiveTarget}
-              mode={mode}
-              isCompleted={isCompleted}
-              pulseTrigger={pulseTrigger}
-              currentZikr={currentZikr}
-              onIncrement={handleIncrement}
-              onUndo={undoLast}
-              onReset={handleResetRequest}
-              focusMode={focusMode}
-              shouldBlurControls={shouldBlurActionControls}
-              hasProgress={hasProgressToReset}
-              onTargetTap={!isTargetLocked && isTargetEditable ? openTargetPopup : undefined}
-            />
-            <AnimatePresence>
-              {!autoAdvanceNextZikr && isCompleted && !isListComplete && (
-                <motion.button
-                  onClick={nextZikrInList}
-                  initial={{ opacity: 0, y: -6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ duration: 0.18 }}
-                  className="w-full rounded-xl bg-[var(--success)] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
-                >
-                  {t("counter.nextZikr")}
-                </motion.button>
-              )}
-            </AnimatePresence>
-          </>
+          <ThemeCounterOverlay
+            theme={activeTheme}
+            counter={counter}
+            target={effectiveTarget}
+            mode={mode}
+            isCompleted={isCompleted}
+            pulseTrigger={pulseTrigger}
+            currentZikr={currentZikr}
+            onIncrement={handleIncrement}
+            onUndo={undoLast}
+            onReset={handleResetRequest}
+            focusMode={focusMode}
+            shouldBlurControls={shouldBlurActionControls}
+            hasProgress={hasProgressToReset}
+            onTargetTap={!isTargetLocked && isTargetEditable ? openTargetPopup : undefined}
+            onNextZikr={!autoAdvanceNextZikr && !isListComplete ? nextZikrInList : undefined}
+          />
         ) : (
           <>
             <motion.div layout className="flex flex-col items-center gap-4">

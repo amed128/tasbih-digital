@@ -24,6 +24,7 @@ export interface AlAndalusCounterProps {
   shouldBlurControls: boolean;
   hasProgress: boolean;
   onTargetTap?: () => void;
+  onNextZikr?: () => void;
 }
 
 // ─── Water-ripple item ────────────────────────────────────────────────────────
@@ -333,6 +334,7 @@ export function AlAndalusCounter({
   shouldBlurControls,
   hasProgress,
   onTargetTap,
+  onNextZikr,
 }: AlAndalusCounterProps) {
   const t = useT();
   const language = useTasbihStore((s) => s.preferences.language);
@@ -494,22 +496,23 @@ export function AlAndalusCounter({
         <span>{t("counter.targetSuffix")}</span>
       </div>
 
-      {/* Completed badge */}
+      {/* Next zikr button — list mode only, shown when completed */}
       <AnimatePresence>
-        {isCompleted && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.85 }}
-            className="mb-3 flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold"
+        {onNextZikr && isCompleted && (
+          <motion.button
+            onClick={onNextZikr}
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+            className="mb-3 w-full max-w-sm rounded-xl px-6 py-4 text-base font-bold transition hover:brightness-110 active:brightness-95"
             style={{
-              background: "rgba(34,197,94,0.15)",
-              border: "1px solid rgba(34,197,94,0.35)",
-              color: "#15803D",
+              background: "linear-gradient(135deg, #C9A84C 0%, #8B6F2A 100%)",
+              color: "#1C1008",
             }}
           >
-            <span>✓</span> {t("circle.objectiveReached")}
-          </motion.div>
+            {t("counter.nextZikr")}
+          </motion.button>
         )}
       </AnimatePresence>
 

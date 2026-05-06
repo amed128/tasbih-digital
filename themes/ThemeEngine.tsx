@@ -9,45 +9,125 @@
  * Premium overlay themes (al-andalus, …) swap the entire Counter view with a
  * dedicated component that owns its own ring, bead, zikr text, and controls.
  *
+ * ── Props contract (AlAndalusCounterProps — template for future themes) ───────
+ *
+ *   counter, target, mode, isCompleted, pulseTrigger   — counter state
+ *   currentZikr                                         — active zikr or undefined
+ *   onIncrement, onUndo, onReset                        — action callbacks
+ *   focusMode, shouldBlurControls, hasProgress          — UI state
+ *   onTargetTap?: () => void    — open target-edit popup; undefined when locked
+ *   onNextZikr?: () => void     — advance to next zikr; only provided in list
+ *                                 mode when !autoAdvanceNextZikr && !isListComplete
+ *
  * ── Integration rules (must be respected by callers in page.tsx) ─────────────
  *
- * 1. Check placement — isOverlayTheme() must be called INSIDE renderCompteur()
- *    and renderListMode(), NOT at the top level of the render function.
- *    Putting it at the top level drops the header/dropdown outside the overlay.
+ * 1. Placement — isOverlayTheme() must be called INSIDE renderCompteur() and
+ *    renderListMode(), not at the top level of the render function. Top-level
+ *    placement drops the header and mode/focus dropdown outside the overlay.
  *
- * 2. Replace both layout blocks in list mode — renderListMode() has two
- *    motion.div blocks (ring+zikr text, tap+controls). Both must be replaced;
- *    replacing only the tap button leaves an orphan CircleProgress ring.
+ * 2. List mode: replace BOTH motion.div blocks — renderListMode() has two
+ *    blocks (ring+zikr text, tap+controls). Replacing only the tap button
+ *    leaves an orphan CircleProgress ring visually detached from the bead.
  *
- * 3. Next-zikr button lives outside the overlay — AlAndalusCounter handles its
- *    own undo/reset; the "next zikr" AnimatePresence block is rendered right
- *    after <ThemeCounterOverlay> in renderListMode(), not inside it.
+ * 3. Next-zikr button is owned by the overlay — pass onNextZikr so the
+ *    component renders it in the correct position (above undo/reset). Do NOT
+ *    render a second next-zikr button outside ThemeCounterOverlay in list mode.
  *
- * 4. onTargetTap — pass `openTargetPopup` (guarded by !focusMode &&
- *    !isTargetLocked && isTargetEditable) so the target field is editable in
- *    simple mode. Omit the prop in locked/list contexts.
+ * 4. onTargetTap guard — pass openTargetPopup only when:
+ *      !focusMode && !isTargetLocked && isTargetEditable
+ *    Omit the prop (pass undefined) otherwise; the overlay renders the target
+ *    as a non-interactive span when the prop is absent.
  *
  * 5. Sound & haptic — overlay components must NOT implement their own audio or
- *    haptic feedback. onIncrement → handleIncrement → triggerHaptic() in
- *    page.tsx already handles the user's sound setting. Duplicating it causes
- *    double audio + double haptic.
+ *    haptic. onIncrement → handleIncrement → triggerHaptic() in page.tsx
+ *    already covers the user's sound preference. Duplicating it produces double
+ *    audio + double haptic on every tap.
  *
- * ── Adding a new premium overlay theme ───────────────────────────────────────
+ * 6. Completed state — do NOT add a "Goal reached" badge inside the overlay.
+ *    The bead's color change (lapis → green) + ✓ label signals completion.
+ *    The onNextZikr button appears automatically when provided.
  *
- * a. Create themes/<name>/<Name>Counter.tsx — export default props interface
- *    and the Counter component. Use AlAndalusCounterProps as the template;
- *    include onTargetTap?: () => void.
- * b. Add the theme string to PREMIUM_OVERLAY_THEMES below.
- * c. Add a branch in ThemeCounterOverlay.
- * d. Add CSS variables in app/globals.css under [data-theme="<name>"].
- * e. Add the theme to store/tasbihStore.ts: PremiumTheme union, Theme union,
- *    normalizeTheme() guard.
- * f. Add the ThemeCard and PREMIUM_MODAL_CONFIG entry in
- *    app/reglages/themes/page.tsx.
- * g. Add i18n strings (themeXxx, premiumThemeXxxModalTitle/Desc) in all 14
- *    languages in i18n/translations.ts — the pre-commit hook enforces 502 keys.
- * h. Update ThemeSync.tsx THEME_META_COLOR record with the new theme's
- *    background color; set StatusBar style to Light if background is light.
+ * ── CSS variables every premium theme must define in globals.css ──────────────
+ *
+ *   Core tokens (required — used by shared components):
+ *     --background, --foreground, --secondary
+ *     --primary, --primary-rgb
+ *     --card, --border
+ *     --deco-opacity, --deco-primary-rgb, --deco-accent-rgb
+ *     --tap-button-bg, --tap-button-color
+ *
+ *   Semantic action colors (override to match the palette; if omitted the
+ *   root defaults apply — generic red / green — which may clash):
+ *     --danger        text color for destructive buttons (reset stats, confirm)
+ *     --danger-border border color for the same
+ *     --restore       text color for restore buttons (purchases, defaults)
+ *     --restore-border border color for the same
+ *
+ *   Al-Andalus example:
+ *     --danger: #8B3A1A          sienna/terracotta — warm on parchment
+ *     --danger-border: rgba(139, 58, 26, 0.40)
+ *     --restore: #2E5FA3         lapis blue — mirrors the bead gemstone
+ *     --restore-border: rgba(46, 95, 163, 0.40)
+ *
+ *   Theme-private tokens (prefix with --aa- or similar to avoid collisions):
+ *     anything used only inside the overlay component
+ *
+ * ── StatusBar / meta-color ────────────────────────────────────────────────────
+ *
+ *   Update ThemeSync.tsx THEME_META_COLOR with the theme's background hex.
+ *   Set StatusBar style to Style.Light for light-background themes (al-andalus),
+ *   Style.Dark for dark-background themes. See the existing switch in ThemeSync.
+ *
+ * ── Layout sizing constraint ──────────────────────────────────────────────────
+ *
+ *   Keep the total rendered height of the overlay component under ~520 px so
+ *   that the completed state (next-zikr button + undo/reset row) fits above
+ *   the bottom nav on iPhone SE (smallest supported screen, ~667 px viewport
+ *   minus ~80 px nav = ~587 px usable minus ~70 px page header = ~517 px).
+ *   Al-Andalus uses RING_SIZE=264 / RING_STROKE=16 to stay within budget.
+ *
+ * ── Adding a new premium overlay theme — checklist ───────────────────────────
+ *
+ *   a. themes/<name>/<Name>Counter.tsx
+ *      - Export a Props interface extending AlAndalusCounterProps (or copy it).
+ *        Always include onTargetTap? and onNextZikr?.
+ *      - No custom audio/haptic — delegate to onIncrement.
+ *      - Keep rendered height under the sizing constraint above.
+ *
+ *   b. ThemeEngine.tsx (this file)
+ *      - Add the theme string to PREMIUM_OVERLAY_THEMES.
+ *      - Add a branch in ThemeCounterOverlay.
+ *      - Widen OverlayCounterProps if the new props interface adds fields.
+ *
+ *   c. store/tasbihStore.ts
+ *      - Add to PremiumTheme union.
+ *      - Add to Theme union.
+ *      - Add case to normalizeTheme() guard.
+ *      - Add to unlockTheme() / preferences.unlockedThemes logic if needed.
+ *
+ *   d. app/globals.css
+ *      - Add html[data-theme="<name>"], body[data-theme="<name>"] block.
+ *      - Define all required core tokens + semantic overrides (danger/restore).
+ *      - Prefix private tokens with --<abbrev>-.
+ *
+ *   e. components/ThemeSync.tsx
+ *      - Add entry to THEME_META_COLOR.
+ *      - Add theme to the StatusBar.Light condition if background is light.
+ *
+ *   f. app/reglages/themes/page.tsx
+ *      - Add ThemeCard entry (value, labelKey, bg, card, primary, border, premium).
+ *      - Add PREMIUM_MODAL_CONFIG entry (bg, border, previewBg, previewBorder,
+ *        primary, secondary, previewColors, titleKey, descKey).
+ *
+ *   g. i18n/translations.ts (all 14 languages)
+ *      - settings.themeXxx
+ *      - settings.premiumThemeXxxModalTitle
+ *      - settings.premiumThemeXxxModalDesc
+ *      Pre-commit hook enforces exactly 502 keys per language — it will block
+ *      the commit if any language is missing the new strings.
+ *
+ *   h. app/reglages/themes/page.tsx — applyThemeToDom colors record
+ *      - Add "<name>": "<background-hex>" to the colors map.
  */
 
 import type { Theme } from "@/store/tasbihStore";

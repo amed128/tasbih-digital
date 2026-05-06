@@ -232,12 +232,54 @@ export default function ThemesPage() {
           </p>
         </header>
 
-        <div className="grid grid-cols-2 gap-3">
-          {THEME_CARDS.map((card) => {
-            const isActive = preferences.theme === card.value;
-            const isPurchased = !!card.premium && preferences.unlockedThemes?.includes(card.premium);
-            const isLocked = !!card.premium && !isPurchased;
-            return (
+        {/* Free themes */}
+        <div>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--secondary)]">
+            {t("settings.themesFreeSection")}
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {THEME_CARDS.filter((c) => !c.premium).map((card) => {
+              const isActive = preferences.theme === card.value;
+              return (
+                <button
+                  key={card.value}
+                  onClick={() => handleThemeSelect(card)}
+                  aria-label={t(card.labelKey as Parameters<typeof t>[0])}
+                  className={`relative flex flex-col gap-2 rounded-xl border-2 p-3 transition focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${
+                    isActive ? "border-[var(--primary)]" : "border-[var(--border)] hover:border-[var(--secondary)]"
+                  }`}
+                  style={{ background: card.bg }}
+                >
+                  <div className="h-12 w-full rounded-lg border" style={{ background: card.card, borderColor: card.border }}>
+                    <div className="flex gap-1.5 p-2">
+                      <div className="h-2 w-2 rounded-full" style={{ background: card.primary }} />
+                      <div className="h-2 flex-1 rounded-full opacity-30" style={{ background: card.primary }} />
+                    </div>
+                    <div className="mx-auto mt-1 h-4 w-10 rounded-lg" style={{ background: card.primary, opacity: 0.85 }} />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold" style={{ color: card.primary }}>
+                      {t(card.labelKey as Parameters<typeof t>[0])}
+                    </span>
+                    {isActive && <Check size={14} style={{ color: card.primary }} />}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Premium themes */}
+        <div>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--secondary)]">
+            {t("settings.themesPremiumSection")}
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {THEME_CARDS.filter((c) => !!c.premium).map((card) => {
+              const isActive = preferences.theme === card.value;
+              const isPurchased = !!card.premium && preferences.unlockedThemes?.includes(card.premium);
+              const isLocked = !!card.premium && !isPurchased;
+              return (
               <button
                 key={card.value}
                 onClick={() => handleThemeSelect(card)}
@@ -283,8 +325,9 @@ export default function ThemesPage() {
                   </span>
                 )}
               </button>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
         {/* Restore purchases */}

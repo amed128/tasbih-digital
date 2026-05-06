@@ -189,7 +189,7 @@ function GoldRing({
 
 // ─── Lapis Lazuli gemstone bead ───────────────────────────────────────────────
 
-function LapisBead({
+export function LapisBead({
   size,
   isCompleted,
   pulseTrigger,

@@ -133,8 +133,16 @@
 import type { Theme } from "@/store/tasbihStore";
 import type { AlAndalusCounterProps } from "./al-andalus/AlAndalusCounter";
 import { AlAndalusCounter } from "./al-andalus/AlAndalusCounter";
+import { EmeraldCounter } from "./emerald/EmeraldCounter";
+import { ObsidianCounter } from "./obsidian/ObsidianCounter";
+import { MidnightCounter } from "./midnight/MidnightCounter";
 
-export const PREMIUM_OVERLAY_THEMES: ReadonlySet<Theme> = new Set(["al-andalus"]);
+export const PREMIUM_OVERLAY_THEMES: ReadonlySet<Theme> = new Set([
+  "al-andalus",
+  "emerald",
+  "obsidian",
+  "midnight",
+]);
 
 export function isOverlayTheme(theme: Theme): boolean {
   return PREMIUM_OVERLAY_THEMES.has(theme);
@@ -145,5 +153,8 @@ type OverlayCounterProps = AlAndalusCounterProps;
 export function ThemeCounterOverlay(props: OverlayCounterProps & { theme: Theme }) {
   const { theme, ...rest } = props;
   if (theme === "al-andalus") return <AlAndalusCounter {...rest} />;
+  if (theme === "emerald")    return <EmeraldCounter    {...rest} />;
+  if (theme === "obsidian")   return <ObsidianCounter   {...rest} />;
+  if (theme === "midnight")   return <MidnightCounter   {...rest} />;
   return null;
 }

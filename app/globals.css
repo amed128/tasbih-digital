@@ -56,6 +56,20 @@ body[data-theme="obsidian"] {
   --deco-accent-opacity: 0.07;
   --deco-primary-rgb: 138, 92, 246;
   --deco-accent-rgb: 79, 70, 229;
+  /* Semantic action colors for obsidian */
+  --danger: #D07080;
+  --danger-border: rgba(208, 112, 128, 0.38);
+  --restore: #9AAAC8;
+  --restore-border: rgba(154, 170, 200, 0.40);
+}
+
+/* Obsidian body — pure volcanic black with faint chrome veining */
+html[data-theme="obsidian"] body {
+  background-color: #0D0D10;
+  background-image:
+    radial-gradient(ellipse 80% 35% at 50% 0%,    rgba(192,200,216,0.04) 0%, transparent 60%),
+    repeating-linear-gradient(135deg, transparent, transparent 70px, rgba(192,200,216,0.012) 71px, transparent 72px),
+    repeating-linear-gradient( 45deg, transparent, transparent 70px, rgba(112,117,138,0.014) 71px, transparent 72px);
 }
 
 html[data-theme="emerald"],
@@ -76,12 +90,20 @@ body[data-theme="emerald"] {
   --tap-button-color: #451A03;
 }
 
+/* Forest canopy — CSS gradients replacing the image, zero network cost */
 html[data-theme="emerald"] body {
-  background-image: url("/emerald-bg.png");
+  background-color: #04291E;
+  background-image:
+    radial-gradient(ellipse 140% 45% at 50% 0%,    rgba(61,217,160,0.11) 0%, transparent 65%),
+    radial-gradient(ellipse 55%  75% at 0%   55%,  rgba(10,128,96,0.08)  0%, transparent 55%),
+    radial-gradient(ellipse 55%  75% at 100% 38%,  rgba(10,128,96,0.07)  0%, transparent 55%),
+    radial-gradient(ellipse 100% 28% at 50%  100%, rgba(2,20,12,0.55)    0%, transparent 70%);
   background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
+  /* Semantic action colors for emerald */
+  --danger: #E05050;
+  --danger-border: rgba(224, 80, 80, 0.38);
+  --restore: #D97706;
+  --restore-border: rgba(217, 119, 6, 0.40);
 }
 
 html[data-theme="midnight"],
@@ -97,6 +119,11 @@ body[data-theme="midnight"] {
   --deco-accent-opacity: 0.09;
   --deco-primary-rgb: 30, 100, 255;
   --deco-accent-rgb: 80, 140, 255;
+  /* Semantic action colors for midnight */
+  --danger: #E06868;
+  --danger-border: rgba(224, 104, 104, 0.38);
+  --restore: #8AAAC8;
+  --restore-border: rgba(138, 170, 200, 0.40);
 }
 
 html[data-theme="al-andalus"],
@@ -162,10 +189,13 @@ html[data-theme="al-andalus"] body {
     );
 }
 
-/* Carpet geometric pattern — only rendered on midnight theme */
+/* Midnight — Ottoman geometric carpet + celestial moonrise glow */
 html[data-theme="midnight"] body {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M40,27 L41.9,35.4 L49.2,30.8 L44.6,38.1 L53,40 L44.6,41.9 L49.2,49.2 L41.9,44.6 L40,53 L38.1,44.6 L30.8,49.2 L35.4,41.9 L27,40 L35.4,38.1 L30.8,30.8 L38.1,35.4 Z' fill='rgba(80,140,255,0.35)'/%3E%3Cpath d='M36,0 L40,4 L44,0 Z' fill='rgba(80,140,255,0.28)'/%3E%3Cpath d='M36,80 L40,76 L44,80 Z' fill='rgba(80,140,255,0.28)'/%3E%3Cpath d='M0,36 L4,40 L0,44 Z' fill='rgba(80,140,255,0.28)'/%3E%3Cpath d='M80,36 L76,40 L80,44 Z' fill='rgba(80,140,255,0.28)'/%3E%3C/svg%3E");
-  background-size: 80px 80px;
+  background-color: #071020;
+  background-image:
+    radial-gradient(ellipse 90% 32% at 50% 0%, rgba(106,130,168,0.18) 0%, transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M40,27 L41.9,35.4 L49.2,30.8 L44.6,38.1 L53,40 L44.6,41.9 L49.2,49.2 L41.9,44.6 L40,53 L38.1,44.6 L30.8,49.2 L35.4,41.9 L27,40 L35.4,38.1 L30.8,30.8 L38.1,35.4 Z' fill='rgba(80,140,255,0.30)'/%3E%3Cpath d='M36,0 L40,4 L44,0 Z' fill='rgba(80,140,255,0.22)'/%3E%3Cpath d='M36,80 L40,76 L44,80 Z' fill='rgba(80,140,255,0.22)'/%3E%3Cpath d='M0,36 L4,40 L0,44 Z' fill='rgba(80,140,255,0.22)'/%3E%3Cpath d='M80,36 L76,40 L80,44 Z' fill='rgba(80,140,255,0.22)'/%3E%3C/svg%3E");
+  background-size: auto, 80px 80px;
 }
 
 

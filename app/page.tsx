@@ -1884,7 +1884,7 @@ export default function Home() {
           mode={mode}
           isCompleted={isCompleted}
           pulseTrigger={pulseTrigger}
-          currentZikr={currentZikr}
+          currentZikr={undefined}
           onIncrement={handleIncrement}
           onUndo={undoLast}
           onReset={handleResetRequest}

@@ -80,6 +80,12 @@ export function ThemeSync() {
     if (themeMeta) {
       themeMeta.setAttribute("content", color);
     }
+    // Force the safe-area strip to the concrete hex so the CSS variable doesn't
+    // get stuck in a composited layer when switching themes in iOS PWA mode.
+    const strip = document.getElementById("ios-safe-strip");
+    if (strip && strip.style.position === "fixed") {
+      strip.style.backgroundColor = color;
+    }
     // Double-RAF: effects fire before the browser paints; two frames push the
     // Capacitor calls to after the new CSS (and the safe-area strip) have been
     // composited so any iOS snapshot reads the correct pixels.

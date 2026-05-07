@@ -7,8 +7,8 @@
 // moonlight progress ring. The gold rim on the bead deliberately introduces
 // warmth into the cool palette — evoking gilded dome edges.
 
-import { useCallback, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence, useMotionValue, useTransform, animate as animateValue, type MotionValue } from "framer-motion";
 import { useTasbihStore } from "@/store/tasbihStore";
 import { getTransliteration } from "@/data/zikrs";
 import type { Zikr } from "@/data/zikrs";
@@ -82,12 +82,22 @@ function MoonRing({ value, target, countsDown, isCompleted, size, strokeWidth }:
 // Deep navy body with a luminous atmosphere glow — like a sapphire in candlelight.
 // A subtle gold rim glow connects to the Ottoman gilded-dome aesthetic.
 
-function SapphireBead({ size, isCompleted, pulseTrigger, counter, target, mode, fmt, onClick, disabled }: {
+function SapphireBead({ size, isCompleted, pulseTrigger, counter, target, mode, fmt, onClick, disabled, dragX, dragY }: {
   size: number; isCompleted: boolean; pulseTrigger?: number;
   counter: number; target: number; mode: string;
   fmt: (n: number) => string; onClick: () => void; disabled: boolean;
+  dragX?: MotionValue<number>;
+  dragY?: MotionValue<number>;
 }) {
   const t = useT();
+
+  const _fallbackX = useMotionValue(0);
+  const _fallbackY = useMotionValue(0);
+  const mx = dragX ?? _fallbackX;
+  const my = dragY ?? _fallbackY;
+  const specularX = useTransform(mx, (x: number) => Math.max(-15, Math.min(15, -x * 0.18)));
+  const specularY = useTransform(my, (y: number) => Math.max(-15, Math.min(15, -y * 0.18)));
+
   return (
     <motion.button
       onClick={onClick} disabled={disabled}
@@ -113,12 +123,14 @@ function SapphireBead({ size, isCompleted, pulseTrigger, counter, target, mode, 
         background: "radial-gradient(circle at 50% 42%, rgba(160,192,255,0.18) 0%, transparent 55%)",
       }} />
 
-      {/* Primary specular */}
-      <div className="absolute rounded-full pointer-events-none" style={{
+      {/* Primary specular — shifts toward light source as bead drags away from center */}
+      <motion.div className="absolute rounded-full pointer-events-none" style={{
         width: size * 0.30, height: size * 0.20,
         top: size * 0.10, left: size * 0.18,
         background: "radial-gradient(ellipse, rgba(255,255,255,0.88) 0%, rgba(220,235,255,0.38) 50%, transparent 100%)",
         filter: "blur(2px)",
+        x: specularX,
+        y: specularY,
       }} />
 
       {/* Gold rim glow — Ottoman gilded-dome warmth */}
@@ -232,6 +244,10 @@ function ZikrText({ arabic, translit }: { arabic: string; translit: string }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
+const RING_SIZE   = 264;
+const RING_STROKE = 16;
+const BEAD_SIZE   = RING_SIZE - RING_STROKE * 2 - 16;
+
 export function MidnightCounter({
   counter, target, mode, isCompleted, pulseTrigger, currentZikr,
   onIncrement, onUndo, onReset, focusMode, shouldBlurControls, hasProgress,
@@ -248,6 +264,7 @@ export function MidnightCounter({
 
   const [ripples, setRipples] = useState<Ripple[]>([]);
   const rippleId = useRef(0);
+  const beadContainerRef = useRef<HTMLDivElement>(null);
 
   const spawnRipple = useCallback(() => {
     const id = ++rippleId.current;
@@ -261,9 +278,44 @@ export function MidnightCounter({
     onIncrement();
   }, [isCompleted, spawnRipple, onIncrement]);
 
-  const RING_SIZE   = 264;
-  const RING_STROKE = 16;
-  const BEAD_SIZE   = RING_SIZE - RING_STROKE * 2 - 16;
+  const dragX = useMotionValue(0);
+  const dragY = useMotionValue(0);
+  const [constraints, setConstraints] = useState({ top: 0, bottom: 0, left: 0, right: 0 });
+
+  const filterShadow = useTransform(
+    [dragX, dragY] as MotionValue<number>[],
+    (latest: number[]) => {
+      const [x, y] = latest;
+      const dist = Math.sqrt(x * x + y * y);
+      if (dist < 2) return "none";
+      const t = Math.min(dist / 150, 1);
+      const sx = ((x / dist) * t * 10).toFixed(1);
+      const sy = ((y / dist) * t * 10).toFixed(1);
+      const blur = Math.round(20 + t * 16);
+      return `drop-shadow(${sx}px ${sy}px ${blur}px rgba(26,80,192,0.45))`;
+    }
+  );
+
+  useEffect(() => {
+    const el = beadContainerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    setConstraints({
+      left:   -(cx - BEAD_SIZE / 2),
+      right:  window.innerWidth - cx - BEAD_SIZE / 2,
+      top:    -(cy - BEAD_SIZE / 2),
+      bottom: window.innerHeight - cy - BEAD_SIZE / 2,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!shouldBlurControls) {
+      animateValue(dragX, 0, { type: "spring", stiffness: 200, damping: 20 });
+      animateValue(dragY, 0, { type: "spring", stiffness: 200, damping: 20 });
+    }
+  }, [shouldBlurControls, dragX, dragY]);
 
   const arabic   = currentZikr?.arabic ?? "";
   const translit = currentZikr ? getTransliteration(currentZikr, language) : "";
@@ -282,7 +334,7 @@ export function MidnightCounter({
       </AnimatePresence>
 
       {/* Ring + bead */}
-      <div className="relative flex items-center justify-center my-2"
+      <div ref={beadContainerRef} className="relative flex items-center justify-center my-2"
         style={{ width: RING_SIZE, height: RING_SIZE }}>
         <div className="absolute rounded-full" style={{
           width: BEAD_SIZE * 0.85, height: BEAD_SIZE * 0.3, bottom: RING_STROKE + 8,
@@ -307,9 +359,25 @@ export function MidnightCounter({
           ))}
         </AnimatePresence>
 
-        <SapphireBead size={BEAD_SIZE} isCompleted={isCompleted} pulseTrigger={pulseTrigger}
-          counter={counter} target={target} mode={mode} fmt={fmt}
-          onClick={handleTap} disabled={isCompleted || shouldBlurControls} />
+        {/* Sapphire bead — draggable when focus mode is active */}
+        <motion.div
+          drag={shouldBlurControls}
+          dragMomentum={false}
+          dragConstraints={constraints}
+          style={{
+            x: dragX,
+            y: dragY,
+            zIndex: shouldBlurControls ? 50 : 0,
+            filter: filterShadow,
+            cursor: shouldBlurControls ? "grab" : "default",
+          }}
+          whileDrag={{ cursor: "grabbing" }}
+        >
+          <SapphireBead size={BEAD_SIZE} isCompleted={isCompleted} pulseTrigger={pulseTrigger}
+            counter={counter} target={target} mode={mode} fmt={fmt}
+            onClick={handleTap} disabled={isCompleted || shouldBlurControls}
+            dragX={dragX} dragY={dragY} />
+        </motion.div>
       </div>
 
       {/* Target */}

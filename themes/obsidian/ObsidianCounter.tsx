@@ -285,11 +285,11 @@ export function ObsidianCounter({
   }, []);
 
   useEffect(() => {
-    if (!shouldBlurControls) {
+    if (!focusMode) {
       animateValue(dragX, 0, { type: "spring", stiffness: 200, damping: 20 });
       animateValue(dragY, 0, { type: "spring", stiffness: 200, damping: 20 });
     }
-  }, [shouldBlurControls, dragX, dragY]);
+  }, [focusMode, dragX, dragY]);
 
   const arabic   = currentZikr?.arabic ?? "";
   const translit = currentZikr ? getTransliteration(currentZikr, language) : "";
@@ -335,15 +335,15 @@ export function ObsidianCounter({
 
         {/* Obsidian bead — draggable when focus mode is active */}
         <motion.div
-          drag={shouldBlurControls}
+          drag={focusMode}
           dragMomentum={false}
           dragConstraints={constraints}
           style={{
             x: dragX,
             y: dragY,
-            zIndex: shouldBlurControls ? 50 : 0,
+            zIndex: focusMode ? 50 : 0,
             filter: filterShadow,
-            cursor: shouldBlurControls ? "grab" : "default",
+            cursor: focusMode ? "grab" : "default",
           }}
           whileDrag={{ cursor: "grabbing" }}
         >

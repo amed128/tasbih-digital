@@ -2081,7 +2081,7 @@ export default function Home() {
             mode={mode}
             isCompleted={isCompleted}
             pulseTrigger={pulseTrigger}
-            currentZikr={currentZikr}
+            currentZikr={isListMode ? currentZikr : undefined}
             onIncrement={handleIncrement}
             onUndo={undoLast}
             onReset={handleResetRequest}
@@ -2094,7 +2094,7 @@ export default function Home() {
         ) : (
           <>
             <motion.div layout className="flex flex-col items-center gap-4">
-              {currentZikr && (
+              {isListMode && currentZikr && (
                 <div className="text-center">
                   {(zikrDisplayFormat === "translit+arabic" || zikrDisplayFormat === "translit" || !zikrDisplayFormat) && (
                     <>

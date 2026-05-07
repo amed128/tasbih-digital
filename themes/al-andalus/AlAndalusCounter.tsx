@@ -384,19 +384,21 @@ export function AlAndalusCounter({
       {/* Muqarnas decorative arch strip */}
       <MuqarnasHeader />
 
-      {/* Zikr text — engraved gold */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentZikr?.id ?? "none"}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.25 }}
-          className="mt-3 mb-1"
-        >
-          <ZikrEngravedText arabic={arabic} translit={translit} />
-        </motion.div>
-      </AnimatePresence>
+      {/* Zikr text — engraved gold, only shown when a zikr is active */}
+      {arabic && (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentZikr?.id ?? "none"}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.25 }}
+            className="mt-3 mb-1"
+          >
+            <ZikrEngravedText arabic={arabic} translit={translit} />
+          </motion.div>
+        </AnimatePresence>
+      )}
 
       {/* Gold ring + Lapis bead */}
       <div

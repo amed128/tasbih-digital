@@ -463,7 +463,7 @@ export function AlAndalusCounter({
           mode={mode}
           fmt={fmt}
           onClick={handleTap}
-          disabled={isCompleted || controlsBlurred}
+          disabled={isCompleted || shouldBlurControls}
         />
       </div>
 

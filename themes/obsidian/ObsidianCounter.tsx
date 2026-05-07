@@ -275,7 +275,7 @@ export function ObsidianCounter({
 
         <ObsidianBead size={BEAD_SIZE} isCompleted={isCompleted} pulseTrigger={pulseTrigger}
           counter={counter} target={target} mode={mode} fmt={fmt}
-          onClick={handleTap} disabled={isCompleted || blurred} />
+          onClick={handleTap} disabled={isCompleted || shouldBlurControls} />
       </div>
 
       {/* Target */}

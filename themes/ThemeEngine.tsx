@@ -47,6 +47,14 @@
  *    The bead's color change (lapis → green) + ✓ label signals completion.
  *    The onNextZikr button appears automatically when provided.
  *
+ * 7. Focus mode torch overlay — when focusMode is true, render a
+ *    position:fixed full-screen div (zIndex 48, background rgba(0,0,0,0.90))
+ *    with a CSS mask-image radial-gradient that punches a ~96px clear circle
+ *    (≈1 inch) centered on the bead's live screen position. Update the mask
+ *    imperatively via dragX/dragY motion-value subscriptions (no re-renders).
+ *    The draggable bead wrapper must carry zIndex 50 so it sits above the overlay.
+ *    Obsidian implements the reference implementation — copy that pattern.
+ *
  * ── CSS variables every premium theme must define in globals.css ──────────────
  *
  *   Core tokens (required — used by shared components):
@@ -93,6 +101,9 @@
  *        Always include onTargetTap? and onNextZikr?.
  *      - No custom audio/haptic — delegate to onIncrement.
  *      - Keep rendered height under the sizing constraint above.
+ *      - Implement the focus mode torch overlay (rule 7 above).
+ *        Reference: ObsidianCounter.tsx — overlayRef, beadCenterRef, the
+ *        useEffect that subscribes to dragX/dragY and writes mask-image.
  *
  *   b. ThemeEngine.tsx (this file)
  *      - Add the theme string to PREMIUM_OVERLAY_THEMES.

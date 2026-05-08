@@ -239,6 +239,8 @@ export function ObsidianCounter({
   const [ripples, setRipples] = useState<Ripple[]>([]);
   const rippleId = useRef(0);
   const beadContainerRef = useRef<HTMLDivElement>(null);
+  const overlayRef       = useRef<HTMLDivElement>(null);
+  const beadCenterRef    = useRef({ x: 0, y: 0 });
 
   const spawnRipple = useCallback(() => {
     const id = ++rippleId.current;
@@ -276,6 +278,7 @@ export function ObsidianCounter({
     const rect = el.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
+    beadCenterRef.current = { x: cx, y: cy };
     setConstraints({
       left:   -(cx - BEAD_SIZE / 2),
       right:  window.innerWidth - cx - BEAD_SIZE / 2,
@@ -283,6 +286,26 @@ export function ObsidianCounter({
       bottom: window.innerHeight - cy - BEAD_SIZE / 2,
     });
   }, []);
+
+  // Torch overlay — update mask at 60fps via motion value subscriptions, no re-renders
+  useEffect(() => {
+    const overlay = overlayRef.current;
+    if (!overlay) return;
+    const update = () => {
+      const x = beadCenterRef.current.x + dragX.get();
+      const y = beadCenterRef.current.y + dragY.get();
+      // ~96px clear radius (≈1 inch at 96dpi), quick fade to black
+      const mask = `radial-gradient(circle at ${x}px ${y}px, transparent 0%, transparent 96px, black 150px)`;
+      overlay.style.maskImage = mask;
+      overlay.style.setProperty("-webkit-mask-image", mask);
+    };
+    const unsubX = dragX.on("change", update);
+    const unsubY = dragY.on("change", update);
+    update();
+    return () => { unsubX(); unsubY(); };
+  // Re-runs when focusMode flips true so overlayRef is freshly set
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dragX, dragY, focusMode]);
 
   useEffect(() => {
     if (!focusMode) {
@@ -296,7 +319,20 @@ export function ObsidianCounter({
   const blurred  = focusMode || shouldBlurControls;
 
   return (
-    <div className="flex flex-col items-center gap-0 select-none">
+    <>
+      {focusMode && (
+        <div
+          ref={overlayRef}
+          aria-hidden
+          style={{
+            position: "fixed", inset: 0, zIndex: 48,
+            background: "rgba(0, 0, 0, 0.90)",
+            pointerEvents: "none",
+          }}
+        />
+      )}
+
+      <div className="flex flex-col items-center gap-0 select-none">
       <GeometricHeader />
 
       <AnimatePresence mode="wait">
@@ -408,5 +444,6 @@ export function ObsidianCounter({
         </button>
       </div>
     </div>
+    </>
   );
 }

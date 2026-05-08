@@ -157,7 +157,7 @@ export const translations = {
       previewTarget: "Objectif: {{count}}",
     },
     stats: {
-      title: "📊 Statistiques",
+      title: "Statistiques",
       subtitle: "Suivi de votre pratique de zikr",
       none: "Aucun",
       totalZikrs: "Total zikrs",
@@ -713,7 +713,7 @@ export const translations = {
       previewTarget: "Target: {{count}}",
     },
     stats: {
-      title: "📊 Statistics",
+      title: "Statistics",
       subtitle: "Track your zikr practice",
       none: "None",
       totalZikrs: "Total zikrs",
@@ -1262,7 +1262,7 @@ export const translations = {
         "previewTarget": "Ziel: {{count}}"
     },
     "stats": {
-        "title": "📊 Statistiken",
+        "title": "Statistiken",
         "subtitle": "Verfolgen Sie Ihre Zikr-Praxis",
         "none": "Keine",
         "totalZikrs": "Gesamt Zikrs",
@@ -1794,7 +1794,7 @@ export const translations = {
           "previewTarget": "Objetivo: {{count}}"
       },
       "stats": {
-          "title": "📊 Estadísticas",
+          "title": "Estadísticas",
           "subtitle": "Rastrea tu práctica",
           "none": "Ninguno",
           "totalZikrs": "Zikrs totales",
@@ -2326,7 +2326,7 @@ export const translations = {
           "previewTarget": "Meta: {{count}}"
       },
       "stats": {
-          "title": "📊 Estatísticas",
+          "title": "Estatísticas",
           "subtitle": "Acompanhe sua prática",
           "none": "Nenhum",
           "totalZikrs": "Total de zikrs",
@@ -2858,7 +2858,7 @@ export const translations = {
     previewTarget: "लक्ष्य: {{count}}",
   },
   stats: {
-    title: "📊 आँकड़े",
+    title: "आँकड़े",
     subtitle: "अपने ज़िक्र अभ्यास को ट्रैक करें",
     none: "कोई नहीं",
     totalZikrs: "कुल ज़िक्र",
@@ -3390,7 +3390,7 @@ export const translations = {
       previewTarget: "الهدف: {{count}}",
     },
     stats: {
-      title: "📊 الإحصائيات",
+      title: "الإحصائيات",
       subtitle: "تتبع ممارستك للذكر",
       none: "لا شيء",
       totalZikrs: "إجمالي الأذكار",
@@ -3922,7 +3922,7 @@ export const translations = {
       previewTarget: "Hedef: {{count}}",
     },
     stats: {
-      title: "📊 İstatistikler",
+      title: "İstatistikler",
       subtitle: "Zikir pratiğini takip et",
       none: "Yok",
       totalZikrs: "Toplam zikir",
@@ -4454,7 +4454,7 @@ export const translations = {
       previewTarget: "ہدف: {{count}}",
     },
     stats: {
-      title: "📊 اعداد و شمار",
+      title: "اعداد و شمار",
       subtitle: "اپنی ذکر عبادت کا ریکارڈ رکھیں",
       none: "کچھ نہیں",
       totalZikrs: "کل اذکار",
@@ -4986,7 +4986,7 @@ export const translations = {
       previewTarget: "লক্ষ্য: {{count}}",
     },
     stats: {
-      title: "📊 পরিসংখ্যান",
+      title: "পরিসংখ্যান",
       subtitle: "আপনার যিকর অনুশীলন ট্র্যাক করুন",
       none: "কিছু নেই",
       totalZikrs: "মোট যিকর",
@@ -5516,7 +5516,7 @@ export const translations = {
       previewTarget: "Target: {{count}}",
     },
     stats: {
-      title: "📊 Statistik",
+      title: "Statistik",
       subtitle: "Lacak praktik zikir Anda",
       none: "Tidak ada",
       totalZikrs: "Total zikir",
@@ -6046,7 +6046,7 @@ export const translations = {
       previewTarget: "Sasaran: {{count}}",
     },
     stats: {
-      title: "📊 Statistik",
+      title: "Statistik",
       subtitle: "Jejak amalan zikir anda",
       none: "Tiada",
       totalZikrs: "Jumlah zikir",
@@ -6576,7 +6576,7 @@ export const translations = {
       previewTarget: "Цель: {{count}}",
     },
     stats: {
-      title: "📊 Статистика",
+      title: "Статистика",
       subtitle: "Отслеживайте свою практику зикра",
       none: "Нет",
       totalZikrs: "Всего зикров",
@@ -7108,7 +7108,7 @@ export const translations = {
       previewTarget: "هدف: {{count}}",
     },
     stats: {
-      title: "📊 آمار",
+      title: "آمار",
       subtitle: "پیشرفت ذکر خود را دنبال کنید",
       none: "هیچ",
       totalZikrs: "مجموع ذکرها",

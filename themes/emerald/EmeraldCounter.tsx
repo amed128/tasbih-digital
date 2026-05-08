@@ -244,6 +244,8 @@ export function EmeraldCounter({
   const [ripples, setRipples] = useState<Ripple[]>([]);
   const rippleId = useRef(0);
   const beadContainerRef = useRef<HTMLDivElement>(null);
+  const overlayRef    = useRef<HTMLDivElement>(null);
+  const beadCenterRef = useRef({ x: 0, y: 0 });
 
   const spawnRipple = useCallback(() => {
     const id = ++rippleId.current;
@@ -281,6 +283,7 @@ export function EmeraldCounter({
     const rect = el.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
+    beadCenterRef.current = { x: cx, y: cy };
     setConstraints({
       left:   -(cx - BEAD_SIZE / 2),
       right:  window.innerWidth - cx - BEAD_SIZE / 2,
@@ -288,6 +291,23 @@ export function EmeraldCounter({
       bottom: window.innerHeight - cy - BEAD_SIZE / 2,
     });
   }, []);
+
+  useEffect(() => {
+    const overlay = overlayRef.current;
+    if (!overlay) return;
+    const update = () => {
+      const x = beadCenterRef.current.x + dragX.get();
+      const y = beadCenterRef.current.y + dragY.get();
+      const mask = `radial-gradient(circle at ${x}px ${y}px, transparent 0%, transparent 96px, black 150px)`;
+      overlay.style.maskImage = mask;
+      overlay.style.setProperty("-webkit-mask-image", mask);
+    };
+    const unsubX = dragX.on("change", update);
+    const unsubY = dragY.on("change", update);
+    update();
+    return () => { unsubX(); unsubY(); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dragX, dragY, focusMode]);
 
   useEffect(() => {
     if (!focusMode) {
@@ -301,7 +321,20 @@ export function EmeraldCounter({
   const blurred  = focusMode || shouldBlurControls;
 
   return (
-    <div className="flex flex-col items-center gap-0 select-none">
+    <>
+      {focusMode && (
+        <div
+          ref={overlayRef}
+          aria-hidden
+          style={{
+            position: "fixed", inset: 0, zIndex: 48,
+            background: "rgba(0, 0, 0, 0.90)",
+            pointerEvents: "none",
+          }}
+        />
+      )}
+
+      <div className="flex flex-col items-center gap-0 select-none">
       <BotanicalHeader />
 
       <AnimatePresence mode="wait">
@@ -324,19 +357,6 @@ export function EmeraldCounter({
         <AmberRing value={counter} target={target} countsDown={mode === "down"}
           isCompleted={isCompleted} size={RING_SIZE} strokeWidth={RING_STROKE} />
 
-        <AnimatePresence>
-          {ripples.map(r => (
-            <motion.div key={r.id} className="absolute rounded-full pointer-events-none"
-              style={{
-                width: BEAD_SIZE, height: BEAD_SIZE,
-                border: "2px solid rgba(125,249,203,0.50)",
-                top: "50%", left: "50%", translateX: "-50%", translateY: "-50%",
-              }}
-              initial={{ scale: 0.55, opacity: 0.7 }} animate={{ scale: 1.9, opacity: 0 }} exit={{}}
-              transition={{ duration: 0.85, ease: [0.2, 0.8, 0.4, 1] }} />
-          ))}
-        </AnimatePresence>
-
         {/* Emerald bead — draggable when focus mode is active */}
         <motion.div
           drag={focusMode}
@@ -348,9 +368,26 @@ export function EmeraldCounter({
             zIndex: focusMode ? 50 : 0,
             filter: filterShadow,
             cursor: focusMode ? "grab" : "default",
+            position: "relative",
+            width: BEAD_SIZE,
+            height: BEAD_SIZE,
           }}
           whileDrag={{ cursor: "grabbing" }}
         >
+          {/* Ripples — inside draggable so they follow the bead */}
+          <AnimatePresence>
+            {ripples.map(r => (
+              <motion.div key={r.id} className="absolute rounded-full pointer-events-none"
+                style={{
+                  width: BEAD_SIZE, height: BEAD_SIZE,
+                  border: "2px solid rgba(125,249,203,0.50)",
+                  top: "50%", left: "50%", translateX: "-50%", translateY: "-50%",
+                }}
+                initial={{ scale: 0.55, opacity: 0.7 }} animate={{ scale: 2.5, opacity: 0 }} exit={{}}
+                transition={{ duration: 1.1, ease: [0.2, 0.8, 0.4, 1] }} />
+            ))}
+          </AnimatePresence>
+
           <EmeraldBead size={BEAD_SIZE} isCompleted={isCompleted} pulseTrigger={pulseTrigger}
             counter={counter} target={target} mode={mode} fmt={fmt}
             onClick={handleTap} disabled={isCompleted || shouldBlurControls}
@@ -412,5 +449,6 @@ export function EmeraldCounter({
         </button>
       </div>
     </div>
+    </>
   );
 }

@@ -285,7 +285,7 @@ export function ObsidianCounter({
       top:    -(cy - BEAD_SIZE / 2),
       bottom: window.innerHeight - cy - BEAD_SIZE / 2,
     });
-  }, []);
+  }, [focusMode]);
 
   // Torch overlay — update mask at 60fps via motion value subscriptions, no re-renders
   useEffect(() => {
@@ -303,9 +303,7 @@ export function ObsidianCounter({
     const unsubY = dragY.on("change", update);
     update();
     return () => { unsubX(); unsubY(); };
-  // Re-runs when focusMode flips true so overlayRef is freshly set
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dragX, dragY, focusMode]);
+  }, [dragX, dragY, focusMode]); // focusMode re-runs so overlayRef is freshly set
 
   useEffect(() => {
     if (!focusMode) {

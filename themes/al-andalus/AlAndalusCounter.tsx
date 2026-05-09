@@ -438,7 +438,7 @@ export function AlAndalusCounter({
       top:    -(cy - BEAD_SIZE / 2),
       bottom: window.innerHeight - cy - BEAD_SIZE / 2,
     });
-  }, []);
+  }, [focusMode]);
 
   useEffect(() => {
     const overlay = overlayRef.current;
@@ -476,7 +476,7 @@ export function AlAndalusCounter({
           aria-hidden
           style={{
             position: "fixed", inset: 0, zIndex: 48,
-            background: "rgba(10, 5, 2, 0.92)",
+            background: "rgba(140, 120, 80, 0.90)",
             pointerEvents: "none",
           }}
         />

@@ -290,7 +290,7 @@ export function EmeraldCounter({
       top:    -(cy - BEAD_SIZE / 2),
       bottom: window.innerHeight - cy - BEAD_SIZE / 2,
     });
-  }, []);
+  }, [focusMode]);
 
   useEffect(() => {
     const overlay = overlayRef.current;
@@ -306,8 +306,7 @@ export function EmeraldCounter({
     const unsubY = dragY.on("change", update);
     update();
     return () => { unsubX(); unsubY(); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dragX, dragY, focusMode]);
+  }, [dragX, dragY, focusMode]); // focusMode re-runs so overlayRef is freshly set
 
   useEffect(() => {
     if (!focusMode) {

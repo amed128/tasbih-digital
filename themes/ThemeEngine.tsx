@@ -147,12 +147,14 @@ import { AlAndalusCounter } from "./al-andalus/AlAndalusCounter";
 import { EmeraldCounter } from "./emerald/EmeraldCounter";
 import { ObsidianCounter } from "./obsidian/ObsidianCounter";
 import { MidnightCounter } from "./midnight/MidnightCounter";
+import { ManuscriptCounter } from "./manuscript/ManuscriptCounter";
 
 export const PREMIUM_OVERLAY_THEMES: ReadonlySet<Theme> = new Set([
   "al-andalus",
   "emerald",
   "obsidian",
   "midnight",
+  "manuscript",
 ]);
 
 export function isOverlayTheme(theme: Theme): boolean {
@@ -163,9 +165,10 @@ type OverlayCounterProps = AlAndalusCounterProps;
 
 export function ThemeCounterOverlay(props: OverlayCounterProps & { theme: Theme }) {
   const { theme, ...rest } = props;
-  if (theme === "al-andalus") return <AlAndalusCounter {...rest} />;
-  if (theme === "emerald")    return <EmeraldCounter    {...rest} />;
-  if (theme === "obsidian")   return <ObsidianCounter   {...rest} />;
-  if (theme === "midnight")   return <MidnightCounter   {...rest} />;
+  if (theme === "al-andalus") return <AlAndalusCounter  {...rest} />;
+  if (theme === "emerald")    return <EmeraldCounter     {...rest} />;
+  if (theme === "obsidian")   return <ObsidianCounter    {...rest} />;
+  if (theme === "midnight")   return <MidnightCounter    {...rest} />;
+  if (theme === "manuscript") return <ManuscriptCounter  {...rest} />;
   return null;
 }

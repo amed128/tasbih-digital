@@ -5,7 +5,7 @@ import { useTasbihStore } from "../store/tasbihStore";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { Capacitor } from "@capacitor/core";
 
-const THEME_META_COLOR: Record<"light" | "dark" | "blue" | "emerald" | "obsidian" | "midnight" | "al-andalus", string> = {
+const THEME_META_COLOR: Record<"light" | "dark" | "blue" | "emerald" | "obsidian" | "midnight" | "al-andalus" | "manuscript", string> = {
   light: "#F3F5F8",
   dark: "#0A0A0A",
   blue: "#0B1118",
@@ -13,6 +13,7 @@ const THEME_META_COLOR: Record<"light" | "dark" | "blue" | "emerald" | "obsidian
   obsidian: "#0D0D10",
   midnight: "#071020",
   "al-andalus": "#EDE8E0",
+  manuscript: "#F4EBD0",
 };
 
 export function ThemeSync() {
@@ -90,7 +91,7 @@ export function ThemeSync() {
           StatusBar.setBackgroundColor({ color: THEME_META_COLOR[nextTheme] }).catch(() => {});
         }
         StatusBar.setStyle({
-          style: (nextTheme === "light" || nextTheme === "al-andalus") ? Style.Light : Style.Dark,
+          style: (nextTheme === "light" || nextTheme === "al-andalus" || nextTheme === "manuscript") ? Style.Light : Style.Dark,
         }).catch(() => {});
       });
     });

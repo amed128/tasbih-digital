@@ -189,7 +189,29 @@ html[data-theme="al-andalus"] body {
     );
 }
 
-/* Midnight — Ottoman Celestial Court: deep starfield, atmospheric moonrise, 8-pointed star ornament */
+/* Ancient Manuscript / Imperial Palace — warm vellum parchment with lapis and gold */
+html[data-theme="manuscript"],
+body[data-theme="manuscript"] {
+  --background: #F4EBD0;
+  --foreground: #2C1810;
+  --primary: #8B6914;
+  --primary-rgb: 139, 105, 20;
+  --card: #EDE0C4;
+  --border: rgba(139, 105, 20, 0.35);
+  --secondary: #5C4A1E;
+  --success: #4A6741;
+  --danger: #7A2B1A;
+  --danger-border: rgba(122, 43, 26, 0.40);
+  --restore: #1A3A6B;
+  --restore-border: rgba(26, 58, 107, 0.40);
+  --tap-button-bg: rgba(139, 105, 20, 0.15);
+  --tap-button-color: #2C1810;
+  --deco-opacity: 0.18;
+  --deco-primary-rgb: 139, 105, 20;
+  --deco-accent-rgb: 26, 58, 139;
+}
+
+/* Manuscript — Midnight — Ottoman Celestial Court: deep starfield, atmospheric moonrise, 8-pointed star ornament */
 html[data-theme="midnight"] body {
   background-color: #071020;
   background-image:

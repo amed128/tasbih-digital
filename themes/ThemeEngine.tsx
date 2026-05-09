@@ -55,6 +55,26 @@
  *    The draggable bead wrapper must carry zIndex 50 so it sits above the overlay.
  *    Obsidian implements the reference implementation — copy that pattern.
  *
+ * 8. Bead / torch center alignment — the useEffect that measures beadCenterRef
+ *    must depend on [focusMode], NOT []. Mounting happens before layout settles
+ *    (zikr text animates in, etc.), so the stale mount-time position misaligns
+ *    the torch hole from the actual bead center. Re-measuring on focusMode
+ *    activation guarantees both share the same center point.
+ *    Al-Andalus implements this fix; apply to every new theme.
+ *
+ * 9. Completed ring shimmer — on isCompleted, wrap the progress arc <circle>
+ *    in a <g className={isCompleted ? "<theme>-shimmer-ring" : undefined}> and
+ *    inject a <style> block with @keyframes that pulses brightness + drop-shadow
+ *    in the theme's own color. Also add a separate SVG <filter> for the done
+ *    state (matching color, stdDeviation 3) so the SVG shadow doesn't fight the
+ *    CSS shimmer. See AlAndalusCounter GoldRing for the reference pattern.
+ *
+ * 10. Ring SVG overflow — add style={{ overflow: "visible" }} to the ring <svg>
+ *    element. With RING_SIZE=264 / RING_STROKE=16 the stroke outer edge lands
+ *    exactly at the SVG viewport boundary at the cardinal points, clipping the
+ *    stroke and making the ring appear flat. overflow:visible lets it render
+ *    past the boundary so the ring stays fully round.
+ *
  * ── CSS variables every premium theme must define in globals.css ──────────────
  *
  *   Core tokens (required — used by shared components):
@@ -101,9 +121,9 @@
  *        Always include onTargetTap? and onNextZikr?.
  *      - No custom audio/haptic — delegate to onIncrement.
  *      - Keep rendered height under the sizing constraint above.
- *      - Implement the focus mode torch overlay (rule 7 above).
- *        Reference: ObsidianCounter.tsx — overlayRef, beadCenterRef, the
- *        useEffect that subscribes to dragX/dragY and writes mask-image.
+ *      - Implement the focus mode torch overlay (rules 7–10 above).
+ *        Reference: AlAndalusCounter.tsx — overlayRef, beadCenterRef,
+ *        [focusMode] dep on center measurement, shimmer ring, overflow:visible.
  *
  *   b. ThemeEngine.tsx (this file)
  *      - Add the theme string to PREMIUM_OVERLAY_THEMES.

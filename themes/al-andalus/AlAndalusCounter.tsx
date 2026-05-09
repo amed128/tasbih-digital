@@ -75,8 +75,9 @@ function GoldRing({
           <stop offset="100%" stopColor="#8B6F2A" />
         </linearGradient>
         <linearGradient id="aa-complete-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#22C55E" />
-          <stop offset="100%" stopColor="#16A34A" />
+          <stop offset="0%" stopColor="#C8A870" />
+          <stop offset="40%" stopColor="#8B6035" />
+          <stop offset="100%" stopColor="#5C3D18" />
         </linearGradient>
         {/* Recessed groove effect */}
         <filter id="aa-ring-shadow">
@@ -144,6 +145,7 @@ export function LapisBead({
   disabled,
   dragX,
   dragY,
+  focusMode,
 }: {
   size: number;
   isCompleted: boolean;
@@ -156,6 +158,7 @@ export function LapisBead({
   disabled: boolean;
   dragX?: MotionValue<number>;
   dragY?: MotionValue<number>;
+  focusMode?: boolean;
 }) {
   const t = useT();
   const countsDown = mode === "down";
@@ -183,10 +186,14 @@ export function LapisBead({
         className="absolute inset-0 rounded-full"
         style={{
           background: isCompleted
-            ? "radial-gradient(circle at 38% 32%, #6EE7B7, #22C55E 45%, #15803D 80%, #064E3B)"
+            ? "radial-gradient(circle at 38% 32%, #F5E6C8, #C8A870 45%, #8B6035 78%, #4A2E10 96%)"
+            : focusMode
+            ? "radial-gradient(circle at 50% 50%, #FDFAF5, #F5ECD8 38%, #E8D0A8 62%, #C8A870 82%, #8B7040 96%)"
             : "radial-gradient(circle at 38% 32%, #7BAEE8, #2E5FA3 40%, #1B3A6B 72%, #0D1F3C)",
           boxShadow: isCompleted
-            ? "0 16px 48px rgba(22,163,74,0.55), 0 6px 18px rgba(0,0,0,0.35), inset 0 -6px 16px rgba(0,0,0,0.28)"
+            ? "0 0 32px rgba(139,96,53,0.50), 0 6px 18px rgba(0,0,0,0.30)"
+            : focusMode
+            ? "0 0 32px rgba(160,130,75,0.55)"
             : "0 16px 48px rgba(27,58,107,0.65), 0 6px 18px rgba(0,0,0,0.45), inset 0 -6px 16px rgba(0,0,0,0.32)",
         }}
       />
@@ -199,22 +206,25 @@ export function LapisBead({
           height: size * 0.22,
           top: size * 0.11,
           left: size * 0.18,
-          background:
-            "radial-gradient(ellipse, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.25) 55%, transparent 100%)",
+          background: focusMode
+            ? "none"
+            : "radial-gradient(ellipse, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.25) 55%, transparent 100%)",
           filter: "blur(2px)",
-          x: specularX,
-          y: specularY,
+          x: focusMode ? 0 : specularX,
+          y: focusMode ? 0 : specularY,
         }}
       />
 
       {/* Secondary rim glow */}
-      <div
-        className="absolute inset-0 rounded-full pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle at 68% 78%, rgba(255,220,120,0.18) 0%, transparent 50%)",
-        }}
-      />
+      {!focusMode && (
+        <div
+          className="absolute inset-0 rounded-full pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(circle at 68% 78%, rgba(255,220,120,0.18) 0%, transparent 50%)",
+          }}
+        />
+      )}
 
       {/* Counter value */}
       <div className="relative z-10 flex flex-col items-center select-none">
@@ -225,8 +235,10 @@ export function LapisBead({
           transition={{ duration: 0.18 }}
           className="text-5xl font-bold leading-tight tabular-nums"
           style={{
-            color: isCompleted ? "#ECFDF5" : "#EEF4FF",
-            textShadow: "0 2px 8px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.8)",
+            color: isCompleted ? "#FDF6E8" : focusMode ? "#4A2E08" : "#EEF4FF",
+            textShadow: focusMode
+              ? "0 1px 0 rgba(255,235,180,0.6), 0 2px 8px rgba(255,220,140,0.3)"
+              : "0 2px 8px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.8)",
           }}
         >
           {fmt(counter)}
@@ -234,7 +246,7 @@ export function LapisBead({
         <span
           className="text-xs font-semibold mt-0.5"
           style={{
-            color: "rgba(200,220,255,0.7)",
+            color: focusMode ? "rgba(80,50,15,0.85)" : "rgba(200,220,255,0.7)",
             textShadow: "0 1px 4px rgba(0,0,0,0.6)",
           }}
         >
@@ -243,7 +255,7 @@ export function LapisBead({
         {isCompleted && (
           <span
             className="mt-1 text-xs font-semibold"
-            style={{ color: "#A7F3D0", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}
+            style={{ color: "#F5E6C8", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}
           >
             ✓
           </span>
@@ -374,6 +386,8 @@ export function AlAndalusCounter({
   const [ripples, setRipples] = useState<Ripple[]>([]);
   const rippleIdRef = useRef(0);
   const beadContainerRef = useRef<HTMLDivElement>(null);
+  const overlayRef    = useRef<HTMLDivElement>(null);
+  const beadCenterRef = useRef({ x: 0, y: 0 });
 
   const spawnRipple = useCallback(() => {
     const id = ++rippleIdRef.current;
@@ -411,6 +425,7 @@ export function AlAndalusCounter({
     const rect = el.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
+    beadCenterRef.current = { x: cx, y: cy };
     setConstraints({
       left:   -(cx - BEAD_SIZE / 2),
       right:  window.innerWidth - cx - BEAD_SIZE / 2,
@@ -418,6 +433,23 @@ export function AlAndalusCounter({
       bottom: window.innerHeight - cy - BEAD_SIZE / 2,
     });
   }, []);
+
+  useEffect(() => {
+    const overlay = overlayRef.current;
+    if (!overlay) return;
+    const update = () => {
+      const x = beadCenterRef.current.x + dragX.get();
+      const y = beadCenterRef.current.y + dragY.get();
+      const mask = `radial-gradient(circle at ${x}px ${y}px, transparent 0%, transparent 96px, black 150px)`;
+      overlay.style.maskImage = mask;
+      overlay.style.setProperty("-webkit-mask-image", mask);
+    };
+    const unsubX = dragX.on("change", update);
+    const unsubY = dragY.on("change", update);
+    update();
+    return () => { unsubX(); unsubY(); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dragX, dragY, focusMode]);
 
   useEffect(() => {
     if (!focusMode) {
@@ -432,7 +464,20 @@ export function AlAndalusCounter({
   const controlsBlurred = focusMode || shouldBlurControls;
 
   return (
-    <div className="flex flex-col items-center gap-0 select-none">
+    <>
+      {focusMode && (
+        <div
+          ref={overlayRef}
+          aria-hidden
+          style={{
+            position: "fixed", inset: 0, zIndex: 48,
+            background: "rgba(140, 120, 80, 0.95)",
+            pointerEvents: "none",
+          }}
+        />
+      )}
+
+      <div className="flex flex-col items-center gap-0 select-none">
       {/* Muqarnas decorative arch strip */}
       <MuqarnasHeader />
 
@@ -459,7 +504,7 @@ export function AlAndalusCounter({
         style={{ width: RING_SIZE, height: RING_SIZE }}
       >
         {/* Marble shadow beneath the bead */}
-        <div
+        {!focusMode && <div
           className="absolute rounded-full"
           style={{
             width: BEAD_SIZE * 0.85,
@@ -470,7 +515,7 @@ export function AlAndalusCounter({
             filter: "blur(6px)",
           }}
           aria-hidden="true"
-        />
+        />}
 
         {/* Gold inlay progress ring */}
         <GoldRing
@@ -482,29 +527,6 @@ export function AlAndalusCounter({
           strokeWidth={RING_STROKE}
         />
 
-        {/* Water ripple overlays */}
-        <AnimatePresence>
-          {ripples.map((r) => (
-            <motion.div
-              key={r.id}
-              className="absolute rounded-full pointer-events-none"
-              style={{
-                width: BEAD_SIZE,
-                height: BEAD_SIZE,
-                border: "2px solid rgba(201,168,76,0.55)",
-                top: "50%",
-                left: "50%",
-                translateX: "-50%",
-                translateY: "-50%",
-              }}
-              initial={{ scale: 0.55, opacity: 0.7 }}
-              animate={{ scale: 1.9, opacity: 0 }}
-              exit={{}}
-              transition={{ duration: 0.85, ease: [0.2, 0.8, 0.4, 1] }}
-            />
-          ))}
-        </AnimatePresence>
-
         {/* Lapis Lazuli bead — draggable when focus mode is active */}
         <motion.div
           drag={focusMode}
@@ -514,11 +536,37 @@ export function AlAndalusCounter({
             x: dragX,
             y: dragY,
             zIndex: focusMode ? 50 : 0,
-            filter: filterShadow,
+            filter: focusMode ? "none" : filterShadow,
             cursor: focusMode ? "grab" : "default",
+            position: "relative",
+            width: BEAD_SIZE,
+            height: BEAD_SIZE,
           }}
           whileDrag={{ cursor: "grabbing" }}
         >
+          {/* Ripples — inside draggable so they follow the bead */}
+          <AnimatePresence>
+            {ripples.map((r) => (
+              <motion.div
+                key={r.id}
+                className="absolute rounded-full pointer-events-none"
+                style={{
+                  width: BEAD_SIZE,
+                  height: BEAD_SIZE,
+                  border: "2px solid rgba(201,168,76,0.55)",
+                  top: "50%",
+                  left: "50%",
+                  translateX: "-50%",
+                  translateY: "-50%",
+                }}
+                initial={{ scale: 0.55, opacity: 0.7 }}
+                animate={{ scale: 2.5, opacity: 0 }}
+                exit={{}}
+                transition={{ duration: 1.1, ease: [0.2, 0.8, 0.4, 1] }}
+              />
+            ))}
+          </AnimatePresence>
+
           <LapisBead
             size={BEAD_SIZE}
             isCompleted={isCompleted}
@@ -531,6 +579,7 @@ export function AlAndalusCounter({
             disabled={isCompleted || shouldBlurControls}
             dragX={dragX}
             dragY={dragY}
+            focusMode={focusMode}
           />
         </motion.div>
       </div>
@@ -621,5 +670,6 @@ export function AlAndalusCounter({
         </button>
       </div>
     </div>
+    </>
   );
 }

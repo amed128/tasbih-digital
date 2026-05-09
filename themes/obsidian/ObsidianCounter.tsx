@@ -43,7 +43,7 @@ function ChromeRing({ value, target, countsDown, isCompleted, size, strokeWidth 
   const pct  = target > 0 ? Math.min(1, Math.max(0, countsDown ? (target - value) / target : value / target)) : 0;
 
   return (
-    <svg width={size} height={size} className="-rotate-90 absolute inset-0" aria-hidden>
+    <svg width={size} height={size} className="-rotate-90 absolute inset-0" style={{ overflow: "visible" }} aria-hidden>
       <defs>
         <linearGradient id="ob-chrome" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%"   stopColor="#E8EBF8" />
@@ -58,20 +58,35 @@ function ChromeRing({ value, target, countsDown, isCompleted, size, strokeWidth 
         <filter id="ob-glow">
           <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#9AAAC8" floodOpacity="0.40" />
         </filter>
+        <filter id="ob-done-glow">
+          <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#7890C8" floodOpacity="0.5" />
+        </filter>
       </defs>
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(36,36,48,0.8)"   strokeWidth={strokeWidth + 4} />
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(192,200,216,0.06)" strokeWidth={strokeWidth - 4} />
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(36,36,48,0.5)"   strokeWidth={strokeWidth} />
-      <motion.circle
-        cx={size/2} cy={size/2} r={r}
-        fill="none"
-        stroke={isCompleted ? "url(#ob-done)" : "url(#ob-chrome)"}
-        strokeWidth={strokeWidth} strokeLinecap="round"
-        strokeDasharray={circ} strokeDashoffset={circ}
-        animate={{ strokeDashoffset: circ * (1 - pct) }}
-        transition={{ type: "spring", stiffness: 100, damping: 22 }}
-        filter="url(#ob-glow)"
-      />
+      <g className={isCompleted ? "ob-shimmer-ring" : undefined}>
+        <motion.circle
+          cx={size/2} cy={size/2} r={r}
+          fill="none"
+          stroke={isCompleted ? "url(#ob-done)" : "url(#ob-chrome)"}
+          strokeWidth={strokeWidth} strokeLinecap="round"
+          strokeDasharray={circ} strokeDashoffset={circ}
+          animate={{ strokeDashoffset: circ * (1 - pct) }}
+          transition={{ type: "spring", stiffness: 100, damping: 22 }}
+          filter={isCompleted ? "url(#ob-done-glow)" : "url(#ob-glow)"}
+        />
+      </g>
+
+      {isCompleted && (
+        <style>{`
+          @keyframes ob-shimmer {
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 3px rgba(120,144,200,0.5)); }
+            50%       { filter: brightness(1.45) drop-shadow(0 0 8px rgba(224,232,255,0.9)); }
+          }
+          .ob-shimmer-ring { animation: ob-shimmer 1.8s ease-in-out infinite; }
+        `}</style>
+      )}
     </svg>
   );
 }

@@ -65,6 +65,7 @@ function GoldRing({
       width={size}
       height={size}
       className="-rotate-90 absolute inset-0"
+      style={{ overflow: "visible" }}
       aria-hidden="true"
     >
       <defs>

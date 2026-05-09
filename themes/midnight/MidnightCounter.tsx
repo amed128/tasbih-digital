@@ -45,7 +45,7 @@ function MoonRing({ value, target, countsDown, isCompleted, size, strokeWidth }:
   const pct  = target > 0 ? Math.min(1, Math.max(0, countsDown ? (target - value) / target : value / target)) : 0;
 
   return (
-    <svg width={size} height={size} className="-rotate-90 absolute inset-0" aria-hidden>
+    <svg width={size} height={size} className="-rotate-90 absolute inset-0" style={{ overflow: "visible" }} aria-hidden>
       <defs>
         <linearGradient id="mn-moon" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%"   stopColor="#EEF5FF" />
@@ -60,20 +60,35 @@ function MoonRing({ value, target, countsDown, isCompleted, size, strokeWidth }:
         <filter id="mn-glow">
           <feDropShadow dx="0" dy="0" stdDeviation="5" floodColor="#6A82A8" floodOpacity="0.55" />
         </filter>
+        <filter id="mn-done-glow">
+          <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#D6E8FF" floodOpacity="0.5" />
+        </filter>
       </defs>
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(23,48,90,0.7)"    strokeWidth={strokeWidth + 4} />
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(214,232,255,0.06)" strokeWidth={strokeWidth - 4} />
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(23,48,90,0.35)"   strokeWidth={strokeWidth} />
-      <motion.circle
-        cx={size/2} cy={size/2} r={r}
-        fill="none"
-        stroke={isCompleted ? "url(#mn-done)" : "url(#mn-moon)"}
-        strokeWidth={strokeWidth} strokeLinecap="round"
-        strokeDasharray={circ} strokeDashoffset={circ}
-        animate={{ strokeDashoffset: circ * (1 - pct) }}
-        transition={{ type: "spring", stiffness: 100, damping: 22 }}
-        filter="url(#mn-glow)"
-      />
+      <g className={isCompleted ? "mn-shimmer-ring" : undefined}>
+        <motion.circle
+          cx={size/2} cy={size/2} r={r}
+          fill="none"
+          stroke={isCompleted ? "url(#mn-done)" : "url(#mn-moon)"}
+          strokeWidth={strokeWidth} strokeLinecap="round"
+          strokeDasharray={circ} strokeDashoffset={circ}
+          animate={{ strokeDashoffset: circ * (1 - pct) }}
+          transition={{ type: "spring", stiffness: 100, damping: 22 }}
+          filter={isCompleted ? "url(#mn-done-glow)" : "url(#mn-glow)"}
+        />
+      </g>
+
+      {isCompleted && (
+        <style>{`
+          @keyframes mn-shimmer {
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 3px rgba(214,232,255,0.5)); }
+            50%       { filter: brightness(1.45) drop-shadow(0 0 8px rgba(255,255,255,0.9)); }
+          }
+          .mn-shimmer-ring { animation: mn-shimmer 1.8s ease-in-out infinite; }
+        `}</style>
+      )}
     </svg>
   );
 }

@@ -43,7 +43,7 @@ function AmberRing({ value, target, countsDown, isCompleted, size, strokeWidth }
   const pct  = target > 0 ? Math.min(1, Math.max(0, countsDown ? (target - value) / target : value / target)) : 0;
 
   return (
-    <svg width={size} height={size} className="-rotate-90 absolute inset-0" aria-hidden>
+    <svg width={size} height={size} className="-rotate-90 absolute inset-0" style={{ overflow: "visible" }} aria-hidden>
       <defs>
         <linearGradient id="em-amber" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%"   stopColor="#FDE68A" />
@@ -58,20 +58,35 @@ function AmberRing({ value, target, countsDown, isCompleted, size, strokeWidth }
         <filter id="em-glow">
           <feDropShadow dx="0" dy="0" stdDeviation="5" floodColor="#F59E0B" floodOpacity="0.50" />
         </filter>
+        <filter id="em-done-glow">
+          <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#059669" floodOpacity="0.5" />
+        </filter>
       </defs>
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(26,92,64,0.45)"    strokeWidth={strokeWidth + 4} />
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(125,249,203,0.07)" strokeWidth={strokeWidth - 4} />
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(26,92,64,0.20)"    strokeWidth={strokeWidth} />
-      <motion.circle
-        cx={size/2} cy={size/2} r={r}
-        fill="none"
-        stroke={isCompleted ? "url(#em-done)" : "url(#em-amber)"}
-        strokeWidth={strokeWidth} strokeLinecap="round"
-        strokeDasharray={circ} strokeDashoffset={circ}
-        animate={{ strokeDashoffset: circ * (1 - pct) }}
-        transition={{ type: "spring", stiffness: 100, damping: 22 }}
-        filter="url(#em-glow)"
-      />
+      <g className={isCompleted ? "em-shimmer-ring" : undefined}>
+        <motion.circle
+          cx={size/2} cy={size/2} r={r}
+          fill="none"
+          stroke={isCompleted ? "url(#em-done)" : "url(#em-amber)"}
+          strokeWidth={strokeWidth} strokeLinecap="round"
+          strokeDasharray={circ} strokeDashoffset={circ}
+          animate={{ strokeDashoffset: circ * (1 - pct) }}
+          transition={{ type: "spring", stiffness: 100, damping: 22 }}
+          filter={isCompleted ? "url(#em-done-glow)" : "url(#em-glow)"}
+        />
+      </g>
+
+      {isCompleted && (
+        <style>{`
+          @keyframes em-shimmer {
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 3px rgba(5,150,105,0.5)); }
+            50%       { filter: brightness(1.45) drop-shadow(0 0 8px rgba(167,243,208,0.9)); }
+          }
+          .em-shimmer-ring { animation: em-shimmer 1.8s ease-in-out infinite; }
+        `}</style>
+      )}
     </svg>
   );
 }

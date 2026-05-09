@@ -75,9 +75,9 @@ function GoldRing({
           <stop offset="100%" stopColor="#8B6F2A" />
         </linearGradient>
         <linearGradient id="aa-complete-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#C8A870" />
-          <stop offset="40%" stopColor="#8B6035" />
-          <stop offset="100%" stopColor="#5C3D18" />
+          <stop offset="0%"   stopColor="#F5D678" />
+          <stop offset="40%"  stopColor="#D4AF37" />
+          <stop offset="100%" stopColor="#8B6914" />
         </linearGradient>
         {/* Recessed groove effect */}
         <filter id="aa-ring-shadow">
@@ -112,21 +112,35 @@ function GoldRing({
         stroke="rgba(139, 111, 42, 0.18)"
         strokeWidth={strokeWidth}
       />
-      {/* Liquid gold fill */}
-      <motion.circle
-        cx={size / 2}
-        cy={size / 2}
-        r={radius}
-        fill="none"
-        stroke={isCompleted ? "url(#aa-complete-gradient)" : "url(#aa-gold-gradient)"}
-        strokeWidth={strokeWidth}
-        strokeLinecap="round"
-        strokeDasharray={circumference}
-        strokeDashoffset={circumference}
-        animate={{ strokeDashoffset: offset }}
-        transition={{ type: "spring", stiffness: 100, damping: 22 }}
-        filter="url(#aa-ring-shadow)"
-      />
+      {/* Liquid gold fill — shimmer pulse on completion */}
+      <g className={isCompleted ? "aa-shimmer-ring" : undefined}>
+        <motion.circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={isCompleted ? "url(#aa-complete-gradient)" : "url(#aa-gold-gradient)"}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference}
+          animate={{ strokeDashoffset: offset }}
+          transition={{ type: "spring", stiffness: 100, damping: 22 }}
+          filter="url(#aa-ring-shadow)"
+        />
+      </g>
+
+      {isCompleted && (
+        <style>{`
+          @keyframes aa-shimmer {
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 3px rgba(212,175,55,0.5)); }
+            50%       { filter: brightness(1.45) drop-shadow(0 0 8px rgba(245,214,120,0.9)); }
+          }
+          .aa-shimmer-ring {
+            animation: aa-shimmer 1.8s ease-in-out infinite;
+          }
+        `}</style>
+      )}
     </svg>
   );
 }
@@ -187,13 +201,11 @@ export function LapisBead({
         style={{
           background: isCompleted
             ? "radial-gradient(circle at 38% 32%, #F5E6C8, #C8A870 45%, #8B6035 78%, #4A2E10 96%)"
-            : focusMode
-            ? "radial-gradient(circle at 50% 50%, #FDFAF5, #F5ECD8 38%, #E8D0A8 62%, #C8A870 82%, #8B7040 96%)"
             : "radial-gradient(circle at 38% 32%, #7BAEE8, #2E5FA3 40%, #1B3A6B 72%, #0D1F3C)",
-          boxShadow: isCompleted
+          boxShadow: focusMode
+            ? "none"
+            : isCompleted
             ? "0 0 32px rgba(139,96,53,0.50), 0 6px 18px rgba(0,0,0,0.30)"
-            : focusMode
-            ? "0 0 32px rgba(160,130,75,0.55)"
             : "0 16px 48px rgba(27,58,107,0.65), 0 6px 18px rgba(0,0,0,0.45), inset 0 -6px 16px rgba(0,0,0,0.32)",
         }}
       />
@@ -206,25 +218,21 @@ export function LapisBead({
           height: size * 0.22,
           top: size * 0.11,
           left: size * 0.18,
-          background: focusMode
-            ? "none"
-            : "radial-gradient(ellipse, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.25) 55%, transparent 100%)",
+          background: "radial-gradient(ellipse, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.25) 55%, transparent 100%)",
           filter: "blur(2px)",
-          x: focusMode ? 0 : specularX,
-          y: focusMode ? 0 : specularY,
+          x: specularX,
+          y: specularY,
         }}
       />
 
       {/* Secondary rim glow */}
-      {!focusMode && (
-        <div
-          className="absolute inset-0 rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle at 68% 78%, rgba(255,220,120,0.18) 0%, transparent 50%)",
-          }}
-        />
-      )}
+      <div
+        className="absolute inset-0 rounded-full pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle at 68% 78%, rgba(255,220,120,0.18) 0%, transparent 50%)",
+        }}
+      />
 
       {/* Counter value */}
       <div className="relative z-10 flex flex-col items-center select-none">
@@ -235,10 +243,8 @@ export function LapisBead({
           transition={{ duration: 0.18 }}
           className="text-5xl font-bold leading-tight tabular-nums"
           style={{
-            color: isCompleted ? "#FDF6E8" : focusMode ? "#4A2E08" : "#EEF4FF",
-            textShadow: focusMode
-              ? "0 1px 0 rgba(255,235,180,0.6), 0 2px 8px rgba(255,220,140,0.3)"
-              : "0 2px 8px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.8)",
+            color: isCompleted ? "#FDF6E8" : "#EEF4FF",
+            textShadow: "0 2px 8px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.8)",
           }}
         >
           {fmt(counter)}
@@ -246,7 +252,7 @@ export function LapisBead({
         <span
           className="text-xs font-semibold mt-0.5"
           style={{
-            color: focusMode ? "rgba(80,50,15,0.85)" : "rgba(200,220,255,0.7)",
+            color: "rgba(200,220,255,0.7)",
             textShadow: "0 1px 4px rgba(0,0,0,0.6)",
           }}
         >
@@ -448,8 +454,7 @@ export function AlAndalusCounter({
     const unsubY = dragY.on("change", update);
     update();
     return () => { unsubX(); unsubY(); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dragX, dragY, focusMode]);
+  }, [dragX, dragY, focusMode]); // focusMode re-runs so overlayRef is freshly set
 
   useEffect(() => {
     if (!focusMode) {
@@ -471,7 +476,7 @@ export function AlAndalusCounter({
           aria-hidden
           style={{
             position: "fixed", inset: 0, zIndex: 48,
-            background: "rgba(140, 120, 80, 0.95)",
+            background: "rgba(10, 5, 2, 0.92)",
             pointerEvents: "none",
           }}
         />
@@ -536,7 +541,7 @@ export function AlAndalusCounter({
             x: dragX,
             y: dragY,
             zIndex: focusMode ? 50 : 0,
-            filter: focusMode ? "none" : filterShadow,
+            filter: filterShadow,
             cursor: focusMode ? "grab" : "default",
             position: "relative",
             width: BEAD_SIZE,

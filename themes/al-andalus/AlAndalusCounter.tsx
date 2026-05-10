@@ -314,12 +314,20 @@ export function LapisBead({
             )}
           </div>
         ) : isAutoMode ? (
-          <span className="mt-1 text-xs font-semibold"
-            style={{ color: "#F5E6C8", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
-            {isCompleted ? t("counter.goalReached")
-              : autoRunning ? t("counter.autoStop")
-              : t("counter.autoBeadAction")}
-          </span>
+          <div className="mt-1 flex flex-col items-center">
+            <span className="text-xs font-semibold"
+              style={{ color: "#F5E6C8", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
+              {isCompleted ? t("counter.goalReached")
+                : autoRunning ? t("counter.autoBeadCounting")
+                : t("counter.autoBeadAction")}
+            </span>
+            {autoRunning && !isCompleted && (
+              <span className="text-[10px]"
+                style={{ color: "rgba(245,230,200,0.6)", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
+                {t("counter.autoBeadStop")}
+              </span>
+            )}
+          </div>
         ) : isCompleted ? (
           <span className="mt-1 text-xs font-semibold"
             style={{ color: "#F5E6C8", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>

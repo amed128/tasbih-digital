@@ -207,13 +207,18 @@ function SapphireBead({ size, isCompleted, pulseTrigger, counter, target, mode, 
             )}
           </div>
         ) : isAutoMode ? (
-          <span className="mt-1 text-xs font-semibold" style={{ color: "#D6E8FF" }}>
-            {isCompleted
-              ? t("counter.goalReached")
-              : autoRunning
-              ? t("counter.autoStop")
-              : t("counter.autoBeadAction")}
-          </span>
+          <div className="mt-0.5 flex flex-col items-center">
+            <span className="text-xs font-semibold" style={{ color: "#D6E8FF" }}>
+              {isCompleted ? t("counter.goalReached")
+                : autoRunning ? t("counter.autoBeadCounting")
+                : t("counter.autoBeadAction")}
+            </span>
+            {autoRunning && !isCompleted && (
+              <span className="text-[10px]" style={{ color: "rgba(214,232,255,0.55)" }}>
+                {t("counter.autoBeadStop")}
+              </span>
+            )}
+          </div>
         ) : isCompleted ? (
           <span className="mt-1 text-xs font-semibold" style={{ color: "#D6E8FF" }}>✓</span>
         ) : null}

@@ -197,13 +197,18 @@ function EmeraldBead({ size, isCompleted, pulseTrigger, counter, target, mode, f
             )}
           </div>
         ) : isAutoMode ? (
-          <span className="mt-1 text-xs font-semibold" style={{ color: "#FDE68A", textShadow: "0 0 8px rgba(245,158,11,0.7)" }}>
-            {isCompleted
-              ? t("counter.goalReached")
-              : autoRunning
-              ? t("counter.autoStop")
-              : t("counter.autoBeadAction")}
-          </span>
+          <div className="mt-0.5 flex flex-col items-center">
+            <span className="text-xs font-semibold" style={{ color: "#FDE68A", textShadow: "0 0 8px rgba(245,158,11,0.7)" }}>
+              {isCompleted ? t("counter.goalReached")
+                : autoRunning ? t("counter.autoBeadCounting")
+                : t("counter.autoBeadAction")}
+            </span>
+            {autoRunning && !isCompleted && (
+              <span className="text-[10px]" style={{ color: "rgba(253,230,138,0.55)", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
+                {t("counter.autoBeadStop")}
+              </span>
+            )}
+          </div>
         ) : isCompleted ? (
           <span className="mt-1 text-xs font-semibold" style={{ color: "#FDE68A", textShadow: "0 0 8px rgba(245,158,11,0.7)" }}>✓</span>
         ) : null}

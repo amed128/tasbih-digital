@@ -18,11 +18,25 @@
  *   onTargetTap?: () => void    — open target-edit popup; undefined when locked
  *   onNextZikr?: () => void     — advance to next zikr; only provided in list
  *                                 mode when !autoAdvanceNextZikr && !isListComplete
- *   autoRunning?: boolean       — true when auto-counter is actively ticking
- *   onAutoToggle?: () => void   — start/stop auto-counter; bead tap calls this
- *                                 instead of onIncrement when mode === "auto"
- *   autoIntervalMs?: number     — current interval (500 | 1000 | 2000 | custom)
- *   onAutoSpeedChange?: (ms) => void — select a preset speed from the pill row
+ *   autoRunning?: boolean            — true when auto-counter is actively ticking
+ *   onAutoToggle?: () => void        — start/stop auto-counter; bead tap calls this
+ *                                      instead of onIncrement when mode === "auto"
+ *   autoIntervalMs?: number          — current interval (500 | 1000 | 2000 | custom)
+ *   onAutoSpeedChange?: (ms) => void — select a preset speed from the speed dropdown
+ *   isCustomSpeed?: boolean          — whether a custom interval is active
+ *   onAutoCustomSpeed?: (ms) => void — set a custom interval and persist it
+ *
+ *   audioRunning?: boolean           — true when speech recognition is active
+ *   onAudioToggle?: () => void       — start/stop audio recognition; bead tap calls
+ *                                      this instead of onIncrement when mode === "audio"
+ *   audioMatchProgress?: number      — 0–1 fraction of speech match progress
+ *   hasAudioSelection?: boolean      — false when no list is active (audio requires
+ *                                      a target zikr phrase from an active list)
+ *   supportsSpeechRecognition?: boolean — false when the browser has no Speech API
+ *   targetDisplayText?: string       — Arabic text (or transliteration) of the
+ *                                      expected phrase shown in the audio strip
+ *   audioHelpText?: string           — pre-computed user-facing hint when audio is
+ *                                      unavailable (no selection, denied, unsupported)
  *
  * ── Integration rules (must be respected by callers in page.tsx) ─────────────
  *
@@ -48,9 +62,25 @@
  *    already covers the user's sound preference. Duplicating it produces double
  *    audio + double haptic on every tap.
  *
- * 6. Completed state — do NOT add a "Goal reached" badge inside the overlay.
- *    The bead's color change (lapis → green) + ✓ label signals completion.
- *    The onNextZikr button appears automatically when provided.
+ * 6. Completed state — the bead subtext handles completion for every mode:
+ *    - tap/down modes: show "✓" (existing convention)
+ *    - auto mode: show t("counter.goalReached")
+ *    - audio mode: show t("counter.goalReached")
+ *    Do NOT add a separate badge. The onNextZikr button appears automatically.
+ *
+ * 11. Auto-counter bead — in mode === "auto", bead tap calls onAutoToggle instead
+ *    of onIncrement. A speed dropdown (0.5s | 1s | 2s | Custom) sits between the
+ *    ring and the Target row. Bead subtext cycles: autoBeadAction → autoStop →
+ *    goalReached. Bead is disabled only when isCompleted (auto can run during focus).
+ *
+ * 12. Audio-counter bead — in mode === "audio", bead tap calls onAudioToggle. Bead
+ *    is disabled when isCompleted || !hasAudioSelection || !supportsSpeechRecognition.
+ *    Bead subtext: audioBeadStart → audioBeadListening + audioBeadStop (2 lines) →
+ *    goalReached. An audio strip between ring and Target row shows:
+ *    - audioHelpText when audio is unavailable
+ *    - audioReciteHint + match progress bar + "audioExpectedZikr: <arabic>" when ready
+ *    All strings use the counter.audioBeadStart/Listening/Stop/ReciteHint/ExpectedZikr
+ *    i18n keys (available in all 14 languages).
  *
  * 7. Focus mode torch overlay — when focusMode is true, render a
  *    position:fixed full-screen div (zIndex 48, background rgba(0,0,0,0.90))
@@ -168,8 +198,9 @@
  *      - settings.themeXxx
  *      - settings.premiumThemeXxxModalTitle
  *      - settings.premiumThemeXxxModalDesc
- *      Pre-commit hook enforces exactly 502 keys per language — it will block
- *      the commit if any language is missing the new strings.
+ *      Pre-commit hook enforces identical key sets across all 14 languages — it
+ *      will block the commit if any language is missing the new strings.
+ *      Current count: 509 keys (as of audio-counter feature).
  *
  *   h. app/reglages/themes/page.tsx — applyThemeToDom colors record
  *      - Add "<name>": "<background-hex>" to the colors map.

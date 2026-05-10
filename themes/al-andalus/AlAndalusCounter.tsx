@@ -229,8 +229,12 @@ export function LapisBead({
       onClick={handleClick}
       disabled={beadDisabled}
       whileTap={beadDisabled ? {} : { scale: 0.93 }}
-      animate={typeof pulseTrigger === "number" ? { scale: [1, 1.07, 1] } : {}}
-      transition={{ duration: 0.22, ease: "easeOut" }}
+      animate={typeof pulseTrigger === "number" ? { scale: [1, 1.07, 1] }
+        : isAudioMode && audioRunning && !isCompleted ? { scale: [1, 1.025, 1] }
+        : {}}
+      transition={isAudioMode && audioRunning && !isCompleted && typeof pulseTrigger !== "number"
+        ? { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
+        : { duration: 0.22, ease: "easeOut" }}
       aria-label={t("counter.tap")}
       style={{ width: size, height: size }}
       className="relative flex items-center justify-center rounded-full outline-none focus:ring-4 focus:ring-[var(--aa-gold)]/50"
@@ -303,8 +307,13 @@ export function LapisBead({
             <span className="text-xs font-semibold"
               style={{ color: "#F5E6C8", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
               {isCompleted ? t("counter.goalReached")
-                : audioRunning ? t("counter.audioBeadListening")
-                : t("counter.audioBeadStart")}
+                : audioRunning ? (
+                  <motion.span
+                    animate={{ opacity: [1, 0.5, 1] }}
+                    transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}>
+                    {t("counter.audioBeadListening")}
+                  </motion.span>
+                ) : t("counter.audioBeadStart")}
             </span>
             {audioRunning && !isCompleted && (
               <span className="text-[10px]"
@@ -662,6 +671,26 @@ export function AlAndalusCounter({
             ))}
           </AnimatePresence>
 
+          {isAudioMode && audioRunning && !isCompleted && (
+            <>
+              <style>{`
+                @keyframes aa-audio-ripple {
+                  0%   { transform: translate(-50%,-50%) scale(1);   opacity: 0.45; }
+                  100% { transform: translate(-50%,-50%) scale(2.1); opacity: 0; }
+                }
+              `}</style>
+              {[0, 0.85, 1.7].map(delay => (
+                <div key={delay} className="absolute rounded-full pointer-events-none"
+                  style={{
+                    width: BEAD_SIZE, height: BEAD_SIZE,
+                    top: '50%', left: '50%',
+                    border: '1.5px solid rgba(201,168,76,0.45)',
+                    animation: `aa-audio-ripple 2.4s ease-out ${delay}s infinite`,
+                  }} />
+              ))}
+            </>
+          )}
+
           <LapisBead
             size={BEAD_SIZE}
             isCompleted={isCompleted}
@@ -699,9 +728,25 @@ export function AlAndalusCounter({
               <span className="text-xs text-center px-2" style={{ color: "#8B7355" }}>
                 {t("counter.audioReciteHint")}
               </span>
-              <div className="w-full rounded-full overflow-hidden" style={{ height: 3, background: "rgba(201,168,76,0.2)" }}>
+              <div className="w-full rounded-full overflow-hidden relative" style={{ height: 3, background: "rgba(201,168,76,0.2)" }}>
                 <div className="h-full rounded-full transition-[width] duration-75"
                   style={{ width: `${Math.round((audioMatchProgress ?? 0) * 100)}%`, background: "rgba(201,168,76,0.85)" }} />
+                {audioRunning && (audioMatchProgress ?? 0) === 0 && (
+                  <>
+                    <style>{`
+                      @keyframes aa-bar-scan {
+                        0%   { transform: translateX(-100%); }
+                        100% { transform: translateX(400%); }
+                      }
+                    `}</style>
+                    <div className="absolute inset-0 rounded-full pointer-events-none"
+                      style={{
+                        background: "linear-gradient(90deg, transparent 0%, rgba(201,168,76,0.6) 50%, transparent 100%)",
+                        width: '25%',
+                        animation: 'aa-bar-scan 1.6s ease-in-out infinite',
+                      }} />
+                  </>
+                )}
               </div>
               {targetDisplayText && (
                 <div className="flex items-center gap-1.5 max-w-full">

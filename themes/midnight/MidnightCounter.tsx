@@ -145,8 +145,12 @@ function SapphireBead({ size, isCompleted, pulseTrigger, counter, target, mode, 
     <motion.button
       onClick={handleClick} disabled={beadDisabled}
       whileTap={beadDisabled ? {} : { scale: 0.93 }}
-      animate={typeof pulseTrigger === "number" ? { scale: [1, 1.07, 1] } : {}}
-      transition={{ duration: 0.22, ease: "easeOut" }}
+      animate={typeof pulseTrigger === "number" ? { scale: [1, 1.07, 1] }
+        : isAudioMode && audioRunning && !isCompleted ? { scale: [1, 1.025, 1] }
+        : {}}
+      transition={isAudioMode && audioRunning && !isCompleted && typeof pulseTrigger !== "number"
+        ? { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
+        : { duration: 0.22, ease: "easeOut" }}
       aria-label={t("counter.tap")}
       style={{ width: size, height: size }}
       className="relative flex items-center justify-center rounded-full outline-none focus:ring-4 focus:ring-[#D6E8FF]/35"
@@ -198,7 +202,14 @@ function SapphireBead({ size, isCompleted, pulseTrigger, counter, target, mode, 
         {isAudioMode ? (
           <div className="flex flex-col items-center">
             <span className="text-xs font-semibold mt-0.5" style={{ color: "#D6E8FF", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
-              {isCompleted ? t("counter.goalReached") : audioRunning ? t("counter.audioBeadListening") : t("counter.audioBeadStart")}
+              {isCompleted ? t("counter.goalReached")
+                : audioRunning ? (
+                  <motion.span
+                    animate={{ opacity: [1, 0.5, 1] }}
+                    transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}>
+                    {t("counter.audioBeadListening")}
+                  </motion.span>
+                ) : t("counter.audioBeadStart")}
             </span>
             {audioRunning && !isCompleted && (
               <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.5)", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
@@ -485,9 +496,32 @@ export function MidnightCounter({
             zIndex: focusMode ? 50 : 0,
             filter: filterShadow,
             cursor: focusMode ? "grab" : "default",
+            position: "relative",
+            width: BEAD_SIZE,
+            height: BEAD_SIZE,
           }}
           whileDrag={{ cursor: "grabbing" }}
         >
+          {isAudioMode && audioRunning && !isCompleted && (
+            <>
+              <style>{`
+                @keyframes mn-audio-ripple {
+                  0%   { transform: translate(-50%,-50%) scale(1);   opacity: 0.45; }
+                  100% { transform: translate(-50%,-50%) scale(2.1); opacity: 0; }
+                }
+              `}</style>
+              {[0, 0.85, 1.7].map(delay => (
+                <div key={delay} className="absolute rounded-full pointer-events-none"
+                  style={{
+                    width: BEAD_SIZE, height: BEAD_SIZE,
+                    top: '50%', left: '50%',
+                    border: '1.5px solid rgba(214,232,255,0.45)',
+                    animation: `mn-audio-ripple 2.4s ease-out ${delay}s infinite`,
+                  }} />
+              ))}
+            </>
+          )}
+
           <SapphireBead size={BEAD_SIZE} isCompleted={isCompleted} pulseTrigger={pulseTrigger}
             counter={counter} target={target} mode={mode} fmt={fmt}
             onClick={handleTap} disabled={isCompleted || shouldBlurControls}
@@ -506,9 +540,25 @@ export function MidnightCounter({
           ) : (
             <>
               <span className="text-xs text-center px-2" style={{ color: "#6A82A8" }}>{t("counter.audioReciteHint")}</span>
-              <div className="w-full rounded-full overflow-hidden" style={{ height: 3, background: "rgba(214,232,255,0.2)" }}>
+              <div className="w-full rounded-full overflow-hidden relative" style={{ height: 3, background: "rgba(214,232,255,0.2)" }}>
                 <div className="h-full rounded-full transition-[width] duration-75"
                   style={{ width: `${Math.round((audioMatchProgress ?? 0) * 100)}%`, background: "rgba(214,232,255,0.85)" }} />
+                {audioRunning && (audioMatchProgress ?? 0) === 0 && (
+                  <>
+                    <style>{`
+                      @keyframes mn-bar-scan {
+                        0%   { transform: translateX(-100%); }
+                        100% { transform: translateX(400%); }
+                      }
+                    `}</style>
+                    <div className="absolute inset-0 rounded-full pointer-events-none"
+                      style={{
+                        background: "linear-gradient(90deg, transparent 0%, rgba(214,232,255,0.6) 50%, transparent 100%)",
+                        width: '25%',
+                        animation: 'mn-bar-scan 1.6s ease-in-out infinite',
+                      }} />
+                  </>
+                )}
               </div>
               {targetDisplayText && (
                 <div className="flex items-center gap-1.5 max-w-full">

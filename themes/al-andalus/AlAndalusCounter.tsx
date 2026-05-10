@@ -687,7 +687,9 @@ export function AlAndalusCounter({
                   style={{
                     width: BEAD_SIZE, height: BEAD_SIZE,
                     top: '50%', left: '50%',
-                    border: '1.5px solid rgba(201,168,76,0.45)',
+                    transform: 'translate(-50%, -50%)',
+                    opacity: 0,
+                    border:'1.5px solid rgba(201,168,76,0.45)',
                     animation: `aa-audio-ripple 2.4s ease-out ${delay}s infinite`,
                   }} />
               ))}
@@ -706,7 +708,9 @@ export function AlAndalusCounter({
                   style={{
                     width: BEAD_SIZE, height: BEAD_SIZE,
                     top: '50%', left: '50%',
-                    border: '1px solid rgba(201,168,76,0.35)',
+                    transform: 'translate(-50%, -50%)',
+                    opacity: 0,
+                    border:'1px solid rgba(201,168,76,0.35)',
                     animation: `aa-auto-ripple 3s ease-out ${delay}s infinite`,
                   }} />
               ))}

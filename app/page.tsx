@@ -204,7 +204,6 @@ export default function Home() {
   const clearListProgress = useTasbihStore((s) => s.clearListProgress);
   const setCustomTarget = useTasbihStore((s) => s.setCustomTarget);
   const allowTargetEditInListMode = useTasbihStore((s) => s.preferences.allowTargetEditInListMode ?? false);
-  const toggleMode = useTasbihStore((s) => s.toggleMode);
   const setMode = useTasbihStore((s) => s.setMode);
   const selectZikrAsList = useTasbihStore((s) => s.selectZikrAsList);
   const customLists = useTasbihStore((s) => s.customLists);

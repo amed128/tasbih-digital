@@ -2,6 +2,20 @@
 
 ---
 
+## Thème Manuscrit Ancien (`theme/manuscrit`)
+> Branche : `theme/manuscrit` — WIP, ne pas merger sur main avant complétion
+
+- [ ] **Peaufiner l'animation du calame** — vérifier que le bec touche exactement le bord du trait d'encre à toutes les valeurs de progression
+- [ ] **Tester les deux modes focus** — Vignette (assombrissement des bords) vs Candlelight (virage ambré) ; choisir ou conserver les deux avec le toggle
+- [ ] **Mode complété** — valider l'animation du calame remontant vers le haut + shimmer doré sur la barre d'encre
+- [ ] **Al-Andalus — état complété doré** — appliquer le shimmer de l'anneau doré du thème Manuscrit sur `GoldRing` dans `AlAndalusCounter.tsx` (voir mémoire `project_andalus_gold_completed.md`)
+- [ ] **Particules de poussière d'or** — affiner la position d'émission (bec du calame) et la physique (trajectoire réaliste depuis la pointe)
+- [ ] **Focus drag** — tester le déplacement carte + barre ensemble sur iPhone SE (écran 667 px)
+- [ ] **Police calligraphique** — évaluer le chargement d'une police Naskh/Thuluth via Google Fonts (`Amiri`, `Scheherazade New`) pour le texte du zikr
+- [ ] **Intégration page.tsx** — s'assurer que `isOverlayTheme("manuscript")` est bien appelé à l'intérieur de `renderCompteur()` / `renderListMode()` et non au niveau supérieur
+
+---
+
 ## Codemagic _(à faire plus tard — nécessite l'inscription Apple Developer Program à $99/an)_
 - [ ] S'inscrire à l'Apple Developer Program (developer.apple.com/programs/enroll)
 - [ ] Connecter le repo sur codemagic.io
@@ -90,7 +104,7 @@
 
 ## Bug — Statut barre iOS (native Capacitor)
 
-- [ ] **Vérifier que `env(safe-area-inset-top)` se résout correctement** dans le build Capacitor.
+- [x] **Vérifier que `env(safe-area-inset-top)` se résout correctement** dans le build Capacitor.
   Symptôme : la couleur de la barre de statut reste celle du thème précédent lors d'un switch entre thèmes premium (obsidian ↔ emerald).
   Fix appliqué : `setBackgroundColor({ color })` appelé avant `setOverlaysWebView({ overlay: true })` dans le double-RAF + au montage, pour que iOS ait la bonne couleur de fallback même si le mode overlay clignote. Le `::before` CSS reste en place comme couche défensive. À valider sur device.
 
@@ -108,7 +122,7 @@
   - [ ] **Avant production** — Restreindre les thèmes premium aux apps natives uniquement + connecter StoreKit (iOS) / Play Billing (Android). Supprimer l'accès PWA et l'endpoint factice.
   - [ ] **Idées de thèmes premium concrets**
     - [x] **Obsidian** — Quasi-noir avec halo ambiant violet subtil, primaire argent/blanc
-    - [ ] **Midnight** — Bleu marine profond, ambiance saphir, accents blanc glacé
+    - [x] **Midnight** — Bleu marine profond, ambiance saphir, accents blanc glacé
     - [ ] **Rose Gold** — Charbon chaud foncé, primaire or rose, bloom ambiant pêche
     - [ ] **Sandstone** — Brun foncé chaud, primaire or vieilli, texture grain ambre
 - [x] **Page d'aide / FAQ** — Page `/aide` avec intro, 4 cartes de modes et accordion FAQ 9 questions (dont "À quoi sert la Sync optionnelle ?"). FR + EN.
@@ -118,8 +132,8 @@
 - [x] **Target field — popup d'édition** — Remplacer l'édition inline du champ target par un popup similaire au popup de reset (avec bouton de confirmation).
 - [x] **Mode button — dropdown** — Transformer le bouton Mode en dropdown tout en conservant sa taille et son design actuels. Ajouter une petite flèche vers le bas indiquant que c'est un dropdown. Le dropdown doit s'ouvrir vers le bas avec un petit espace entre le bouton et le menu (comme le dropdown "All zikrs"), reprendre le style/couleur du bouton, et proposer 4 options : Increment, Decrement, Auto-counter, Audio-counter.
 - [x] **Logo de l'app** — Design choisi : Option 02 Classical Cinzel. Icône app générée (light default + dark + blue alternates). Switching natif iOS/Android via plugin Capacitor. Caché sur PWA.
-- [ ] **Fix new app icon and logo**
-- [ ] **Fix manual zikr panel and cancel button** — The cancel button should replace the "Add manually" button during edit mode in the manual zikr panel
+- [x] **Fix new app icon and logo**
+- [x] **Fix manual zikr panel and cancel button** — The cancel button should replace the "Add manually" button during edit mode in the manual zikr panel
 - [ ] **Enhance zikr library** — Improve the existing library UI/UX and propose new zikr ideas to enrich the collection
 - [x] **Icône du bouton Undo** — Remplacée par RotateCcw (Lucide).
 - [x] Renommer "Mode de sélection" → "Mode sélection de zikr" (FR) et "Selection Mode" → "Zikr selection mode" (EN)
@@ -175,71 +189,26 @@
 
 ---
 
-## Internationalisation (i18n)
-
-### État actuel → objectif : **14 langues** (toutes phases confondues)
-- 2 langues UI : **Français** (défaut) et **Anglais**
-- Translittération : champ unique `transliteration: string` par zikr — phonétique anglaise/latine, partagé par toutes les langues UI
-- Type store : `language: "fr" | "en"` (`store/tasbihStore.ts`)
-- 450+ zikrs dans `data/zikrs.ts` avec `translation_fr` + `translation_en` déjà séparés
+## Internationalisation (i18n) ✅
 
 ### Phase 1 — Langues décidées (6 langues au total)
 - [x] Français (`fr`) ✅
 - [x] Anglais (`en`) ✅
-- [ ] **Allemand (`de`)** — diaspora turque/arabe en Allemagne, App Store top 5 Europe, script latin
-- [ ] **Espagnol (`es`)** — large marché Play Store/App Store, communautés musulmanes Espagne + Amérique latine, script latin
-- [ ] **Portugais (`pt`)** — Brésil = top 3 Play Store mondial, Mozambique/Guinée-Bissau, script latin
-- [ ] **Hindi (`hi`)** — ~200M musulmans en Inde, Play Store #1 mondial, script Devanagari
+- [x] **Allemand (`de`)** ✅
+- [x] **Espagnol (`es`)** ✅
+- [x] **Portugais (`pt`)** ✅
+- [x] **Hindi (`hi`)** ✅
 
-### Phase 2 — Backlog (Latin, sans RTL)
-- [ ] **Indonésien (`id`)** — ~270M musulmans, Indonésie = top 3 Play Store mondial
-- [ ] **Turc (`tr`)** — ~85M musulmans, marché App Store/Play Store solide
-- [ ] **Malais (`ms`)** — trivial si `id` est fait, même base linguistique
+### Phase 2 — Latin, sans RTL
+- [x] **Indonésien (`id`)** ✅
+- [x] **Turc (`tr`)** ✅
+- [x] **Malais (`ms`)** ✅
 
-### Phase 3 — Backlog (RTL requis — effort layout séparé)
-- [ ] **Arabe (`ar`)** — 330M locuteurs natifs / langue liturgique de 1,8Md de musulmans. Translittération inutile (lisent le script arabe directement)
-- [ ] **Ourdou (`ur`)** — ~170M musulmans (Pakistan), script Nastaliq
-- [ ] **Persan/Dari (`fa`)** — ~80M musulmans (Iran, Afghanistan)
+### Phase 3 — RTL
+- [x] **Arabe (`ar`)** ✅
+- [x] **Ourdou (`ur`)** ✅
+- [x] **Persan/Dari (`fa`)** ✅
 
-### Phase 4 — Backlog (script propre, effort élevé)
-- [ ] **Bengali (`bn`)** — ~170M musulmans, Bangladesh = Play Store en forte croissance
-- [ ] **Russe (`ru`)** — ~20M musulmans russophone (Tatarstan, Asie centrale)
-
-### Translittération par langue — refactoring requis (bloquant Phase 1)
-
-**Refactoring du type `Zikr` (`data/zikrs.ts`) :**
-```ts
-// Avant
-transliteration: string   // phonétique anglaise uniquement
-
-// Après (Phase 1)
-transliteration_en: string   // identique à l'actuel
-transliteration_fr: string   // phonétique française
-transliteration_de: string   // phonétique allemande (proche EN)
-transliteration_es: string   // phonétique espagnole (h muet → convention j)
-transliteration_pt: string   // phonétique portugaise (proche ES)
-transliteration_hi: string   // Devanagari phonétique (script propre)
-```
-
-Stratégie par langue pour les 450+ zikrs :
-
-| Langue | Effort | Stratégie | Exemple : سُبْحَانَ اللهِ |
-|---|---|---|---|
-| Anglais (`en`) | 0 | Champ actuel renommé | `SubhanaLlah` |
-| Français (`fr`) | Moyen | `u`→`ou`, `h` muet marqué, voyelles longues | `Soubhânallâh` |
-| Allemand (`de`) | Faible | Quasi-identique à EN, `ü` pour voyelles longues | `SubhanaLlah` *(~identique)* |
-| Espagnol (`es`) | Faible | `h` inaudible en ES → convention `j` pour /h/ | `SubhanaLlah` *(h accepté)* |
-| Portugais (`pt`) | Faible | Très proche ES, voyelles nasales | `SubhanaLlah` *(h accepté)* |
-| Hindi (`hi`) | Élevé | Transcription Devanagari — génération assistée | `सुब्हानल्लाह` |
-
-Le hook `useT()` résoudrait la bonne clé selon `preferences.language`, avec fallback sur `transliteration_en`.
-
-### Plan d'implémentation Phase 1
-
-1. **Refactoring type `Zikr`** — renommer `transliteration` → `transliteration_en`, ajouter les 5 nouveaux champs dans `data/zikrs.ts` et mettre à jour tous les composants qui lisent `zikr.transliteration`
-2. **Remplissage données** — populer les 450+ zikrs avec les nouvelles translittérations (DE/ES/PT proches de EN ; HI nécessite génération Devanagari)
-3. **Store** — `language: "fr" | "en" | "de" | "es" | "pt" | "hi"`
-4. **Dictionnaires UI** — ajouter DE, ES, PT, HI dans `i18n/translations.ts` (~550 clés × 4 langues)
-5. **Hook** — `useT()` résout `transliteration_[lang]` avec fallback `transliteration_en`
-6. **Settings** — sélecteur langue passe à 6 options
-7. **SEO** — `hreflang` × 6, sitemap mis à jour
+### Phase 4 — Scripts propres
+- [x] **Bengali (`bn`)** ✅
+- [x] **Russe (`ru`)** ✅

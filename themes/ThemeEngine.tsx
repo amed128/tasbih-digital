@@ -114,6 +114,15 @@
  *   minus ~80 px nav = ~587 px usable minus ~70 px page header = ~517 px).
  *   Al-Andalus uses RING_SIZE=264 / RING_STROKE=16 to stay within budget.
  *
+ * ── Bottom clearance — caller responsibility ──────────────────────────────────
+ *
+ *   Overlay components must NOT add bottom padding to their own root element.
+ *   page.tsx wraps every <ThemeCounterOverlay> call in <div className="pb-6">
+ *   to guarantee the Undo/Reset buttons sit 37 px above the fixed BottomNav
+ *   (pb-6=24 px + pb-20=80 px on <main> − BottomNav≈67 px = 37 px clearance)
+ *   when the user has scrolled to the very bottom. Baking padding into the
+ *   component itself would double-count it and push the ring unnecessarily high.
+ *
  * ── Adding a new premium overlay theme — checklist ───────────────────────────
  *
  *   a. themes/<name>/<Name>Counter.tsx

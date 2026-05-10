@@ -1877,22 +1877,24 @@ export default function Home() {
       </div>
 
       {isOverlayTheme(activeTheme) ? (
-        <ThemeCounterOverlay
-          theme={activeTheme}
-          counter={counter}
-          target={effectiveTarget}
-          mode={mode}
-          isCompleted={isCompleted}
-          pulseTrigger={pulseTrigger}
-          currentZikr={undefined}
-          onIncrement={handleIncrement}
-          onUndo={undoLast}
-          onReset={handleResetRequest}
-          focusMode={focusMode}
-          shouldBlurControls={shouldBlurActionControls}
-          hasProgress={hasProgressToReset}
-          onTargetTap={!focusMode && !isTargetLocked && isTargetEditable ? openTargetPopup : undefined}
-        />
+        <div className="pb-6">
+          <ThemeCounterOverlay
+            theme={activeTheme}
+            counter={counter}
+            target={effectiveTarget}
+            mode={mode}
+            isCompleted={isCompleted}
+            pulseTrigger={pulseTrigger}
+            currentZikr={undefined}
+            onIncrement={handleIncrement}
+            onUndo={undoLast}
+            onReset={handleResetRequest}
+            focusMode={focusMode}
+            shouldBlurControls={shouldBlurActionControls}
+            hasProgress={hasProgressToReset}
+            onTargetTap={!focusMode && !isTargetLocked && isTargetEditable ? openTargetPopup : undefined}
+          />
+        </div>
       ) : (
         <>
           <motion.div layout className="flex flex-col items-center gap-4">
@@ -2074,23 +2076,25 @@ export default function Home() {
         </div>
 
         {isOverlayTheme(activeTheme) ? (
-          <ThemeCounterOverlay
-            theme={activeTheme}
-            counter={counter}
-            target={effectiveTarget}
-            mode={mode}
-            isCompleted={isCompleted}
-            pulseTrigger={pulseTrigger}
-            currentZikr={isListMode ? currentZikr : undefined}
-            onIncrement={handleIncrement}
-            onUndo={undoLast}
-            onReset={handleResetRequest}
-            focusMode={focusMode}
-            shouldBlurControls={shouldBlurActionControls}
-            hasProgress={hasProgressToReset}
-            onTargetTap={!isTargetLocked && isTargetEditable ? openTargetPopup : undefined}
-            onNextZikr={!autoAdvanceNextZikr && !isListComplete ? nextZikrInList : undefined}
-          />
+          <div className="pb-6">
+            <ThemeCounterOverlay
+              theme={activeTheme}
+              counter={counter}
+              target={effectiveTarget}
+              mode={mode}
+              isCompleted={isCompleted}
+              pulseTrigger={pulseTrigger}
+              currentZikr={isListMode ? currentZikr : undefined}
+              onIncrement={handleIncrement}
+              onUndo={undoLast}
+              onReset={handleResetRequest}
+              focusMode={focusMode}
+              shouldBlurControls={shouldBlurActionControls}
+              hasProgress={hasProgressToReset}
+              onTargetTap={!isTargetLocked && isTargetEditable ? openTargetPopup : undefined}
+              onNextZikr={!autoAdvanceNextZikr && !isListComplete ? nextZikrInList : undefined}
+            />
+          </div>
         ) : (
           <>
             <motion.div layout className="flex flex-col items-center gap-4">

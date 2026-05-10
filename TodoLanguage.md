@@ -1,7 +1,7 @@
 # Language Expansion — Implementation Plan
 
 ## Current state
-- 12 languages: `fr` `en` `de` `es` `pt` `hi` `ar` `tr` `ur` `bn` `id` `ms`
+- 14 languages: `fr` `en` `de` `es` `pt` `hi` `ar` `tr` `ur` `bn` `id` `ms` `ru` `fa`
 - All strings in `i18n/translations.ts` (~550 keys per language)
 - `Language` type = `keyof typeof translations`
 - `useT()` hook resolves by `preferences.language`, falls back to `en`
@@ -156,7 +156,7 @@ Steps 1–5 and 6–9 can be done in separate commits so each translation is ind
 6. `data/zikrs.ts` — add category labels to `CATEGORY_LABELS`
 7. `i18n/translations.ts` — add complete language block (~550 keys)
 
-**RTL languages** (Arabic `ar`, Urdu `ur`, and any future RTL addition) require extra steps:
+**RTL languages** (Arabic `ar`, Urdu `ur`, Persian `fa`, and any future RTL addition) require extra steps:
 - `components/ThemeSync.tsx` — extend the `language === "ar"` RTL guard to include the new code
 - `app/page.tsx` — extend `isRtl` and the `fmt` numeral helper
 - `app/listes/page.tsx`, `components/CircleProgress.tsx`, `app/reglages/selection-mode/page.tsx` — extend the same `fmt`/`isArabic` guards
@@ -184,6 +184,6 @@ Write a short text line between each `Edit` call — this resets the idle timer.
 ## Future phases (roadmap)
 - Phase 2: ~~Arabic 🇸🇦~~ ✅, ~~Turkish 🇹🇷~~ ✅, ~~Urdu 🇵🇰~~ ✅, ~~Bengali 🇧🇩~~ ✅ — COMPLETED
 - Phase 3: ~~Indonesian 🇮🇩~~ ✅, ~~Malay 🇲🇾~~ ✅ — COMPLETED
-- Phase 4: Russian 🇷🇺, Persian 🇮🇷
+- Phase 4: ~~Russian 🇷🇺~~ ✅, ~~Persian 🇮🇷~~ ✅ — COMPLETED
 
 See `Todo.md` for full roadmap and Muslim population analysis.

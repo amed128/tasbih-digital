@@ -52,14 +52,14 @@ function AmberRing({ value, target, countsDown, isCompleted, size, strokeWidth }
           <stop offset="100%" stopColor="#92400E" />
         </linearGradient>
         <linearGradient id="em-done" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stopColor="#A7F3D0" />
-          <stop offset="100%" stopColor="#059669" />
+          <stop offset="0%"   stopColor="#FEF3B0" />
+          <stop offset="100%" stopColor="#C8A030" />
         </linearGradient>
         <filter id="em-glow">
           <feDropShadow dx="0" dy="0" stdDeviation="5" floodColor="#F59E0B" floodOpacity="0.50" />
         </filter>
         <filter id="em-done-glow">
-          <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#059669" floodOpacity="0.5" />
+          <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#F0C030" floodOpacity="0.60" />
         </filter>
       </defs>
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(26,92,64,0.45)"    strokeWidth={strokeWidth + 4} />
@@ -81,8 +81,8 @@ function AmberRing({ value, target, countsDown, isCompleted, size, strokeWidth }
       {isCompleted && (
         <style>{`
           @keyframes em-shimmer {
-            0%, 100% { filter: brightness(1) drop-shadow(0 0 3px rgba(5,150,105,0.5)); }
-            50%       { filter: brightness(1.45) drop-shadow(0 0 8px rgba(167,243,208,0.9)); }
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 3px rgba(210,170,30,0.55)); }
+            50%       { filter: brightness(1.18) drop-shadow(0 0 7px rgba(220,175,40,0.75)); }
           }
           .em-shimmer-ring { animation: em-shimmer 1.8s ease-in-out infinite; }
         `}</style>
@@ -122,10 +122,10 @@ function EmeraldBead({ size, isCompleted, pulseTrigger, counter, target, mode, f
       {/* Gem body */}
       <div className="absolute inset-0 rounded-full" style={{
         background: isCompleted
-          ? "radial-gradient(circle at 38% 32%, #D1FAE5, #34D399 32%, #059669 68%, #064E3B)"
+          ? "radial-gradient(circle at 38% 32%, #E8C040 0%, #C8A028 18%, #9A7820 42%, #4A3A10 65%, #261E06)"
           : "radial-gradient(circle at 33% 26%, #CCFFF0 0%, #7DF9CB 12%, #1A9970 40%, #0A5540 65%, #04291E 100%)",
         boxShadow: isCompleted
-          ? "0 16px 48px rgba(52,211,153,0.55), 0 6px 18px rgba(0,0,0,0.4), inset 0 -6px 16px rgba(0,0,0,0.3)"
+          ? "0 16px 48px rgba(200,160,40,0.50), 0 6px 18px rgba(0,0,0,0.4), inset 0 -6px 16px rgba(0,0,0,0.3)"
           : "0 16px 48px rgba(13,122,88,0.65), 0 6px 18px rgba(0,0,0,0.5), inset 0 -6px 16px rgba(0,0,0,0.38)",
       }} />
       {/* Crystalline facet — diagonal light refraction */}
@@ -144,7 +144,7 @@ function EmeraldBead({ size, isCompleted, pulseTrigger, counter, target, mode, f
       }} />
       {/* Amber rim glow — links bead to ring */}
       <div className="absolute inset-0 rounded-full pointer-events-none" style={{
-        background: "radial-gradient(circle at 72% 82%, rgba(245,158,11,0.22) 0%, transparent 42%)",
+        background: "radial-gradient(circle at 72% 82%, rgba(245,158,11,0.38) 0%, transparent 42%)",
       }} />
       {/* Text */}
       <div className="relative z-10 flex flex-col items-center select-none">
@@ -157,7 +157,7 @@ function EmeraldBead({ size, isCompleted, pulseTrigger, counter, target, mode, f
           style={{ color: "rgba(167,243,208,0.75)", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
           {mode === "down" ? t("circle.remaining") : `/ ${fmt(target)}`}
         </span>
-        {isCompleted && <span className="mt-1 text-xs font-semibold" style={{ color: "#A7F3D0" }}>✓</span>}
+        {isCompleted && <span className="mt-1 text-xs font-semibold" style={{ color: "#FDE68A", textShadow: "0 0 8px rgba(245,158,11,0.7)" }}>✓</span>}
       </div>
     </motion.button>
   );
@@ -180,12 +180,13 @@ function BotanicalHeader() {
         </defs>
         {/* Left branch */}
         <path d={`M${cx},${H} Q${cx-18},${H-22} ${cx-38},${H-38}`}
-          fill="none" stroke="rgba(13,122,88,0.55)" strokeWidth="1.2" strokeLinecap="round" />
+          fill="none" stroke="rgba(180,130,40,0.55)" strokeWidth="1.2" strokeLinecap="round" />
         <g transform={`translate(${cx-12},${H-14}) rotate(-22)`}>
           <path d="M0,0 Q-6,-13 0,-22 Q6,-13 0,0" fill="url(#em-leaf)" />
         </g>
         <g transform={`translate(${cx-25},${H-26}) rotate(-42)`}>
           <path d="M0,0 Q-5,-10 0,-18 Q5,-10 0,0" fill="url(#em-leaf)" />
+          <circle cx="0" cy="-18" r="1.5" fill="#F59E0B" opacity="0.7" />
         </g>
         <g transform={`translate(${cx-38},${H-37}) rotate(-60)`}>
           <path d="M0,0 Q-4,-8 0,-14 Q4,-8 0,0" fill="url(#em-leaf)" />
@@ -193,12 +194,13 @@ function BotanicalHeader() {
         </g>
         {/* Right branch — mirror */}
         <path d={`M${cx},${H} Q${cx+18},${H-22} ${cx+38},${H-38}`}
-          fill="none" stroke="rgba(13,122,88,0.55)" strokeWidth="1.2" strokeLinecap="round" />
+          fill="none" stroke="rgba(180,130,40,0.55)" strokeWidth="1.2" strokeLinecap="round" />
         <g transform={`translate(${cx+12},${H-14}) rotate(22)`}>
           <path d="M0,0 Q6,-13 0,-22 Q-6,-13 0,0" fill="url(#em-leaf)" />
         </g>
         <g transform={`translate(${cx+25},${H-26}) rotate(42)`}>
           <path d="M0,0 Q5,-10 0,-18 Q-5,-10 0,0" fill="url(#em-leaf)" />
+          <circle cx="0" cy="-18" r="1.5" fill="#F59E0B" opacity="0.7" />
         </g>
         <g transform={`translate(${cx+38},${H-37}) rotate(60)`}>
           <path d="M0,0 Q4,-8 0,-14 Q-4,-8 0,0" fill="url(#em-leaf)" />
@@ -228,7 +230,7 @@ function ZikrText({ arabic, translit }: { arabic: string; translit: string }) {
         </p>
       )}
       {translit && (
-        <p className="text-sm font-semibold italic" style={{ color: "#8FB8A0", textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}>
+        <p className="text-sm font-semibold italic" style={{ color: "#C9A040", textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}>
           {translit}
         </p>
       )}
@@ -401,6 +403,16 @@ export function EmeraldCounter({
                 initial={{ scale: 0.55, opacity: 0.7 }} animate={{ scale: 2.5, opacity: 0 }} exit={{}}
                 transition={{ duration: 1.1, ease: [0.2, 0.8, 0.4, 1] }} />
             ))}
+            {ripples.map(r => (
+              <motion.div key={`${r.id}-g`} className="absolute rounded-full pointer-events-none"
+                style={{
+                  width: BEAD_SIZE, height: BEAD_SIZE,
+                  border: "1.5px solid rgba(245,158,11,0.45)",
+                  top: "50%", left: "50%", translateX: "-50%", translateY: "-50%",
+                }}
+                initial={{ scale: 0.7, opacity: 0.6 }} animate={{ scale: 1.8, opacity: 0 }} exit={{}}
+                transition={{ duration: 0.9, ease: [0.2, 0.8, 0.4, 1] }} />
+            ))}
           </AnimatePresence>
 
           <EmeraldBead size={BEAD_SIZE} isCompleted={isCompleted} pulseTrigger={pulseTrigger}
@@ -447,7 +459,7 @@ export function EmeraldCounter({
           disabled={!hasProgress || blurred}
           className="flex-1 rounded-xl border px-4 py-4 text-sm font-semibold transition hover:brightness-110"
           style={{
-            borderColor: "rgba(26,92,64,0.65)", background: "rgba(10,61,43,0.55)",
+            borderColor: "rgba(245,158,11,0.40)", background: "rgba(10,61,43,0.55)",
             color: !hasProgress ? "rgba(143,184,160,0.3)" : "#8FB8A0",
             opacity: !hasProgress ? 0.4 : 1,
           }}>
@@ -456,7 +468,7 @@ export function EmeraldCounter({
         <button onClick={onReset} disabled={blurred}
           className="flex-1 rounded-xl border px-4 py-4 text-sm font-semibold transition hover:brightness-110"
           style={{
-            borderColor: "rgba(26,92,64,0.65)", background: "rgba(10,61,43,0.55)",
+            borderColor: "rgba(245,158,11,0.40)", background: "rgba(10,61,43,0.55)",
             color: !hasProgress ? "rgba(143,184,160,0.3)" : "#8FB8A0",
             opacity: !hasProgress ? 0.4 : 1,
           }}>

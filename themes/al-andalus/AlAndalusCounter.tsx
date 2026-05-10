@@ -25,6 +25,13 @@ export interface AlAndalusCounterProps {
   hasProgress: boolean;
   onTargetTap?: () => void;
   onNextZikr?: () => void;
+  /** Auto-counter props — only active when mode === "auto" */
+  autoRunning?: boolean;
+  onAutoToggle?: () => void;
+  autoIntervalMs?: number;
+  onAutoSpeedChange?: (ms: number) => void;
+  isCustomSpeed?: boolean;
+  onAutoCustomSpeed?: (ms: number) => void;
 }
 
 // ─── Water-ripple item ────────────────────────────────────────────────────────
@@ -161,6 +168,9 @@ export function LapisBead({
   dragX,
   dragY,
   focusMode,
+  isAutoMode,
+  autoRunning,
+  onAutoToggle,
 }: {
   size: number;
   isCompleted: boolean;
@@ -174,9 +184,14 @@ export function LapisBead({
   dragX?: MotionValue<number>;
   dragY?: MotionValue<number>;
   focusMode?: boolean;
+  isAutoMode?: boolean;
+  autoRunning?: boolean;
+  onAutoToggle?: () => void;
 }) {
   const t = useT();
   const countsDown = mode === "down";
+
+  const handleClick = isAutoMode && onAutoToggle ? onAutoToggle : onClick;
 
   const _fallbackX = useMotionValue(0);
   const _fallbackY = useMotionValue(0);
@@ -185,11 +200,13 @@ export function LapisBead({
   const specularX = useTransform(mx, (x: number) => Math.max(-15, Math.min(15, -x * 0.18)));
   const specularY = useTransform(my, (y: number) => Math.max(-15, Math.min(15, -y * 0.18)));
 
+  const beadDisabled = isAutoMode ? isCompleted : disabled;
+
   return (
     <motion.button
-      onClick={onClick}
-      disabled={disabled}
-      whileTap={disabled ? {} : { scale: 0.93 }}
+      onClick={handleClick}
+      disabled={beadDisabled}
+      whileTap={beadDisabled ? {} : { scale: 0.93 }}
       animate={typeof pulseTrigger === "number" ? { scale: [1, 1.07, 1] } : {}}
       transition={{ duration: 0.22, ease: "easeOut" }}
       aria-label={t("counter.tap")}
@@ -259,14 +276,25 @@ export function LapisBead({
         >
           {countsDown ? t("circle.remaining") : `/ ${fmt(target)}`}
         </span>
-        {isCompleted && (
+        {isAutoMode ? (
+          <span
+            className="mt-1 text-xs font-semibold"
+            style={{ color: "#F5E6C8", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}
+          >
+            {isCompleted
+              ? t("counter.goalReached")
+              : autoRunning
+              ? t("counter.autoStop")
+              : t("counter.autoBeadAction")}
+          </span>
+        ) : isCompleted ? (
           <span
             className="mt-1 text-xs font-semibold"
             style={{ color: "#F5E6C8", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}
           >
             ✓
           </span>
-        )}
+        ) : null}
       </div>
     </motion.button>
   );
@@ -371,9 +399,23 @@ export function AlAndalusCounter({
   hasProgress,
   onTargetTap,
   onNextZikr,
+  autoRunning,
+  onAutoToggle,
+  autoIntervalMs,
+  onAutoSpeedChange,
+  isCustomSpeed,
+  onAutoCustomSpeed,
 }: AlAndalusCounterProps) {
   const t = useT();
   const language = useTasbihStore((s) => s.preferences.language);
+  const isAutoMode = mode === "auto";
+  const [customInput, setCustomInput] = useState(() =>
+    isCustomSpeed ? String(Math.round((autoIntervalMs ?? 5000) / 1000)) : "5"
+  );
+  const [speedOpen, setSpeedOpen] = useState(false);
+  const speedLabel = isCustomSpeed
+    ? t("settings.custom")
+    : autoIntervalMs === 500 ? "0.5s" : autoIntervalMs === 1000 ? "1s" : "2s";
 
   const fmt = useCallback(
     (n: number) =>
@@ -586,9 +628,74 @@ export function AlAndalusCounter({
             dragX={dragX}
             dragY={dragY}
             focusMode={focusMode}
+            isAutoMode={isAutoMode}
+            autoRunning={autoRunning}
+            onAutoToggle={onAutoToggle}
           />
         </motion.div>
       </div>
+
+      {/* Speed selector — auto mode only */}
+      {isAutoMode && (
+        <div className="flex flex-col items-center gap-1.5 mb-1">
+          <div className="relative flex items-center gap-2">
+            <span className="text-xs font-semibold" style={{ color: "var(--secondary)" }}>{t("counter.autoSpeed")}:</span>
+            <div className="relative">
+              <button onClick={() => setSpeedOpen(v => !v)}
+                className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition"
+                style={{ border: "1.5px solid rgba(201,168,76,0.85)", color: "#7A5A10", background: "rgba(201,168,76,0.18)" }}>
+                {speedLabel}
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                  className={`transition-transform duration-150 ${speedOpen ? "rotate-180" : ""}`}>
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              {speedOpen && (
+                <div className="absolute left-0 top-full mt-1.5 z-50 min-w-[80px] overflow-hidden rounded-xl border shadow-lg"
+                  style={{ background: "rgba(237,228,210,0.98)", borderColor: "rgba(201,168,76,0.35)" }}>
+                  {([500, 1000, 2000] as const).map(ms => {
+                    const label = ms === 500 ? "0.5s" : ms === 1000 ? "1s" : "2s";
+                    const active = !isCustomSpeed && autoIntervalMs === ms;
+                    return (
+                      <button key={ms} onClick={() => { onAutoSpeedChange?.(ms); setSpeedOpen(false); }}
+                        className="block w-full px-4 py-2 text-left text-xs font-semibold transition hover:bg-black/5"
+                        style={{ color: active ? "#8B6314" : "#6B5030" }}>
+                        {label}
+                      </button>
+                    );
+                  })}
+                  <button onClick={() => { if (!isCustomSpeed) onAutoCustomSpeed?.(5000); setSpeedOpen(false); }}
+                    className="block w-full px-4 py-2 text-left text-xs font-semibold transition hover:bg-black/5"
+                    style={{ color: isCustomSpeed ? "#8B6314" : "#6B5030", borderTop: "1px solid rgba(201,168,76,0.25)" }}>
+                    {t("settings.custom")}
+                  </button>
+                </div>
+              )}
+            </div>
+            {isCustomSpeed && (
+              <div className="flex items-center gap-1">
+                <input type="number" min={1} max={120} inputMode="numeric"
+                  value={customInput}
+                  onChange={(e) => {
+                    setCustomInput(e.target.value);
+                    const val = parseInt(e.target.value, 10);
+                    if (!isNaN(val) && val >= 1 && val <= 120) onAutoCustomSpeed?.(val * 1000);
+                  }}
+                  onBlur={() => {
+                    const val = parseInt(customInput, 10);
+                    const clamped = isNaN(val) || val < 1 ? 1 : Math.min(val, 120);
+                    setCustomInput(String(clamped));
+                    onAutoCustomSpeed?.(clamped * 1000);
+                  }}
+                  className="w-12 rounded-lg border px-2 py-1 text-center text-xs font-semibold outline-none"
+                  style={{ borderColor: "rgba(201,168,76,0.85)", color: "#7A5A10", background: "rgba(255,252,245,0.9)" }}
+                />
+                <span className="text-xs" style={{ color: "var(--secondary)" }}>s</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Target line */}
       <div className="flex items-center gap-1.5 text-sm font-semibold mb-2"

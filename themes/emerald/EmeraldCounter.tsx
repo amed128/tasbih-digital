@@ -28,6 +28,13 @@ export interface EmeraldCounterProps {
   hasProgress: boolean;
   onTargetTap?: () => void;
   onNextZikr?: () => void;
+  /** Auto-counter props — only active when mode === "auto" */
+  autoRunning?: boolean;
+  onAutoToggle?: () => void;
+  autoIntervalMs?: number;
+  onAutoSpeedChange?: (ms: number) => void;
+  isCustomSpeed?: boolean;
+  onAutoCustomSpeed?: (ms: number) => void;
 }
 
 interface Ripple { id: number }
@@ -93,14 +100,19 @@ function AmberRing({ value, target, countsDown, isCompleted, size, strokeWidth }
 
 // ── Crystalline emerald bead ──────────────────────────────────────────────────
 
-function EmeraldBead({ size, isCompleted, pulseTrigger, counter, target, mode, fmt, onClick, disabled, dragX, dragY }: {
+function EmeraldBead({ size, isCompleted, pulseTrigger, counter, target, mode, fmt, onClick, disabled, dragX, dragY, isAutoMode, autoRunning, onAutoToggle }: {
   size: number; isCompleted: boolean; pulseTrigger?: number;
   counter: number; target: number; mode: string;
   fmt: (n: number) => string; onClick: () => void; disabled: boolean;
   dragX?: MotionValue<number>;
   dragY?: MotionValue<number>;
+  isAutoMode?: boolean;
+  autoRunning?: boolean;
+  onAutoToggle?: () => void;
 }) {
   const t = useT();
+  const handleClick = isAutoMode && onAutoToggle ? onAutoToggle : onClick;
+  const beadDisabled = isAutoMode ? isCompleted : disabled;
 
   const _fallbackX = useMotionValue(0);
   const _fallbackY = useMotionValue(0);
@@ -111,8 +123,8 @@ function EmeraldBead({ size, isCompleted, pulseTrigger, counter, target, mode, f
 
   return (
     <motion.button
-      onClick={onClick} disabled={disabled}
-      whileTap={disabled ? {} : { scale: 0.93 }}
+      onClick={handleClick} disabled={beadDisabled}
+      whileTap={beadDisabled ? {} : { scale: 0.93 }}
       animate={typeof pulseTrigger === "number" ? { scale: [1, 1.07, 1] } : {}}
       transition={{ duration: 0.22, ease: "easeOut" }}
       aria-label={t("counter.tap")}
@@ -157,7 +169,17 @@ function EmeraldBead({ size, isCompleted, pulseTrigger, counter, target, mode, f
           style={{ color: "rgba(167,243,208,0.75)", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
           {mode === "down" ? t("circle.remaining") : `/ ${fmt(target)}`}
         </span>
-        {isCompleted && <span className="mt-1 text-xs font-semibold" style={{ color: "#FDE68A", textShadow: "0 0 8px rgba(245,158,11,0.7)" }}>✓</span>}
+        {isAutoMode ? (
+          <span className="mt-1 text-xs font-semibold" style={{ color: "#FDE68A", textShadow: "0 0 8px rgba(245,158,11,0.7)" }}>
+            {isCompleted
+              ? t("counter.goalReached")
+              : autoRunning
+              ? t("counter.autoStop")
+              : t("counter.autoBeadAction")}
+          </span>
+        ) : isCompleted ? (
+          <span className="mt-1 text-xs font-semibold" style={{ color: "#FDE68A", textShadow: "0 0 8px rgba(245,158,11,0.7)" }}>✓</span>
+        ) : null}
       </div>
     </motion.button>
   );
@@ -248,9 +270,19 @@ export function EmeraldCounter({
   counter, target, mode, isCompleted, pulseTrigger, currentZikr,
   onIncrement, onUndo, onReset, focusMode, shouldBlurControls, hasProgress,
   onTargetTap, onNextZikr,
+  autoRunning, onAutoToggle, autoIntervalMs, onAutoSpeedChange,
+  isCustomSpeed, onAutoCustomSpeed,
 }: EmeraldCounterProps) {
   const t        = useT();
   const language = useTasbihStore(s => s.preferences.language);
+  const isAutoMode = mode === "auto";
+  const [customInput, setCustomInput] = useState(() =>
+    isCustomSpeed ? String(Math.round((autoIntervalMs ?? 5000) / 1000)) : "5"
+  );
+  const [speedOpen, setSpeedOpen] = useState(false);
+  const speedLabel = isCustomSpeed
+    ? t("settings.custom")
+    : autoIntervalMs === 500 ? "0.5s" : autoIntervalMs === 1000 ? "1s" : "2s";
 
   const fmt = useCallback((n: number) =>
     language === "ar" ? n.toLocaleString("ar-SA") :
@@ -418,9 +450,72 @@ export function EmeraldCounter({
           <EmeraldBead size={BEAD_SIZE} isCompleted={isCompleted} pulseTrigger={pulseTrigger}
             counter={counter} target={target} mode={mode} fmt={fmt}
             onClick={handleTap} disabled={isCompleted || shouldBlurControls}
-            dragX={dragX} dragY={dragY} />
+            dragX={dragX} dragY={dragY}
+            isAutoMode={isAutoMode} autoRunning={autoRunning} onAutoToggle={onAutoToggle} />
         </motion.div>
       </div>
+
+      {/* Speed selector — auto mode only */}
+      {isAutoMode && (
+        <div className="flex flex-col items-center gap-1.5 mb-1">
+          <div className="relative flex items-center gap-2">
+            <span className="text-xs font-semibold" style={{ color: "#8FB8A0" }}>{t("counter.autoSpeed")}:</span>
+            <div className="relative">
+              <button onClick={() => setSpeedOpen(v => !v)}
+                className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition"
+                style={{ border: "1px solid rgba(125,249,203,0.5)", color: "#7DF9CB", background: "rgba(10,61,43,0.6)" }}>
+                {speedLabel}
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                  className={`transition-transform duration-150 ${speedOpen ? "rotate-180" : ""}`}>
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              {speedOpen && (
+                <div className="absolute left-0 top-full mt-1.5 z-50 min-w-[80px] overflow-hidden rounded-xl border shadow-lg"
+                  style={{ background: "rgba(4,41,30,0.97)", borderColor: "rgba(125,249,203,0.25)" }}>
+                  {([500, 1000, 2000] as const).map(ms => {
+                    const label = ms === 500 ? "0.5s" : ms === 1000 ? "1s" : "2s";
+                    const active = !isCustomSpeed && autoIntervalMs === ms;
+                    return (
+                      <button key={ms} onClick={() => { onAutoSpeedChange?.(ms); setSpeedOpen(false); }}
+                        className="block w-full px-4 py-2 text-left text-xs font-semibold transition hover:bg-white/5"
+                        style={{ color: active ? "#7DF9CB" : "#8FB8A0" }}>
+                        {label}
+                      </button>
+                    );
+                  })}
+                  <button onClick={() => { if (!isCustomSpeed) onAutoCustomSpeed?.(5000); setSpeedOpen(false); }}
+                    className="block w-full px-4 py-2 text-left text-xs font-semibold transition hover:bg-white/5"
+                    style={{ color: isCustomSpeed ? "#7DF9CB" : "#8FB8A0", borderTop: "1px solid rgba(125,249,203,0.15)" }}>
+                    {t("settings.custom")}
+                  </button>
+                </div>
+              )}
+            </div>
+            {isCustomSpeed && (
+              <div className="flex items-center gap-1">
+                <input type="number" min={1} max={120} inputMode="numeric"
+                  value={customInput}
+                  onChange={(e) => {
+                    setCustomInput(e.target.value);
+                    const val = parseInt(e.target.value, 10);
+                    if (!isNaN(val) && val >= 1 && val <= 120) onAutoCustomSpeed?.(val * 1000);
+                  }}
+                  onBlur={() => {
+                    const val = parseInt(customInput, 10);
+                    const clamped = isNaN(val) || val < 1 ? 1 : Math.min(val, 120);
+                    setCustomInput(String(clamped));
+                    onAutoCustomSpeed?.(clamped * 1000);
+                  }}
+                  className="w-12 rounded-lg border px-2 py-1 text-center text-xs font-semibold outline-none focus:border-[#7DF9CB]"
+                  style={{ borderColor: "rgba(125,249,203,0.4)", color: "#7DF9CB", background: "rgba(10,61,43,0.7)" }}
+                />
+                <span className="text-xs" style={{ color: "#8FB8A0" }}>s</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Target */}
       <div className="flex items-center gap-1.5 text-sm font-semibold mb-2" style={{ color: "#8FB8A0" }}>

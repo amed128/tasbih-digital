@@ -1893,6 +1893,23 @@ export default function Home() {
             shouldBlurControls={shouldBlurActionControls}
             hasProgress={hasProgressToReset}
             onTargetTap={!focusMode && !isTargetLocked && isTargetEditable ? openTargetPopup : undefined}
+            autoRunning={autoRunning}
+            onAutoToggle={() => setAutoEnabled(v => !v)}
+            autoIntervalMs={autoIntervalMs}
+            onAutoSpeedChange={(ms) => {
+              setIsCustomSpeed(false);
+              setAutoIntervalMs(ms);
+              setAutoCounterDefaultSpeed(ms);
+              setAutoCounterSpeedIsCustom(false);
+            }}
+            isCustomSpeed={isCustomSpeed}
+            onAutoCustomSpeed={(ms) => {
+              setIsCustomSpeed(true);
+              setAutoIntervalMs(ms);
+              setAutoCounterDefaultSpeed(ms);
+              setAutoCounterSpeedIsCustom(true);
+              setAutoCustomRawInput(String(Math.round(ms / 1000)));
+            }}
           />
         </div>
       ) : (
@@ -2093,6 +2110,23 @@ export default function Home() {
               hasProgress={hasProgressToReset}
               onTargetTap={!isTargetLocked && isTargetEditable ? openTargetPopup : undefined}
               onNextZikr={!autoAdvanceNextZikr && !isListComplete ? nextZikrInList : undefined}
+              autoRunning={autoRunning}
+              onAutoToggle={() => setAutoEnabled(v => !v)}
+              autoIntervalMs={autoIntervalMs}
+              onAutoSpeedChange={(ms) => {
+                setIsCustomSpeed(false);
+                setAutoIntervalMs(ms);
+                setAutoCounterDefaultSpeed(ms);
+                setAutoCounterSpeedIsCustom(false);
+              }}
+              isCustomSpeed={isCustomSpeed}
+              onAutoCustomSpeed={(ms) => {
+                setIsCustomSpeed(true);
+                setAutoIntervalMs(ms);
+                setAutoCounterDefaultSpeed(ms);
+                setAutoCounterSpeedIsCustom(true);
+                setAutoCustomRawInput(String(Math.round(ms / 1000)));
+              }}
             />
           </div>
         ) : (

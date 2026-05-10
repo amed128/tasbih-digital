@@ -18,6 +18,11 @@
  *   onTargetTap?: () => void    — open target-edit popup; undefined when locked
  *   onNextZikr?: () => void     — advance to next zikr; only provided in list
  *                                 mode when !autoAdvanceNextZikr && !isListComplete
+ *   autoRunning?: boolean       — true when auto-counter is actively ticking
+ *   onAutoToggle?: () => void   — start/stop auto-counter; bead tap calls this
+ *                                 instead of onIncrement when mode === "auto"
+ *   autoIntervalMs?: number     — current interval (500 | 1000 | 2000 | custom)
+ *   onAutoSpeedChange?: (ms) => void — select a preset speed from the pill row
  *
  * ── Integration rules (must be respected by callers in page.tsx) ─────────────
  *

@@ -32,6 +32,14 @@ export interface AlAndalusCounterProps {
   onAutoSpeedChange?: (ms: number) => void;
   isCustomSpeed?: boolean;
   onAutoCustomSpeed?: (ms: number) => void;
+  /** Audio-counter props — only active when mode === "audio" */
+  audioRunning?: boolean;
+  onAudioToggle?: () => void;
+  audioMatchProgress?: number;
+  hasAudioSelection?: boolean;
+  supportsSpeechRecognition?: boolean;
+  targetDisplayText?: string;
+  audioHelpText?: string;
 }
 
 // ─── Water-ripple item ────────────────────────────────────────────────────────
@@ -171,6 +179,11 @@ export function LapisBead({
   isAutoMode,
   autoRunning,
   onAutoToggle,
+  isAudioMode,
+  audioRunning,
+  onAudioToggle,
+  hasAudioSelection,
+  supportsSpeechRecognition,
 }: {
   size: number;
   isCompleted: boolean;
@@ -187,11 +200,20 @@ export function LapisBead({
   isAutoMode?: boolean;
   autoRunning?: boolean;
   onAutoToggle?: () => void;
+  isAudioMode?: boolean;
+  audioRunning?: boolean;
+  onAudioToggle?: () => void;
+  hasAudioSelection?: boolean;
+  supportsSpeechRecognition?: boolean;
 }) {
   const t = useT();
   const countsDown = mode === "down";
 
-  const handleClick = isAutoMode && onAutoToggle ? onAutoToggle : onClick;
+  const handleClick = isAudioMode && onAudioToggle ? onAudioToggle
+    : isAutoMode && onAutoToggle ? onAutoToggle
+    : onClick;
+
+  const beadDisabledAudio = isAudioMode && (isCompleted || !hasAudioSelection || !supportsSpeechRecognition);
 
   const _fallbackX = useMotionValue(0);
   const _fallbackY = useMotionValue(0);
@@ -200,7 +222,7 @@ export function LapisBead({
   const specularX = useTransform(mx, (x: number) => Math.max(-15, Math.min(15, -x * 0.18)));
   const specularY = useTransform(my, (y: number) => Math.max(-15, Math.min(15, -y * 0.18)));
 
-  const beadDisabled = isAutoMode ? isCompleted : disabled;
+  const beadDisabled = isAudioMode ? beadDisabledAudio : isAutoMode ? isCompleted : disabled;
 
   return (
     <motion.button
@@ -276,22 +298,31 @@ export function LapisBead({
         >
           {countsDown ? t("circle.remaining") : `/ ${fmt(target)}`}
         </span>
-        {isAutoMode ? (
-          <span
-            className="mt-1 text-xs font-semibold"
-            style={{ color: "#F5E6C8", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}
-          >
-            {isCompleted
-              ? t("counter.goalReached")
-              : autoRunning
-              ? t("counter.autoStop")
+        {isAudioMode ? (
+          <div className="mt-1 flex flex-col items-center">
+            <span className="text-xs font-semibold"
+              style={{ color: "#F5E6C8", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
+              {isCompleted ? t("counter.goalReached")
+                : audioRunning ? t("counter.audioBeadListening")
+                : t("counter.audioBeadStart")}
+            </span>
+            {audioRunning && !isCompleted && (
+              <span className="text-[10px]"
+                style={{ color: "rgba(245,230,200,0.6)", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
+                {t("counter.audioBeadStop")}
+              </span>
+            )}
+          </div>
+        ) : isAutoMode ? (
+          <span className="mt-1 text-xs font-semibold"
+            style={{ color: "#F5E6C8", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
+            {isCompleted ? t("counter.goalReached")
+              : autoRunning ? t("counter.autoStop")
               : t("counter.autoBeadAction")}
           </span>
         ) : isCompleted ? (
-          <span
-            className="mt-1 text-xs font-semibold"
-            style={{ color: "#F5E6C8", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}
-          >
+          <span className="mt-1 text-xs font-semibold"
+            style={{ color: "#F5E6C8", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
             ✓
           </span>
         ) : null}
@@ -405,10 +436,18 @@ export function AlAndalusCounter({
   onAutoSpeedChange,
   isCustomSpeed,
   onAutoCustomSpeed,
+  audioRunning,
+  onAudioToggle,
+  audioMatchProgress,
+  hasAudioSelection,
+  supportsSpeechRecognition,
+  targetDisplayText,
+  audioHelpText,
 }: AlAndalusCounterProps) {
   const t = useT();
   const language = useTasbihStore((s) => s.preferences.language);
   const isAutoMode = mode === "auto";
+  const isAudioMode = mode === "audio";
   const [customInput, setCustomInput] = useState(() =>
     isCustomSpeed ? String(Math.round((autoIntervalMs ?? 5000) / 1000)) : "5"
   );
@@ -631,9 +670,43 @@ export function AlAndalusCounter({
             isAutoMode={isAutoMode}
             autoRunning={autoRunning}
             onAutoToggle={onAutoToggle}
+            isAudioMode={isAudioMode}
+            audioRunning={audioRunning}
+            onAudioToggle={onAudioToggle}
+            hasAudioSelection={hasAudioSelection}
+            supportsSpeechRecognition={supportsSpeechRecognition}
           />
         </motion.div>
       </div>
+
+      {/* Audio feedback strip — audio mode only */}
+      {isAudioMode && (
+        <div className="flex flex-col items-center gap-1.5 mb-1 w-full max-w-[260px]">
+          {!hasAudioSelection || !supportsSpeechRecognition ? (
+            <span className="text-xs text-center px-2" style={{ color: "#8B7355" }}>
+              {audioHelpText}
+            </span>
+          ) : (
+            <>
+              <span className="text-xs text-center px-2" style={{ color: "#8B7355" }}>
+                {t("counter.audioReciteHint")}
+              </span>
+              <div className="w-full rounded-full overflow-hidden" style={{ height: 3, background: "rgba(201,168,76,0.2)" }}>
+                <div className="h-full rounded-full transition-[width] duration-75"
+                  style={{ width: `${Math.round((audioMatchProgress ?? 0) * 100)}%`, background: "rgba(201,168,76,0.85)" }} />
+              </div>
+              {targetDisplayText && (
+                <div className="flex items-center gap-1.5 max-w-full">
+                  <span className="text-xs shrink-0" style={{ color: "#8B7355" }}>{t("counter.audioExpectedZikr")}</span>
+                  <span className="text-xs font-semibold truncate" dir="rtl" style={{ color: "#7A5A10" }}>
+                    {targetDisplayText}
+                  </span>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
 
       {/* Speed selector — auto mode only */}
       {isAutoMode && (

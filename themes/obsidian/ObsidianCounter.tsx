@@ -35,6 +35,13 @@ export interface ObsidianCounterProps {
   onAutoSpeedChange?: (ms: number) => void;
   isCustomSpeed?: boolean;
   onAutoCustomSpeed?: (ms: number) => void;
+  audioRunning?: boolean;
+  onAudioToggle?: () => void;
+  audioMatchProgress?: number;
+  hasAudioSelection?: boolean;
+  supportsSpeechRecognition?: boolean;
+  targetDisplayText?: string;
+  audioHelpText?: string;
 }
 
 interface Ripple { id: number }
@@ -103,7 +110,7 @@ function ChromeRing({ value, target, countsDown, isCompleted, size, strokeWidth 
 // gradient) that drops immediately to near-black — exactly how volcanic glass
 // catches light.
 
-function ObsidianBead({ size, isCompleted, pulseTrigger, counter, target, mode, fmt, onClick, disabled, dragX, dragY, isAutoMode, autoRunning, onAutoToggle }: {
+function ObsidianBead({ size, isCompleted, pulseTrigger, counter, target, mode, fmt, onClick, disabled, dragX, dragY, isAutoMode, autoRunning, onAutoToggle, isAudioMode, audioRunning, onAudioToggle, hasAudioSelection, supportsSpeechRecognition }: {
   size: number; isCompleted: boolean; pulseTrigger?: number;
   counter: number; target: number; mode: string;
   fmt: (n: number) => string; onClick: () => void; disabled: boolean;
@@ -112,10 +119,19 @@ function ObsidianBead({ size, isCompleted, pulseTrigger, counter, target, mode, 
   isAutoMode?: boolean;
   autoRunning?: boolean;
   onAutoToggle?: () => void;
+  isAudioMode?: boolean;
+  audioRunning?: boolean;
+  onAudioToggle?: () => void;
+  hasAudioSelection?: boolean;
+  supportsSpeechRecognition?: boolean;
 }) {
   const t = useT();
-  const handleClick = isAutoMode && onAutoToggle ? onAutoToggle : onClick;
-  const beadDisabled = isAutoMode ? isCompleted : disabled;
+  const handleClick = isAudioMode && onAudioToggle ? onAudioToggle
+    : isAutoMode && onAutoToggle ? onAutoToggle
+    : onClick;
+  const beadDisabled = isAudioMode
+    ? (isCompleted || !hasAudioSelection || !supportsSpeechRecognition)
+    : isAutoMode ? isCompleted : disabled;
 
   const _fallbackX = useMotionValue(0);
   const _fallbackY = useMotionValue(0);
@@ -180,7 +196,18 @@ function ObsidianBead({ size, isCompleted, pulseTrigger, counter, target, mode, 
           style={{ color: "rgba(160,168,200,0.65)", textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>
           {mode === "down" ? t("circle.remaining") : `/ ${fmt(target)}`}
         </span>
-        {isAutoMode ? (
+        {isAudioMode ? (
+          <div className="flex flex-col items-center">
+            <span className="text-xs font-semibold mt-0.5" style={{ color: isCompleted ? "#E8EFFF" : "#C0C8D8", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
+              {isCompleted ? t("counter.goalReached") : audioRunning ? t("counter.audioBeadListening") : t("counter.audioBeadStart")}
+            </span>
+            {audioRunning && !isCompleted && (
+              <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.5)", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
+                {t("counter.audioBeadStop")}
+              </span>
+            )}
+          </div>
+        ) : isAutoMode ? (
           <span className="mt-1 text-xs font-semibold" style={{ color: "#C8D4F0" }}>
             {isCompleted
               ? t("counter.goalReached")
@@ -265,10 +292,13 @@ export function ObsidianCounter({
   onTargetTap, onNextZikr,
   autoRunning, onAutoToggle, autoIntervalMs, onAutoSpeedChange,
   isCustomSpeed, onAutoCustomSpeed,
+  audioRunning, onAudioToggle, audioMatchProgress, hasAudioSelection,
+  supportsSpeechRecognition, targetDisplayText, audioHelpText,
 }: ObsidianCounterProps) {
   const t        = useT();
   const language = useTasbihStore(s => s.preferences.language);
   const isAutoMode = mode === "auto";
+  const isAudioMode = mode === "audio";
   const [customInput, setCustomInput] = useState(() =>
     isCustomSpeed ? String(Math.round((autoIntervalMs ?? 5000) / 1000)) : "5"
   );
@@ -434,9 +464,34 @@ export function ObsidianCounter({
             counter={counter} target={target} mode={mode} fmt={fmt}
             onClick={handleTap} disabled={isCompleted || shouldBlurControls}
             dragX={dragX} dragY={dragY}
-            isAutoMode={isAutoMode} autoRunning={autoRunning} onAutoToggle={onAutoToggle} />
+            isAutoMode={isAutoMode} autoRunning={autoRunning} onAutoToggle={onAutoToggle}
+            isAudioMode={isAudioMode} audioRunning={audioRunning} onAudioToggle={onAudioToggle}
+            hasAudioSelection={hasAudioSelection} supportsSpeechRecognition={supportsSpeechRecognition} />
         </motion.div>
       </div>
+
+      {/* Audio feedback strip — audio mode only */}
+      {isAudioMode && (
+        <div className="flex flex-col items-center gap-1.5 mb-1 w-full max-w-[260px]">
+          {!hasAudioSelection || !supportsSpeechRecognition ? (
+            <span className="text-xs text-center px-2" style={{ color: "#70758A" }}>{audioHelpText}</span>
+          ) : (
+            <>
+              <span className="text-xs text-center px-2" style={{ color: "#70758A" }}>{t("counter.audioReciteHint")}</span>
+              <div className="w-full rounded-full overflow-hidden" style={{ height: 3, background: "rgba(192,200,216,0.2)" }}>
+                <div className="h-full rounded-full transition-[width] duration-75"
+                  style={{ width: `${Math.round((audioMatchProgress ?? 0) * 100)}%`, background: "rgba(192,200,216,0.85)" }} />
+              </div>
+              {targetDisplayText && (
+                <div className="flex items-center gap-1.5 max-w-full">
+                  <span className="text-xs shrink-0" style={{ color: "#70758A" }}>{t("counter.audioExpectedZikr")}</span>
+                  <span className="text-xs font-semibold truncate" dir="rtl" style={{ color: "#C0C8D8" }}>{targetDisplayText}</span>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
 
       {/* Speed selector — auto mode only */}
       {isAutoMode && (

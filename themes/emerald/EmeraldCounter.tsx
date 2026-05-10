@@ -211,8 +211,11 @@ function EmeraldBead({ size, isCompleted, pulseTrigger, counter, target, mode, f
           <div className="mt-0.5 flex flex-col items-center">
             <span className="text-xs font-semibold" style={{ color: "#FDE68A", textShadow: "0 0 8px rgba(245,158,11,0.7)" }}>
               {isCompleted ? t("counter.goalReached")
-                : autoRunning ? t("counter.autoBeadCounting")
-                : t("counter.autoBeadAction")}
+                : autoRunning ? (
+                  <motion.span animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}>
+                    {t("counter.autoBeadCounting")}
+                  </motion.span>
+                ) : t("counter.autoBeadAction")}
             </span>
             {autoRunning && !isCompleted && (
               <span className="text-[10px]" style={{ color: "rgba(253,230,138,0.55)", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
@@ -508,6 +511,25 @@ export function EmeraldCounter({
                     top: '50%', left: '50%',
                     border: '1.5px solid rgba(125,249,203,0.45)',
                     animation: `em-audio-ripple 2.4s ease-out ${delay}s infinite`,
+                  }} />
+              ))}
+            </>
+          )}
+          {isAutoMode && autoRunning && !isCompleted && (
+            <>
+              <style>{`
+                @keyframes em-auto-ripple {
+                  0%   { transform: translate(-50%,-50%) scale(1);   opacity: 0.30; }
+                  100% { transform: translate(-50%,-50%) scale(1.8); opacity: 0; }
+                }
+              `}</style>
+              {[0, 1, 2].map(delay => (
+                <div key={delay} className="absolute rounded-full pointer-events-none"
+                  style={{
+                    width: BEAD_SIZE, height: BEAD_SIZE,
+                    top: '50%', left: '50%',
+                    border: '1px solid rgba(245,158,11,0.35)',
+                    animation: `em-auto-ripple 3s ease-out ${delay}s infinite`,
                   }} />
               ))}
             </>

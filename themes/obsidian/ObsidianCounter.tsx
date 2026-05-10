@@ -222,8 +222,11 @@ function ObsidianBead({ size, isCompleted, pulseTrigger, counter, target, mode, 
           <div className="mt-0.5 flex flex-col items-center">
             <span className="text-xs font-semibold" style={{ color: "#C8D4F0" }}>
               {isCompleted ? t("counter.goalReached")
-                : autoRunning ? t("counter.autoBeadCounting")
-                : t("counter.autoBeadAction")}
+                : autoRunning ? (
+                  <motion.span animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}>
+                    {t("counter.autoBeadCounting")}
+                  </motion.span>
+                ) : t("counter.autoBeadAction")}
             </span>
             {autoRunning && !isCompleted && (
               <span className="text-[10px]" style={{ color: "rgba(200,212,240,0.55)" }}>
@@ -494,6 +497,25 @@ export function ObsidianCounter({
                     top: '50%', left: '50%',
                     border: '1.5px solid rgba(192,200,216,0.45)',
                     animation: `ob-audio-ripple 2.4s ease-out ${delay}s infinite`,
+                  }} />
+              ))}
+            </>
+          )}
+          {isAutoMode && autoRunning && !isCompleted && (
+            <>
+              <style>{`
+                @keyframes ob-auto-ripple {
+                  0%   { transform: translate(-50%,-50%) scale(1);   opacity: 0.30; }
+                  100% { transform: translate(-50%,-50%) scale(1.8); opacity: 0; }
+                }
+              `}</style>
+              {[0, 1, 2].map(delay => (
+                <div key={delay} className="absolute rounded-full pointer-events-none"
+                  style={{
+                    width: BEAD_SIZE, height: BEAD_SIZE,
+                    top: '50%', left: '50%',
+                    border: '1px solid rgba(192,200,216,0.30)',
+                    animation: `ob-auto-ripple 3s ease-out ${delay}s infinite`,
                   }} />
               ))}
             </>

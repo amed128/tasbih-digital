@@ -1554,13 +1554,13 @@ export default function Home() {
           <div ref={modeDropdownRef} className="relative">
             <button
               type="button"
-              onClick={() => { if (!shouldBlurActionControls) setModeDropdownOpen((v) => !v); }}
-              disabled={shouldBlurActionControls}
+              onClick={() => { if (!shouldBlurActionControls && !isCompleted) setModeDropdownOpen((v) => !v); }}
+              disabled={shouldBlurActionControls || isCompleted}
               aria-haspopup="listbox"
               aria-expanded={modeDropdownOpen}
               aria-label={t("counter.ariaChangeMode")}
               className={`flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)] ${
-                shouldBlurActionControls || focusMode ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""
+                shouldBlurActionControls || focusMode || isCompleted ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""
               }`}
             >
               {t("counter.modePrefix")}: {executionModeLabel}
@@ -1910,6 +1910,18 @@ export default function Home() {
               setAutoCounterSpeedIsCustom(true);
               setAutoCustomRawInput(String(Math.round(ms / 1000)));
             }}
+            audioRunning={audioRunning}
+            onAudioToggle={() => {
+              if (audioEnabled) { setAudioEnabled(false); return; }
+              if (!hasAudioSelection) return;
+              setAudioAccessState((c) => (c === "unsupported" ? c : "idle"));
+              setAudioEnabled(true);
+            }}
+            audioMatchProgress={audioMatchProgress}
+            hasAudioSelection={hasAudioSelection}
+            supportsSpeechRecognition={supportsSpeechRecognition}
+            targetDisplayText={targetDisplayText}
+            audioHelpText={audioHelpText}
           />
         </div>
       ) : (
@@ -2060,16 +2072,43 @@ export default function Home() {
           >
             {t("counter.quitZikrSelection")}
           </button>
-          <button
-            type="button"
-            onClick={toggleMode}
-            disabled={shouldBlurActionControls}
-            className={`rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-center text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)] ${
-              focusMode || shouldBlurActionControls ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""}`}
-            aria-label={t("counter.ariaChangeMode")}
-          >
-            {t("counter.modePrefix")}: {executionModeLabel}
-          </button>
+          <div ref={modeDropdownRef} className="relative">
+            <button
+              type="button"
+              onClick={() => { if (!shouldBlurActionControls && !isCompleted) setModeDropdownOpen((v) => !v); }}
+              disabled={shouldBlurActionControls || isCompleted}
+              aria-haspopup="listbox"
+              aria-expanded={modeDropdownOpen}
+              aria-label={t("counter.ariaChangeMode")}
+              className={`flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition hover:border-[var(--primary)] ${
+                shouldBlurActionControls || focusMode || isCompleted ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""
+              }`}
+            >
+              {t("counter.modePrefix")}: {executionModeLabel}
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                className={`transition-transform duration-200 ${modeDropdownOpen ? "rotate-180" : ""}`} aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            {modeDropdownOpen && (
+              <div role="listbox" aria-label={t("counter.ariaChangeMode")}
+                className="absolute left-0 top-full mt-2 z-50 min-w-full overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-lg">
+                {(["up", "down", "auto", "audio"] as const).map((m) => (
+                  <button key={m} role="option" aria-selected={mode === m} type="button"
+                    onClick={() => { setMode(m); setModeDropdownOpen(false); }}
+                    className={`w-full px-4 py-2 text-left text-xs font-semibold transition hover:bg-[var(--border)] ${
+                      mode === m ? "text-[var(--primary)]" : "text-[var(--foreground)]"
+                    }`}>
+                    {m === "up" ? t("counter.modeIncrement")
+                      : m === "down" ? t("counter.modeDecrement")
+                      : m === "auto" ? t("counter.modeAuto")
+                      : t("counter.modeAudio")}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <button
             type="button"
             onClick={() => setFocusMode((v) => !v)}
@@ -2127,6 +2166,18 @@ export default function Home() {
                 setAutoCounterSpeedIsCustom(true);
                 setAutoCustomRawInput(String(Math.round(ms / 1000)));
               }}
+              audioRunning={audioRunning}
+              onAudioToggle={() => {
+                if (audioEnabled) { setAudioEnabled(false); return; }
+                if (!hasAudioSelection) return;
+                setAudioAccessState((c) => (c === "unsupported" ? c : "idle"));
+                setAudioEnabled(true);
+              }}
+              audioMatchProgress={audioMatchProgress}
+              hasAudioSelection={hasAudioSelection}
+              supportsSpeechRecognition={supportsSpeechRecognition}
+              targetDisplayText={targetDisplayText}
+              audioHelpText={audioHelpText}
             />
           </div>
         ) : (

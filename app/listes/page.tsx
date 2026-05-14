@@ -174,12 +174,6 @@ const PRESET_ROUTINES: PresetRoutine[] = [
     hintKey: "lists.presetIstighfarHint",
     zikrIds: ["istighfar-1", "istighfar-2", "istighfar-4", "istighfar-3", "salawat-1"],
   },
-  {
-    id: "salawat",
-    nameKey: "lists.presetSalawatName",
-    hintKey: "lists.presetSalawatHint",
-    zikrIds: ["salawat-1", "salawat-2", "salawat-3", "salawat-4"],
-  },
 ];
 
 export default function ListesPage() {

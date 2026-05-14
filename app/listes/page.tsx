@@ -160,19 +160,25 @@ const PRESET_ROUTINES: PresetRoutine[] = [
     id: "after-prayer",
     nameKey: "lists.presetAfterPrayerName",
     hintKey: "lists.presetAfterPrayerHint",
-    zikrIds: ["tasbih-1", "hamd-1", "takbir-1", "zikr-1"],
+    zikrIds: ["tasbih-1", "hamd-1", "takbir-1", "tahlil-2"],
   },
   {
     id: "morning-evening",
     nameKey: "lists.presetMorningEveningName",
     hintKey: "lists.presetMorningEveningHint",
-    zikrIds: ["matin-soir-1", "matin-soir-2", "matin-soir-4", "istighfar-1"],
+    zikrIds: ["matin-soir-4", "matin-soir-3", "matin-soir-1", "tahlil-1"],
   },
   {
     id: "istighfar-intensive",
     nameKey: "lists.presetIstighfarName",
     hintKey: "lists.presetIstighfarHint",
-    zikrIds: ["istighfar-1", "istighfar-2", "salawat-1"],
+    zikrIds: ["istighfar-1", "istighfar-2", "istighfar-4", "istighfar-3", "salawat-1"],
+  },
+  {
+    id: "salawat",
+    nameKey: "lists.presetSalawatName",
+    hintKey: "lists.presetSalawatHint",
+    zikrIds: ["salawat-1", "salawat-2", "salawat-3", "salawat-4"],
   },
 ];
 

@@ -1952,21 +1952,6 @@ export default function Home() {
           </motion.div>
 
           <motion.div layout className="flex flex-col gap-3 pb-6">
-            <AnimatePresence>
-              {!autoAdvanceNextZikr && isListMode && isCompleted && !isListComplete && (
-                <motion.button
-                  onClick={nextZikrInList}
-                  initial={{ opacity: 0, y: -6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ duration: 0.18 }}
-                  className="w-full rounded-xl bg-[var(--success)] px-6 py-5 text-lg font-bold text-white transition hover:brightness-110 active:brightness-95"
-                >
-                  {t("counter.nextZikr")}
-                </motion.button>
-              )}
-            </AnimatePresence>
-
             {isAutoMode ? (
               renderAutoControls()
             ) : isAudioMode ? (

@@ -1570,7 +1570,38 @@ export default function Home() {
   const renderCompteur = () => (
     <div className="flex flex-col gap-6 px-5 pt-6">
       <header className="flex flex-col items-center gap-2">
-        <h1 className="text-xl font-semibold text-[var(--foreground)]">At-tasbih</h1>
+        <div className="relative flex w-full items-center justify-center">
+          <h1 className="text-xl font-semibold text-[var(--foreground)]">At-tasbih</h1>
+          <div ref={helpDropdownRef} className="absolute right-0">
+            <button
+              type="button"
+              onClick={() => setHelpDropdownOpen((v) => !v)}
+              aria-haspopup="true"
+              aria-expanded={helpDropdownOpen}
+              className="flex h-6 w-6 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--card)] text-xs font-bold text-[var(--secondary)] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
+            >
+              ?
+            </button>
+            {helpDropdownOpen && (
+              <div className="absolute right-0 top-full mt-2 z-50 min-w-[160px] overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-lg">
+                <Link
+                  href="/aide"
+                  onClick={() => setHelpDropdownOpen(false)}
+                  className="flex w-full items-center px-4 py-2.5 text-left text-xs font-semibold text-[var(--foreground)] transition hover:bg-[var(--border)]"
+                >
+                  {t("settings.helpTitle")}
+                </Link>
+                <Link
+                  href="/donate"
+                  onClick={() => setHelpDropdownOpen(false)}
+                  className="flex w-full items-center px-4 py-2.5 text-left text-xs font-semibold text-[var(--foreground)] transition hover:bg-[var(--border)]"
+                >
+                  {t("settings.supportTitle")}
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
         <p className="text-sm text-[var(--secondary)]">{ t("counter.subtitle") }</p>
         <div className="flex gap-2 items-center justify-center flex-wrap">
           <div ref={modeDropdownRef} className="relative">
@@ -1645,35 +1676,6 @@ export default function Home() {
             {focusMode ? `✕ ${t("counter.focusLabel")}` : `⊙ ${t("counter.focusLabel")}`}
           </button>
 
-          <div ref={helpDropdownRef} className="relative">
-            <button
-              type="button"
-              onClick={() => setHelpDropdownOpen((v) => !v)}
-              aria-haspopup="true"
-              aria-expanded={helpDropdownOpen}
-              className="flex h-6 w-6 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--card)] text-xs font-bold text-[var(--secondary)] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
-            >
-              ?
-            </button>
-            {helpDropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 z-50 min-w-[160px] overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-lg">
-                <Link
-                  href="/aide"
-                  onClick={() => setHelpDropdownOpen(false)}
-                  className="flex w-full items-center px-4 py-2.5 text-left text-xs font-semibold text-[var(--foreground)] transition hover:bg-[var(--border)]"
-                >
-                  {t("settings.helpTitle")}
-                </Link>
-                <Link
-                  href="/donate"
-                  onClick={() => setHelpDropdownOpen(false)}
-                  className="flex w-full items-center px-4 py-2.5 text-left text-xs font-semibold text-[var(--foreground)] transition hover:bg-[var(--border)]"
-                >
-                  {t("settings.supportTitle")}
-                </Link>
-              </div>
-            )}
-          </div>
         </div>
       </header>
 

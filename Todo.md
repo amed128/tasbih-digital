@@ -2,6 +2,18 @@
 
 ---
 
+## 🚀 ÉTAPES OBLIGATOIRES AVANT PRODUCTION
+
+> Ces 5 étapes sont des bloqueurs réels. Rien d'autre ne doit passer avant elles.
+
+- [ ] **1. S'inscrire à l'Apple Developer Program** — $99/an — [developer.apple.com/programs/enroll](https://developer.apple.com/programs/enroll) — Prérequis pour tout le reste iOS
+- [ ] **2. S'inscrire à Google Play Console** — $25 unique — [play.google.com/console](https://play.google.com/console) — Prérequis pour tout le reste Android
+- [ ] **3. Intégration RevenueCat (IAP thèmes premium)** — Installer `@capgo/capacitor-purchases`, configurer les produits dans App Store Connect + Play Console, remplacer le faux `handlePurchase`/`restorePurchases`, bloquer PWA via `isNativeApp()` — *Nécessite étapes 1 et 2*
+- [ ] **4. Codemagic CI/CD** — Connecter le repo, configurer les secrets Apple/Google, lancer un premier build TestFlight — *Nécessite étapes 1 et 2*
+- [ ] **5. SEO final** — Canonical URL, hreflang, FAQ JSON-LD, Google Search Console, Smart App Banner — *Nécessite un nom de domaine de production*
+
+---
+
 ## Thème Manuscrit Ancien (`theme/manuscrit`)
 > Branche : `theme/manuscrit` — WIP, ne pas merger sur main avant complétion
 

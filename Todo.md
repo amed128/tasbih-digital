@@ -119,7 +119,7 @@
 - [x] **SEO de base** — Metadata, Open Graph, Twitter card, `lang="en"`, descriptions marketing. Reste : sitemap, JSON-LD, OG image dédiée (voir section SEO en bas).
 - [ ] **Marketing et réseaux sociaux** — Stratégie de publicité et de présence sur les réseaux (à discuter : plateformes cibles, contenu, budget, timing par rapport au lancement).
 - [x] **Monétisation — Thèmes premium** — Thème Émeraude implémenté (vert émeraude + or luxe). UI avec grille de cartes visuelles + modal achat dans Settings → Apparence. Disponible sur PWA pour l'instant avec endpoint d'achat factice.
-  - [ ] **Avant production** — Restreindre les thèmes premium aux apps natives uniquement + connecter StoreKit (iOS) / Play Billing (Android). Supprimer l'accès PWA et l'endpoint factice.
+  - [ ] **Avant production — URGENT : Intégration RevenueCat** — Installer `@capgo/capacitor-purchases`, configurer les produits IAP dans App Store Connect + Google Play Console (un produit non-consommable par thème, ex. `theme.andalus`), remplacer le faux `handlePurchase` et `restorePurchases` par les appels RevenueCat réels, bloquer l'accès PWA aux thèmes premium via `isNativeApp()`, supprimer l'endpoint factice. Nécessite les comptes développeur Apple ($99/an) et Google Play ($25) actifs en prérequis. Paiement géré nativement par Apple/Google (Face ID, Apple Pay, Google Pay) — l'utilisateur ne quitte jamais l'app.
   - [ ] **Idées de thèmes premium concrets**
     - [x] **Obsidian** — Quasi-noir avec halo ambiant violet subtil, primaire argent/blanc
     - [x] **Midnight** — Bleu marine profond, ambiance saphir, accents blanc glacé

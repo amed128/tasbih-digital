@@ -27,6 +27,7 @@ export interface AlAndalusCounterProps {
   onNextZikr?: () => void;
   onPrevZikr?: () => void;
   isTargetLocked?: boolean;
+  onExitFocusMode?: () => void;
   /** Auto-counter props — only active when mode === "auto" */
   autoRunning?: boolean;
   onAutoToggle?: () => void;
@@ -454,6 +455,7 @@ export function AlAndalusCounter({
   onNextZikr,
   onPrevZikr,
   isTargetLocked,
+  onExitFocusMode,
   autoRunning,
   onAutoToggle,
   autoIntervalMs,
@@ -581,10 +583,17 @@ export function AlAndalusCounter({
         <div
           ref={overlayRef}
           aria-hidden
+          onClick={(e) => {
+            const cx = beadCenterRef.current.x + dragX.get();
+            const cy = beadCenterRef.current.y + dragY.get();
+            const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+            if (dist > 96) onExitFocusMode?.();
+          }}
           style={{
             position: "fixed", inset: 0, zIndex: 48,
             background: "rgba(140, 120, 80, 0.90)",
-            pointerEvents: "none",
+            pointerEvents: "auto",
+            cursor: "pointer",
           }}
         />
       )}

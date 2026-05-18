@@ -32,6 +32,7 @@ export interface MidnightCounterProps {
   onNextZikr?: () => void;
   onPrevZikr?: () => void;
   isTargetLocked?: boolean;
+  onExitFocusMode?: () => void;
   /** Auto-counter props — only active when mode === "auto" */
   autoRunning?: boolean;
   onAutoToggle?: () => void;
@@ -336,7 +337,7 @@ const BEAD_SIZE   = RING_SIZE - RING_STROKE * 2 - 16;
 export function MidnightCounter({
   counter, target, mode, isCompleted, pulseTrigger, currentZikr,
   onIncrement, onUndo, onReset, focusMode, shouldBlurControls, hasProgress,
-  onTargetTap, onNextZikr, onPrevZikr, isTargetLocked,
+  onTargetTap, onNextZikr, onPrevZikr, isTargetLocked, onExitFocusMode,
   autoRunning, onAutoToggle, autoIntervalMs, onAutoSpeedChange,
   isCustomSpeed, onAutoCustomSpeed,
   audioRunning, onAudioToggle, audioMatchProgress, hasAudioSelection,
@@ -446,10 +447,17 @@ export function MidnightCounter({
         <div
           ref={overlayRef}
           aria-hidden
+          onClick={(e) => {
+            const cx = beadCenterRef.current.x + dragX.get();
+            const cy = beadCenterRef.current.y + dragY.get();
+            const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+            if (dist > 96) onExitFocusMode?.();
+          }}
           style={{
             position: "fixed", inset: 0, zIndex: 48,
             background: "rgba(0, 0, 0, 0.90)",
-            pointerEvents: "none",
+            pointerEvents: "auto",
+            cursor: "pointer",
           }}
         />
       )}

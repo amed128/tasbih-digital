@@ -1948,6 +1948,7 @@ export default function Home() {
             hasProgress={hasProgressToReset}
             onTargetTap={!focusMode && !isTargetLocked && isTargetEditable ? openTargetPopup : undefined}
             isTargetLocked={isTargetLocked}
+            onExitFocusMode={() => setFocusMode(false)}
             autoRunning={autoRunning}
             onAutoToggle={() => setAutoEnabled(v => !v)}
             autoIntervalMs={autoIntervalMs}
@@ -2189,6 +2190,7 @@ export default function Home() {
               hasProgress={hasProgressToReset}
               onTargetTap={!isTargetLocked && isTargetEditable ? openTargetPopup : undefined}
               isTargetLocked={isTargetLocked}
+            onExitFocusMode={() => setFocusMode(false)}
               onNextZikr={!autoAdvanceNextZikr && !isListComplete ? nextZikrInList : undefined}
               onPrevZikr={isListMode && activeIndex > 0 && counter === initialCounter && !isStarted && mode !== "auto" ? previousZikrInList : undefined}
               autoRunning={autoRunning}

@@ -10,6 +10,7 @@ import { CircleProgress } from "../components/CircleProgress";
 import { BottomNav } from "../components/BottomNav";
 import { Modal } from "../components/Modal";
 import { RotateCcw } from "lucide-react";
+import Link from "next/link";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import { isOverlayTheme, ThemeCounterOverlay } from "@/themes/ThemeEngine";
 
@@ -589,6 +590,8 @@ export default function Home() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [modeDropdownOpen, setModeDropdownOpen] = useState(false);
   const modeDropdownRef = useRef<HTMLDivElement | null>(null);
+  const helpDropdownRef = useRef<HTMLDivElement | null>(null);
+  const [helpDropdownOpen, setHelpDropdownOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const [libraryExpanded, setLibraryExpanded] = useState(true);
   const [customListsExpanded, setCustomListsExpanded] = useState(true);
@@ -1171,6 +1174,26 @@ export default function Home() {
   }, [modeDropdownOpen]);
 
   useEffect(() => {
+    const handler = (event: MouseEvent) => {
+      if (!helpDropdownOpen) return;
+      if (!helpDropdownRef.current) return;
+      if (event.target instanceof Node && !helpDropdownRef.current.contains(event.target)) {
+        setHelpDropdownOpen(false);
+      }
+    };
+    const keyHandler = (event: KeyboardEvent) => {
+      if (!helpDropdownOpen) return;
+      if (event.key === "Escape") setHelpDropdownOpen(false);
+    };
+    window.addEventListener("mousedown", handler);
+    window.addEventListener("keydown", keyHandler);
+    return () => {
+      window.removeEventListener("mousedown", handler);
+      window.removeEventListener("keydown", keyHandler);
+    };
+  }, [helpDropdownOpen]);
+
+  useEffect(() => {
     if (!isListMode) return;
     scheduleAlignCurrentListChip("smooth");
   }, [activeIndex, isListMode]);
@@ -1621,6 +1644,36 @@ export default function Home() {
           >
             {focusMode ? `✕ ${t("counter.focusLabel")}` : `⊙ ${t("counter.focusLabel")}`}
           </button>
+
+          <div ref={helpDropdownRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setHelpDropdownOpen((v) => !v)}
+              aria-haspopup="true"
+              aria-expanded={helpDropdownOpen}
+              className="flex h-6 w-6 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--card)] text-xs font-bold text-[var(--secondary)] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
+            >
+              ?
+            </button>
+            {helpDropdownOpen && (
+              <div className="absolute right-0 top-full mt-2 z-50 min-w-[160px] overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-lg">
+                <Link
+                  href="/aide"
+                  onClick={() => setHelpDropdownOpen(false)}
+                  className="flex w-full items-center px-4 py-2.5 text-left text-xs font-semibold text-[var(--foreground)] transition hover:bg-[var(--border)]"
+                >
+                  {t("settings.helpTitle")}
+                </Link>
+                <Link
+                  href="/donate"
+                  onClick={() => setHelpDropdownOpen(false)}
+                  className="flex w-full items-center px-4 py-2.5 text-left text-xs font-semibold text-[var(--foreground)] transition hover:bg-[var(--border)]"
+                >
+                  {t("settings.supportTitle")}
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 

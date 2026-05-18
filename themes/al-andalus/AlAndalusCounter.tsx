@@ -26,6 +26,7 @@ export interface AlAndalusCounterProps {
   onTargetTap?: () => void;
   onNextZikr?: () => void;
   onPrevZikr?: () => void;
+  isTargetLocked?: boolean;
   /** Auto-counter props — only active when mode === "auto" */
   autoRunning?: boolean;
   onAutoToggle?: () => void;
@@ -452,6 +453,7 @@ export function AlAndalusCounter({
   onTargetTap,
   onNextZikr,
   onPrevZikr,
+  isTargetLocked,
   autoRunning,
   onAutoToggle,
   autoIntervalMs,
@@ -870,7 +872,7 @@ export function AlAndalusCounter({
           </button>
         ) : (
           <span
-            className="rounded border px-2 py-0.5 font-bold tabular-nums"
+            className={`rounded border px-2 py-0.5 font-bold tabular-nums${isTargetLocked ? " blur-[0.5px] opacity-50 cursor-not-allowed" : ""}`}
             style={{
               borderColor: "rgba(180,145,72,0.4)",
               color: "#5C3D11",

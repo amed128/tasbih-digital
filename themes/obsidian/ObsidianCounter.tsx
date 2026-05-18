@@ -29,6 +29,7 @@ export interface ObsidianCounterProps {
   onTargetTap?: () => void;
   onNextZikr?: () => void;
   onPrevZikr?: () => void;
+  isTargetLocked?: boolean;
   /** Auto-counter props — only active when mode === "auto" */
   autoRunning?: boolean;
   onAutoToggle?: () => void;
@@ -309,7 +310,7 @@ const BEAD_SIZE   = RING_SIZE - RING_STROKE * 2 - 16;
 export function ObsidianCounter({
   counter, target, mode, isCompleted, pulseTrigger, currentZikr,
   onIncrement, onUndo, onReset, focusMode, shouldBlurControls, hasProgress,
-  onTargetTap, onNextZikr, onPrevZikr,
+  onTargetTap, onNextZikr, onPrevZikr, isTargetLocked,
   autoRunning, onAutoToggle, autoIntervalMs, onAutoSpeedChange,
   isCustomSpeed, onAutoCustomSpeed,
   audioRunning, onAudioToggle, audioMatchProgress, hasAudioSelection,
@@ -648,7 +649,7 @@ export function ObsidianCounter({
             {fmt(target)}
           </button>
         ) : (
-          <span className="rounded border px-2 py-0.5 font-bold tabular-nums"
+          <span className={`rounded border px-2 py-0.5 font-bold tabular-nums${isTargetLocked ? " blur-[0.5px] opacity-50 cursor-not-allowed" : ""}`}
             style={{ borderColor: "rgba(192,200,216,0.25)", color: "#C0C8D8", background: "rgba(23,23,29,0.8)" }}>
             {fmt(target)}
           </span>

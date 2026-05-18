@@ -1892,6 +1892,7 @@ export default function Home() {
             shouldBlurControls={shouldBlurActionControls}
             hasProgress={hasProgressToReset}
             onTargetTap={!focusMode && !isTargetLocked && isTargetEditable ? openTargetPopup : undefined}
+            isTargetLocked={isTargetLocked}
             autoRunning={autoRunning}
             onAutoToggle={() => setAutoEnabled(v => !v)}
             autoIntervalMs={autoIntervalMs}
@@ -2147,6 +2148,7 @@ export default function Home() {
               shouldBlurControls={shouldBlurActionControls}
               hasProgress={hasProgressToReset}
               onTargetTap={!isTargetLocked && isTargetEditable ? openTargetPopup : undefined}
+              isTargetLocked={isTargetLocked}
               onNextZikr={!autoAdvanceNextZikr && !isListComplete ? nextZikrInList : undefined}
               onPrevZikr={isListMode && activeIndex > 0 && counter === initialCounter && !isStarted && mode !== "auto" ? previousZikrInList : undefined}
               autoRunning={autoRunning}

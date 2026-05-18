@@ -29,6 +29,7 @@ export interface EmeraldCounterProps {
   onTargetTap?: () => void;
   onNextZikr?: () => void;
   onPrevZikr?: () => void;
+  isTargetLocked?: boolean;
   /** Auto-counter props — only active when mode === "auto" */
   autoRunning?: boolean;
   onAutoToggle?: () => void;
@@ -316,7 +317,7 @@ const BEAD_SIZE   = RING_SIZE - RING_STROKE * 2 - 16;
 export function EmeraldCounter({
   counter, target, mode, isCompleted, pulseTrigger, currentZikr,
   onIncrement, onUndo, onReset, focusMode, shouldBlurControls, hasProgress,
-  onTargetTap, onNextZikr, onPrevZikr,
+  onTargetTap, onNextZikr, onPrevZikr, isTargetLocked,
   autoRunning, onAutoToggle, autoIntervalMs, onAutoSpeedChange,
   isCustomSpeed, onAutoCustomSpeed,
   audioRunning, onAudioToggle, audioMatchProgress, hasAudioSelection,
@@ -662,7 +663,7 @@ export function EmeraldCounter({
             {fmt(target)}
           </button>
         ) : (
-          <span className="rounded border px-2 py-0.5 font-bold tabular-nums"
+          <span className={`rounded border px-2 py-0.5 font-bold tabular-nums${isTargetLocked ? " blur-[0.5px] opacity-50 cursor-not-allowed" : ""}`}
             style={{ borderColor: "rgba(245,158,11,0.35)", color: "#FDE68A", background: "rgba(10,61,43,0.7)" }}>
             {fmt(target)}
           </span>

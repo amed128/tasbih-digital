@@ -2148,6 +2148,7 @@ export default function Home() {
               hasProgress={hasProgressToReset}
               onTargetTap={!isTargetLocked && isTargetEditable ? openTargetPopup : undefined}
               onNextZikr={!autoAdvanceNextZikr && !isListComplete ? nextZikrInList : undefined}
+              onPrevZikr={isListMode && activeIndex > 0 && counter === initialCounter && !isStarted && mode !== "auto" ? previousZikrInList : undefined}
               autoRunning={autoRunning}
               onAutoToggle={() => setAutoEnabled(v => !v)}
               autoIntervalMs={autoIntervalMs}

@@ -25,6 +25,7 @@ export interface AlAndalusCounterProps {
   hasProgress: boolean;
   onTargetTap?: () => void;
   onNextZikr?: () => void;
+  onPrevZikr?: () => void;
   /** Auto-counter props — only active when mode === "auto" */
   autoRunning?: boolean;
   onAutoToggle?: () => void;
@@ -450,6 +451,7 @@ export function AlAndalusCounter({
   hasProgress,
   onTargetTap,
   onNextZikr,
+  onPrevZikr,
   autoRunning,
   onAutoToggle,
   autoIntervalMs,
@@ -465,7 +467,8 @@ export function AlAndalusCounter({
   audioHelpText,
 }: AlAndalusCounterProps) {
   const t = useT();
-  const language = useTasbihStore((s) => s.preferences.language);
+  const language           = useTasbihStore((s) => s.preferences.language);
+  const zikrDisplayFormat  = useTasbihStore((s) => s.preferences.zikrDisplayFormat);
   const isAutoMode = mode === "auto";
   const isAudioMode = mode === "audio";
   const [customInput, setCustomInput] = useState(() =>
@@ -565,8 +568,8 @@ export function AlAndalusCounter({
     }
   }, [focusMode, dragX, dragY]);
 
-  const arabic = currentZikr?.arabic ?? "";
-  const translit = currentZikr ? getTransliteration(currentZikr, language) : "";
+  const arabic   = zikrDisplayFormat === "translit" ? "" : (currentZikr?.arabic ?? "");
+  const translit = zikrDisplayFormat === "arabic"   ? "" : (currentZikr ? getTransliteration(currentZikr, language) : "");
 
   const controlsBlurred = focusMode || shouldBlurControls;
 
@@ -900,26 +903,37 @@ export function AlAndalusCounter({
         )}
       </AnimatePresence>
 
-      {/* Undo + Reset controls */}
+      {/* Undo / Prev-zikr + Reset controls */}
       <div
         className={`flex w-full max-w-sm items-center justify-between gap-4 px-4 ${
           controlsBlurred ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""
         }`}
       >
-        <button
-          onClick={onUndo}
-          aria-label={t("counter.ariaUndo")}
-          className="flex-1 rounded-xl border px-4 py-4 text-sm font-semibold transition hover:brightness-95"
-          style={{
-            borderColor: "rgba(180,145,72,0.35)",
-            background: "rgba(255,252,245,0.85)",
-            color: !hasProgress ? "rgba(139,111,78,0.35)" : "#5C3D11",
-            opacity: !hasProgress ? 0.4 : 1,
-          }}
-          disabled={!hasProgress || controlsBlurred}
-        >
-          <RotateCcw size={16} className="mx-auto" style={{ color: "inherit" }} />
-        </button>
+        {onPrevZikr ? (
+          <button
+            onClick={onPrevZikr}
+            aria-label={t("counter.ariaPreviousZikr")}
+            className="flex-1 rounded-xl border px-4 py-4 text-sm font-semibold transition hover:brightness-95"
+            style={{ borderColor: "rgba(180,145,72,0.35)", background: "rgba(255,252,245,0.85)", color: "#5C3D11" }}
+          >
+            {t("counter.previousZikr")}
+          </button>
+        ) : (
+          <button
+            onClick={onUndo}
+            aria-label={t("counter.ariaUndo")}
+            className="flex-1 rounded-xl border px-4 py-4 text-sm font-semibold transition hover:brightness-95"
+            style={{
+              borderColor: "rgba(180,145,72,0.35)",
+              background: "rgba(255,252,245,0.85)",
+              color: !hasProgress ? "rgba(139,111,78,0.35)" : "#5C3D11",
+              opacity: !hasProgress ? 0.4 : 1,
+            }}
+            disabled={!hasProgress || controlsBlurred}
+          >
+            <RotateCcw size={16} className="mx-auto" style={{ color: "inherit" }} />
+          </button>
+        )}
         <button
           onClick={onReset}
           disabled={controlsBlurred}

@@ -28,6 +28,7 @@ export interface ObsidianCounterProps {
   hasProgress: boolean;
   onTargetTap?: () => void;
   onNextZikr?: () => void;
+  onPrevZikr?: () => void;
   /** Auto-counter props — only active when mode === "auto" */
   autoRunning?: boolean;
   onAutoToggle?: () => void;
@@ -308,14 +309,15 @@ const BEAD_SIZE   = RING_SIZE - RING_STROKE * 2 - 16;
 export function ObsidianCounter({
   counter, target, mode, isCompleted, pulseTrigger, currentZikr,
   onIncrement, onUndo, onReset, focusMode, shouldBlurControls, hasProgress,
-  onTargetTap, onNextZikr,
+  onTargetTap, onNextZikr, onPrevZikr,
   autoRunning, onAutoToggle, autoIntervalMs, onAutoSpeedChange,
   isCustomSpeed, onAutoCustomSpeed,
   audioRunning, onAudioToggle, audioMatchProgress, hasAudioSelection,
   supportsSpeechRecognition, targetDisplayText, audioHelpText,
 }: ObsidianCounterProps) {
   const t        = useT();
-  const language = useTasbihStore(s => s.preferences.language);
+  const language          = useTasbihStore(s => s.preferences.language);
+  const zikrDisplayFormat = useTasbihStore(s => s.preferences.zikrDisplayFormat);
   const isAutoMode = mode === "auto";
   const isAudioMode = mode === "audio";
   const [customInput, setCustomInput] = useState(() =>
@@ -410,8 +412,8 @@ export function ObsidianCounter({
     }
   }, [focusMode, dragX, dragY]);
 
-  const arabic   = currentZikr?.arabic ?? "";
-  const translit = currentZikr ? getTransliteration(currentZikr, language) : "";
+  const arabic   = zikrDisplayFormat === "translit" ? "" : (currentZikr?.arabic ?? "");
+  const translit = zikrDisplayFormat === "arabic"   ? "" : (currentZikr ? getTransliteration(currentZikr, language) : "");
   const blurred  = focusMode || shouldBlurControls;
 
   return (
@@ -667,18 +669,26 @@ export function ObsidianCounter({
         )}
       </AnimatePresence>
 
-      {/* Undo + Reset */}
+      {/* Undo / Prev-zikr + Reset */}
       <div className={`flex w-full max-w-sm items-center justify-between gap-4 px-4 ${blurred ? "blur-[1px] opacity-50 pointer-events-none select-none" : ""}`}>
-        <button onClick={onUndo} aria-label={t("counter.ariaUndo")}
-          disabled={!hasProgress || blurred}
-          className="flex-1 rounded-xl border px-4 py-4 text-sm font-semibold transition hover:brightness-125"
-          style={{
-            borderColor: "rgba(36,36,48,0.9)", background: "rgba(23,23,29,0.75)",
-            color: !hasProgress ? "rgba(112,117,138,0.3)" : "#70758A",
-            opacity: !hasProgress ? 0.4 : 1,
-          }}>
-          <RotateCcw size={16} className="mx-auto" style={{ color: "inherit" }} />
-        </button>
+        {onPrevZikr ? (
+          <button onClick={onPrevZikr} aria-label={t("counter.ariaPreviousZikr")}
+            className="flex-1 rounded-xl border px-4 py-4 text-sm font-semibold transition hover:brightness-125"
+            style={{ borderColor: "rgba(36,36,48,0.9)", background: "rgba(23,23,29,0.75)", color: "#70758A" }}>
+            {t("counter.previousZikr")}
+          </button>
+        ) : (
+          <button onClick={onUndo} aria-label={t("counter.ariaUndo")}
+            disabled={!hasProgress || blurred}
+            className="flex-1 rounded-xl border px-4 py-4 text-sm font-semibold transition hover:brightness-125"
+            style={{
+              borderColor: "rgba(36,36,48,0.9)", background: "rgba(23,23,29,0.75)",
+              color: !hasProgress ? "rgba(112,117,138,0.3)" : "#70758A",
+              opacity: !hasProgress ? 0.4 : 1,
+            }}>
+            <RotateCcw size={16} className="mx-auto" style={{ color: "inherit" }} />
+          </button>
+        )}
         <button onClick={onReset} disabled={blurred}
           className="flex-1 rounded-xl border px-4 py-4 text-sm font-semibold transition hover:brightness-125"
           style={{

@@ -162,6 +162,11 @@
 
 ## Backlog - New Features
 
+- [ ] **Focus mode — exit on tap outside bead ball** — In premium themes, tapping outside the bead ball area should exit focus mode
+- [ ] **Bigger font size option** — Add a larger text/police size option (see Enhanced Accessibility below)
+- [ ] **Help/Donate button in simple mode** — Add a help and donate button on the main page when in simple (non-list) mode
+- [ ] **Blur mode button on premium themes when counting starts** — Blur/dim the mode button on premium themes once counting begins
+- [ ] **Next zikr button before tap button in free themes (selection mode)** — On free themes, reorder the controls in selection mode so the "next zikr" button appears before the tap button
 - [ ] **Guided Zikr Programs & Sequences:** Create pre-packaged sequences of zikrs. For example, a "Morning Routine" or a "Post-Prayer Sequence" that guides the user through a series of zikrs without them having to manually select each one. This reduces friction and mental overhead, providing structure for both new and experienced users.
 - [ ] **Personal Goals & Gentle Reminders:** Allow users to set personal, private goals (e.g., "Complete 1,000 counts of Tasbih Fatima this week"). Implement opt-in, non-intrusive notifications to let users schedule gentle reminders for specific times they want to practice. This fosters consistency and mindfulness in a way that respects the user's autonomy.
 - [ ] **Advanced Statistics & Personal Insights:** Enhance the stats page to show a calendar heatmap of activity, trends over time, and breakdowns of which zikrs are practiced most often. This allows for personal reflection on one's practice and can be a powerful motivator.

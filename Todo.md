@@ -167,7 +167,7 @@
 - [x] PayPal, Stripe, Lemon Squeezy abandonnés — Ko-fi couvre les deux (PayPal + carte)
 
 ### À faire plus tard
-- [ ] **Reconnaissance des donateurs** — Stocker `{ date, amount }` dans `localStorage` après un don Ko-fi (via webhook Ko-fi ou redirect `?success=true`), afficher un message de remerciement dans About
+- [ ] **Reconnaissance des donateurs** — Badge vert dans About déjà implémenté (lit `localStorage`). Il manque le déclencheur : Ko-fi redirect URL (`?success=true`) est une feature Ko-fi Gold (payante). Alternative : bouton "J'ai donné" manuel sur la page donate. À décider plus tard.
 - [ ] **Migrer vers Stripe** si les dons dépassent ~$50/mois (Ko-fi prend 0% sur le tier gratuit)
 
 ---

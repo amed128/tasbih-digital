@@ -511,6 +511,8 @@ export const translations = {
       policyContactBody:
         "Pour toute question, utilisez le dépôt GitHub du projet.",
       supporterThankYou: "Merci de soutenir le développement de At-tasbih. Qu'Allah vous récompense.",
+      donorBadgeTitle: "Soutien du projet",
+      donorSince: "Don effectué le",
       bugReportTitle: "Signaler un bug",
       bugReportHint: "Ouvrir une issue GitHub",
       bugForm: {
@@ -1076,6 +1078,8 @@ export const translations = {
       policyContactBody:
         "For any question, please use the project's GitHub repository.",
       supporterThankYou: "Thank you for supporting At-tasbih. May Allah reward you.",
+      donorBadgeTitle: "Project supporter",
+      donorSince: "Donated on",
       bugReportTitle: "Report a bug",
       bugReportHint: "Open a GitHub issue",
       bugForm: {
@@ -1620,6 +1624,8 @@ export const translations = {
         "policyContactTitle": "5. Kontakt",
         "policyContactBody": "Nutzen Sie das GitHub-Repository.",
         "supporterThankYou": "Vielen Dank für Ihre Unterstützung.",
+        "donorBadgeTitle": "Projektunterstützer",
+        "donorSince": "Gespendet am",
         "bugReportTitle": "Fehler melden",
         "bugReportHint": "Ein GitHub-Issue öffnen",
         "bugForm": {
@@ -2164,6 +2170,8 @@ export const translations = {
           "policyContactTitle": "5. Contacto",
           "policyContactBody": "Utiliza GitHub.",
           "supporterThankYou": "Gracias por apoyar.",
+          "donorBadgeTitle": "Apoyo al proyecto",
+          "donorSince": "Donado el",
           "bugReportTitle": "Reportar error",
           "bugReportHint": "Abre un issue en GitHub",
           "bugForm": {
@@ -2708,6 +2716,8 @@ export const translations = {
           "policyContactTitle": "5. Contato",
           "policyContactBody": "Via GitHub.",
           "supporterThankYou": "Obrigado pelo apoio.",
+          "donorBadgeTitle": "Apoio ao projeto",
+          "donorSince": "Doado em",
           "bugReportTitle": "Reportar erro",
           "bugReportHint": "Abrir um issue no GitHub",
           "bugForm": {
@@ -3252,6 +3262,8 @@ export const translations = {
     policyContactTitle: "5. संपर्क",
     policyContactBody: "किसी भी प्रश्न के लिए, कृपया प्रोजेक्ट के GitHub रिपॉजिटरी का उपयोग करें।",
     supporterThankYou: "At-tasbih का समर्थन करने के लिए धन्यवाद। अल्लाह आपको इसका बदला दे।",
+    donorBadgeTitle: "परियोजना समर्थक",
+    donorSince: "दान किया",
     bugReportTitle: "एक बग रिपोर्ट करें",
     bugReportHint: "एक GitHub समस्या खोलें",
     bugForm: {
@@ -3796,6 +3808,8 @@ export const translations = {
       policyContactTitle: "5. الاتصال",
       policyContactBody: "لأي سؤال، يرجى استخدام مستودع GitHub الخاص بالمشروع.",
       supporterThankYou: "شكراً لدعمك At-tasbih. جزاك الله خيراً.",
+      donorBadgeTitle: "داعم المشروع",
+      donorSince: "تبرع في",
       bugReportTitle: "الإبلاغ عن خطأ",
       bugReportHint: "فتح مشكلة على GitHub",
       bugForm: {
@@ -4340,6 +4354,8 @@ export const translations = {
       policyContactTitle: "5. İletişim",
       policyContactBody: "Herhangi bir soru için lütfen projenin GitHub deposunu kullanın.",
       supporterThankYou: "At-tasbih'i desteklediğiniz için teşekkürler. Allah sizi mükafatlandırsın.",
+      donorBadgeTitle: "Proje destekçisi",
+      donorSince: "Bağış tarihi",
       bugReportTitle: "Hata bildir",
       bugReportHint: "GitHub sorunu aç",
       bugForm: {
@@ -4884,6 +4900,8 @@ export const translations = {
       policyContactTitle: "٥. رابطہ",
       policyContactBody: "کسی بھی سوال کے لیے براہ کرم پروجیکٹ کا GitHub ریپوزٹری استعمال کریں۔",
       supporterThankYou: "At-tasbih کو سپورٹ کرنے کا شکریہ۔ اللہ آپ کو اجر دے۔",
+      donorBadgeTitle: "منصوبے کا حامی",
+      donorSince: "عطیہ کیا",
       bugReportTitle: "بگ رپورٹ کریں",
       bugReportHint: "GitHub مسئلہ کھولیں",
       bugForm: {
@@ -5428,6 +5446,8 @@ export const translations = {
       policyContactTitle: "৫. যোগাযোগ",
       policyContactBody: "যেকোনো প্রশ্নের জন্য দয়া করে প্রকল্পের GitHub রিপোজিটরি ব্যবহার করুন।",
       supporterThankYou: "At-tasbih সমর্থন করার জন্য ধন্যবাদ। আল্লাহ আপনাকে পুরস্কৃত করুন।",
+      donorBadgeTitle: "প্রকল্প সমর্থক",
+      donorSince: "দান করা হয়েছে",
       bugReportTitle: "বাগ রিপোর্ট করুন",
       bugReportHint: "GitHub ইস্যু খুলুন",
       bugForm: {
@@ -5970,6 +5990,8 @@ export const translations = {
       policyContactTitle: "5. Kontak",
       policyContactBody: "Untuk pertanyaan apa pun, gunakan repositori GitHub proyek.",
       supporterThankYou: "Terima kasih telah mendukung At-tasbih. Semoga Allah membalas Anda.",
+      donorBadgeTitle: "Pendukung proyek",
+      donorSince: "Donasi pada",
       bugReportTitle: "Laporkan bug",
       bugReportHint: "Buka isu GitHub",
       bugForm: {
@@ -6512,6 +6534,8 @@ export const translations = {
       policyContactTitle: "5. Hubungi",
       policyContactBody: "Untuk sebarang pertanyaan, gunakan repositori GitHub projek.",
       supporterThankYou: "Terima kasih kerana menyokong At-tasbih. Semoga Allah membalas anda.",
+      donorBadgeTitle: "Penyokong projek",
+      donorSince: "Didermakan pada",
       bugReportTitle: "Laporkan bug",
       bugReportHint: "Buka isu GitHub",
       bugForm: {
@@ -7054,6 +7078,8 @@ export const translations = {
       policyContactTitle: "5. Контакты",
       policyContactBody: "По любым вопросам используйте репозиторий GitHub проекта.",
       supporterThankYou: "Спасибо за поддержку At-tasbih. Да вознаградит вас Аллах.",
+      donorBadgeTitle: "Поддержка проекта",
+      donorSince: "Пожертвование от",
       bugReportTitle: "Сообщить об ошибке",
       bugReportHint: "Открыть issue на GitHub",
       bugForm: {
@@ -7598,6 +7624,8 @@ export const translations = {
       policyContactTitle: "۵. تماس",
       policyContactBody: "برای هر سؤالی، لطفاً از مخزن GitHub پروژه استفاده کنید.",
       supporterThankYou: "از حمایت شما از At-tasbih ممنونیم. الله شما را پاداش دهد.",
+      donorBadgeTitle: "حامی پروژه",
+      donorSince: "اهدا شده در",
       bugReportTitle: "گزارش باگ",
       bugReportHint: "باز کردن یک issue در GitHub",
       bugForm: {

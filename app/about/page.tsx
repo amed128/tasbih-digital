@@ -8,6 +8,17 @@ import { useT } from "@/hooks/useT";
 import { useFeatureAvailability } from "@/hooks/useFeatureAvailability";
 import type { FeatureStatus } from "@/lib/featureAvailability";
 
+function getDonorDate(): string | null {
+  try {
+    const raw = localStorage.getItem("attasbih_donor");
+    if (!raw) return null;
+    const { date } = JSON.parse(raw) as { date: string };
+    return date ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export default function AboutPage() {
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -17,6 +28,7 @@ export default function AboutPage() {
 
   const t = useT();
   const [showDeviceSupport, setShowDeviceSupport] = useState(false);
+  const donorDate = mounted ? getDonorDate() : null;
   const vibrationAvail = useFeatureAvailability("vibration");
   const wakeLockAvail = useFeatureAvailability("wakeLock");
   const notificationsAvail = useFeatureAvailability("notifications");
@@ -113,6 +125,17 @@ export default function AboutPage() {
             </div>
           )}
         </section>
+
+        {/* Donor recognition badge */}
+        {donorDate && (
+          <section className="rounded-2xl border border-[var(--success)] bg-[var(--card)] p-4 flex flex-col gap-1">
+            <div className="text-sm font-semibold text-[var(--success)]">{t("about.donorBadgeTitle")}</div>
+            <div className="text-xs text-[var(--secondary)]">{t("about.supporterThankYou")}</div>
+            <div className="text-xs text-[var(--secondary)] mt-0.5">
+              {t("about.donorSince")} {new Date(donorDate).toLocaleDateString()}
+            </div>
+          </section>
+        )}
 
         {/* Support */}
         <Link

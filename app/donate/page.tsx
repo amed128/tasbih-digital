@@ -13,6 +13,16 @@ function SuccessBanner() {
   const t = useT();
   const searchParams = useSearchParams();
   const success = searchParams.get("success") === "true";
+
+  if (success) {
+    try {
+      const existing = localStorage.getItem("attasbih_donor");
+      if (!existing) {
+        localStorage.setItem("attasbih_donor", JSON.stringify({ date: new Date().toISOString() }));
+      }
+    } catch {}
+  }
+
   if (!success) return null;
   return (
     <section className="rounded-2xl border border-[var(--success)] bg-[var(--card)] p-4 flex flex-col gap-1">

@@ -190,7 +190,7 @@ function EmeraldBead({ size, isCompleted, pulseTrigger, counter, target, mode, f
         </motion.span>
         <span className="text-xs font-semibold mt-0.5"
           style={{ color: "rgba(167,243,208,0.75)", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
-          {mode === "down" ? t("circle.remaining") : `/ ${fmt(target)}`}
+          {mode === "down" ? t("circle.remaining") : `${t("circle.outOf")} ${fmt(target)}`}
         </span>
         {isAudioMode ? (
           <div className="flex flex-col items-center">

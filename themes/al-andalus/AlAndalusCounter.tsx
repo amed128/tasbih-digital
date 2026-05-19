@@ -303,7 +303,7 @@ export function LapisBead({
             textShadow: "0 1px 4px rgba(0,0,0,0.6)",
           }}
         >
-          {countsDown ? t("circle.remaining") : `/ ${fmt(target)}`}
+          {countsDown ? t("circle.remaining") : `${t("circle.outOf")} ${fmt(target)}`}
         </span>
         {isAudioMode ? (
           <div className="mt-1 flex flex-col items-center">

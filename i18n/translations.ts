@@ -466,7 +466,7 @@ export const translations = {
     },
     circle: {
       remaining: "RESTANT",
-      objectiveReached: "Objectif atteint",
+      outOf: "sur",
       ariaUp: "{{value}} sur {{target}}{{completed}}",
       ariaDown: "{{value}} restant{{completed}}",
       ariaCompleted: ", objectif atteint",
@@ -1030,6 +1030,7 @@ export const translations = {
     },
     circle: {
       remaining: "LEFT",
+      outOf: "of",
       objectiveReached: "Goal reached",
       ariaUp: "{{value}} of {{target}}{{completed}}",
       ariaDown: "{{value}} remaining{{completed}}",
@@ -1582,6 +1583,7 @@ export const translations = {
     },
     "circle": {
         "remaining": "VERBLEIBEND",
+        "outOf": "von",
         "objectiveReached": "Ziel erreicht",
         "ariaUp": "{{value}} von {{target}}{{completed}}",
         "ariaDown": "{{value}} verbleibend{{completed}}",
@@ -2125,6 +2127,7 @@ export const translations = {
       },
       "circle": {
           "remaining": "RESTANTES",
+          "outOf": "de",
           "objectiveReached": "Objetivo alcanzado",
           "ariaUp": "{{value}} de {{target}}{{completed}}",
           "ariaDown": "{{value}} restantes{{completed}}",
@@ -2668,6 +2671,7 @@ export const translations = {
       },
       "circle": {
           "remaining": "RESTANTES",
+          "outOf": "de",
           "objectiveReached": "Meta alcançada",
           "ariaUp": "{{value}} de {{target}}{{completed}}",
           "ariaDown": "{{value}} restantes{{completed}}",
@@ -3211,6 +3215,7 @@ export const translations = {
   },
   circle: {
     remaining: "बाकी",
+    outOf: "में से",
     objectiveReached: "लक्ष्य प्राप्त",
     ariaUp: "{{target}} में से {{value}}{{completed}}",
     ariaDown: "{{value}} शेष{{completed}}",
@@ -3754,6 +3759,7 @@ export const translations = {
     },
     circle: {
       remaining: "متبقي",
+      outOf: "من",
       objectiveReached: "تم بلوغ الهدف",
       ariaUp: "{{value}} من {{target}}{{completed}}",
       ariaDown: "{{value}} متبقٍ{{completed}}",
@@ -4297,6 +4303,7 @@ export const translations = {
     },
     circle: {
       remaining: "KALDI",
+      outOf: "/",
       objectiveReached: "Hedefe ulaşıldı",
       ariaUp: "{{value}} / {{target}}{{completed}}",
       ariaDown: "{{value}} kaldı{{completed}}",
@@ -4840,6 +4847,7 @@ export const translations = {
     },
     circle: {
       remaining: "باقی",
+      outOf: "سے",
       objectiveReached: "ہدف پہنچ گیا",
       ariaUp: "{{value}} / {{target}}{{completed}}",
       ariaDown: "{{value}} باقی{{completed}}",
@@ -5383,6 +5391,7 @@ export const translations = {
     },
     circle: {
       remaining: "বাকি",
+      outOf: "/",
       objectiveReached: "লক্ষ্য পূরণ হয়েছে",
       ariaUp: "{{value}} / {{target}}{{completed}}",
       ariaDown: "{{value}} বাকি{{completed}}",
@@ -5924,6 +5933,7 @@ export const translations = {
     },
     circle: {
       remaining: "SISA",
+      outOf: "dari",
       objectiveReached: "Target tercapai",
       ariaUp: "{{value}} dari {{target}}{{completed}}",
       ariaDown: "{{value}} tersisa{{completed}}",
@@ -6465,6 +6475,7 @@ export const translations = {
     },
     circle: {
       remaining: "BAKI",
+      outOf: "daripada",
       objectiveReached: "Sasaran dicapai",
       ariaUp: "{{value}} daripada {{target}}{{completed}}",
       ariaDown: "{{value}} berbaki{{completed}}",
@@ -7006,6 +7017,7 @@ export const translations = {
     },
     circle: {
       remaining: "ОСТАЛОСЬ",
+      outOf: "из",
       objectiveReached: "Цель достигнута",
       ariaUp: "{{value}} из {{target}}{{completed}}",
       ariaDown: "{{value}} осталось{{completed}}",
@@ -7549,6 +7561,7 @@ export const translations = {
     },
     circle: {
       remaining: "باقی",
+      outOf: "از",
       objectiveReached: "هدف محقق شد",
       ariaUp: "{{value}} از {{target}}{{completed}}",
       ariaDown: "{{value}} باقی‌مانده{{completed}}",

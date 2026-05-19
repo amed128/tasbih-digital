@@ -201,7 +201,7 @@ function ObsidianBead({ size, isCompleted, pulseTrigger, counter, target, mode, 
         </motion.span>
         <span className="text-xs font-semibold mt-0.5"
           style={{ color: "rgba(160,168,200,0.65)", textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>
-          {mode === "down" ? t("circle.remaining") : `/ ${fmt(target)}`}
+          {mode === "down" ? t("circle.remaining") : `${t("circle.outOf")} ${fmt(target)}`}
         </span>
         {isAudioMode ? (
           <div className="flex flex-col items-center">

@@ -205,7 +205,7 @@
 - [x] **Canonical URL** — `alternates: { canonical: '/' }` ajouté dans `layout.tsx` ✅
 - [x] **hreflang tags** — `fr` et `en` ajoutés dans `layout.tsx` ✅
 - [x] **FAQ JSON-LD sur `/aide`** — Schema `FAQPage` ajouté dans `app/aide/page.tsx` ✅
-- [ ] **Google Search Console** — Soumettre le sitemap sur `search.google.com/search-console` pour surveiller l'indexation et les performances
+- [x] **Google Search Console** — Sitemap `https://attasbih.com/sitemap.xml` soumis ✅
 - [ ] **Smart App Banner iOS** — Ajouter `<meta name="apple-itunes-app">` dans `layout.tsx` une fois l'app publiée sur l'App Store *(bloqué : nécessite App Store ID)*
 
 ## Marketing — À faire maintenant que le domaine est connu

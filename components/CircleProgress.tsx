@@ -142,9 +142,11 @@ export function CircleProgress({
         >
           {fmt(value)}
         </motion.div>
-        <div className="mt-1 text-sm font-semibold text-[var(--secondary)]">
-          {!countsDown ? `/ ${fmt(target)}` : t("circle.remaining")}
-        </div>
+        {countsDown && (
+          <div className="mt-1 text-sm font-semibold text-[var(--secondary)]">
+            {t("circle.remaining")}
+          </div>
+        )}
         {isCompleted && (
           <div
             role="status"
@@ -155,6 +157,15 @@ export function CircleProgress({
           </div>
         )}
       </div>
+
+      {!countsDown && !isCompleted && (
+        <div
+          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--border)] bg-[var(--card)] px-2.5 py-0.5 text-xs font-semibold text-[var(--secondary)]"
+          style={{ top: strokeWidth / 2 }}
+        >
+          {fmt(target)}
+        </div>
+      )}
     </motion.div>
   );
 }

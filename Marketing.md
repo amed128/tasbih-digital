@@ -168,6 +168,36 @@ Viral sharing in Muslim communities runs on WhatsApp in South Asia, the Gulf, an
 
 ---
 
+## Backlinks — SEO Authority
+
+Backlinks are links from other websites pointing to attasbih.com. Google treats them as votes of trust — the more quality sites link to you, the higher you rank over time.
+
+### Do now (free, takes minutes each)
+
+- **AlternativeTo** — `alternativeto.net` — list At-tasbih as an alternative to Muslim Pro and MyTasbih. High-authority site, people actively searching "Muslim Pro alternative" will find you. **Highest priority.**
+- **Product Hunt** — your launch post automatically creates a backlink from a high-DA site
+- **GitHub README** — link to `attasbih.com` in the repo README — already a backlink
+- **Ko-fi page** — already links back to the app
+
+### Do at launch
+
+- Search "best Islamic apps 2025/2026" — find every list article and submit At-tasbih via their "suggest an app" form
+- `theresanaiforthat.com` and similar app directories
+- Islamic app review sites and blogs — submit for a review
+
+### High value (harder, pursue after traction)
+
+- **IslamicFinder.org** — high-authority Islamic site, a single mention is worth dozens of directory links
+- **SeekersGuidance** — respected Islamic learning platform, reaches serious practitioners
+- **MuslimMatters.org** — pitch a guest post as the developer ("I built a dhikr app for the Ummah")
+- **Productive Muslim** — productivity + Islamic lifestyle, perfect audience fit
+
+### How backlinks compound
+
+Every Reddit post, every directory listing, every blog mention that includes the URL builds domain authority slowly. After 6–12 months of consistent mentions, the site starts ranking for competitive keywords without paid ads. Ramadan 2027 will benefit directly from backlinks built now.
+
+---
+
 ## Phase 4 — Content & Influencers (October 2026–January 2027)
 
 *Goal: Reach people who will never find the app through search.*

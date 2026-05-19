@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://at-tasbih.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://attasbih.com"),
   title: {
     default: "At-tasbih",
     template: "%s — At-tasbih",
@@ -26,6 +26,13 @@ export const metadata: Metadata = {
   description:
     "Islamic zikr counter. Track your daily dhikr practice, manage your lists, and view your statistics. Free, offline, no account needed.",
   keywords: ["tasbih", "zikr", "dhikr", "islamic counter", "muslim", "prayer counter", "تسبيح", "ذكر"],
+  alternates: {
+    canonical: "/",
+    languages: {
+      "fr": "/",
+      "en": "/",
+    },
+  },
   openGraph: {
     title: "At-tasbih — Islamic Zikr Counter",
     description:
@@ -72,7 +79,7 @@ export default function RootLayout({
               offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
               description:
                 "Islamic zikr counter. Track your daily dhikr practice, manage your lists, and view your statistics. Free, offline, no account needed.",
-              url: process.env.NEXT_PUBLIC_APP_URL ?? "https://at-tasbih.app",
+              url: process.env.NEXT_PUBLIC_APP_URL ?? "https://attasbih.com",
             }),
           }}
         />

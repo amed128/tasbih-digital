@@ -201,10 +201,10 @@
 
 - [x] **Domaine** — `attasbih.com` acheté sur Namecheap, DNS configuré, Vercel valide ✅
 - [x] **NEXT_PUBLIC_APP_URL** — `https://attasbih.com` défini dans les variables d'environnement Vercel ✅
-- [ ] **Fallback URL** — Remplacer `https://at-tasbih.app` par `https://attasbih.com` comme fallback dans `layout.tsx:21` et `:75`
-- [ ] **Canonical URL** — Ajouter `alternates: { canonical: '/' }` dans `layout.tsx`
-- [ ] **hreflang tags** — Ajouter `<link rel="alternate" hreflang="fr">` et `hreflang="en"` pour le ciblage linguistique international (FR + EN)
-- [ ] **FAQ JSON-LD sur `/aide`** — Ajouter un schema `FAQPage` pour que Google affiche les Q&A directement dans les résultats de recherche
+- [x] **Fallback URL** — Remplacé `https://at-tasbih.app` par `https://attasbih.com` dans `layout.tsx` ✅
+- [x] **Canonical URL** — `alternates: { canonical: '/' }` ajouté dans `layout.tsx` ✅
+- [x] **hreflang tags** — `fr` et `en` ajoutés dans `layout.tsx` ✅
+- [x] **FAQ JSON-LD sur `/aide`** — Schema `FAQPage` ajouté dans `app/aide/page.tsx` ✅
 - [ ] **Google Search Console** — Soumettre le sitemap sur `search.google.com/search-console` pour surveiller l'indexation et les performances
 - [ ] **Smart App Banner iOS** — Ajouter `<meta name="apple-itunes-app">` dans `layout.tsx` une fois l'app publiée sur l'App Store *(bloqué : nécessite App Store ID)*
 

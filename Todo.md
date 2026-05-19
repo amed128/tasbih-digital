@@ -197,13 +197,22 @@
 - [x] **Données structurées (JSON-LD)** — bloc `SoftwareApplication` dans `layout.tsx`
 - [x] **metadataBase** — via `NEXT_PUBLIC_APP_URL` env var
 
-## SEO upgrades after real domain name
+## SEO upgrades — Domaine attasbih.com acquis ✅
 
-- [ ] **Canonical URL** — Ajouter `alternates: { canonical: '/' }` dans `layout.tsx` une fois le domaine de production connu.
-- [ ] **hreflang tags** — Ajouter `<link rel="alternate" hreflang="fr">` et `hreflang="en"` pour le ciblage linguistique international (FR + EN).
-- [ ] **FAQ JSON-LD sur `/aide`** — Ajouter un schema `FAQPage` pour que Google affiche les Q&A directement dans les résultats de recherche.
-- [ ] **Google Search Console** — Soumettre le sitemap sur `search.google.com/search-console` pour surveiller l'indexation et les performances.
-- [ ] **Smart App Banner iOS** — Ajouter `<meta name="apple-itunes-app">` dans `layout.tsx` une fois l'app publiée sur l'App Store.
+- [x] **Domaine** — `attasbih.com` acheté sur Namecheap, DNS configuré, Vercel valide ✅
+- [x] **NEXT_PUBLIC_APP_URL** — `https://attasbih.com` défini dans les variables d'environnement Vercel ✅
+- [ ] **Fallback URL** — Remplacer `https://at-tasbih.app` par `https://attasbih.com` comme fallback dans `layout.tsx:21` et `:75`
+- [ ] **Canonical URL** — Ajouter `alternates: { canonical: '/' }` dans `layout.tsx`
+- [ ] **hreflang tags** — Ajouter `<link rel="alternate" hreflang="fr">` et `hreflang="en"` pour le ciblage linguistique international (FR + EN)
+- [ ] **FAQ JSON-LD sur `/aide`** — Ajouter un schema `FAQPage` pour que Google affiche les Q&A directement dans les résultats de recherche
+- [ ] **Google Search Console** — Soumettre le sitemap sur `search.google.com/search-console` pour surveiller l'indexation et les performances
+- [ ] **Smart App Banner iOS** — Ajouter `<meta name="apple-itunes-app">` dans `layout.tsx` une fois l'app publiée sur l'App Store *(bloqué : nécessite App Store ID)*
+
+## Marketing — À faire maintenant que le domaine est connu
+
+- [ ] **Créer @attasbihapp** sur Instagram, TikTok, Twitter/X, YouTube
+- [ ] **Mettre à jour la page Ko-fi** — ajouter la référence à attasbih.com
+- [ ] **Préparer les assets App Store** — screenshots premium, vidéo de preview 30s, descriptions localisées (FR, EN, AR, ID, UR en priorité)
 
 ---
 
